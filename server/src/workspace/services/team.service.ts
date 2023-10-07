@@ -1,24 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Team } from '../schemas/team.schema';
 
 @Injectable()
 export class TeamService {
-  create(createTeamDto: any) {
-    return 'This action adds a new team';
+  constructor(
+    @InjectModel(Team.name) private readonly teamModel: Model<Team>,
+  ) {}
+
+  async create(team: Team): Promise<Team> {
+    const createdTeam = new this.teamModel(team);
+    return createdTeam.save();
   }
 
-  findAll() {
-    return `This action returns all team`;
+  async findAll(): Promise<Team[]> {
+    return this.teamModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} team`;
+  async findById(id: string): Promise<Team> {
+    return { hahahah: 'ssss' } as any;
+
+    // const team = await this.teamModel.findById(id).exec();
+    // if (!team) {
+    //   throw new NotFoundException('Team not found');
+    // }
+    // return team;
   }
 
-  update(id: number, updateTeamDto: any) {
-    return `This action updates a #${id} team`;
+  async update(id: string, team: Team): Promise<Team> {
+    const updatedTeam = await this.teamModel
+      .findByIdAndUpdate(id, team, { new: true })
+      .exec();
+    if (!updatedTeam) {
+      throw new NotFoundException('Team not found');
+    }
+    return updatedTeam;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} team`;
+  async remove(id: string): Promise<Team> {
+    const deletedTeam = await this.teamModel.findByIdAndRemove(id).exec();
+    if (!deletedTeam) {
+      throw new NotFoundException('Team not found');
+    }
+    return deletedTeam;
   }
 }

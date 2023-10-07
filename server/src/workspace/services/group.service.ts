@@ -1,24 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Group } from '../schemas/group.schema';
 
 @Injectable()
 export class GroupService {
-  create(createTeamDto: any) {
-    return 'This action adds a new team';
+  constructor(
+    @InjectModel(Group.name) private readonly groupModel: Model<Group>,
+  ) {}
+
+  async create(group: Group): Promise<Group> {
+    const createdGroup = new this.groupModel(group);
+    return createdGroup.save();
   }
 
-  findAll() {
-    return `This action returns all team`;
+  async findAll(): Promise<Group[]> {
+    return this.groupModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} team`;
+  async findById(id: string): Promise<Group> {
+    const group = await this.groupModel.findById(id).exec();
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+    return group;
   }
 
-  update(id: number, updateTeamDto: any) {
-    return `This action updates a #${id} team`;
+  async update(id: string, updatedGroup: Partial<Group>): Promise<Group> {
+    const group = await this.groupModel
+      .findByIdAndUpdate(id, updatedGroup, { new: true })
+      .exec();
+    if (!group) {
+      throw new NotFoundException('Group not found');
+    }
+    return group;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} team`;
+  async remove(id: string): Promise<Group> {
+    const deletedGroup = await this.groupModel.findByIdAndRemove(id).exec();
+    if (!deletedGroup) {
+      throw new NotFoundException('Group not found');
+    }
+    return deletedGroup;
   }
 }

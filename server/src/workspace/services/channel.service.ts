@@ -1,24 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Channel } from '../schemas/channel.schema';
 
 @Injectable()
 export class ChannelService {
-  create(createTeamDto: any) {
-    return 'This action adds a new team';
+  constructor(
+    @InjectModel(Channel.name) private readonly channelModel: Model<Channel>,
+  ) {}
+
+  async create(channel: Channel): Promise<Channel> {
+    const createdChannel = new this.channelModel(channel);
+    return createdChannel.save();
   }
 
-  findAll() {
-    return `This action returns all team`;
+  async findAll(): Promise<Channel[]> {
+    return this.channelModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} team`;
+  async findById(id: string): Promise<Channel> {
+    const channel = await this.channelModel.findById(id).exec();
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    return channel;
   }
 
-  update(id: number, updateTeamDto: any) {
-    return `This action updates a #${id} team`;
+  async update(id: string, updatedChannel: Partial<Channel>): Promise<Channel> {
+    const channel = await this.channelModel
+      .findByIdAndUpdate(id, updatedChannel, { new: true })
+      .exec();
+    if (!channel) {
+      throw new NotFoundException('Channel not found');
+    }
+    return channel;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} team`;
+  async remove(id: string): Promise<Channel> {
+    const deletedChannel = await this.channelModel.findByIdAndRemove(id).exec();
+    if (!deletedChannel) {
+      throw new NotFoundException('Channel not found');
+    }
+    return deletedChannel;
   }
 }

@@ -9,6 +9,13 @@ export enum ChannelType {
 
 @Schema()
 export class Channel {
+  @Prop({ type: String, enum: ChannelType })
+  channelType: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'Team' })
+  teamId: string;
+
+  //#region common
   _id: string;
 
   @Prop()
@@ -20,13 +27,6 @@ export class Channel {
   @Prop()
   avatar?: string;
 
-  @Prop({ type: String, enum: ChannelType })
-  channelType: string;
-
-  @Prop({ type: Types.ObjectId, ref: 'Team' })
-  teamId: string;
-
-  //#region common
   @Prop()
   path: string;
 
