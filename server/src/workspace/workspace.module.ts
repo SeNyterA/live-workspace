@@ -15,8 +15,6 @@ import { ChannelService } from './services/channel.service';
 import { DirectMessageService } from './services/direct-message.service';
 import { GroupService } from './services/group.service';
 import { TeamService } from './services/team.service';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -33,15 +31,6 @@ import { APP_GUARD } from '@nestjs/core';
     DirectMessageController,
     GroupController,
   ],
-  providers: [
-    ChannelService,
-    TeamService,
-    GroupService,
-    DirectMessageService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
+  providers: [ChannelService, TeamService, GroupService, DirectMessageService],
 })
 export class WorkspaceModule {}

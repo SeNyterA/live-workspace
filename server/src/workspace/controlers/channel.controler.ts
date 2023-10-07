@@ -41,8 +41,6 @@ export class ChannelController {
     @Param('id') id: string,
     @Body() channel: Partial<Channel>,
   ) {
-    console.log({ teamId, id });
-
     const data = await this.teamService.findById(id);
 
     return {
