@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { TCreateTeamPayload, TTeam } from '../dto/team.dto';
 import { Team } from '../schemas/team.schema';
 
 @Injectable()
@@ -9,23 +10,33 @@ export class TeamService {
     @InjectModel(Team.name) private readonly teamModel: Model<Team>,
   ) {}
 
-  async create(team: Team): Promise<Team> {
-    const createdTeam = new this.teamModel(team);
-    return createdTeam.save();
+  async create({
+    team,
+    userId,
+  }: {
+    team: TCreateTeamPayload;
+    userId: string;
+  }): Promise<TTeam> {
+    const createdTeam = new this.teamModel({
+      ...team,
+      createdById: userId,
+      modifiedById: userId,
+    });
+    createdTeam.path = createdTeam._id.toString();
+    createdTeam.save();
+    return createdTeam;
+  }
+
+  async findById(id: string): Promise<Team> {
+    const team = await this.teamModel.findById(id).exec();
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+    return team.toJSON();
   }
 
   async findAll(): Promise<Team[]> {
     return this.teamModel.find().exec();
-  }
-
-  async findById(id: string): Promise<Team> {
-    return { hahahah: 'ssss' } as any;
-
-    // const team = await this.teamModel.findById(id).exec();
-    // if (!team) {
-    //   throw new NotFoundException('Team not found');
-    // }
-    // return team;
   }
 
   async update(id: string, team: Team): Promise<Team> {
