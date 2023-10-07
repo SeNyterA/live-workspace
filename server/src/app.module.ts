@@ -1,12 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { BoardModule } from './board/board.module';
-import { UsersModule } from './users/users.module';
-import { CardModule } from './card/card.module';
-import { WorkspaceModule } from './workspace/workspace.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { BoardModule } from './modules/board/board.module';
+import { UsersModule } from './modules/users/users.module';
+import { WorkspaceModule } from './modules/workspace/workspace.module';
 
 @Module({
   imports: [
@@ -14,10 +11,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
     AuthModule,
     UsersModule,
     BoardModule,
-    CardModule,
     WorkspaceModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

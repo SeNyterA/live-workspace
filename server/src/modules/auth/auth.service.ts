@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { TCreateUser, TUser } from 'src/users/user.dto';
+import { TCreateUser, TUser } from 'src/modules/users/user.dto';
 import { UsersService } from '../users/users.service';
 import { TLoginPayload, TLoginResponse } from './auth.dto';
 

@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { getUserId } from 'src/libs/getUserId';
-import { TCreateUser } from 'src/users/user.dto';
+import { TCreateUser } from 'src/modules/users/user.dto';
 import { TLoginPayload } from './auth.dto';
 import { AuthGuard, Public } from './auth.guard';
 import { AuthService } from './auth.service';
