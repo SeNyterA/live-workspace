@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  mongodb:
+    container_name: live-workspace-mongo
+    image: mongo:latest
+    ports:
+      - '$MONGODB_PORT:27017'
+    volumes:
+      - 'data:/data/db'
+    command: mongod --bind_ip_all
+
+volumes:
+  data:
