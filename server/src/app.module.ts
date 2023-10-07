@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { BoardModule } from './board/board.module';
 import { UsersModule } from './users/users.module';
 import { CardModule } from './card/card.module';
+import { WorkspaceModule } from './workspace/workspace.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CardModule } from './card/card.module';
     UsersModule,
     BoardModule,
     CardModule,
+    WorkspaceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
