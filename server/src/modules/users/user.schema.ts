@@ -1,35 +1,35 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 
 @Schema()
 export class User {
-  _id: string;
+  _id: string
 
   @Prop()
-  firebaseId?: string;
+  firebaseId?: string
 
   @Prop({ unique: true, required: true })
-  userName: string;
+  userName: string
 
   @Prop({ unique: true, required: true })
-  email: string;
+  email: string
 
   @Prop()
-  nickname?: string;
+  nickname?: string
 
   @Prop()
-  avatar?: string;
+  avatar?: string
 
   @Prop()
-  password: string;
+  password: string
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt: Date
 
   @Prop({ default: Date.now })
-  updatedAt: Date;
+  updatedAt: Date
 
   @Prop({ default: true })
-  isAvailable: boolean;
+  isAvailable: boolean
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User)

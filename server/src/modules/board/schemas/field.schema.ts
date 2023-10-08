@@ -1,4 +1,4 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 
 export enum FieldType {
   Date = 'Date',
@@ -7,34 +7,34 @@ export enum FieldType {
   MultiPeople = 'MultiPeople',
   Select = 'Select',
   MultiSelect = 'MultiSelect',
-  Link = 'Link',
+  Link = 'Link'
 }
 
 @Schema()
 export class Option {
-  _id: string;
+  _id: string
 
   @Prop()
-  title: string;
+  title: string
 
   @Prop()
-  color: string;
+  color: string
 }
 
-export const OptionSchema = SchemaFactory.createForClass(Option);
+export const OptionSchema = SchemaFactory.createForClass(Option)
 
 @Schema()
 export class FieldProperty {
-  _id: string;
+  _id: string
 
   @Prop()
-  title: string;
+  title: string
 
   @Prop()
-  fieldType: FieldType;
+  fieldType: FieldType
 
   @Prop({ type: [OptionSchema] })
-  fieldOption?: Option[];
+  fieldOption?: Option[]
 }
 
-export const FieldPropertySchema = SchemaFactory.createForClass(FieldProperty);
+export const FieldPropertySchema = SchemaFactory.createForClass(FieldProperty)

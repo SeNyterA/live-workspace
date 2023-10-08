@@ -1,46 +1,46 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Channel } from '../schemas/channel.schema';
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
+import { Channel } from '../schemas/channel.schema'
 
 @Injectable()
 export class ChannelService {
   constructor(
-    @InjectModel(Channel.name) private readonly channelModel: Model<Channel>,
+    @InjectModel(Channel.name) private readonly channelModel: Model<Channel>
   ) {}
 
   async create(channel: Channel): Promise<Channel> {
-    const createdChannel = new this.channelModel(channel);
-    return createdChannel.save();
+    const createdChannel = new this.channelModel(channel)
+    return createdChannel.save()
   }
 
   async findAll(): Promise<Channel[]> {
-    return this.channelModel.find().exec();
+    return this.channelModel.find().exec()
   }
 
   async findById(id: string): Promise<Channel> {
-    const channel = await this.channelModel.findById(id).exec();
+    const channel = await this.channelModel.findById(id).exec()
     if (!channel) {
-      throw new NotFoundException('Channel not found');
+      throw new NotFoundException('Channel not found')
     }
-    return channel;
+    return channel
   }
 
   async update(id: string, updatedChannel: Partial<Channel>): Promise<Channel> {
     const channel = await this.channelModel
       .findByIdAndUpdate(id, updatedChannel, { new: true })
-      .exec();
+      .exec()
     if (!channel) {
-      throw new NotFoundException('Channel not found');
+      throw new NotFoundException('Channel not found')
     }
-    return channel;
+    return channel
   }
 
   async remove(id: string): Promise<Channel> {
-    const deletedChannel = await this.channelModel.findByIdAndRemove(id).exec();
+    const deletedChannel = await this.channelModel.findByIdAndRemove(id).exec()
     if (!deletedChannel) {
-      throw new NotFoundException('Channel not found');
+      throw new NotFoundException('Channel not found')
     }
-    return deletedChannel;
+    return deletedChannel
   }
 }

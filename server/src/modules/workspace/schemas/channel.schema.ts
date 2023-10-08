@@ -1,50 +1,50 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Types } from 'mongoose'
 
 export enum ChannelType {
   Private = 'private',
   Public = 'public',
-  System = 'system',
+  System = 'system'
 }
 
 @Schema()
 export class Channel {
   @Prop({ type: String, enum: ChannelType })
-  channelType: string;
+  channelType: string
 
   @Prop({ type: Types.ObjectId, ref: 'Team' })
-  teamId: string;
+  teamId: string
 
   //#region common
-  _id: string;
+  _id: string
 
   @Prop()
-  title: string;
+  title: string
 
   @Prop()
-  description?: string;
+  description?: string
 
   @Prop()
-  avatar?: string;
+  avatar?: string
 
   @Prop()
-  path: string;
+  path: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  createdById: string;
+  createdById: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  modifiedById: string;
+  modifiedById: string
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt: Date
 
   @Prop({ default: Date.now })
-  updatedAt: Date;
+  updatedAt: Date
 
   @Prop({ default: true })
-  isAvailable: boolean;
+  isAvailable: boolean
   //#endregion
 }
 
-export const ChannelSchema = SchemaFactory.createForClass(Channel);
+export const ChannelSchema = SchemaFactory.createForClass(Channel)

@@ -1,4 +1,4 @@
-import { User } from './user.schema';
+import { User } from './user.schema'
 
 export type TUser = Pick<
   User,
@@ -11,11 +11,11 @@ export type TUser = Pick<
   | 'createdAt'
   | 'updatedAt'
   | 'isAvailable'
->;
+>
 
 export type TCreateUser = Pick<
   User,
   'avatar' | 'email' | 'userName' | 'nickname' | 'password'
->;
+>
 
-export type TUpdateUser = Partial<Omit<TCreateUser, 'password'>>;
+export type TUpdateUser = Partial<Omit<TCreateUser, 'password'>>

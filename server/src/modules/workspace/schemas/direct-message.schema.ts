@@ -1,45 +1,45 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Types } from 'mongoose'
 
 @Schema()
 export class DirectMessage {
   @Prop({
     type: [{ type: Types.ObjectId, ref: 'User' }],
     unique: true,
-    sparse: true,
+    sparse: true
   })
-  userIds: string[];
+  userIds: string[]
 
   //#region common
-  _id: string;
+  _id: string
 
   @Prop()
-  title: string;
+  title: string
 
   @Prop()
-  description?: string;
+  description?: string
 
   @Prop()
-  avatar?: string;
+  avatar?: string
 
   @Prop()
-  path: string;
+  path: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  createdById: string;
+  createdById: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  modifiedById: string;
+  modifiedById: string
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt: Date
 
   @Prop({ default: Date.now })
-  updatedAt: Date;
+  updatedAt: Date
 
   @Prop({ default: true })
-  isAvailable: boolean;
+  isAvailable: boolean
   //#endregion
 }
 
-export const DirectMessageSchema = SchemaFactory.createForClass(DirectMessage);
+export const DirectMessageSchema = SchemaFactory.createForClass(DirectMessage)

@@ -1,59 +1,163 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { TCreateTeamPayload, TTeam } from '../dto/team.dto';
-import { Team } from '../schemas/team.schema';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
+import {
+  TCreateTeamPayload,
+  TTeam,
+  TTeamMemberPayload,
+  TUpdateTeamPayload
+} from '../dto/team.dto'
+import { ETeamMemberType, Team } from '../schemas/team.schema'
 
 @Injectable()
 export class TeamService {
   constructor(
-    @InjectModel(Team.name) private readonly teamModel: Model<Team>,
+    @InjectModel(Team.name) private readonly teamModel: Model<Team>
   ) {}
+
+  async editMembers({
+    id,
+    userId,
+    teamMembersPayload
+  }: {
+    id: string
+    userId: string
+    teamMembersPayload: TTeamMemberPayload[]
+  }): Promise<boolean> {
+    console.log({ id, userId, teamMembersPayload })
+
+    const team = await this.teamModel.findById({
+      _id: id,
+      isAvailable: true,
+      'members.userId': userId,
+      'members.type': { $in: [ETeamMemberType.Owner, ETeamMemberType.Admin] }
+    })
+
+    if (!team) {
+      throw new ForbiddenException('Your dont have permission')
+    }
+
+    return true
+  }
+
+  //#region public service
+  async getTeamsByUserId(userId: string): Promise<TTeam[]> {
+    const teams = await this.teamModel.find({
+      'members.userId': userId,
+      isAvailable: true
+    })
+
+    return teams.map(e => e.toJSON())
+  }
+
+  async getTeamById({
+    id,
+    userId
+  }: {
+    id: string
+    userId: string
+  }): Promise<TTeam> {
+    const team = await this.teamModel.findById({
+      _id: id,
+      isAvailable: true,
+      'members.userId': userId
+    })
+
+    if (!team) {
+      throw new NotFoundException('Team not found')
+    }
+
+    return team.toJSON()
+  }
 
   async create({
     team,
-    userId,
+    userId
   }: {
-    team: TCreateTeamPayload;
-    userId: string;
+    team: TCreateTeamPayload
+    userId: string
   }): Promise<TTeam> {
     const createdTeam = new this.teamModel({
       ...team,
       createdById: userId,
       modifiedById: userId,
-    });
-    createdTeam.path = createdTeam._id.toString();
-    createdTeam.save();
-    return createdTeam;
+      members: [
+        {
+          userId,
+          type: ETeamMemberType.Owner
+        }
+      ]
+    })
+    createdTeam.path = createdTeam._id.toString()
+    createdTeam.save()
+    return createdTeam
   }
 
-  async findById(id: string): Promise<Team> {
-    const team = await this.teamModel.findById(id).exec();
+  async update({
+    id,
+    teamPayload,
+    userId
+  }: {
+    id: string
+    teamPayload: TUpdateTeamPayload
+    userId: string
+  }): Promise<boolean> {
+    const team = await this.teamModel.findByIdAndUpdate(
+      {
+        _id: id,
+        isAvailable: true,
+        'members.userId': userId,
+        'members.type': { $in: [ETeamMemberType.Owner, ETeamMemberType.Admin] }
+      },
+      {
+        $set: {
+          ...teamPayload,
+          updatedAt: new Date(),
+          modifiedById: userId
+        }
+      },
+      { new: true }
+    )
+
     if (!team) {
-      throw new NotFoundException('Team not found');
+      throw new ForbiddenException('Your dont have permission')
     }
-    return team.toJSON();
+    return true
   }
 
-  async findAll(): Promise<Team[]> {
-    return this.teamModel.find().exec();
-  }
+  async delete({
+    id,
+    userId
+  }: {
+    id: string
+    userId: string
+  }): Promise<boolean> {
+    const team = await this.teamModel.findByIdAndUpdate(
+      {
+        _id: id,
+        isAvailable: true,
+        'members.userId': userId,
+        'members.type': ETeamMemberType.Owner
+      },
+      {
+        // $pull: { members: { userId, type: ETeamMemberType.Owner } },
+        $set: {
+          isAvailable: false,
+          updatedAt: new Date(),
+          modifiedById: userId
+        }
+      },
+      { new: true }
+    )
 
-  async update(id: string, team: Team): Promise<Team> {
-    const updatedTeam = await this.teamModel
-      .findByIdAndUpdate(id, team, { new: true })
-      .exec();
-    if (!updatedTeam) {
-      throw new NotFoundException('Team not found');
+    if (!team) {
+      throw new ForbiddenException('Your dont have permission')
     }
-    return updatedTeam;
+    return true
   }
-
-  async remove(id: string): Promise<Team> {
-    const deletedTeam = await this.teamModel.findByIdAndRemove(id).exec();
-    if (!deletedTeam) {
-      throw new NotFoundException('Team not found');
-    }
-    return deletedTeam;
-  }
+  //#endregion
 }

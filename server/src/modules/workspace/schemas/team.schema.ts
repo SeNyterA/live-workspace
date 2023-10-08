@@ -1,38 +1,58 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Types } from 'mongoose'
+
+export enum ETeamMemberType {
+  Owner = 0,
+  Admin = 1,
+  Member = 2
+}
+
+@Schema()
+export class TeamMember {
+  _id: string
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  userId: string
+
+  @Prop({ enum: ETeamMemberType, default: ETeamMemberType.Member })
+  type: ETeamMemberType
+}
 
 @Schema()
 export class Team {
-  _id: string;
+  _id: string
 
   @Prop()
-  title: string;
+  title: string
 
   @Prop()
-  description?: string;
+  description?: string
 
   @Prop()
-  avatar?: string;
+  avatar?: string
+
+  @Prop({ type: [SchemaFactory.createForClass(TeamMember)], default: [] })
+  members: TeamMember[]
 
   //#region common
   @Prop()
-  path: string;
+  path: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  createdById: string;
+  createdById: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  modifiedById: string;
+  modifiedById: string
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt: Date
 
   @Prop({ default: Date.now })
-  updatedAt: Date;
+  updatedAt: Date
 
   @Prop({ default: true })
-  isAvailable: boolean;
+  isAvailable: boolean
   //#endregion
 }
 
-export const TeamSchema = SchemaFactory.createForClass(Team);
+export const TeamSchema = SchemaFactory.createForClass(Team)

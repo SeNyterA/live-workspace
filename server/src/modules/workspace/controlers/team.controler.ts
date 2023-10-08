@@ -6,12 +6,15 @@ import {
   Param,
   Patch,
   Post,
-  Request,
-} from '@nestjs/common';
-import { getUserId } from 'src/libs/getUserId';
-import { TCreateTeamPayload } from '../dto/team.dto';
-import { Team } from '../schemas/team.schema';
-import { TeamService } from '../services/team.service';
+  Request
+} from '@nestjs/common'
+import { getUserId } from 'src/libs/getUserId'
+import {
+  TCreateTeamPayload,
+  TTeamMemberPayload,
+  TUpdateTeamPayload
+} from '../dto/team.dto'
+import { TeamService } from '../services/team.service'
 
 @Controller('/workspace/teams')
 export class TeamController {
@@ -21,27 +24,54 @@ export class TeamController {
   create(@Request() req, @Body() team: TCreateTeamPayload) {
     return this.teamService.create({
       team: team,
-      userId: getUserId(req),
-    });
+      userId: getUserId(req)
+    })
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.teamService.findById(id);
+  findOne(@Request() req, @Param('id') id: string) {
+    return this.teamService.getTeamById({
+      id: id,
+      userId: getUserId(req)
+    })
   }
 
   @Get()
-  findAll() {
-    return this.teamService.findAll();
+  findAll(@Request() req) {
+    return this.teamService.getTeamsByUserId(getUserId(req))
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() team: Team) {
-    return this.teamService.update(id, team);
+  update(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() teamPayload: TUpdateTeamPayload
+  ) {
+    return this.teamService.update({
+      id,
+      userId: getUserId(req),
+      teamPayload
+    })
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.teamService.remove(id);
+  remove(@Request() req, @Param('id') id: string) {
+    return this.teamService.delete({
+      id: id,
+      userId: getUserId(req)
+    })
+  }
+
+  @Post(':id')
+  editMembers(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() membersPayload: TTeamMemberPayload[]
+  ) {
+    return this.teamService.editMembers({
+      teamMembersPayload: membersPayload,
+      userId: getUserId(req),
+      id: id
+    })
   }
 }

@@ -1,39 +1,39 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
-import { FieldProperty, FieldPropertySchema } from './field.schema';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Types } from 'mongoose'
+import { FieldProperty, FieldPropertySchema } from './field.schema'
 
 @Schema()
 export class Board {
-  _id: string;
+  _id: string
 
   @Prop({ type: [FieldPropertySchema] })
-  properties: FieldProperty[];
+  properties: FieldProperty[]
 
   @Prop({ required: true })
-  title: string;
+  title: string
 
   @Prop()
-  description?: string;
+  description?: string
 
   //#region common
   @Prop()
-  path: string;
+  path: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  createdById: string;
+  createdById: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  modifiedById: string;
+  modifiedById: string
 
   @Prop({ default: Date.now })
-  createdAt: Date;
+  createdAt: Date
 
   @Prop({ default: Date.now })
-  updatedAt: Date;
+  updatedAt: Date
 
   @Prop({ default: true })
-  isAvailable: boolean;
+  isAvailable: boolean
   //#region
 }
 
-export const BoardSchema = SchemaFactory.createForClass(Board);
+export const BoardSchema = SchemaFactory.createForClass(Board)

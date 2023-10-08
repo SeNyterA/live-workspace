@@ -1,10 +1,10 @@
-import { Team } from '../schemas/team.schema';
+import { Team, TeamMember } from '../schemas/team.schema'
 
-export type TTeam = Team;
+export type TTeam = Team
+export type TTeamMember = TeamMember
 
-export type TCreateTeamPayload = Pick<
-  TTeam,
-  'avatar' | 'title' | 'description'
->;
+export type TCreateTeamPayload = Pick<TTeam, 'avatar' | 'title' | 'description'>
 
-export type TUpdateTeamPayload = Partial<TCreateTeamPayload>;
+export type TUpdateTeamPayload = Partial<TCreateTeamPayload>
+
+export type TTeamMemberPayload = Partial<TTeam>
