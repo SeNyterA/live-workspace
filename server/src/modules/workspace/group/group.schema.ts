@@ -1,8 +1,28 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
 
+export enum EGroupMemberType {
+  Owner = 0,
+  Admin = 1,
+  Member = 2
+}
+
+@Schema()
+export class GroupMember {
+  _id: string
+
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  userId: string
+
+  @Prop({ enum: EGroupMemberType, default: EGroupMemberType.Member })
+  type: EGroupMemberType
+}
+
 @Schema()
 export class Group {
+  @Prop({ type: [SchemaFactory.createForClass(GroupMember)], default: [] })
+  members: GroupMember[]
+
   //#region common
   _id: string
 

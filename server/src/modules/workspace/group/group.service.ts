@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
+import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
-import { Group } from './group.schema'
+import { CreateGroupDto, UpdateGroupDto } from './group.dto'
+import { EGroupMemberType, Group } from './group.schema'
 
 @Injectable()
 export class GroupService {
@@ -9,38 +16,152 @@ export class GroupService {
     @InjectModel(Group.name) private readonly groupModel: Model<Group>
   ) {}
 
-  async create(group: Group): Promise<Group> {
-    const createdGroup = new this.groupModel(group)
-    return createdGroup.save()
+  async editMembers({
+    id,
+    userId,
+    groupMembersPayload
+  }: {
+    id: string
+    userId: string
+    groupMembersPayload: CreateGroupDto[]
+  }): Promise<boolean> {
+    console.log({ id, userId, groupMembersPayload })
+
+    const group = await this.groupModel.findById({
+      _id: id,
+      isAvailable: true,
+      'members.userId': userId,
+      'members.type': {
+        $in: [EGroupMemberType.Owner, EGroupMemberType.Admin]
+      }
+    })
+
+    if (!group) {
+      throw new ForbiddenException('Your dont have permission')
+    }
+
+    return true
   }
 
-  async findAll(): Promise<Group[]> {
-    return this.groupModel.find().exec()
+  //#region public service
+  async getGroupsByUserId(userId: string): Promise<Group[]> {
+    const groups = await this.groupModel.find({
+      'members.userId': userId,
+      isAvailable: true
+    })
+
+    return groups.map(e => e.toJSON())
   }
 
-  async findById(id: string): Promise<Group> {
-    const group = await this.groupModel.findById(id).exec()
+  async getGroupById({
+    id,
+    userId
+  }: {
+    id: string
+    userId: string
+  }): Promise<Group> {
+    const group = await this.groupModel.findOne({
+      _id: id,
+      isAvailable: true,
+      'members.userId': userId
+    })
+
     if (!group) {
       throw new NotFoundException('Group not found')
     }
-    return group
+
+    return group.toJSON()
   }
 
-  async update(id: string, updatedGroup: Partial<Group>): Promise<Group> {
-    const group = await this.groupModel
-      .findByIdAndUpdate(id, updatedGroup, { new: true })
-      .exec()
+  async create({
+    group,
+    userId
+  }: {
+    group: CreateGroupDto
+    userId: string
+  }): Promise<Group> {
+    const createdGroup = new this.groupModel({
+      ...group,
+      createdById: userId,
+      modifiedById: userId,
+      members: [
+        {
+          userId,
+          type: EGroupMemberType.Owner
+        }
+      ]
+    })
+
+    createdGroup.save()
+    return createdGroup
+  }
+
+  async update({
+    id,
+    groupPayload,
+    userId
+  }: {
+    id: string
+    groupPayload: UpdateGroupDto
+    userId: string
+  }) {
+    if (isEmpty(groupPayload)) {
+      throw new BadRequestException('Bad request')
+    }
+
+    const group = await this.groupModel.findByIdAndUpdate(
+      {
+        _id: id,
+        isAvailable: true,
+        'members.userId': userId,
+        'members.type': {
+          $in: [EGroupMemberType.Owner, EGroupMemberType.Admin]
+        }
+      },
+      {
+        $set: {
+          ...groupPayload,
+          updatedAt: new Date(),
+          modifiedById: userId
+        }
+      },
+      { new: true }
+    )
+
     if (!group) {
-      throw new NotFoundException('Group not found')
+      throw new ForbiddenException('Your dont have permission')
     }
-    return group
+    return group.toJSON()
   }
 
-  async remove(id: string): Promise<Group> {
-    const deletedGroup = await this.groupModel.findByIdAndRemove(id).exec()
-    if (!deletedGroup) {
-      throw new NotFoundException('Group not found')
+  async delete({
+    id,
+    userId
+  }: {
+    id: string
+    userId: string
+  }): Promise<boolean> {
+    const group = await this.groupModel.findByIdAndUpdate(
+      {
+        _id: id,
+        isAvailable: true,
+        'members.userId': userId,
+        'members.type': EGroupMemberType.Owner
+      },
+      {
+        $set: {
+          isAvailable: false,
+          updatedAt: new Date(),
+          modifiedById: userId
+        }
+      },
+      { new: true }
+    )
+
+    if (!group) {
+      throw new ForbiddenException('Your dont have permission')
     }
-    return deletedGroup
+    return true
   }
+  //#endregion
 }

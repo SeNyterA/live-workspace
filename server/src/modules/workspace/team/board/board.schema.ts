@@ -22,8 +22,6 @@ export class Option {
   color: string
 }
 
-export const OptionSchema = SchemaFactory.createForClass(Option)
-
 @Schema()
 export class FieldProperty {
   _id: string
@@ -34,17 +32,15 @@ export class FieldProperty {
   @Prop()
   fieldType: FieldType
 
-  @Prop({ type: [OptionSchema] })
+  @Prop({ type: [SchemaFactory.createForClass(Option)] })
   fieldOption?: Option[]
 }
-
-export const FieldPropertySchema = SchemaFactory.createForClass(FieldProperty)
 
 @Schema()
 export class Board {
   _id: string
 
-  @Prop({ type: [FieldPropertySchema] })
+  @Prop({ type: [SchemaFactory.createForClass(FieldProperty)] })
   properties: FieldProperty[]
 
   @Prop({ required: true })

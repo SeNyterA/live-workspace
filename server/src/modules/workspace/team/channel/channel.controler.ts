@@ -5,48 +5,62 @@ import {
   Get,
   Param,
   Patch,
-  Post
+  Post,
+  Request
 } from '@nestjs/common'
-import { Channel } from './channel.schema'
+import { getUserId } from 'src/libs/getUserId'
+import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
 import { ChannelService } from './channel.service'
-import { TeamService } from '../team.service'
 
-@Controller('workspace/teams/:teamId/channels')
+@Controller('workspace')
 export class ChannelController {
-  constructor(
-    private readonly channelService: ChannelService,
-    private readonly teamService: TeamService
-  ) {}
+  constructor(private readonly channelService: ChannelService) {}
 
-  @Post()
-  create(@Body() channel: Channel, @Param('teamId') teamId: string) {
-    // Set the teamId for the channel
-    channel.teamId = teamId
-    return this.channelService.create(channel)
+  @Get('channels/:id')
+  findOne(@Request() req, @Param('id') id: string) {
+    return this.channelService.getChannelById({
+      id: id,
+      userId: getUserId(req)
+    })
   }
 
-  @Get()
-  findAll(@Param('teamId') teamId: string) {
-    // return this.channelService.findAllForTeam(teamId);
+  @Get('channels')
+  findAll(@Request() req) {
+    return this.channelService.getChannelsByUserId(getUserId(req))
   }
 
-  @Get(':id')
-  findOne(@Param('teamId') teamId: string, @Param('id') id: string) {
-    // return this.channelService.findByIdForTeam(teamId, id);
-  }
-
-  @Patch(':id')
-  async update(
-    @Param('teamId') teamId: string,
-    @Param('id') id: string,
-    @Body() channel: Partial<Channel>
+  @Post('teams/:teamId/channels')
+  create(
+    @Request() req,
+    @Body() channelPayload: CreateChannelDto,
+    @Param('teamId') teamId: string
   ) {
-    return 1
-    // return this.channelService.update(id, channel);
+    return this.channelService.create({
+      channel: channelPayload,
+      userId: getUserId(req),
+      teamId
+    })
   }
 
-  @Delete(':id')
-  remove(@Param('teamId') teamId: string, @Param('id') id: string) {
-    return this.channelService.remove(id)
+  @Patch('channels/:id')
+  update(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() channelPayload: UpdateChannelDto
+  ) {
+    return this.channelService.update({
+      id,
+
+      userId: getUserId(req),
+      channelPayload
+    })
+  }
+
+  @Delete('channels/:id')
+  delete(@Param('id') id: string, @Request() req) {
+    return this.channelService.delete({
+      id,
+      userId: getUserId(req)
+    })
   }
 }

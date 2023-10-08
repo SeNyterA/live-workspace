@@ -5,37 +5,56 @@ import {
   Get,
   Param,
   Patch,
-  Post
+  Post,
+  Request
 } from '@nestjs/common'
-import { Group } from './group.schema'
+import { getUserId } from 'src/libs/getUserId'
+import { CreateGroupDto, UpdateGroupDto } from './group.dto'
 import { GroupService } from './group.service'
 
-@Controller('/workspace/groups')
+@Controller('workspace/groups')
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
 
-  @Post()
-  create(@Body() group: Group) {
-    return this.groupService.create(group)
+  @Get(':id')
+  findOne(@Request() req, @Param('id') id: string) {
+    return this.groupService.getGroupById({
+      id: id,
+      userId: getUserId(req)
+    })
   }
 
   @Get()
-  findAll() {
-    return this.groupService.findAll()
+  findAll(@Request() req) {
+    return this.groupService.getGroupsByUserId(getUserId(req))
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.groupService.findById(id)
+  @Post()
+  create(@Request() req, @Body() groupPayload: CreateGroupDto) {
+    return this.groupService.create({
+      group: groupPayload,
+      userId: getUserId(req)
+    })
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() group: Partial<Group>) {
-    return this.groupService.update(id, group)
+  update(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() groupPayload: UpdateGroupDto
+  ) {
+    return this.groupService.update({
+      id,
+      userId: getUserId(req),
+      groupPayload
+    })
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.groupService.remove(id)
+  delete(@Param('id') id: string, @Request() req) {
+    return this.groupService.delete({
+      id,
+      userId: getUserId(req)
+    })
   }
 }
