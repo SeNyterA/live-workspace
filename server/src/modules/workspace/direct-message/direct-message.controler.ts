@@ -7,8 +7,8 @@ import {
   Patch,
   Post
 } from '@nestjs/common'
-import { DirectMessage } from '../schemas/direct-message.schema'
-import { DirectMessageService } from '../services/direct-message.service'
+import { DirectMessage } from './direct-message.schema'
+import { DirectMessageService } from './direct-message.service'
 
 @Controller('/workspace/direct-messages')
 export class DirectMessageController {

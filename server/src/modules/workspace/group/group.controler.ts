@@ -7,8 +7,8 @@ import {
   Patch,
   Post
 } from '@nestjs/common'
-import { Group } from '../schemas/group.schema'
-import { GroupService } from '../services/group.service'
+import { Group } from './group.schema'
+import { GroupService } from './group.service'
 
 @Controller('/workspace/groups')
 export class GroupController {

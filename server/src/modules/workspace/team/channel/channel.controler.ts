@@ -7,9 +7,9 @@ import {
   Patch,
   Post
 } from '@nestjs/common'
-import { Channel } from '../schemas/channel.schema'
-import { ChannelService } from '../services/channel.service'
-import { TeamService } from '../services/team.service'
+import { Channel } from './channel.schema'
+import { ChannelService } from './channel.service'
+import { TeamService } from '../team.service'
 
 @Controller('workspace/teams/:teamId/channels')
 export class ChannelController {

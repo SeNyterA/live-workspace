@@ -10,8 +10,8 @@ import {
   TTeam,
   TTeamMemberPayload,
   TUpdateTeamPayload
-} from '../dto/team.dto'
-import { ETeamMemberType, Team } from '../schemas/team.schema'
+} from './team.dto'
+import { ETeamMemberType, Team } from './team.schema'
 
 @Injectable()
 export class TeamService {

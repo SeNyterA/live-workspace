@@ -1,4 +1,4 @@
-import { Team, TeamMember } from '../schemas/team.schema'
+import { Team, TeamMember } from './team.schema'
 
 export type TTeam = Team
 export type TTeamMember = TeamMember

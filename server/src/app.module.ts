@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { AuthGuard } from './modules/auth/auth.guard'
 import { AuthModule } from './modules/auth/auth.module'
 import { AWSModule } from './modules/aws/aws.module'
-import { BoardModule } from './modules/board/board.module'
+
 import { UsersModule } from './modules/users/users.module'
 import { WorkspaceModule } from './modules/workspace/workspace.module'
 
@@ -13,7 +13,6 @@ import { WorkspaceModule } from './modules/workspace/workspace.module'
     MongooseModule.forRoot('mongodb://localhost:27017/live-workspace'),
     AuthModule,
     UsersModule,
-    BoardModule,
     WorkspaceModule,
     AWSModule
   ],

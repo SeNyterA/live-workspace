@@ -1,20 +1,20 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
-import { ChannelController } from './controlers/channel.controler'
-import { DirectMessageController } from './controlers/direct-message.controler'
-import { GroupController } from './controlers/group.controler'
-import { TeamController } from './controlers/team.controler'
-import { Channel, ChannelSchema } from './schemas/channel.schema'
+import { ChannelController } from './team/channel/channel.controler'
+import { DirectMessageController } from './direct-message/direct-message.controler'
+import { GroupController } from './group/group.controler'
+import { TeamController } from './team/team.controler'
+import { Channel, ChannelSchema } from './team/channel/channel.schema'
 import {
   DirectMessage,
   DirectMessageSchema
-} from './schemas/direct-message.schema'
-import { Group, GroupSchema } from './schemas/group.schema'
-import { Team, TeamSchema } from './schemas/team.schema'
-import { ChannelService } from './services/channel.service'
-import { DirectMessageService } from './services/direct-message.service'
-import { GroupService } from './services/group.service'
-import { TeamService } from './services/team.service'
+} from './direct-message/direct-message.schema'
+import { Group, GroupSchema } from './group/group.schema'
+import { Team, TeamSchema } from './team/team.schema'
+import { ChannelService } from './team/channel/channel.service'
+import { DirectMessageService } from './direct-message/direct-message.service'
+import { GroupService } from './group/group.service'
+import { TeamService } from './team/team.service'
 
 @Module({
   imports: [

@@ -13,8 +13,8 @@ import {
   TCreateTeamPayload,
   TTeamMemberPayload,
   TUpdateTeamPayload
-} from '../dto/team.dto'
-import { TeamService } from '../services/team.service'
+} from './team.dto'
+import { TeamService } from './team.service'
 
 @Controller('/workspace/teams')
 export class TeamController {

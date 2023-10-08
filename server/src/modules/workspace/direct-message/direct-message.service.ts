@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { DirectMessage } from '../schemas/direct-message.schema'
+import { DirectMessage } from './direct-message.schema'
 
 @Injectable()
 export class DirectMessageService {
