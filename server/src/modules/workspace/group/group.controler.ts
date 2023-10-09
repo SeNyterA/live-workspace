@@ -9,7 +9,7 @@ import {
   Request
 } from '@nestjs/common'
 import { getUserId } from 'src/libs/getUserId'
-import { CreateGroupDto, UpdateGroupDto } from './group.dto'
+import { CreateWorkspaceDto, UpdateWorkspaceDto } from '../workspace.dto'
 import { GroupService } from './group.service'
 
 @Controller('workspace/groups')
@@ -30,7 +30,7 @@ export class GroupController {
   }
 
   @Post()
-  create(@Request() req, @Body() groupPayload: CreateGroupDto) {
+  create(@Request() req, @Body() groupPayload: CreateWorkspaceDto) {
     return this.groupService.create({
       group: groupPayload,
       userId: getUserId(req)
@@ -41,7 +41,7 @@ export class GroupController {
   update(
     @Param('id') id: string,
     @Request() req,
-    @Body() groupPayload: UpdateGroupDto
+    @Body() groupPayload: UpdateWorkspaceDto
   ) {
     return this.groupService.update({
       id,

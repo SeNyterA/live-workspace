@@ -11,16 +11,30 @@ export class MemberDto {
   type: EMemberType
 }
 
-export class WorkspaceDto {
+export class CreateWorkspaceDto {
   @IsString()
   @IsNotEmpty()
   title: string
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   description?: string
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
+  avatar?: string
+}
+
+export class UpdateWorkspaceDto {
+  @IsString()
+  @IsOptional()
+  title?: string
+
+  @IsString()
+  @IsOptional()
+  description?: string
+
+  @IsString()
+  @IsOptional()
   avatar?: string
 }

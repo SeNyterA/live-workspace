@@ -9,8 +9,6 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
       forbidNonWhitelisted: true,
-      skipNullProperties: true,
-      skipUndefinedProperties: true,
       stopAtFirstError: true
     })
   )

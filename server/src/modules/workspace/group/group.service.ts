@@ -7,7 +7,11 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
-import { CreateGroupDto, UpdateGroupDto } from './group.dto'
+import {
+  CreateWorkspaceDto,
+  MemberDto,
+  UpdateWorkspaceDto
+} from '../workspace.dto'
 import { EGroupMemberType, Group } from './group.schema'
 
 @Injectable()
@@ -23,7 +27,7 @@ export class GroupService {
   }: {
     id: string
     userId: string
-    groupMembersPayload: CreateGroupDto[]
+    groupMembersPayload: MemberDto[]
   }): Promise<boolean> {
     const group = await this.groupModel.findById({
       _id: id,
@@ -75,7 +79,7 @@ export class GroupService {
     group,
     userId
   }: {
-    group: CreateGroupDto
+    group: CreateWorkspaceDto
     userId: string
   }): Promise<Group> {
     const createdGroup = new this.groupModel({
@@ -100,7 +104,7 @@ export class GroupService {
     userId
   }: {
     id: string
-    groupPayload: UpdateGroupDto
+    groupPayload: UpdateWorkspaceDto
     userId: string
   }) {
     if (isEmpty(groupPayload)) {

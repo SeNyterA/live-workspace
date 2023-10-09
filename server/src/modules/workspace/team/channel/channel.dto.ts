@@ -1,50 +1,19 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator'
-import { EMemberType, EStatusType } from '../../workspace.schema'
+import { IsEnum, IsNotEmpty } from 'class-validator'
+import {
+  CreateWorkspaceDto,
+  MemberDto,
+  UpdateWorkspaceDto
+} from '../../workspace.dto'
+import { EStatusType } from '../../workspace.schema'
 
-export class CreateChannelMemberDto {
-  @IsString()
-  @IsNotEmpty()
-  userId: string
+export class CreateChannelMemberDto extends MemberDto {}
 
-  @IsEnum(EMemberType)
-  @IsNotEmpty()
-  type: EMemberType
-}
+export class UpdateChannelMemberDto extends MemberDto {}
 
-export class UpdateChannelMemberDto {
-  @IsEnum(EMemberType)
-  @IsNotEmpty()
-  type: EMemberType
-}
-
-export class CreateChannelDto {
-  @IsString()
-  @IsNotEmpty()
-  title: string
-
-  @IsOptional()
-  @IsString()
-  description?: string
-
-  @IsOptional()
-  @IsString()
-  avatar?: string
-
+export class CreateChannelDto extends CreateWorkspaceDto {
   @IsEnum(EStatusType)
   @IsNotEmpty()
   channelType: EStatusType
 }
 
-export class UpdateChannelDto {
-  @IsOptional()
-  @IsString()
-  title?: string
-
-  @IsOptional()
-  @IsString()
-  description?: string
-
-  @IsOptional()
-  @IsString()
-  avatar?: string
-}
+export class UpdateChannelDto extends UpdateWorkspaceDto {}

@@ -11,6 +11,7 @@ import { EMemberType } from '../../workspace.schema'
 import { Team } from '../team.schema'
 import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
 import { Channel } from './channel.schema'
+import { CreateWorkspaceDto } from '../../workspace.dto'
 
 @Injectable()
 export class ChannelService {

@@ -11,6 +11,7 @@ import {
 import { getUserId } from 'src/libs/getUserId'
 import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
 import { ChannelService } from './channel.service'
+import { CreateWorkspaceDto } from '../../workspace.dto'
 
 @Controller('workspace')
 export class ChannelController {
