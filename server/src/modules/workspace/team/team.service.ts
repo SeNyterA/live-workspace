@@ -28,8 +28,6 @@ export class TeamService {
     userId: string
     teamMembersPayload: TTeamMemberPayload[]
   }): Promise<boolean> {
-    console.log({ id, userId, teamMembersPayload })
-
     const team = await this.teamModel.findById({
       _id: id,
       isAvailable: true,

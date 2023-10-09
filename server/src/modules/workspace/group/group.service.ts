@@ -25,8 +25,6 @@ export class GroupService {
     userId: string
     groupMembersPayload: CreateGroupDto[]
   }): Promise<boolean> {
-    console.log({ id, userId, groupMembersPayload })
-
     const group = await this.groupModel.findById({
       _id: id,
       isAvailable: true,
@@ -141,7 +139,7 @@ export class GroupService {
     id: string
     userId: string
   }): Promise<boolean> {
-    const group = await this.groupModel.findByIdAndUpdate(
+    const group = await this.groupModel.findOneAndUpdate(
       {
         _id: id,
         isAvailable: true,

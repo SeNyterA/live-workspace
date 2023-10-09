@@ -27,8 +27,6 @@ export class ChannelService {
     userId: string
     channelMembersPayload: CreateChannelDto[]
   }): Promise<boolean> {
-    console.log({ id, userId, channelMembersPayload })
-
     const channel = await this.channelModel.findById({
       _id: id,
       isAvailable: true,
