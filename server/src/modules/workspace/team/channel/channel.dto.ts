@@ -1,20 +1,20 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator'
-import { EChannelMemberType, EChannelType } from './channel.schema'
+import { EMemberType, EStatusType } from '../../common.schema'
 
 export class CreateChannelMemberDto {
   @IsString()
   @IsNotEmpty()
   userId: string
 
-  @IsEnum(EChannelMemberType)
+  @IsEnum(EMemberType)
   @IsNotEmpty()
-  type: EChannelMemberType
+  type: EMemberType
 }
 
 export class UpdateChannelMemberDto {
-  @IsEnum(EChannelMemberType)
+  @IsEnum(EMemberType)
   @IsNotEmpty()
-  type: EChannelMemberType
+  type: EMemberType
 }
 
 export class CreateChannelDto {
@@ -30,9 +30,9 @@ export class CreateChannelDto {
   @IsString()
   avatar?: string
 
-  @IsEnum(EChannelType)
+  @IsEnum(EStatusType)
   @IsNotEmpty()
-  channelType: EChannelType
+  channelType: EStatusType
 }
 
 export class UpdateChannelDto {

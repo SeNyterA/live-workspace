@@ -5,13 +5,14 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { EMemberType } from '../common.schema'
 import {
   TCreateTeamPayload,
   TTeam,
   TTeamMemberPayload,
   TUpdateTeamPayload
 } from './team.dto'
-import { ETeamMemberType, Team } from './team.schema'
+import { Team } from './team.schema'
 
 @Injectable()
 export class TeamService {
@@ -32,7 +33,7 @@ export class TeamService {
       _id: id,
       isAvailable: true,
       'members.userId': userId,
-      'members.type': { $in: [ETeamMemberType.Owner, ETeamMemberType.Admin] }
+      'members.type': { $in: [EMemberType.Owner, EMemberType.Admin] }
     })
 
     if (!team) {
@@ -86,11 +87,11 @@ export class TeamService {
       members: [
         {
           userId,
-          type: ETeamMemberType.Owner
+          type: EMemberType.Owner
         }
       ]
     })
-    createdTeam.path = createdTeam._id.toString()
+
     createdTeam.save()
     return createdTeam
   }
@@ -109,7 +110,7 @@ export class TeamService {
         _id: id,
         isAvailable: true,
         'members.userId': userId,
-        'members.type': { $in: [ETeamMemberType.Owner, ETeamMemberType.Admin] }
+        'members.type': { $in: [EMemberType.Owner, EMemberType.Admin] }
       },
       {
         $set: {
@@ -139,10 +140,10 @@ export class TeamService {
         _id: id,
         isAvailable: true,
         'members.userId': userId,
-        'members.type': ETeamMemberType.Owner
+        'members.type': EMemberType.Owner
       },
       {
-        // $pull: { members: { userId, type: ETeamMemberType.Owner } },
+        // $pull: { members: { userId, type: EMemberType.Owner } },
         $set: {
           isAvailable: false,
           updatedAt: new Date(),

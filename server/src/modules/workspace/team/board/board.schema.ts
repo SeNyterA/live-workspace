@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Types } from 'mongoose'
+import { MemberBase, WorkspaceBase } from '../../common.schema'
 
 export enum FieldType {
   Date = 'Date',
@@ -37,37 +37,12 @@ export class FieldProperty {
 }
 
 @Schema()
-export class Board {
-  _id: string
-
+export class Board extends WorkspaceBase {
   @Prop({ type: [SchemaFactory.createForClass(FieldProperty)] })
   properties: FieldProperty[]
 
-  @Prop({ required: true })
-  title: string
-
-  @Prop()
-  description?: string
-
-  //#region common
-  @Prop()
-  path: string
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  createdById: string
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  modifiedById: string
-
-  @Prop({ default: Date.now })
-  createdAt: Date
-
-  @Prop({ default: Date.now })
-  updatedAt: Date
-
-  @Prop({ default: true })
-  isAvailable: boolean
-  //#region
+  @Prop({ type: [SchemaFactory.createForClass(MemberBase)], default: [] })
+  members: MemberBase[]
 }
 
 export const BoardSchema = SchemaFactory.createForClass(Board)

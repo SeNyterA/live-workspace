@@ -7,9 +7,10 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
+import { EMemberType } from '../../common.schema'
 import { Team } from '../team.schema'
 import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
-import { Channel, EChannelMemberType } from './channel.schema'
+import { Channel } from './channel.schema'
 
 @Injectable()
 export class ChannelService {
@@ -32,7 +33,7 @@ export class ChannelService {
       isAvailable: true,
       'members.userId': userId,
       'members.type': {
-        $in: [EChannelMemberType.Owner, EChannelMemberType.Admin]
+        $in: [EMemberType.Owner, EMemberType.Admin]
       }
     })
 
@@ -89,7 +90,7 @@ export class ChannelService {
       members: {
         $elemMatch: {
           userId: userId,
-          type: { $in: [EChannelMemberType.Owner, EChannelMemberType.Admin] }
+          type: { $in: [EMemberType.Owner, EMemberType.Admin] }
         }
       }
     })
@@ -106,7 +107,7 @@ export class ChannelService {
       members: [
         {
           userId,
-          type: EChannelMemberType.Owner
+          type: EMemberType.Owner
         }
       ]
     })
@@ -136,7 +137,7 @@ export class ChannelService {
         isAvailable: true,
         'members.userId': userId,
         'members.type': {
-          $in: [EChannelMemberType.Owner, EChannelMemberType.Admin]
+          $in: [EMemberType.Owner, EMemberType.Admin]
         }
       },
       {
@@ -167,7 +168,7 @@ export class ChannelService {
         _id: id,
         isAvailable: true,
         'members.userId': userId,
-        'members.type': EChannelMemberType.Owner
+        'members.type': EMemberType.Owner
       },
       {
         $set: {
