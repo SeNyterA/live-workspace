@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { MemberBase, WorkspaceBase } from '../common.schema'
+import { MemberBase, WorkspaceBase } from '../workspace.schema'
 
 @Schema()
 export class Team extends WorkspaceBase {

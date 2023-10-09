@@ -1,4 +1,4 @@
-import { MemberBase } from '../common.schema'
+import { MemberBase } from '../workspace.schema'
 import { Team } from './team.schema'
 
 export type TTeam = Team

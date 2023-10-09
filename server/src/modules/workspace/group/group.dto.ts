@@ -32,24 +32,8 @@ export class CreateGroupDto {
 }
 
 export class UpdateGroupDto {
-  @IsOptional()
-  @IsString()
   title?: string
-
-  @IsOptional()
-  @IsString()
   description?: string
-
-  @IsOptional()
-  @IsString()
   avatar?: string
-
   isAvailable?: string
-
-  validate() {
-    console.log(this.isAvailable)
-    if (this.isAvailable !== undefined) {
-      throw new Error('You are not allowed to change isAvailable.')
-    }
-  }
 }

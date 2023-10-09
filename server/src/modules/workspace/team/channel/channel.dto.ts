@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator'
-import { EMemberType, EStatusType } from '../../common.schema'
+import { EMemberType, EStatusType } from '../../workspace.schema'
 
 export class CreateChannelMemberDto {
   @IsString()

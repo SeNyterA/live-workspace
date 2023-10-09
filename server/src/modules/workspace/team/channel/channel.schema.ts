@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
-import { EStatusType, MemberBase, WorkspaceBase } from '../../common.schema'
+import { EStatusType, MemberBase, WorkspaceBase } from '../../workspace.schema'
 
 @Schema()
 export class Channel extends WorkspaceBase {

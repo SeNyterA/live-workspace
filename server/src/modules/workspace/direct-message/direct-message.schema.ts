@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
-import { WorkspaceBase } from '../common.schema'
+import { WorkspaceBase } from '../workspace.schema'
 
 @Schema()
 export class DirectMessage extends WorkspaceBase {

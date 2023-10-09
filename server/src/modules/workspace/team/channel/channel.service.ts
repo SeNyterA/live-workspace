@@ -7,7 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
-import { EMemberType } from '../../common.schema'
+import { EMemberType } from '../../workspace.schema'
 import { Team } from '../team.schema'
 import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
 import { Channel } from './channel.schema'
