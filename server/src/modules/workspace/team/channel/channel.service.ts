@@ -9,9 +9,12 @@ import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
 import { EMemberType } from '../../workspace.schema'
 import { Team } from '../team.schema'
-import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
+import {
+  CreateChannelDto,
+  CreateChannelMembersDto,
+  UpdateChannelDto
+} from './channel.dto'
 import { Channel } from './channel.schema'
-import { CreateWorkspaceDto } from '../../workspace.dto'
 
 @Injectable()
 export class ChannelService {
@@ -23,24 +26,13 @@ export class ChannelService {
   async editMembers({
     id,
     userId,
-    channelMembersPayload
+    membersPayload
   }: {
     id: string
     userId: string
-    channelMembersPayload: CreateChannelDto[]
+    membersPayload: CreateChannelMembersDto
   }): Promise<boolean> {
-    const channel = await this.channelModel.findById({
-      _id: id,
-      isAvailable: true,
-      'members.userId': userId,
-      'members.type': {
-        $in: [EMemberType.Owner, EMemberType.Admin]
-      }
-    })
-
-    if (!channel) {
-      throw new ForbiddenException('Your dont have permission')
-    }
+    console.log('edit channel members', { id, userId, membersPayload })
 
     return true
   }
@@ -132,7 +124,7 @@ export class ChannelService {
       throw new BadRequestException('Bad request')
     }
 
-    const channel = await this.channelModel.findByIdAndUpdate(
+    const channel = await this.channelModel.findOneAndUpdate(
       {
         _id: id,
         isAvailable: true,
@@ -164,7 +156,7 @@ export class ChannelService {
     id: string
     userId: string
   }): Promise<boolean> {
-    const channel = await this.channelModel.findByIdAndUpdate(
+    const channel = await this.channelModel.findOneAndUpdate(
       {
         _id: id,
         isAvailable: true,

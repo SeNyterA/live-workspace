@@ -9,9 +9,12 @@ import {
   Request
 } from '@nestjs/common'
 import { getUserId } from 'src/libs/getUserId'
-import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
+import {
+  CreateChannelDto,
+  CreateChannelMembersDto,
+  UpdateChannelDto
+} from './channel.dto'
 import { ChannelService } from './channel.service'
-import { CreateWorkspaceDto } from '../../workspace.dto'
 
 @Controller('workspace')
 export class ChannelController {
@@ -62,6 +65,19 @@ export class ChannelController {
     return this.channelService.delete({
       id,
       userId: getUserId(req)
+    })
+  }
+
+  @Post('channels/:id/members')
+  eidtMembers(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() membersPayload: CreateChannelMembersDto
+  ) {
+    return this.channelService.editMembers({
+      id,
+      userId: getUserId(req),
+      membersPayload
     })
   }
 }

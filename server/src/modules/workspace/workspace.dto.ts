@@ -1,5 +1,14 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator'
+import {
+  ArrayMinSize,
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested
+} from 'class-validator'
 import { EMemberType } from './workspace.schema'
+import { Type } from 'class-transformer'
 
 export class MemberDto {
   @IsString()
@@ -9,6 +18,14 @@ export class MemberDto {
   @IsEnum(EMemberType)
   @IsNotEmpty()
   type: EMemberType
+}
+
+export class MembersDto {
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => MemberDto) 
+  members: MemberDto[]
 }
 
 export class CreateWorkspaceDto {

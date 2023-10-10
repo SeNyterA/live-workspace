@@ -1,14 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { MemberBase, WorkspaceBase } from '../../workspace.schema'
 
-export enum FieldType {
+export enum EFieldType {
   Date = 'Date',
   Number = 'Number',
   String = 'String',
   MultiPeople = 'MultiPeople',
   Select = 'Select',
   MultiSelect = 'MultiSelect',
-  Link = 'Link'
+  Link = 'Link',
+  Email = 'Email',
+
+  // Special field
+  Assignees = 'Assignees',
+  DueDate = 'DueDate'
 }
 
 @Schema()
@@ -23,14 +28,14 @@ export class Option {
 }
 
 @Schema()
-export class FieldProperty {
+export class Property {
   _id: string
 
   @Prop()
   title: string
 
   @Prop()
-  fieldType: FieldType
+  fieldType: EFieldType
 
   @Prop({ type: [SchemaFactory.createForClass(Option)] })
   fieldOption?: Option[]
@@ -38,8 +43,8 @@ export class FieldProperty {
 
 @Schema()
 export class Board extends WorkspaceBase {
-  @Prop({ type: [SchemaFactory.createForClass(FieldProperty)] })
-  properties: FieldProperty[]
+  @Prop({ type: [SchemaFactory.createForClass(Property)], default: [] })
+  properties: Property[]
 
   @Prop({ type: [SchemaFactory.createForClass(MemberBase)], default: [] })
   members: MemberBase[]

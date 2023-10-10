@@ -1,14 +1,14 @@
 import { IsEnum, IsNotEmpty } from 'class-validator'
 import {
   CreateWorkspaceDto,
-  MemberDto,
+  MembersDto,
   UpdateWorkspaceDto
 } from '../../workspace.dto'
 import { EStatusType } from '../../workspace.schema'
 
-export class CreateChannelMemberDto extends MemberDto {}
+export class CreateChannelMembersDto extends MembersDto {}
 
-export class UpdateChannelMemberDto extends MemberDto {}
+export class UpdateChannelMembersDto extends MembersDto {}
 
 export class CreateChannelDto extends CreateWorkspaceDto {
   @IsEnum(EStatusType)
