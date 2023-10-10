@@ -22,6 +22,15 @@ export class UsersService {
     return user
   }
 
+  async _findById(id: string): Promise<TUser> {
+    const user = await this.userModel.findById(id)
+    if (!user) {
+      throw new NotFoundException('User not found')
+    }
+
+    return user.toJSON()
+  }
+
   async createUser(createUserDto: TCreateUser): Promise<TUser> {
     const saltOrRounds = 10
     const _password = createUserDto.password

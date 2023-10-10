@@ -1,17 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
-import { EStatusType, MemberBase, WorkspaceBase } from '../../workspace.schema'
+import { EStatusType, MemberSchema, WorkspaceSchema } from '../../workspace.schema'
 
 @Schema()
-export class Channel extends WorkspaceBase {
+export class Channel extends WorkspaceSchema {
   @Prop({ type: Types.ObjectId, ref: 'Team' })
   teamId: string
 
   @Prop({ type: String, enum: EStatusType })
   channelType: EStatusType
 
-  @Prop({ type: [SchemaFactory.createForClass(MemberBase)], default: [] })
-  members: MemberBase[]
+  @Prop({ type: [SchemaFactory.createForClass(MemberSchema)], default: [] })
+  members: MemberSchema[]
 
   @Prop()
   path: string

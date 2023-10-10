@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
-import { WorkspaceBase } from '../workspace.schema'
+import { WorkspaceSchema } from '../workspace.schema'
 
 export enum EGroupMemberType {
   Owner = 0,
@@ -20,7 +20,7 @@ export class GroupMember {
 }
 
 @Schema()
-export class Group extends WorkspaceBase {
+export class Group extends WorkspaceSchema {
   @Prop({ type: [SchemaFactory.createForClass(GroupMember)], default: [] })
   members: GroupMember[]
 }

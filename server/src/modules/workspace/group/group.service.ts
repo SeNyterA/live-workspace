@@ -45,6 +45,26 @@ export class GroupService {
     return true
   }
 
+  async _checkExisting({
+    id,
+    userId
+  }: {
+    userId: string
+    id: string
+  }): Promise<boolean> {
+    const existingDirectMessage = await this.groupModel.findOne({
+      _id: id,
+      isAvailable: true,
+      'members.userId': userId
+    })
+
+    if (!existingDirectMessage) {
+      throw new ForbiddenException('Your dont have permission')
+    }
+
+    return !!existingDirectMessage.toJSON()
+  }
+
   //#region public service
   async getGroupsByUserId(userId: string): Promise<Group[]> {
     const groups = await this.groupModel.find({

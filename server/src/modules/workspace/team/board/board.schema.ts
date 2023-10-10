@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { MemberBase, WorkspaceBase } from '../../workspace.schema'
+import { MemberSchema, WorkspaceSchema } from '../../workspace.schema'
 
 export enum EFieldType {
   Date = 'Date',
@@ -42,12 +42,12 @@ export class Property {
 }
 
 @Schema()
-export class Board extends WorkspaceBase {
+export class Board extends WorkspaceSchema {
   @Prop({ type: [SchemaFactory.createForClass(Property)], default: [] })
   properties: Property[]
 
-  @Prop({ type: [SchemaFactory.createForClass(MemberBase)], default: [] })
-  members: MemberBase[]
+  @Prop({ type: [SchemaFactory.createForClass(MemberSchema)], default: [] })
+  members: MemberSchema[]
 }
 
 export const BoardSchema = SchemaFactory.createForClass(Board)

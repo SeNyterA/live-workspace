@@ -1,47 +1,37 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
+import { WorkspaceSchema } from '../workspace.schema'
+
+export enum EMessageFor {
+  Channel = 'Channel',
+  Group = 'Group',
+  Direct = 'Direct'
+}
 
 export enum EMessageType {
-  Channel = 0,
-  Group = 1,
-  Direct = 2,
-  Systeam = 3
+  Normal = 'Normal',
+  System = 'System'
 }
 
 @Schema()
-export class Message {
-  @Prop({ required: true })
+export class Message extends WorkspaceSchema {
+  @Prop({ default: '' })
   content: string
 
-  @Prop({ type: Types.ObjectId })
+  @Prop({ type: Types.ObjectId, required: true })
   messageReferenceId: string
+
+  @Prop({ enum: EMessageFor, default: EMessageFor.Channel, required: true })
+  messageFor: EMessageFor
+
+  @Prop({ enum: EMessageType, default: EMessageType.Normal, required: true })
+  messageType: EMessageType
 
   @Prop({ type: [{ type: String }] })
   attachments?: string[]
 
   @Prop({ type: Types.ObjectId, ref: 'Message' })
   replyToMessageId?: string
-
-  // Common
-  _id: string
-
-  @Prop()
-  ancestorPath: string
-
-  @Prop()
-  createdById: string
-
-  @Prop({ type: Types.ObjectId, ref: 'User' })
-  modifiedById?: string
-
-  @Prop({ default: Date.now })
-  createdAt: Date
-
-  @Prop({ default: Date.now })
-  updatedAt: Date
-
-  @Prop({ default: true })
-  isAvailable: boolean
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message)

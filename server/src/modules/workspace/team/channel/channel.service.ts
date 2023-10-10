@@ -32,9 +32,27 @@ export class ChannelService {
     userId: string
     membersPayload: CreateChannelMembersDto
   }): Promise<boolean> {
-    console.log('edit channel members', { id, userId, membersPayload })
-
     return true
+  }
+
+  async _checkExisting({
+    id,
+    userId
+  }: {
+    userId: string
+    id: string
+  }): Promise<boolean> {
+    const existingDirectMessage = await this.channelModel.findOne({
+      _id: id,
+      isAvailable: true,
+      'members.userId': userId
+    })
+
+    if (!existingDirectMessage) {
+      throw new ForbiddenException('Your dont have permission')
+    }
+
+    return !!existingDirectMessage.toJSON()
   }
 
   //#region public service

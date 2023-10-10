@@ -14,7 +14,7 @@ export enum EStatusType {
 }
 
 @Schema()
-export class MemberBase {
+export class MemberSchema {
   _id: string
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
@@ -25,16 +25,16 @@ export class MemberBase {
 }
 
 @Schema()
-export class WorkspaceBase {
+export class WorkspaceSchema {
   _id: string
 
-  @Prop()
+  @Prop({ default: '' })
   title: string
 
-  @Prop()
+  @Prop({ default: '' })
   description?: string
 
-  @Prop()
+  @Prop({ default: '' })
   avatar?: string
 
   @Prop({ type: Types.ObjectId, ref: 'User' })

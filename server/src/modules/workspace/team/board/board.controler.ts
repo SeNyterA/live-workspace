@@ -34,7 +34,6 @@ export class BoardController {
     @Body() boardPayload: CreateBoardDto,
     @Param('teamId') teamId: string
   ) {
-    console.log(boardPayload)
     return 'create'
   }
 
