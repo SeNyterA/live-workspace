@@ -5,10 +5,19 @@ services:
     container_name: live-workspace-mongo
     image: mongo:latest
     ports:
-      - '$MONGODB_PORT:27017'
+      - '27017:27017'
     volumes:
       - 'data:/data/db'
     command: mongod --bind_ip_all
 
+  redis:
+    container_name: live-workspace-redis
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/data'
+
 volumes:
   data:
+  redis_data:
