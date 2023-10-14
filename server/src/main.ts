@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
+import { RedisIoAdapter } from './modules/adapters/redis-io.adapter'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -12,6 +13,11 @@ async function bootstrap() {
       stopAtFirstError: true
     })
   )
-  await app.listen(8430)
+
+  const redisIoAdapter = new RedisIoAdapter(app)
+  await redisIoAdapter.connectToRedis()
+  app.useWebSocketAdapter(redisIoAdapter)
+
+  await app.listen(8420)
 }
 bootstrap()
