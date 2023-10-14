@@ -19,6 +19,7 @@ import { ChannelService } from './team/channel/channel.service'
 import { TeamController } from './team/team.controler'
 import { Team, TeamSchema } from './team/team.schema'
 import { TeamService } from './team/team.service'
+import { WorkspaceGateway } from './workspace.gateway'
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { TeamService } from './team/team.service'
     TeamService,
     GroupService,
     DirectMessageService,
-    MessageService
+    MessageService,
+    WorkspaceGateway
   ]
 })
 export class WorkspaceModule {}

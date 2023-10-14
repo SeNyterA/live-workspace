@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { WorkspaceGateway } from '../workspace.gateway'
 import { EMemberType } from '../workspace.schema'
 import {
   TCreateTeamPayload,
@@ -17,7 +18,8 @@ import { Team } from './team.schema'
 @Injectable()
 export class TeamService {
   constructor(
-    @InjectModel(Team.name) private readonly teamModel: Model<Team>
+    @InjectModel(Team.name) private readonly teamModel: Model<Team>,
+    private readonly workspaceGateway: WorkspaceGateway
   ) {}
 
   async editMembers({
@@ -93,6 +95,9 @@ export class TeamService {
     })
 
     createdTeam.save()
+
+    this.workspaceGateway.server.to('team:10').emit('createdTeam', createdTeam)
+
     return createdTeam
   }
 

@@ -29,14 +29,9 @@ export default function SocketProvider({ children }: SocketProviderProps) {
       }
     }).connect()
 
-    const pingInterval = setInterval(() => {
-      newSocket.emit('ping', key)
-    }, 1000)
-
     setSocket(newSocket)
 
     return () => {
-      clearInterval(pingInterval)
       newSocket.disconnect()
     }
   }, [])

@@ -5,12 +5,15 @@ import { RedisClientType, createClient } from 'redis'
 import { ServerOptions, Socket } from 'socket.io'
 import { jwtConstants } from '../auth/constants'
 
+export type TJwtUser = {
+  email: string
+  userName: string
+  sub: string
+  iat: number
+  exp: number
+}
 export interface CustomSocket extends Socket {
-  user: {
-    email: string
-    userName: string
-    sub: string
-  }
+  user: TJwtUser
 }
 
 const decodeToken = async (token: string) => {
