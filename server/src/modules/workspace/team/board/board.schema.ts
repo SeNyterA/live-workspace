@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Types } from 'mongoose'
 import { MemberSchema, WorkspaceSchema } from '../../workspace.schema'
 
 export enum EFieldType {
@@ -43,6 +44,9 @@ export class Property {
 
 @Schema()
 export class Board extends WorkspaceSchema {
+  @Prop({ type: Types.ObjectId, ref: 'Team' })
+  teamId: string
+
   @Prop({ type: [SchemaFactory.createForClass(Property)], default: [] })
   properties: Property[]
 

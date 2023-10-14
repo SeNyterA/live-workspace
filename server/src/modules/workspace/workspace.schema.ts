@@ -17,11 +17,14 @@ export enum EStatusType {
 export class MemberSchema {
   _id: string
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true, unique: true })
   userId: string
 
-  @Prop({ enum: EMemberType, default: EMemberType.Member })
+  @Prop({ enum: EMemberType, default: EMemberType.Member, required: true })
   type: EMemberType
+
+  @Prop({ default: true })
+  isAvailable: boolean
 }
 
 @Schema()
