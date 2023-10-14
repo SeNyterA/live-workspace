@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common'
 import { Public } from 'src/modules/auth/auth.guard'
 import { UserPresenceService } from './user-presence.service'
 
@@ -16,5 +16,29 @@ export class UserPresenceController {
   @Get(':key')
   findOne(@Param('key') key: string) {
     return this.userPresenceService.getValue(key)
+  }
+
+  @Public()
+  @Get()
+  findAll() {
+    return this.userPresenceService.getUsersInRange(1000, 9000)
+  }
+
+  @Public()
+  @Post('/unread')
+  testUnred(@Body() data: { key: string; value: string }) {
+    return this.userPresenceService.setUnread()
+  }
+
+  @Public()
+  @Get('/unread/:key')
+  getUnreadByUserId(@Param('key') key: string) {
+    return this.userPresenceService.getUnreadDataForUserIndex(key)
+  }
+
+  @Public()
+  @Delete('')
+  deleteAllKey(@Param('key') key: string) {
+    return this.userPresenceService.clearAllKeys()
   }
 }

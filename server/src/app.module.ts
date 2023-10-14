@@ -9,6 +9,7 @@ import { EventsModule } from './modules/events/events.module'
 import { UsersModule } from './modules/users/users.module'
 import { WorkspaceModule } from './modules/workspace/workspace.module'
 import { UserPresenceModule } from './user-presence/user-presence.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { UserPresenceModule } from './user-presence/user-presence.module';
     WorkspaceModule,
     AWSModule,
     EventsModule,
-    UserPresenceModule
+    UserPresenceModule,
+    RedisModule
   ],
   providers: [
     {

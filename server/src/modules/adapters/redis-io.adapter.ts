@@ -53,7 +53,7 @@ export class RedisIoAdapter extends IoAdapter {
       console.log('User connected:', user)
       this.connectedUsers.add(user)
 
-      this.redisClient.set(`user:${user.sub}`, 'online')
+      this.redisClient.set(`presence:${user.sub}`, 'online')
 
       socket.on('disconnect', () => {
         const time = Date.now().toString()
@@ -66,8 +66,7 @@ export class RedisIoAdapter extends IoAdapter {
 
         if (!isUserConnected) {
           console.log(`User ${user.userName} is offline at ${time}.`)
-          // redisClient.del(`user:${user.sub}`)
-          this.redisClient.set(`user:${user.sub}`, time)
+          this.redisClient.set(`presence:${user.sub}`, time)
         }
 
         console.log('Connections:', this.connectedUsers.size)
