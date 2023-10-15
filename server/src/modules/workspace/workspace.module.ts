@@ -20,6 +20,7 @@ import { TeamController } from './team/team.controler'
 import { Team, TeamSchema } from './team/team.schema'
 import { TeamService } from './team/team.service'
 import { WorkspaceGateway } from './workspace.gateway'
+import { WorkspaceService } from './workspace.service'
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { WorkspaceGateway } from './workspace.gateway'
     GroupService,
     DirectMessageService,
     MessageService,
-    WorkspaceGateway
+    WorkspaceGateway,
+    WorkspaceService
   ]
 })
 export class WorkspaceModule {}

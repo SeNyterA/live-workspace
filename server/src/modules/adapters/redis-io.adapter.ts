@@ -16,7 +16,7 @@ export interface CustomSocket extends Socket {
   user: TJwtUser
 }
 
-const decodeToken = async (token: string) => {
+const decodeToken = async (token: string): Promise<TJwtUser> => {
   const jwtService = new JwtService({
     secret: jwtConstants.secret
   })
@@ -30,7 +30,7 @@ const decodeToken = async (token: string) => {
 
 export class RedisIoAdapter extends IoAdapter {
   private adapterConstructor: ReturnType<typeof createAdapter>
-  private connectedUsers: Set<string> = new Set()
+  private connectedUsers: Set<TJwtUser> = new Set()
   private redisClient: RedisClientType
 
   async connectToRedis(): Promise<void> {
@@ -53,9 +53,9 @@ export class RedisIoAdapter extends IoAdapter {
       const user = await decodeToken(token)
       socket.user = user
 
-      console.log('User connected:', user)
+      // console.log('User connected:', user)
+      console.log('User connected:', user.userName)
       this.connectedUsers.add(user)
-
       this.redisClient.set(`presence:${user.sub}`, 'online')
 
       socket.on('disconnect', () => {
@@ -68,14 +68,14 @@ export class RedisIoAdapter extends IoAdapter {
         )
 
         if (!isUserConnected) {
-          console.log(`User ${user.userName} is offline at ${time}.`)
+          // console.log(`User ${user.userName} is offline at ${time}.`)
           this.redisClient.set(`presence:${user.sub}`, time)
         }
 
-        console.log('Connections:', this.connectedUsers.size)
+        // console.log('Connections:', this.connectedUsers.size)
       })
 
-      console.log('Connections:', this.connectedUsers.size)
+      // console.log('Connections:', this.connectedUsers.size)
     })
 
     server.adapter(this.adapterConstructor)

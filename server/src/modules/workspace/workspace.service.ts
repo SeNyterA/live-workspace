@@ -2,11 +2,24 @@ import { Injectable } from '@nestjs/common'
 import { Redis } from 'ioredis'
 
 @Injectable()
-export class RedisService {
+export class WorkspaceService {
   private readonly redisClient: Redis
+  private readonly subRedis: Redis
+  private readonly pubRedis: Redis
 
   constructor() {
     this.redisClient = new Redis()
+    this.subRedis = this.redisClient.duplicate()
+    this.pubRedis = this.redisClient.duplicate()
+
+    this.afterInit()
+  }
+
+  async afterInit() {
+    await this.subRedis.psubscribe(`__keyevent@0__:expired`)
+    await this.subRedis.on('pmessage', async (pattern, channel, key) => {
+      console.log({ pattern, channel, key })
+    })
   }
 
   private async getKeysByPattern(pattern: string): Promise<string[]> {
@@ -23,7 +36,13 @@ export class RedisService {
 
   //#region Typing
   async startTyping(userId: string, targetId: string) {
-    await this.redisClient.set(`typing:${targetId}:${userId}`, '', 'EX', 10)
+    console.log(`typing:${targetId}:${userId}`)
+    await this.redisClient.set(
+      `typing:${targetId}:${userId}`,
+      'typing',
+      'EX',
+      10
+    )
   }
 
   async stopTyping(userId: string, targetId: string) {

@@ -7,6 +7,7 @@ import {
 import { Server, Socket } from 'socket.io'
 import { TJwtUser } from '../adapters/redis-io.adapter'
 import { WsClient, WsUser } from './../../decorators/users.decorator'
+import { WorkspaceService } from './workspace.service'
 
 @WebSocketGateway({
   cors: {
@@ -16,6 +17,8 @@ import { WsClient, WsUser } from './../../decorators/users.decorator'
 export class WorkspaceGateway {
   @WebSocketServer()
   server: Server
+
+  constructor(private readonly workspaceService: WorkspaceService) {}
 
   @SubscribeMessage('joinTeam')
   async handleJoinTeam(
@@ -111,5 +114,14 @@ export class WorkspaceGateway {
     @MessageBody() groupId: string
   ) {
     client.leave(`group:${groupId}`)
+  }
+
+  @SubscribeMessage('startTyping')
+  async startTyping(
+    @WsUser() user: TJwtUser,
+    @WsClient() client: Socket,
+    @MessageBody() targetId: string
+  ) {
+    this.workspaceService.startTyping(user.sub, targetId)
   }
 }
