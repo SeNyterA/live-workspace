@@ -4,6 +4,8 @@ import { TCreateUser } from 'src/modules/users/user.dto'
 import { TLoginPayload } from './auth.dto'
 import { AuthGuard, Public } from './auth.guard'
 import { AuthService } from './auth.service'
+import { TJwtUser } from '../adapters/redis-io.adapter'
+import { HttpUser } from 'src/decorators/users.decorator'
 
 @Controller('auth')
 export class AuthController {
@@ -23,7 +25,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    return this.authService.getProfile(getUserId(req))
+  getProfile(@HttpUser() user: TJwtUser) {
+    return this.authService.getProfile(user.sub)
   }
 }

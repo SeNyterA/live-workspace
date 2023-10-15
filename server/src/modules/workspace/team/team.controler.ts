@@ -5,10 +5,10 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  Request
+  Post
 } from '@nestjs/common'
-import { getUserId } from 'src/libs/getUserId'
+import { HttpUser } from 'src/decorators/users.decorator'
+import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
 import {
   TCreateTeamPayload,
   TTeamMemberPayload,
@@ -21,56 +21,56 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post()
-  create(@Request() req, @Body() team: TCreateTeamPayload) {
+  create(@HttpUser() user: TJwtUser, @Body() team: TCreateTeamPayload) {
     return this.teamService.create({
       team: team,
-      userId: getUserId(req)
+      userId: user.sub
     })
   }
 
   @Get(':id')
-  findOne(@Request() req, @Param('id') id: string) {
+  findOne(@HttpUser() user: TJwtUser, @Param('id') id: string) {
     return this.teamService.getTeamById({
       id: id,
-      userId: getUserId(req)
+      userId: user.sub
     })
   }
 
   @Get()
-  findAll(@Request() req) {
-    return this.teamService.getTeamsByUserId(getUserId(req))
+  findAll(@HttpUser() user: TJwtUser) {
+    return this.teamService.getTeamsByUserId(user.sub)
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Body() teamPayload: TUpdateTeamPayload
   ) {
     return this.teamService.update({
       id,
-      userId: getUserId(req),
+      userId: user.sub,
       teamPayload
     })
   }
 
   @Delete(':id')
-  remove(@Request() req, @Param('id') id: string) {
+  remove(@HttpUser() user: TJwtUser, @Param('id') id: string) {
     return this.teamService.delete({
       id: id,
-      userId: getUserId(req)
+      userId: user.sub
     })
   }
 
   @Post(':id')
   editMembers(
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Param('id') id: string,
     @Body() membersPayload: TTeamMemberPayload[]
   ) {
     return this.teamService.editMembers({
       teamMembersPayload: membersPayload,
-      userId: getUserId(req),
+      userId: user.sub,
       id: id
     })
   }

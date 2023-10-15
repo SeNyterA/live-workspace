@@ -13,6 +13,8 @@ import { EMessageFor } from '../message/message.schema'
 import { MessageService } from '../message/message.service'
 import { DirectMessage } from './direct-message.schema'
 import { DirectMessageService } from './direct-message.service'
+import { HttpUser } from 'src/decorators/users.decorator'
+import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
 
 @Controller('/workspace/direct-messages')
 export class DirectMessageController {
@@ -52,21 +54,21 @@ export class DirectMessageController {
   @Post(':targetId/')
   sendMesage(
     @Param('targetId') targetId: string,
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Body() messagePayload: any
   ) {
     return this.messageService._createForDirect({
       targetId: targetId,
-      userId: getUserId(req),
+      userId: user.sub,
       messagePayload
     })
   }
 
   @Get(':targetId/messages')
-  messages(@Param('targetId') targetId: string, @Request() req) {
+  messages(@Param('targetId') targetId: string, @HttpUser() user: TJwtUser) {
     return this.messageService._getMessages({
       messageReferenceId: targetId,
-      userId: getUserId(req),
+      userId: user.sub,
       messgaeFor: EMessageFor.Direct
     })
   }

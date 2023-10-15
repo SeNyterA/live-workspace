@@ -5,10 +5,10 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  Request
+  Post
 } from '@nestjs/common'
-import { getUserId } from 'src/libs/getUserId'
+import { HttpUser } from 'src/decorators/users.decorator'
+import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
 import { EMessageFor } from '../../message/message.schema'
 import { MessageService } from '../../message/message.service'
 import {
@@ -26,27 +26,27 @@ export class ChannelController {
   ) {}
 
   @Get('channels/:id')
-  findOne(@Request() req, @Param('id') id: string) {
+  findOne(@HttpUser() user: TJwtUser, @Param('id') id: string) {
     return this.channelService.getChannelById({
       id: id,
-      userId: getUserId(req)
+      userId: user.sub
     })
   }
 
   @Get('channels')
-  findAll(@Request() req) {
-    return this.channelService.getChannelsByUserId(getUserId(req))
+  findAll(@HttpUser() user: TJwtUser) {
+    return this.channelService.getChannelsByUserId(user.sub)
   }
 
   @Post('teams/:teamId/channels')
   create(
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Body() channelPayload: CreateChannelDto,
     @Param('teamId') teamId: string
   ) {
     return this.channelService.create({
       channel: channelPayload,
-      userId: getUserId(req),
+      userId: user.sub,
       teamId
     })
   }
@@ -54,34 +54,34 @@ export class ChannelController {
   @Patch('channels/:id')
   update(
     @Param('id') id: string,
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Body() channelPayload: UpdateChannelDto
   ) {
     return this.channelService.update({
       id,
 
-      userId: getUserId(req),
+      userId: user.sub,
       channelPayload
     })
   }
 
   @Delete('channels/:id')
-  delete(@Param('id') id: string, @Request() req) {
+  delete(@Param('id') id: string, @HttpUser() user: TJwtUser) {
     return this.channelService.delete({
       id,
-      userId: getUserId(req)
+      userId: user.sub
     })
   }
 
   @Post('channels/:id/members')
   eidtMembers(
     @Param('id') id: string,
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Body() membersPayload: CreateChannelMembersDto
   ) {
     return this.channelService.editMembers({
       id,
-      userId: getUserId(req),
+      userId: user.sub,
       membersPayload
     })
   }
@@ -89,21 +89,21 @@ export class ChannelController {
   @Post('channels/:id/messages')
   sendMesage(
     @Param('id') id: string,
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Body() messagePayload: any
   ) {
     return this.messageService._createForChannel({
       channelId: id,
-      userId: getUserId(req),
+      userId: user.sub,
       messagePayload
     })
   }
 
   @Get('channels/:id/messages')
-  messages(@Param('id') id: string, @Request() req) {
+  messages(@Param('id') id: string, @HttpUser() user: TJwtUser) {
     return this.messageService._getMessages({
       messageReferenceId: id,
-      userId: getUserId(req),
+      userId: user.sub,
       messgaeFor: EMessageFor.Channel
     })
   }

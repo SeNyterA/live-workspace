@@ -5,10 +5,10 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  Request
+  Post
 } from '@nestjs/common'
-import { getUserId } from 'src/libs/getUserId'
+import { HttpUser } from 'src/decorators/users.decorator'
+import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
 import { EMessageFor } from '../message/message.schema'
 import { MessageService } from '../message/message.service'
 import { CreateWorkspaceDto, UpdateWorkspaceDto } from '../workspace.dto'
@@ -22,65 +22,65 @@ export class GroupController {
   ) {}
 
   @Get(':id')
-  findOne(@Request() req, @Param('id') id: string) {
+  findOne(@HttpUser() user: TJwtUser, @Param('id') id: string) {
     return this.groupService.getGroupById({
       id: id,
-      userId: getUserId(req)
+      userId: user.sub
     })
   }
 
   @Get()
-  findAll(@Request() req) {
-    return this.groupService.getGroupsByUserId(getUserId(req))
+  findAll(@HttpUser() user: TJwtUser) {
+    return this.groupService.getGroupsByUserId(user.sub)
   }
 
   @Post()
-  create(@Request() req, @Body() groupPayload: CreateWorkspaceDto) {
+  create(@HttpUser() user: TJwtUser, @Body() groupPayload: CreateWorkspaceDto) {
     return this.groupService.create({
       group: groupPayload,
-      userId: getUserId(req)
+      userId: user.sub
     })
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Body() groupPayload: UpdateWorkspaceDto
   ) {
     return this.groupService.update({
       id,
-      userId: getUserId(req),
+      userId: user.sub,
       groupPayload
     })
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string, @Request() req) {
+  delete(@Param('id') id: string, @HttpUser() user: TJwtUser) {
     return this.groupService.delete({
       id,
-      userId: getUserId(req)
+      userId: user.sub
     })
   }
 
   @Post(':id/messages')
   sendMesage(
     @Param('id') id: string,
-    @Request() req,
+    @HttpUser() user: TJwtUser,
     @Body() messagePayload: any
   ) {
     return this.messageService._createForGroup({
       groupId: id,
-      userId: getUserId(req),
+      userId: user.sub,
       messagePayload
     })
   }
 
   @Get(':id/messages')
-  messages(@Param('id') id: string, @Request() req) {
+  messages(@Param('id') id: string, @HttpUser() user: TJwtUser) {
     return this.messageService._getMessages({
       messageReferenceId: id,
-      userId: getUserId(req),
+      userId: user.sub,
       messgaeFor: EMessageFor.Group
     })
   }
