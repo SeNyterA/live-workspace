@@ -12,11 +12,11 @@ export class WorkspaceService {
     this.subRedis = this.redisClient.duplicate()
     this.pubRedis = this.redisClient.duplicate()
 
-    this.afterInit()
+    this.listenToExpiredKeys()
   }
 
-  async afterInit() {
-    await this.subRedis.psubscribe(`__keyevent@0__:expired`)
+  async listenToExpiredKeys() {
+    await this.subRedis.psubscribe(`*:expired`)
     await this.subRedis.on('pmessage', async (pattern, channel, key) => {
       console.log({ pattern, channel, key })
     })
@@ -41,7 +41,7 @@ export class WorkspaceService {
       `typing:${targetId}:${userId}`,
       'typing',
       'EX',
-      10
+      1
     )
   }
 
