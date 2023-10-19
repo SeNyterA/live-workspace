@@ -10,6 +10,7 @@ import { DirectMessageService } from './direct-message/direct-message.service'
 import { GroupController } from './group/group.controler'
 import { Group, GroupSchema } from './group/group.schema'
 import { GroupService } from './group/group.service'
+import { Member, MemberSchema } from './member/member.schema'
 import { Message, MessageSchema } from './message/message.schema'
 import { MessageService } from './message/message.service'
 import { BoardController } from './team/board/board.controler'
@@ -21,6 +22,7 @@ import { Team, TeamSchema } from './team/team.schema'
 import { TeamService } from './team/team.service'
 import { WorkspaceGateway } from './workspace.gateway'
 import { WorkspaceService } from './workspace.service'
+import { MemberService } from './member/member.service'
 
 @Module({
   imports: [
@@ -29,7 +31,8 @@ import { WorkspaceService } from './workspace.service'
       { name: Channel.name, schema: ChannelSchema },
       { name: DirectMessage.name, schema: DirectMessageSchema },
       { name: Group.name, schema: GroupSchema },
-      { name: Message.name, schema: MessageSchema }
+      { name: Message.name, schema: MessageSchema },
+      { name: Member.name, schema: MemberSchema }
     ]),
     UsersModule
   ],
@@ -47,7 +50,8 @@ import { WorkspaceService } from './workspace.service'
     DirectMessageService,
     MessageService,
     WorkspaceGateway,
-    WorkspaceService
+    WorkspaceService,
+    MemberService
   ]
 })
 export class WorkspaceModule {}

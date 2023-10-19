@@ -1,8 +1,9 @@
-import { MemberSchema } from '../workspace.schema'
+
+import { Member } from '../member/member.schema'
 import { Team } from './team.schema'
 
 export type TTeam = Team
-export type TTeamMember = MemberSchema
+export type TTeamMember = Member
 
 export type TCreateTeamPayload = Pick<TTeam, 'avatar' | 'title' | 'description'>
 

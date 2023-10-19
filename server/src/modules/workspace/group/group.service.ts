@@ -7,85 +7,57 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
-import {
-  CreateWorkspaceDto,
-  MemberDto,
-  UpdateWorkspaceDto
-} from '../workspace.dto'
-import { EGroupMemberType, Group } from './group.schema'
+import { EMemberRole, EMemberType, Member } from '../member/member.schema'
+import { MemberService } from '../member/member.service'
+import { CreateWorkspaceDto, UpdateWorkspaceDto } from '../workspace.dto'
+import { Group } from './group.schema'
 
 @Injectable()
 export class GroupService {
   constructor(
-    @InjectModel(Group.name) private readonly groupModel: Model<Group>
+    @InjectModel(Group.name) private readonly groupModel: Model<Group>,
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    private readonly memberService: MemberService
   ) {}
 
-  async editMembers({
-    id,
-    userId,
-    groupMembersPayload
-  }: {
-    id: string
-    userId: string
-    groupMembersPayload: MemberDto[]
-  }): Promise<boolean> {
-    const group = await this.groupModel.findById({
-      _id: id,
-      isAvailable: true,
-      'members.userId': userId,
-      'members.type': {
-        $in: [EGroupMemberType.Owner, EGroupMemberType.Admin]
-      }
+  async _checkExisting({ groupId }: { groupId: string }) {
+    const existingGroup = await this.groupModel.findOne({
+      _id: groupId,
+      isAvailable: true
     })
 
-    if (!group) {
+    if (!existingGroup) {
       throw new ForbiddenException('Your dont have permission')
     }
 
     return true
   }
 
-  async _checkExisting({
-    id,
-    userId
-  }: {
-    userId: string
-    id: string
-  }): Promise<boolean> {
-    const existingDirectMessage = await this.groupModel.findOne({
-      _id: id,
-      isAvailable: true,
-      'members.userId': userId
+  async getGroupsByUserId(userId: string) {
+    const members = await this.memberService._getByUserId({
+      userId
     })
 
-    if (!existingDirectMessage) {
-      throw new ForbiddenException('Your dont have permission')
-    }
-
-    return !!existingDirectMessage.toJSON()
-  }
-
-  //#region public service
-  async getGroupsByUserId(userId: string): Promise<Group[]> {
     const groups = await this.groupModel.find({
-      'members.userId': userId,
+      _id: {
+        $in: members.map(e => e.targetId)
+      },
       isAvailable: true
     })
 
     return groups.map(e => e.toJSON())
   }
 
-  async getGroupById({
-    id,
-    userId
-  }: {
-    id: string
-    userId: string
-  }): Promise<Group> {
+  async getGroupById({ id, userId }: { id: string; userId: string }) {
+    await this.memberService._checkExisting({
+      userId,
+      targetId: id,
+      inRoles: [EMemberRole.Admin, EMemberRole.Owner, EMemberRole.Member]
+    })
+
     const group = await this.groupModel.findOne({
       _id: id,
-      isAvailable: true,
-      'members.userId': userId
+      isAvailable: true
     })
 
     if (!group) {
@@ -96,26 +68,31 @@ export class GroupService {
   }
 
   async create({
-    group,
+    groupDto,
     userId
   }: {
-    group: CreateWorkspaceDto
+    groupDto: CreateWorkspaceDto
     userId: string
-  }): Promise<Group> {
-    const createdGroup = new this.groupModel({
-      ...group,
+  }) {
+    const createdGroup = await this.groupModel.create({
+      ...groupDto,
       createdById: userId,
-      modifiedById: userId,
-      members: [
-        {
-          userId,
-          type: EGroupMemberType.Owner
-        }
-      ]
+      modifiedById: userId
     })
 
-    createdGroup.save()
-    return createdGroup
+    const owner = await this.memberModel.create({
+      userId,
+      targetId: createdGroup._id.toString(),
+      path: createdGroup._id.toString(),
+      type: EMemberType.Group,
+      role: EMemberRole.Owner,
+      createdById: userId,
+      modifiedById: userId
+    })
+    return {
+      group: createdGroup,
+      members: [owner]
+    }
   }
 
   async update({
@@ -131,14 +108,16 @@ export class GroupService {
       throw new BadRequestException('Bad request')
     }
 
+    await this.memberService._checkExisting({
+      userId,
+      targetId: id,
+      inRoles: [EMemberRole.Admin, EMemberRole.Owner]
+    })
+
     const group = await this.groupModel.findByIdAndUpdate(
       {
         _id: id,
-        isAvailable: true,
-        'members.userId': userId,
-        'members.type': {
-          $in: [EGroupMemberType.Owner, EGroupMemberType.Admin]
-        }
+        isAvailable: true
       },
       {
         $set: {
@@ -163,12 +142,16 @@ export class GroupService {
     id: string
     userId: string
   }): Promise<boolean> {
+    await this.memberService._checkExisting({
+      userId,
+      targetId: id,
+      inRoles: [EMemberRole.Owner]
+    })
+
     const group = await this.groupModel.findOneAndUpdate(
       {
         _id: id,
-        isAvailable: true,
-        'members.userId': userId,
-        'members.type': EGroupMemberType.Owner
+        isAvailable: true
       },
       {
         $set: {
@@ -185,5 +168,4 @@ export class GroupService {
     }
     return true
   }
-  //#endregion
 }

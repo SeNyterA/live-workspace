@@ -7,8 +7,9 @@ import {
   IsString,
   ValidateNested
 } from 'class-validator'
-import { EMemberType } from './workspace.schema'
+
 import { Type } from 'class-transformer'
+import { EMemberType } from './member/member.schema'
 
 export class MemberDto {
   @IsString()
@@ -24,7 +25,7 @@ export class MembersDto {
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
-  @Type(() => MemberDto) 
+  @Type(() => MemberDto)
   members: MemberDto[]
 }
 

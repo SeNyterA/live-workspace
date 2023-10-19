@@ -73,19 +73,6 @@ export class ChannelController {
     })
   }
 
-  @Post('channels/:id/members')
-  eidtMembers(
-    @Param('id') id: string,
-    @HttpUser() user: TJwtUser,
-    @Body() membersPayload: CreateChannelMembersDto
-  ) {
-    return this.channelService.editMembers({
-      id,
-      userId: user.sub,
-      membersPayload
-    })
-  }
-
   @Post('channels/:id/messages')
   sendMesage(
     @Param('id') id: string,
