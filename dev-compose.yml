@@ -7,7 +7,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - 'data:/data/db'
+      - 'mongo_data:/data/db'
     command: mongod --bind_ip_all
 
   redis:
@@ -20,5 +20,5 @@ services:
     command: redis-server --notify-keyspace-events Ex
 
 volumes:
-  data:
+  mongo_data:
   redis_data:

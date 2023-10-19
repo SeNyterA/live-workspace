@@ -37,7 +37,7 @@ export class GroupController {
   @Post()
   create(@HttpUser() user: TJwtUser, @Body() groupPayload: CreateWorkspaceDto) {
     return this.groupService.create({
-      group: groupPayload,
+      groupDto: groupPayload,
       userId: user.sub
     })
   }

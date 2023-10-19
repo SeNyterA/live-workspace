@@ -1,10 +1,9 @@
 import {
   MessageBody,
   SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer
+  WebSocketGateway
 } from '@nestjs/websockets'
-import { Server, Socket } from 'socket.io'
+import { Socket } from 'socket.io'
 import { TJwtUser } from '../adapters/redis-io.adapter'
 import { WsClient, WsUser } from './../../decorators/users.decorator'
 import { WorkspaceService } from './workspace.service'
@@ -15,9 +14,6 @@ import { WorkspaceService } from './workspace.service'
   }
 })
 export class WorkspaceGateway {
-  @WebSocketServer()
-  server: Server
-
   constructor(private readonly workspaceService: WorkspaceService) {}
 
   @SubscribeMessage('joinTeam')
@@ -123,5 +119,10 @@ export class WorkspaceGateway {
     @MessageBody() targetId: string
   ) {
     this.workspaceService.startTyping(user.sub, targetId)
+  }
+
+  @SubscribeMessage('joins')
+  async joins(@WsUser() user: TJwtUser, @WsClient() client: Socket) {
+    this.workspaceService.subscribeAllRooms(user.sub, client)
   }
 }

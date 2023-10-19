@@ -6,8 +6,8 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { DirectMessageService } from '../direct-message/direct-message.service'
-import { GroupService } from '../group/group.service'
-import { ChannelService } from '../team/channel/channel.service'
+import { MemberService } from '../member/member.service'
+import { WorkspaceService } from './../workspace.service'
 import { EMessageFor, EMessageType, Message } from './message.schema'
 
 @Injectable()
@@ -16,8 +16,8 @@ export class MessageService {
     @InjectModel(Message.name)
     private readonly messageModel: Model<Message>,
     private readonly directMessageService: DirectMessageService,
-    private readonly channelService: ChannelService,
-    private readonly groupService: GroupService
+    private readonly memberService: MemberService,
+    private readonly workspaceService: WorkspaceService
   ) {}
 
   async _createForDirect({
@@ -44,6 +44,14 @@ export class MessageService {
       messageType: EMessageType.Normal
     })
 
+    this.workspaceService.message({
+      rooms: [`user:${targetId}`, `user:${userId}`],
+      data: {
+        action: 'create',
+        message: newMess
+      }
+    })
+
     return newMess.toJSON()
   }
 
@@ -56,11 +64,6 @@ export class MessageService {
     channelId: string
     messagePayload: any
   }) {
-    await this.channelService._checkExisting({
-      id: channelId,
-      userId
-    })
-
     const newMess = await this.messageModel.create({
       messageReferenceId: channelId,
       createdById: userId,
@@ -68,6 +71,14 @@ export class MessageService {
       content: 'content',
       messageFor: EMessageFor.Channel,
       messageType: EMessageType.Normal
+    })
+
+    this.workspaceService.message({
+      rooms: [`channel:${channelId}`],
+      data: {
+        action: 'create',
+        message: newMess
+      }
     })
 
     return newMess.toJSON()
@@ -82,9 +93,9 @@ export class MessageService {
     groupId: string
     messagePayload: any
   }) {
-    await this.groupService._checkExisting({
-      id: groupId,
-      userId
+    await this.memberService._checkExisting({
+      userId,
+      targetId: groupId
     })
 
     const newMess = await this.messageModel.create({
@@ -94,6 +105,14 @@ export class MessageService {
       content: 'content',
       messageFor: EMessageFor.Group,
       messageType: EMessageType.Normal
+    })
+
+    this.workspaceService.message({
+      rooms: [`group:${groupId}`],
+      data: {
+        action: 'create',
+        message: newMess
+      }
     })
 
     return newMess.toJSON()
@@ -121,22 +140,14 @@ export class MessageService {
     }
 
     switch (message.messageFor) {
-      case EMessageFor.Channel: {
-        await this.channelService._checkExisting({
-          id: message.messageReferenceId,
-          userId
-        })
-        break
-      }
-      case EMessageFor.Group: {
-        await this.groupService._checkExisting({
-          id: message.messageReferenceId,
-          userId
-        })
-        break
-      }
       case EMessageFor.Direct: {
         break
+      }
+      default: {
+        this.memberService._checkExisting({
+          userId,
+          targetId: message._id.toString()
+        })
       }
     }
 
@@ -154,19 +165,13 @@ export class MessageService {
   }) {
     let _messageReferenceId = messageReferenceId
     switch (messgaeFor) {
-      case EMessageFor.Channel: {
-        await this.channelService._checkExisting({
-          id: messageReferenceId,
+      case EMessageFor.Channel:
+      case EMessageFor.Group: {
+        await this.memberService._checkExisting({
+          targetId: messageReferenceId,
           userId
         })
 
-        break
-      }
-      case EMessageFor.Group: {
-        await this.groupService._checkExisting({
-          id: messageReferenceId,
-          userId
-        })
         break
       }
       case EMessageFor.Direct: {

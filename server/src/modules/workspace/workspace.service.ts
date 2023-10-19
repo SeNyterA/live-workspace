@@ -1,13 +1,35 @@
 import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Redis } from 'ioredis'
+import { Model } from 'mongoose'
+import { Server, Socket } from 'socket.io'
+import { Group } from './group/group.schema'
+import { EMemberType, Member } from './member/member.schema'
+import { MemberService } from './member/member.service'
+import { Message } from './message/message.schema'
+import { Board } from './team/board/board.schema'
+import { Channel } from './team/channel/channel.schema'
+import { Team } from './team/team.schema'
 
 @Injectable()
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 export class WorkspaceService {
+  @WebSocketServer()
+  server: Server
+
   private readonly redisClient: Redis
   private readonly subRedis: Redis
   private readonly pubRedis: Redis
 
-  constructor() {
+  constructor(
+    private readonly memberService: MemberService,
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>
+  ) {
     this.redisClient = new Redis()
     this.subRedis = this.redisClient.duplicate()
     this.pubRedis = this.redisClient.duplicate()
@@ -32,6 +54,35 @@ export class WorkspaceService {
         }
       })
     })
+  }
+
+  async subscribeAllRooms(userId: string, client: Socket) {
+    const members = await this.memberModel
+      .find({
+        userId,
+        isAvailable: true
+      })
+      .lean()
+
+    const rooms = members.map(member => {
+      switch (member.type) {
+        case EMemberType.Team:
+          return `team:${member.targetId}`
+        case EMemberType.Board:
+          return `board:${member.targetId}`
+        case EMemberType.Channel:
+          return `channel:${member.targetId}`
+        case EMemberType.DirectMessage:
+          return `directMessage:${member.targetId}`
+        case EMemberType.Group:
+          return `group:${member.targetId}`
+      }
+    })
+
+    rooms.push(`user:${userId}`)
+    client.join(rooms)
+
+    console.log(userId, client.rooms)
   }
 
   //#region Typing
@@ -123,4 +174,82 @@ export class WorkspaceService {
     return usersPresence
   }
   //#endregion
+
+  async team({
+    rooms,
+    data
+  }: {
+    rooms: string | string[]
+    data: {
+      team: Team
+      action: 'create' | 'update' | 'delete'
+    }
+  }) {
+    this.server.to(rooms).emit('team', data)
+  }
+
+  async channel({
+    rooms,
+    data
+  }: {
+    rooms: string | string[]
+    data: {
+      channel: Channel
+      action: 'create' | 'update' | 'delete'
+    }
+  }) {
+    this.server.to(rooms).emit('channel', data)
+  }
+
+  async board({
+    rooms,
+    data
+  }: {
+    rooms: string | string[]
+    data: {
+      board: Board
+      action: 'create' | 'update' | 'delete'
+    }
+  }) {
+    this.server.to(rooms).emit('board', data)
+  }
+
+  async group({
+    rooms,
+    data
+  }: {
+    rooms: string | string[]
+    data: {
+      group: Group
+      action: 'create' | 'update' | 'delete'
+    }
+  }) {
+    this.server.to(rooms).emit('group', data)
+  }
+
+  async member({
+    rooms,
+    data
+  }: {
+    rooms: string | string[]
+    data: {
+      member: Member
+      action: 'create' | 'update' | 'delete'
+    }
+  }) {
+    this.server.to(rooms).emit('member', data)
+  }
+
+  async message({
+    rooms,
+    data
+  }: {
+    rooms: string | string[]
+    data: {
+      message: Message
+      action: 'create' | 'update' | 'delete'
+    }
+  }) {
+    this.server.to(rooms).emit('message', data)
+  }
 }

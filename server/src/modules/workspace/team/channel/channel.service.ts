@@ -7,52 +7,32 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
-import { EMemberType } from '../../workspace.schema'
+import { EMemberRole, Member } from '../../member/member.schema'
+import { MemberService } from '../../member/member.service'
 import { Team } from '../team.schema'
-import {
-  CreateChannelDto,
-  CreateChannelMembersDto,
-  UpdateChannelDto
-} from './channel.dto'
+import { TeamService } from '../team.service'
+import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
 import { Channel } from './channel.schema'
 
 @Injectable()
 export class ChannelService {
   constructor(
     @InjectModel(Channel.name) private readonly channelModel: Model<Channel>,
-    @InjectModel(Team.name) private readonly teamModel: Model<Team>
+    @InjectModel(Team.name) private readonly teamModel: Model<Team>,
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    private readonly memberService: MemberService,
+    private readonly teamService: TeamService
   ) {}
 
-  async editMembers({
-    id,
-    userId,
-    membersPayload
-  }: {
-    id: string
-    userId: string
-    membersPayload: CreateChannelMembersDto
-  }): Promise<boolean> {
-    return true
-  }
-
-  async _checkExisting({
-    id,
-    userId
-  }: {
-    userId: string
-    id: string
-  }): Promise<boolean> {
-    const existingDirectMessage = await this.channelModel.findOne({
-      _id: id,
-      isAvailable: true,
-      'members.userId': userId
+  async _checkExisting({ channelId }: { channelId: string }): Promise<boolean> {
+    const existingChannel = await this.channelModel.findOne({
+      _id: channelId,
+      isAvailable: true
     })
-
-    if (!existingDirectMessage) {
+    if (!existingChannel) {
       throw new ForbiddenException('Your dont have permission')
     }
-
-    return !!existingDirectMessage.toJSON()
+    return !!existingChannel
   }
 
   //#region public service
@@ -93,40 +73,31 @@ export class ChannelService {
     channel: CreateChannelDto
     userId: string
     teamId: string
-  }): Promise<Channel> {
-    const team = await this.teamModel.findOne({
-      _id: teamId,
-      isAvailable: true,
-
-      members: {
-        $elemMatch: {
-          userId: userId,
-          type: { $in: [EMemberType.Owner, EMemberType.Admin] }
-        }
-      }
+  }) {
+    await this.teamService._checkExisting({
+      teamId
     })
 
-    if (!team) {
-      throw new ForbiddenException('Your dont have permission')
-    }
+    await this.memberService._checkExisting({
+      userId,
+      targetId: teamId,
+      inRoles: [EMemberRole.Admin, EMemberRole.Owner]
+    })
 
     const createdChannel = new this.channelModel({
       ...channel,
       teamId,
       createdById: userId,
-      modifiedById: userId,
-      members: [
-        {
-          userId,
-          type: EMemberType.Owner
-        }
-      ]
+      modifiedById: userId
     })
 
-    createdChannel.path = `${team.id.toString()}/${createdChannel._id.toString()}`
+    createdChannel.path = `${teamId.toString()}/${createdChannel._id.toString()}`
     createdChannel.save()
 
-    return createdChannel
+    return {
+      channel: createdChannel,
+      members: []
+    }
   }
 
   async update({
@@ -142,14 +113,16 @@ export class ChannelService {
       throw new BadRequestException('Bad request')
     }
 
+    await this.memberService._checkExisting({
+      userId,
+      targetId: id,
+      inRoles: [EMemberRole.Owner, EMemberRole.Admin]
+    })
+
     const channel = await this.channelModel.findOneAndUpdate(
       {
         _id: id,
-        isAvailable: true,
-        'members.userId': userId,
-        'members.type': {
-          $in: [EMemberType.Owner, EMemberType.Admin]
-        }
+        isAvailable: true
       },
       {
         $set: {
@@ -174,12 +147,16 @@ export class ChannelService {
     id: string
     userId: string
   }): Promise<boolean> {
+    await this.memberService._checkExisting({
+      userId,
+      targetId: id,
+      inRoles: [EMemberRole.Owner]
+    })
+
     const channel = await this.channelModel.findOneAndUpdate(
       {
         _id: id,
-        isAvailable: true,
-        'members.userId': userId,
-        'members.type': EMemberType.Owner
+        isAvailable: true
       },
       {
         $set: {

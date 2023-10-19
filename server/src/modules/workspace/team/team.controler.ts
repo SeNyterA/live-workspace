@@ -9,11 +9,7 @@ import {
 } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
-import {
-  TCreateTeamPayload,
-  TTeamMemberPayload,
-  TUpdateTeamPayload
-} from './team.dto'
+import { TCreateTeamPayload, TUpdateTeamPayload } from './team.dto'
 import { TeamService } from './team.service'
 
 @Controller('/workspace/teams')
@@ -59,19 +55,6 @@ export class TeamController {
     return this.teamService.delete({
       id: id,
       userId: user.sub
-    })
-  }
-
-  @Post(':id')
-  editMembers(
-    @HttpUser() user: TJwtUser,
-    @Param('id') id: string,
-    @Body() membersPayload: TTeamMemberPayload[]
-  ) {
-    return this.teamService.editMembers({
-      teamMembersPayload: membersPayload,
-      userId: user.sub,
-      id: id
     })
   }
 }

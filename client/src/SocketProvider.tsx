@@ -14,20 +14,21 @@ interface SocketProviderProps {
 const socketContext = createContext<{ socket?: Socket<any, any> }>({})
 
 export const useSocket = () => useContext(socketContext)
-const key = Math.random()
 
 export default function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket<any, any>>()
 
   useEffect(() => {
     const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbnl0ZXJhQGdtYWlsLmNvbSIsInVzZXJOYW1lIjoic2VueXRlcmEiLCJzdWIiOiI2NTIxMzA0OTFkMWU2MjFkMzRhMjUwZWMiLCJpYXQiOjE2OTY2NzUwMzgsImV4cCI6MTAwMDAxNjk2Njc1MDM3fQ.cicq_LbUe8Q7wnYRbOYvrue-ezVKljyBeruqNuHwtD8'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbnl0ZXJhQGdtYWlsLmNvbSIsInVzZXJOYW1lIjoic2VueXRlcmEiLCJzdWIiOiI2NTJmNGVhZWQxYzFlMDg2YThiZTIxZTEiLCJpYXQiOjE2OTc1OTkyMzAsImV4cCI6MTAwMDAxNjk3NTk5MjI5fQ.Vhyw6ZPRT8nkImRBbmSnY4bdlGDtTjLTV_1UKF2kmHo'
 
     const newSocket = io('http://localhost:8420', {
       auth: {
         token
       }
     }).connect()
+
+    newSocket.emit('joins')
 
     setSocket(newSocket)
 
