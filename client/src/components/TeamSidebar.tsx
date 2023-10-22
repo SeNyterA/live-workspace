@@ -1,10 +1,116 @@
-import { ActionIcon, Button, Divider, NavLink, ScrollArea } from '@mantine/core'
+import {
+  ActionIcon,
+  Avatar,
+  Button,
+  Divider,
+  NavLink,
+  ScrollArea
+} from '@mantine/core'
 import {
   IconAdjustments,
   IconArrowRight,
-  IconGalaxy,
-  IconSearch
+  IconHash,
+  IconLayoutKanban,
+  IconMessage,
+  IconSearch,
+  IconUsersGroup
 } from '@tabler/icons-react'
+
+const intData = [
+  {
+    icon: <IconLayoutKanban size='1rem' stroke={1.5} />,
+    title: 'Board',
+    chidren: [
+      {
+        isPublic: true,
+        title: 'Genaral'
+      },
+      {
+        isPublic: true,
+        title: 'Notification'
+      },
+      {
+        isPublic: false,
+        title: 'Private board 1'
+      },
+      {
+        isPublic: false,
+        title: 'Private board 2'
+      }
+    ]
+  },
+  {
+    icon: <IconHash size='1rem' stroke={1.5} />,
+    title: 'Channel',
+    chidren: [
+      {
+        isPublic: true,
+        title: 'Genaral'
+      },
+      {
+        isPublic: true,
+        title: 'Notification'
+      },
+      {
+        isPublic: false,
+        title: 'Private channel 1'
+      },
+      {
+        isPublic: false,
+        title: 'Private channel 2'
+      }
+    ]
+  },
+
+  {
+    icon: <IconUsersGroup size='1rem' stroke={1.5} />,
+    title: 'Group',
+    chidren: [
+      {
+        isPublic: true,
+        title: 'Genaral'
+      },
+      {
+        isPublic: true,
+        title: 'Notification'
+      },
+      {
+        isPublic: false,
+        title: 'Private board 1'
+      },
+      {
+        isPublic: false,
+        title: 'Private board 2'
+      }
+    ]
+  },
+  {
+    icon: <IconMessage size='1rem' stroke={1.5} />,
+    title: 'Direct message',
+    chidren: [
+      {
+        isPublic: true,
+        title: 'Genaral',
+        icon: <Avatar size='xs' />
+      },
+      {
+        isPublic: true,
+        title: 'Notification',
+        icon: <Avatar size='xs' />
+      },
+      {
+        isPublic: false,
+        title: 'Private board 1',
+        icon: <Avatar size='xs' />
+      },
+      {
+        isPublic: false,
+        title: 'Private board 2',
+        icon: <Avatar size='xs' />
+      }
+    ]
+  }
+]
 
 export default function TeamSidebar() {
   return (
@@ -36,34 +142,22 @@ export default function TeamSidebar() {
 
       <div className='flex-1 relative'>
         <ScrollArea scrollbarSize={6} className='inset-0 absolute px-4'>
-          {[1, 2, 3, 4].map((_, index) => (
+          {intData.map((group, index) => (
             <NavLink
               key={index}
               className='p-1'
-              label='First parent link'
-              leftSection={<IconGalaxy size='1rem' stroke={1.5} />}
+              label={group.title}
+              leftSection={group.icon}
             >
-              <NavLink className='p-1' label='First child link' />
-              <NavLink className='p-1' label='Second child link' />
-              <NavLink className='p-1' label='First child link' />
-              <NavLink className='p-1' label='Second child link' />
-              <NavLink className='p-1' label='First child link' />
-              <NavLink className='p-1' label='Second child link' />
-              <NavLink className='p-1' label='First child link' />
-              <NavLink className='p-1' label='Second child link' />
-              <NavLink className='p-1' label='First child link' />
-              <NavLink className='p-1' label='Second child link' />
-              <NavLink className='p-1' label='First child link' />
-              <NavLink className='p-1' label='Second child link' />
-              <NavLink className='p-1' label='First child link' />
-              <NavLink className='p-1' label='Second child link' />
-              <NavLink className='p-1' label='First child link' />
-              <NavLink className='p-1' label='Second child link' />
-              <NavLink className='p-1' label='Nested parent link'>
+              {group.chidren.map((item, index) => (
+                <NavLink key={index} className='p-1' label={item.title} />
+              ))}
+
+              {/* <NavLink className='p-1' label='Nested parent link'>
                 <NavLink className='p-1' label='First child link' />
                 <NavLink className='p-1' label='Second child link' />
                 <NavLink className='p-1' label='Third child link' />
-              </NavLink>
+              </NavLink> */}
             </NavLink>
           ))}
         </ScrollArea>

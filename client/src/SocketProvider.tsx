@@ -19,22 +19,22 @@ export default function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket<any, any>>()
 
   useEffect(() => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbnl0ZXJhQGdtYWlsLmNvbSIsInVzZXJOYW1lIjoic2VueXRlcmEiLCJzdWIiOiI2NTJmNGVhZWQxYzFlMDg2YThiZTIxZTEiLCJpYXQiOjE2OTc1OTkyMzAsImV4cCI6MTAwMDAxNjk3NTk5MjI5fQ.Vhyw6ZPRT8nkImRBbmSnY4bdlGDtTjLTV_1UKF2kmHo'
+    // const token =
+    //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbnl0ZXJhQGdtYWlsLmNvbSIsInVzZXJOYW1lIjoic2VueXRlcmEiLCJzdWIiOiI2NTJmNGVhZWQxYzFlMDg2YThiZTIxZTEiLCJpYXQiOjE2OTc1OTkyMzAsImV4cCI6MTAwMDAxNjk3NTk5MjI5fQ.Vhyw6ZPRT8nkImRBbmSnY4bdlGDtTjLTV_1UKF2kmHo'
 
-    const newSocket = io('http://localhost:8420', {
-      auth: {
-        token
-      }
-    }).connect()
+    // const newSocket = io('http://localhost:8420', {
+    //   auth: {
+    //     token
+    //   }
+    // }).connect()
 
-    newSocket.emit('joins')
+    // newSocket.emit('joins')
 
-    setSocket(newSocket)
+    // setSocket(newSocket)
 
-    return () => {
-      newSocket.disconnect()
-    }
+    // return () => {
+    //   newSocket.disconnect()
+    // }
   }, [])
 
   return (

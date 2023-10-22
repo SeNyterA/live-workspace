@@ -1,6 +1,5 @@
-import { Avatar, Divider, Menu, ScrollArea } from '@mantine/core'
+import { Avatar, Divider, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
-import { IconSearch } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import Editor from './new-message/NewMessage'
 
@@ -8,7 +7,7 @@ export default function MessageContent() {
   const [messes, setMesses] = useState<{ content: string; isOwner: boolean }[]>(
     []
   )
-  const [id, setId] = useState('')
+  //   const [id, setId] = useState('')
 
   const { targetRef, scrollableRef, scrollIntoView } = useScrollIntoView<
     HTMLDivElement,
@@ -39,22 +38,18 @@ export default function MessageContent() {
           {messes.map((value, index) => (
             <div
               id={`id_${index}`}
-              className='mt-3 bg-gray-50 rounded'
+              className='mt-3 flex gap-2 pl-4'
               key={index}
               ref={targetRef}
             >
-              <Menu withArrow>
-                <Menu.Target>
-                  <Avatar />
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item leftSection={<IconSearch />} disabled>
-                    Search
-                  </Menu.Item>
-
-                  {/* Other items ... */}
-                </Menu.Dropdown>
-              </Menu>
+              <Avatar />
+              <div className=''>
+                <p className='text-base font-medium'>Senytera</p>
+                <p className='text-xs leading-3 text-gray-500'>1 mins ago</p>
+                <div className='p-1 rounded bg-gray-50 mt-2'>
+                  {value.content}
+                </div>
+              </div>
             </div>
           ))}
         </ScrollArea>
@@ -73,7 +68,7 @@ export default function MessageContent() {
           }}
         ></Button>
       </div> */}
-      <Divider variant='dashed'/>
+      <Divider variant='dashed' />
       <Editor
         onSubmit={value =>
           setMesses([
