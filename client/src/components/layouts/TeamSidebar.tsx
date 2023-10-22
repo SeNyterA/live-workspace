@@ -2,13 +2,14 @@ import { ActionIcon, Button, Divider, NavLink, ScrollArea } from '@mantine/core'
 import {
   IconAdjustments,
   IconArrowRight,
+  IconPlus,
   IconSearch
 } from '@tabler/icons-react'
 import { useLocation } from 'react-router-dom'
 import useAppParams from '../../hooks/useAppParams'
 import useControlParams from '../../hooks/useControlParams'
-import { intData } from './data.test'
 import useGetApi from '../../services/apis/useGetApi'
+import { intData } from './data.test'
 
 export default function TeamSidebar() {
   const { boardId, channelId, groupId, messageId } = useAppParams()
@@ -71,6 +72,12 @@ export default function TeamSidebar() {
                   }}
                 />
               ))}
+
+              <NavLink
+                className='p-1 opacity-70'
+                label={`Create ${group.type}`}
+                rightSection={<IconPlus size={14} />}
+              />
 
               {/* <NavLink className='p-1' label='Nested parent link'>
                 <NavLink className='p-1' label='First child link' />

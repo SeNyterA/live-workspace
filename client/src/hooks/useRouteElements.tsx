@@ -1,20 +1,20 @@
+import { useEffect } from 'react'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Layout from '../Layout'
+import SocketProvider from '../SocketProvider'
 import MessageContent from '../components/MessageContent'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
 import { useAppSelector } from '../redux/store'
-import { useEffect } from 'react'
-import SocketProvider from '../SocketProvider'
 
 export const paths = {
   login: '/login',
   register: '/register',
 
-  board: '/board/:boardId',
-  channel: '/channel/:channelId',
-  group: '/group/:groupId',
-  message: '/direct-message/:messageId'
+  board: 'board/:boardId',
+  channel: 'channel/:channelId',
+  group: 'group/:groupId',
+  message: 'direct-message/:messageId'
 }
 
 function PrivateRoute() {
