@@ -1,7 +1,21 @@
-import { Button, PasswordInput, TextInput } from '@mantine/core'
+import {
+  Anchor,
+  Button,
+  Checkbox,
+  Divider,
+  Group,
+  Paper,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput
+} from '@mantine/core'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { BsGithub, BsGoogle } from 'react-icons/bs'
 
 export default function Authentication() {
+  const [type, setType] = useState<'register' | 'login'>('login')
   const { control, handleSubmit, formState, reset } = useForm({
     defaultValues: {
       email: '',
@@ -11,9 +25,7 @@ export default function Authentication() {
     }
   })
 
-  console.log(formState)
-
-  const onSubmit = data => {
+  const onSubmit = (data: any) => {
     if (formState.isDirty) {
       if (formState.dirtyFields.hasOwnProperty('name')) {
         console.log('Register:', data)
@@ -25,57 +37,110 @@ export default function Authentication() {
   }
 
   return (
-    <form
-      className='h-screen w-screen flex items-center justify-center flex-col gap-3'
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className='w-96'>
-        <Controller
-          control={control}
-          name='email'
-          render={({ field, fieldState: { invalid } }) => (
-            <TextInput
-              label='Email'
-              placeholder='hello@mantine.dev'
-              error={invalid && 'Invalid email'}
-              radius='md'
-              {...field}
-            />
-          )}
+    <div className='w-screen h-screen flex items-center justify-center'>
+      <Paper radius='md' className='w-96' p='xl' withBorder>
+        <Text size='lg' fw={500}>
+          Welcome to Mantine, {type} with
+        </Text>
+
+        <Group grow mb='md' mt='md'>
+          <BsGoogle radius='xl'>Google</BsGoogle>
+          <BsGithub radius='xl'>Github</BsGithub>
+        </Group>
+
+        <Divider
+          label='Or continue with email'
+          labelPosition='center'
+          my='lg'
         />
 
-        <Controller
-          control={control}
-          name='password'
-          render={({ field, fieldState: { invalid } }) => (
-            <PasswordInput
-              label='Password'
-              placeholder='Your password'
-              error={invalid && 'Password should include at least 6 characters'}
-              radius='md'
-              {...field}
-            />
-          )}
-        />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack>
+            {type === 'register' && (
+              <Controller
+                name='name'
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <TextInput
+                    label='Name'
+                    placeholder='Your name'
+                    value={field.value}
+                    onChange={field.onChange}
+                    radius='md'
+                  />
+                )}
+              />
+            )}
 
-        <Controller
-          control={control}
-          name='name'
-          render={({ field, fieldState: { invalid } }) => (
-            <TextInput
-              label='Name'
-              placeholder='Your name'
-              error={invalid && 'Name is required'}
-              radius='md'
-              {...field}
+            <Controller
+              name='email'
+              control={control}
+              render={({ field, fieldState }) => (
+                <TextInput
+                  label='Email'
+                  placeholder='hello@mantine.dev'
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={fieldState.error && 'Invalid email'}
+                  radius='md'
+                />
+              )}
             />
-          )}
-        />
 
-        <Button variant='default' type='submit' radius='xl'>
-          {formState.dirtyFields.hasOwnProperty('name') ? 'Register' : 'Login'}
-        </Button>
-      </div>
-    </form>
+            <Controller
+              name='password'
+              control={control}
+              render={({ field, fieldState }) => (
+                <PasswordInput
+                  label='Password'
+                  placeholder='Your password'
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={
+                    fieldState.error &&
+                    'Password should include at least 6 characters'
+                  }
+                  radius='md'
+                />
+              )}
+            />
+
+            {type === 'register' && (
+              <Controller
+                name='terms'
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    label='I accept terms and conditions'
+                    checked={field.value}
+                    onChange={field.onChange}
+                  />
+                )}
+              />
+            )}
+          </Stack>
+
+          <Group justify='space-between' mt='xl'>
+            <Anchor
+              component='button'
+              type='button'
+              c='dimmed'
+              onClick={() => {
+                setType(type === 'login' ? 'register' : 'login')
+              }}
+              size='xs'
+            >
+              {type === 'register'
+                ? 'Already have an account? Login'
+                : "Don't have an account? Register"}
+            </Anchor>
+            <Button type='submit' radius='xl' variant='outline'>
+              {type}
+            </Button>
+          </Group>
+        </form>
+      </Paper>
+    </div>
   )
 }
