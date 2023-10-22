@@ -1,16 +1,19 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Redis } from 'ioredis'
 import { Model } from 'mongoose'
 import { Server, Socket } from 'socket.io'
 import { Group } from './group/group.schema'
+import { GroupService } from './group/group.service'
 import { EMemberType, Member } from './member/member.schema'
 import { MemberService } from './member/member.service'
 import { Message } from './message/message.schema'
 import { Board } from './team/board/board.schema'
 import { Channel } from './team/channel/channel.schema'
+import { ChannelService } from './team/channel/channel.service'
 import { Team } from './team/team.schema'
+import { TeamService } from './team/team.service'
 
 @Injectable()
 @WebSocketGateway({
@@ -28,6 +31,13 @@ export class WorkspaceService {
 
   constructor(
     private readonly memberService: MemberService,
+    @Inject(forwardRef(() => TeamService))
+    private readonly teamService: TeamService,
+    @Inject(forwardRef(() => ChannelService))
+    private readonly channelSerivce: ChannelService,
+    @Inject(forwardRef(() => GroupService))
+    private readonly groupService: GroupService,
+
     @InjectModel(Member.name) private readonly memberModel: Model<Member>
   ) {
     this.redisClient = new Redis()
@@ -251,5 +261,18 @@ export class WorkspaceService {
     }
   }) {
     this.server.to(rooms).emit('message', data)
+  }
+
+  async getWorkspaceData(userId: string) {
+    const _teams = this.teamService.getTeamsByUserId(userId)
+    const _channels = this.channelSerivce.getChannelsByUserId(userId)
+    const _groups = this.groupService.getGroupsByUserId(userId)
+
+    const [teams, channels, groups] = await Promise.all([
+      _teams,
+      _channels,
+      _groups
+    ])
+    return { teams, channels, groups }
   }
 }

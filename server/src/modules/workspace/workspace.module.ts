@@ -11,8 +11,10 @@ import { GroupController } from './group/group.controler'
 import { Group, GroupSchema } from './group/group.schema'
 import { GroupService } from './group/group.service'
 import { Member, MemberSchema } from './member/member.schema'
+import { MemberService } from './member/member.service'
 import { Message, MessageSchema } from './message/message.schema'
 import { MessageService } from './message/message.service'
+import { WorkpaceController } from './team.controler'
 import { BoardController } from './team/board/board.controler'
 import { ChannelController } from './team/channel/channel.controler'
 import { Channel, ChannelSchema } from './team/channel/channel.schema'
@@ -22,7 +24,6 @@ import { Team, TeamSchema } from './team/team.schema'
 import { TeamService } from './team/team.service'
 import { WorkspaceGateway } from './workspace.gateway'
 import { WorkspaceService } from './workspace.service'
-import { MemberService } from './member/member.service'
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { MemberService } from './member/member.service'
     ChannelController,
     DirectMessageController,
     GroupController,
-    BoardController
+    BoardController,
+    WorkpaceController
   ],
   providers: [
     ChannelService,
