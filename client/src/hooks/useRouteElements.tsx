@@ -1,6 +1,8 @@
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Layout from '../Layout'
 import MessageContent from '../components/MessageContent'
+import Login from '../components/auth/Login'
+import BoardContent from '../components/boards/BoardContent'
 import { useAppSelector } from '../redux/store'
 
 export const paths = {
@@ -10,7 +12,7 @@ export const paths = {
   board: '/board/:boardId',
   channel: '/channel/:channelId',
   group: '/group/:groupId',
-  message: '/message/:messageId'
+  message: '/direct-message/:messageId'
 }
 
 function PrivateRoute() {
@@ -39,11 +41,7 @@ export default function useRouteElements() {
         },
         {
           path: paths.login,
-          element: (
-            <div className='h-screen w-screen flex items-center justify-center'>
-              Login
-            </div>
-          )
+          element: <Login />
         },
         {
           path: paths.register,
@@ -63,7 +61,7 @@ export default function useRouteElements() {
           path: paths.board,
           element: (
             <Layout>
-              <MessageContent />
+              <BoardContent />
             </Layout>
           )
         },

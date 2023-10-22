@@ -1,7 +1,8 @@
 import { Avatar, Divider, ScrollArea } from '@mantine/core'
 import { ReactNode } from 'react'
-import TeamSidebar from './components/TeamSidebar'
+
 import AppHeader from './components/layouts/AppHeader'
+import TeamSidebar from './components/layouts/TeamSidebar'
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -14,7 +15,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           <Divider variant='dashed' className='mx-4' />
           <div className='flex-1 relative'>
             <ScrollArea className='absolute inset-0 px-2' scrollbarSize={6}>
-              {Array(1000)
+              {Array(10)
                 .fill(1)
                 .map((_, index) => (
                   <Avatar className='mt-1 first:mt-0' key={index} />
