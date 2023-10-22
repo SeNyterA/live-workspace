@@ -1,7 +1,7 @@
-import YourComponent from "./components/TestSocket"
+import Layout from './Layout'
 
 function App() {
-  return <div className='h-screen w-screen'><YourComponent/></div>
+  return <Layout />
 }
 
 export default App
