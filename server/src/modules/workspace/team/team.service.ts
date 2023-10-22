@@ -1,13 +1,17 @@
 import {
   ForbiddenException,
+  Inject,
   Injectable,
-  NotFoundException
+  NotFoundException,
+  forwardRef
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
+import { EStatusType } from '../workspace.schema'
 import { WorkspaceService } from '../workspace.service'
+import { ChannelService } from './channel/channel.service'
 import { TCreateTeamPayload, TTeam, TUpdateTeamPayload } from './team.dto'
 import { Team } from './team.schema'
 
@@ -17,6 +21,11 @@ export class TeamService {
     @InjectModel(Team.name) private readonly teamModel: Model<Team>,
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
     private readonly memberService: MemberService,
+
+    @Inject(forwardRef(() => ChannelService))
+    private readonly channelService: ChannelService,
+
+    @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService
   ) {}
 
@@ -31,17 +40,19 @@ export class TeamService {
     return !!existingTeam
   }
 
-  async getTeamsByUserId(userId: string): Promise<TTeam[]> {
+  async getTeamsByUserId(userId: string) {
     const members = await this.memberService._getByUserId({
       userId
     })
-    const teams = await this.teamModel.find({
-      _id: {
-        $in: members.map(e => e.targetId)
-      },
-      isAvailable: true
-    })
-    return teams.map(e => e.toJSON())
+    const teams = await this.teamModel
+      .find({
+        _id: {
+          $in: members.map(e => e.targetId)
+        },
+        isAvailable: true
+      })
+      .lean()
+    return teams
   }
 
   async getTeamById({
@@ -81,8 +92,16 @@ export class TeamService {
       modifiedById: userId
     })
 
-    const rooms = [`team:${createdTeam._id.toString()}`, `user:${userId}`]
+    this.channelService.create({
+      channel: {
+        channelType: EStatusType.Public,
+        title: 'General'
+      },
+      teamId: createdTeam._id.toString(),
+      userId: userId
+    })
 
+    const rooms = [`team:${createdTeam._id.toString()}`, `user:${userId}`]
     this.workspaceService.team({
       rooms,
       data: {
@@ -90,7 +109,6 @@ export class TeamService {
         team: createdTeam
       }
     })
-
     this.workspaceService.member({
       rooms,
       data: {

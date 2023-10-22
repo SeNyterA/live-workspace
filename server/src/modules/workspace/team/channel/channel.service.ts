@@ -1,18 +1,22 @@
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
-  NotFoundException
+  NotFoundException,
+  forwardRef
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
 import { EMemberRole, Member } from '../../member/member.schema'
 import { MemberService } from '../../member/member.service'
+import { MessageService } from '../../message/message.service'
 import { Team } from '../team.schema'
 import { TeamService } from '../team.service'
 import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
 import { Channel } from './channel.schema'
+import { EMessageFor } from '../../message/message.schema'
 
 @Injectable()
 export class ChannelService {
@@ -21,6 +25,9 @@ export class ChannelService {
     @InjectModel(Team.name) private readonly teamModel: Model<Team>,
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
     private readonly memberService: MemberService,
+
+    @Inject(forwardRef(() => MessageService))
+    private readonly messageService: MessageService,
     private readonly teamService: TeamService
   ) {}
 
@@ -36,13 +43,19 @@ export class ChannelService {
   }
 
   //#region public service
-  async getChannelsByUserId(userId: string): Promise<Channel[]> {
-    const channels = await this.channelModel.find({
-      'members.userId': userId,
-      isAvailable: true
+  async getChannelsByUserId(userId: string) {
+    const members = await this.memberService._getByUserId({
+      userId
     })
-
-    return channels.map(e => e.toJSON())
+    const channels = await this.channelModel
+      .find({
+        _id: {
+          $in: members.map(e => e.targetId)
+        },
+        isAvailable: true
+      })
+      .lean()
+    return channels
   }
 
   async getChannelById({
@@ -74,10 +87,6 @@ export class ChannelService {
     userId: string
     teamId: string
   }) {
-    await this.teamService._checkExisting({
-      teamId
-    })
-
     await this.memberService._checkExisting({
       userId,
       targetId: teamId,
@@ -93,6 +102,13 @@ export class ChannelService {
 
     createdChannel.path = `${teamId.toString()}/${createdChannel._id.toString()}`
     createdChannel.save()
+
+    await this.messageService._createSystemMessage({
+      targetId: createdChannel._id.toString(),
+      userId: userId,
+      messagePayload: `Channel has been created by \$\{${userId}\}`,
+      messageFor: EMessageFor.Channel
+    })
 
     return {
       channel: createdChannel,
