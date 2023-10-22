@@ -4,6 +4,8 @@ import MessageContent from '../components/MessageContent'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
 import { useAppSelector } from '../redux/store'
+import { useEffect } from 'react'
+import SocketProvider from '../SocketProvider'
 
 export const paths = {
   login: '/login',
@@ -16,8 +18,18 @@ export const paths = {
 }
 
 function PrivateRoute() {
+  useEffect(() => {
+    console.log({ sssss: 'ssssssssss' })
+  }, [])
+
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
-  return isAuthenticated ? <Outlet /> : <Navigate to='/login' />
+  return isAuthenticated ? (
+    <SocketProvider>
+      <Outlet />
+    </SocketProvider>
+  ) : (
+    <Navigate to='/login' />
+  )
 }
 
 function PublicOnlyRoute() {

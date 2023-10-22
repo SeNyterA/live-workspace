@@ -99,7 +99,7 @@ export default function Editor({
       />
 
       <div className='flex justify-between'>
-        <RichTextEditor.Toolbar sticky stickyOffset={60}>
+        <RichTextEditor.Toolbar className='border-none' sticky stickyOffset={60}>
           <RichTextEditor.ControlsGroup>
             <RichTextEditor.Bold />
             <RichTextEditor.Italic />
