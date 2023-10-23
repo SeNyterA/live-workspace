@@ -64,6 +64,11 @@ export class MessageService {
     channelId: string
     messagePayload: any
   }) {
+    await this.memberService._checkExisting({
+      userId,
+      targetId: channelId
+    })
+
     const newMess = await this.messageModel.create({
       messageReferenceId: channelId,
       createdById: userId,
