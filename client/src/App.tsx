@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useRouteElements from './hooks/useRouteElements'
-import { userAction } from './redux/slices/auth.slice'
+import { authActions } from './redux/slices/auth.slice'
 import { LocalStorageEventTarget } from './utils/auth'
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
 
   useEffect(() => {
     LocalStorageEventTarget.addEventListener('clearLS', () => {
-      dispatch(userAction.logout())
+      dispatch(authActions.logout())
     })
   }, [dispatch])
 

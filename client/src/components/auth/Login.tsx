@@ -13,28 +13,26 @@ import {
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
+import { useDispatch } from 'react-redux'
+import { authActions } from '../../redux/slices/auth.slice'
+import { useAppMutation } from '../../services/apis/useAppMutation'
+import { TUser } from '../../types/user.type'
+
+type TAuthForm = Pick<TUser, 'email' | 'password' | 'userName'> & {
+  terms: boolean
+}
 
 export default function Authentication() {
   const [type, setType] = useState<'register' | 'login'>('login')
-  const { control, handleSubmit, formState, reset } = useForm({
+  const { mutateAsync } = useAppMutation('login')
+
+  const dispatch = useDispatch()
+
+  const { control, handleSubmit, formState, reset } = useForm<TAuthForm>({
     defaultValues: {
-      email: '',
-      password: '',
-      name: '',
       terms: false
     }
   })
-
-  const onSubmit = (data: any) => {
-    if (formState.isDirty) {
-      if (formState.dirtyFields.hasOwnProperty('name')) {
-        console.log('Register:', data)
-      } else {
-        console.log('Login:', data)
-      }
-      reset()
-    }
-  }
 
   return (
     <div className='w-screen h-screen flex items-center justify-center'>
@@ -54,11 +52,40 @@ export default function Authentication() {
           my='lg'
         />
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          onSubmit={handleSubmit(data => {
+            if (formState.isDirty) {
+              if (formState.dirtyFields.hasOwnProperty('name')) {
+                console.log('Register:', data)
+              } else {
+                console.log('Login:', data)
+
+                mutateAsync(
+                  {
+                    method: 'post',
+                    url: {
+                      baseUrl: '/auth/login'
+                    },
+                    payload: {
+                      userNameOrEmail: 'senytera@gmail.com',
+                      password: '123123'
+                    }
+                  },
+                  {
+                    onSuccess(data) {
+                      dispatch(authActions.loginSuccess(data))
+                    }
+                  }
+                )
+              }
+              reset()
+            }
+          })}
+        >
           <Stack>
             {type === 'register' && (
               <Controller
-                name='name'
+                name='userName'
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (

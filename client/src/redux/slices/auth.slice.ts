@@ -10,7 +10,7 @@ interface UserState {
 
 const initialState: UserState = {
   userInfo: lsActions.getUser(),
-  isAuthenticated: true,
+  isAuthenticated: !!lsActions.getToken(),
   token: lsActions.getToken()
 }
 
@@ -47,6 +47,6 @@ const authSlice = createSlice({
   }
 })
 
-export const userAction = authSlice.actions
+export const authActions = authSlice.actions
 
 export default authSlice.reducer

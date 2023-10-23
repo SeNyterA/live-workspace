@@ -6,6 +6,7 @@ import MessageContent from '../components/MessageContent'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
 import { useAppSelector } from '../redux/store'
+import { useAppQuery } from '../services/apis/useAppQuery'
 
 export const paths = {
   login: '/login',
@@ -21,6 +22,15 @@ function PrivateRoute() {
   useEffect(() => {
     console.log({ sssss: 'ssssssssss' })
   }, [])
+
+  const { data } = useAppQuery({
+    key: 'login',
+    url: {
+      baseUrl: '/auth/profile'
+    }
+  })
+
+  console.log(data)
 
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
   return isAuthenticated ? (

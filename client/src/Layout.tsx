@@ -1,8 +1,7 @@
 import { Avatar, Divider, ScrollArea } from '@mantine/core'
 import { ReactNode } from 'react'
-
 import AppHeader from './components/layouts/AppHeader'
-import TeamSidebar from './components/layouts/TeamSidebar'
+import Sidebar from './components/layouts/Sidebar'
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -26,7 +25,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
         <Divider variant='dashed' orientation='vertical' />
         <div className='flex-1 flex'>
-          <TeamSidebar />
+          <Sidebar />
           <Divider variant='dashed' orientation='vertical' />
           {children}
         </div>

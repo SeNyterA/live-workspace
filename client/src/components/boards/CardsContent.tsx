@@ -46,7 +46,9 @@ export default function CardsContent() {
                               <p className='text-xs'>{card.description}</p>
                               <AvatarGroup>
                                 {['A', 'B', 'C', 'D', 'E'].map(e => (
-                                  <Avatar size='sm'>{e}</Avatar>
+                                  <Avatar key={e} size='sm'>
+                                    {e}
+                                  </Avatar>
                                 ))}
                               </AvatarGroup>
                             </div>

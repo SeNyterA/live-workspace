@@ -1,11 +1,12 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
+import { lsActions } from '../../utils/auth'
 
 class Http {
   instance: AxiosInstance
 
   constructor() {
     this.instance = axios.create({
-      baseURL: 'https://api.github.com',
+      baseURL: 'http://localhost:8420',
       headers: {
         'Content-Type': 'application/json'
       }
@@ -13,7 +14,7 @@ class Http {
 
     this.instance.interceptors.request.use(
       config => {
-        // config.headers.Authorization = `Bearer ${lsActions.getToken()}`
+        config.headers.Authorization = `Bearer ${lsActions.getToken()}`
         return config
       },
       error => {

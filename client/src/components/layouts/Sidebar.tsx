@@ -8,16 +8,12 @@ import {
 import { useLocation } from 'react-router-dom'
 import useAppParams from '../../hooks/useAppParams'
 import useControlParams from '../../hooks/useControlParams'
-import useGetApi from '../../services/apis/useGetApi'
 import { intData } from './data.test'
 
-export default function TeamSidebar() {
+export default function Sidebar() {
   const { boardId, channelId, groupId, messageId } = useAppParams()
   const { switchTo } = useControlParams()
   const path = useLocation()
-
-  const { data } = useGetApi()
-  console.log({ data })
 
   return (
     <div className='w-72 flex py-3 flex-col gap-2'>
