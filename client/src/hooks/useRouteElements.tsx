@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Layout from '../Layout'
 import SocketProvider from '../SocketProvider'
 import MessageContent from '../components/MessageContent'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
+import { authActions } from '../redux/slices/auth.slice'
 import { useAppSelector } from '../redux/store'
 import { useAppQuery } from '../services/apis/useAppQuery'
+import { lsActions } from '../utils/auth'
 
 export const paths = {
   login: '/login',
@@ -19,20 +22,36 @@ export const paths = {
 }
 
 function PrivateRoute() {
-  useEffect(() => {
-    console.log({ sssss: 'ssssssssss' })
-  }, [])
+  const dispatch = useDispatch()
+  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
 
-  const { data } = useAppQuery({
+  const { data: user } = useAppQuery({
     key: 'login',
     url: {
       baseUrl: '/auth/profile'
     }
   })
 
-  console.log(data)
+  const { data: workspaceData } = useAppQuery({
+    key: 'workspace',
+    url: {
+      baseUrl: '/workspace'
+    },
+    options: {
+      queryKey: ['/workspace']
+    }
+  })
 
-  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
+  useEffect(() => {
+    if (user)
+      dispatch(
+        authActions.loginSuccess({
+          token: lsActions.getToken(),
+          user: user
+        })
+      )
+  }, [user])
+
   return isAuthenticated ? (
     <SocketProvider>
       <Outlet />

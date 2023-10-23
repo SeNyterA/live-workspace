@@ -6,6 +6,7 @@ import {
   useState
 } from 'react'
 import io, { Socket } from 'socket.io-client'
+import { useAppSelector } from './redux/store'
 
 interface SocketProviderProps {
   children?: ReactNode
@@ -17,25 +18,25 @@ export const useSocket = () => useContext(socketContext)
 
 export default function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket<any, any>>()
+  const token = useAppSelector(state => state.auth.token)
 
   useEffect(() => {
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbnl0ZXJhQGdtYWlsLmNvbSIsInVzZXJOYW1lIjoic2VueXRlcmEiLCJzdWIiOiI2NTJmNGVhZWQxYzFlMDg2YThiZTIxZTEiLCJpYXQiOjE2OTc1OTkyMzAsImV4cCI6MTAwMDAxNjk3NTk5MjI5fQ.Vhyw6ZPRT8nkImRBbmSnY4bdlGDtTjLTV_1UKF2kmHo'
+    if (token) {
+      const newSocket = io('http://localhost:8420', {
+        auth: {
+          token
+        }
+      }).connect()
 
-    const newSocket = io('http://localhost:8420', {
-      auth: {
-        token
+      newSocket.emit('joins')
+
+      setSocket(newSocket)
+
+      return () => {
+        newSocket.disconnect()
       }
-    }).connect()
-
-    newSocket.emit('joins')
-
-    setSocket(newSocket)
-
-    return () => {
-      newSocket.disconnect()
     }
-  }, [])
+  }, [token])
 
   return (
     <socketContext.Provider value={{ socket }}>

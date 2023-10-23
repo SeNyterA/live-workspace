@@ -25,6 +25,18 @@ type ApiQueryType = {
     }
     response: TUser
   }
+
+  //workspace
+  workspace: {
+    url: {
+      baseUrl: '/workspace'
+    }
+    response: {
+      teams: any[]
+      channels: any[]
+      groups: any[]
+    }
+  }
 }
 
 export const useAppQuery = <T extends keyof ApiQueryType>({

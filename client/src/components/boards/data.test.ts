@@ -6,7 +6,7 @@ type TKanban = {
 
 const kanbanData: TKanban = []
 
-const numColumns = 6
+const numColumns = 7
 const numCardsPerColumn = 30
 
 for (let columnId = 1; columnId <= numColumns; columnId++) {
