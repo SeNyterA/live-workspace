@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
-import { WorkspaceSchema } from '../workspace.schema'
+import { Workspace } from '../workspace.schema'
 
 export enum EMessageFor {
   Channel = 'Channel',
@@ -14,7 +14,7 @@ export enum EMessageType {
 }
 
 @Schema()
-export class Message extends WorkspaceSchema {
+export class Message extends Workspace {
   @Prop({ default: '' })
   content: string
 
@@ -33,5 +33,3 @@ export class Message extends WorkspaceSchema {
   @Prop({ type: Types.ObjectId, ref: 'Message' })
   replyToMessageId?: string
 }
-
-export const MessageSchema = SchemaFactory.createForClass(Message)

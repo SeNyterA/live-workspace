@@ -33,7 +33,8 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
 }: Omit<ApiQueryType[T], 'response'> & { key: T } & {
   options?: Omit<UseQueryOptions<ApiQueryType[T]['response']>, 'queryFn'>
 }) => {
-  const queryParams = new URLSearchParams((url as any)?.queryParams || {})
+  const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
+
   const urlApi = `${replaceDynamicValues(
     url.baseUrl,
     (url as any)?.urlParams || {}

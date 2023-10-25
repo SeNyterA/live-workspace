@@ -1,9 +1,9 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Prop, Schema } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
-import { EStatusType, WorkspaceSchema } from '../../workspace.schema'
+import { EStatusType, Workspace } from '../../workspace.schema'
 
 @Schema()
-export class Channel extends WorkspaceSchema {
+export class Channel extends Workspace {
   @Prop({ type: Types.ObjectId, ref: 'Team' })
   teamId: string
 
@@ -13,5 +13,3 @@ export class Channel extends WorkspaceSchema {
   @Prop()
   path: string
 }
-
-export const ChannelSchema = SchemaFactory.createForClass(Channel)

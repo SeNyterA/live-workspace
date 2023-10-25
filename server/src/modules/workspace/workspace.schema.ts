@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
 
 export enum EStatusType {
@@ -8,7 +8,7 @@ export enum EStatusType {
 }
 
 @Schema()
-export class WorkspaceSchema {
+export class Workspace {
   _id: string
 
   @Prop({ default: '' })
