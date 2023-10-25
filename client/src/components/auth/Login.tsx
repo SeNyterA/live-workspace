@@ -24,15 +24,17 @@ type TAuthForm = Pick<TUser, 'email' | 'password' | 'userName'> & {
 
 export default function Authentication() {
   const [type, setType] = useState<'register' | 'login'>('login')
-  const { mutateAsync } = useAppMutation('login')
+  const { mutateAsync: login } = useAppMutation('login')
+  const { mutateAsync: register } = useAppMutation('register')
 
   const dispatch = useDispatch()
 
-  const { control, handleSubmit, formState, reset } = useForm<TAuthForm>({
-    defaultValues: {
-      terms: false
-    }
-  })
+  const { control, handleSubmit, formState, reset, clearErrors } =
+    useForm<TAuthForm>({
+      defaultValues: {
+        terms: false
+      }
+    })
   console.log({ formState })
 
   return (
@@ -58,7 +60,7 @@ export default function Authentication() {
             console.log(`${type === 'register' ? 'Register' : 'Login'}:`, data)
 
             if (type === 'login') {
-              mutateAsync(
+              login(
                 {
                   method: 'post',
                   url: {
@@ -77,7 +79,29 @@ export default function Authentication() {
               )
             }
 
+            if (type === 'register') {
+              register(
+                {
+                  method: 'post',
+                  url: {
+                    baseUrl: '/auth/register'
+                  },
+                  payload: {
+                    email: data.email,
+                    password: data.password,
+                    userName: data.userName
+                  }
+                },
+                {
+                  onSuccess(data) {
+                    console.log(data)
+                  }
+                }
+              )
+            }
+
             reset()
+            clearErrors()
           })}
         >
           <Stack>
