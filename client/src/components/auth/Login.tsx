@@ -33,12 +33,13 @@ export default function Authentication() {
       terms: false
     }
   })
+  console.log({ formState })
 
   return (
     <div className='w-screen h-screen flex items-center justify-center'>
       <Paper radius='md' className='w-96' p='xl' withBorder>
         <Text size='lg' fw={500}>
-          Welcome to Mantine, {type} with
+          Welcome to Mantine, {type === 'register' ? 'Register' : 'Login'} with
         </Text>
 
         <Group grow mb='md' mt='md'>
@@ -54,32 +55,29 @@ export default function Authentication() {
 
         <form
           onSubmit={handleSubmit(data => {
-            if (formState.isDirty) {
-              if (formState.dirtyFields.hasOwnProperty('name')) {
-                console.log('Register:', data)
-              } else {
-                console.log('Login:', data)
+            console.log(`${type === 'register' ? 'Register' : 'Login'}:`, data)
 
-                mutateAsync(
-                  {
-                    method: 'post',
-                    url: {
-                      baseUrl: '/auth/login'
-                    },
-                    payload: {
-                      userNameOrEmail: 'senytera@gmail.com',
-                      password: '123123'
-                    }
+            if (type === 'login') {
+              mutateAsync(
+                {
+                  method: 'post',
+                  url: {
+                    baseUrl: '/auth/login'
                   },
-                  {
-                    onSuccess(data) {
-                      dispatch(authActions.loginSuccess(data))
-                    }
+                  payload: {
+                    userNameOrEmail: data.email,
+                    password: data.password
                   }
-                )
-              }
-              reset()
+                },
+                {
+                  onSuccess(data) {
+                    dispatch(authActions.loginSuccess(data))
+                  }
+                }
+              )
             }
+
+            reset()
           })}
         >
           <Stack>
@@ -87,13 +85,14 @@ export default function Authentication() {
               <Controller
                 name='userName'
                 control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
+                rules={{ required: 'User name is required' }}
+                render={({ field, fieldState }) => (
                   <TextInput
                     label='Name'
                     placeholder='Your name'
                     value={field.value}
                     onChange={field.onChange}
+                    error={fieldState.error && fieldState.error.message}
                     radius='md'
                   />
                 )}
@@ -103,13 +102,20 @@ export default function Authentication() {
             <Controller
               name='email'
               control={control}
+              rules={{
+                required: 'Email is required',
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: 'Invalid email address'
+                }
+              }}
               render={({ field, fieldState }) => (
                 <TextInput
                   label='Email'
                   placeholder='hello@mantine.dev'
                   value={field.value}
                   onChange={field.onChange}
-                  error={fieldState.error && 'Invalid email'}
+                  error={fieldState.error && fieldState.error.message}
                   radius='md'
                 />
               )}
@@ -118,16 +124,20 @@ export default function Authentication() {
             <Controller
               name='password'
               control={control}
+              rules={{
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password should be at least 6 characters long'
+                }
+              }}
               render={({ field, fieldState }) => (
                 <PasswordInput
                   label='Password'
                   placeholder='Your password'
                   value={field.value}
                   onChange={field.onChange}
-                  error={
-                    fieldState.error &&
-                    'Password should include at least 6 characters'
-                  }
+                  error={fieldState.error && fieldState.error.message}
                   radius='md'
                 />
               )}
@@ -137,11 +147,15 @@ export default function Authentication() {
               <Controller
                 name='terms'
                 control={control}
-                render={({ field }) => (
+                rules={{
+                  required: 'You must accept the terms and conditions'
+                }}
+                render={({ field, fieldState }) => (
                   <Checkbox
                     label='I accept terms and conditions'
                     checked={field.value}
                     onChange={field.onChange}
+                    error={fieldState.error && fieldState.error.message}
                   />
                 )}
               />

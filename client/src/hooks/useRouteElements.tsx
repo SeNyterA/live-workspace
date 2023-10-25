@@ -12,8 +12,8 @@ import { useAppQuery } from '../services/apis/useAppQuery'
 import { lsActions } from '../utils/auth'
 
 export const paths = {
-  login: '/login',
-  register: '/register',
+  login: 'auth/login',
+  register: 'auth/register',
 
   board: 'board/:boardId',
   channel: 'channel/:channelId',
@@ -42,6 +42,8 @@ function PrivateRoute() {
     }
   })
 
+  console.log({ workspaceData })
+
   useEffect(() => {
     if (user)
       dispatch(
@@ -50,7 +52,7 @@ function PrivateRoute() {
           user: user
         })
       )
-  }, [user])
+  }, [user, dispatch])
 
   return isAuthenticated ? (
     <SocketProvider>

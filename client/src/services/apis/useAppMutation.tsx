@@ -18,6 +18,21 @@ type ApiMutationType = {
       token: string
     }
   }
+  register: {
+    url: {
+      baseUrl: '/auth/register'
+    }
+    method: 'post'
+    payload: {
+      email: string
+      userName: string
+      password: string
+    }
+    response: {
+      user: TUser
+      token: string
+    }
+  }
 }
 
 export const useAppMutation = <T extends keyof ApiMutationType>(_key: T) => {
