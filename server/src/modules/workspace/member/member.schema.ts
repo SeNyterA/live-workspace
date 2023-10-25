@@ -1,4 +1,4 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Prop, Schema } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
 
 export enum EMemberRole {
@@ -8,6 +8,7 @@ export enum EMemberRole {
 }
 
 export enum EMemberType {
+  Workspace = 'Workspace',
   Team = 'Team',
   Channel = 'Channel',
   Board = 'Board',
@@ -49,5 +50,3 @@ export class Member {
   @Prop({ default: true })
   isAvailable: boolean
 }
-
-export const MemberSchema = SchemaFactory.createForClass(Member)

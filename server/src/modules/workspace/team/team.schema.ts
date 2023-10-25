@@ -1,7 +1,5 @@
-import { Schema, SchemaFactory } from '@nestjs/mongoose'
-import { WorkspaceSchema } from '../workspace.schema'
+import { Schema } from '@nestjs/mongoose'
+import { Workspace } from '../workspace.schema'
 
 @Schema()
-export class Team extends WorkspaceSchema {}
-
-export const TeamSchema = SchemaFactory.createForClass(Team)
+export class Team extends Workspace {}

@@ -31,5 +31,3 @@ export class User {
   @Prop({ default: true })
   isAvailable: boolean
 }
-
-export const UserSchema = SchemaFactory.createForClass(User)
