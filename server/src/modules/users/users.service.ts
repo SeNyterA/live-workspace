@@ -9,17 +9,15 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
   async _findByUserNameOrEmail(userNameOrEmail: string): Promise<User> {
-    const user = (
-      await this.userModel.findOne({
-        $or: [{ userName: userNameOrEmail }, { email: userNameOrEmail }]
-      })
-    ).toJSON()
+    const user = await this.userModel.findOne({
+      $or: [{ userName: userNameOrEmail }, { email: userNameOrEmail }]
+    })
 
     if (!user) {
       throw new NotFoundException('User not found')
     }
 
-    return user
+    return user.toJSON()
   }
 
   async _findById(id: string): Promise<TUser> {

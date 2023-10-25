@@ -1,11 +1,10 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
-import { getUserId } from 'src/libs/getUserId'
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { HttpUser } from 'src/decorators/users.decorator'
 import { TCreateUser } from 'src/modules/users/user.dto'
+import { TJwtUser } from '../adapters/redis-io.adapter'
 import { TLoginPayload } from './auth.dto'
 import { AuthGuard, Public } from './auth.guard'
 import { AuthService } from './auth.service'
-import { TJwtUser } from '../adapters/redis-io.adapter'
-import { HttpUser } from 'src/decorators/users.decorator'
 
 @Controller('auth')
 export class AuthController {

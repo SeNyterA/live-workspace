@@ -12,8 +12,17 @@ module.exports = {
 
   rules: {
     'react-refresh/only-export-components': [
+      'off',
+      {
+        allowConstantExport: true,
+      }
+    ],
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': [
       'warn',
-      { allowConstantExport: true }
+      {
+        argsIgnorePattern: '^_',
+      },
     ],
     'prettier/prettier': [
       'warn',
