@@ -8,7 +8,8 @@ import {
   Post
 } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
+
+import { TJwtUser } from '../workspace.gateway'
 import { TCreateTeamPayload, TUpdateTeamPayload } from './team.dto'
 import { TeamService } from './team.service'
 

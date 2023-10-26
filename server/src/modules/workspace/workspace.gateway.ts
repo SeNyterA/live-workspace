@@ -1,20 +1,53 @@
+import { JwtService } from '@nestjs/jwt'
 import {
   MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway
 } from '@nestjs/websockets'
 import { Socket } from 'socket.io'
-import { TJwtUser } from '../adapters/redis-io.adapter'
 import { WsClient, WsUser } from './../../decorators/users.decorator'
 import { WorkspaceService } from './workspace.service'
+
+export type TJwtUser = {
+  email: string
+  userName: string
+  sub: string
+  iat: number
+  exp: number
+}
+export interface CustomSocket extends Socket {
+  user: TJwtUser
+}
 
 @WebSocketGateway({
   cors: {
     origin: '*'
   }
 })
-export class WorkspaceGateway {
-  constructor(private readonly workspaceService: WorkspaceService) {}
+export class WorkspaceGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
+  constructor(
+    private readonly workspaceService: WorkspaceService,
+    private readonly jwtService: JwtService
+  ) {}
+
+  async handleConnection(client: CustomSocket, ...args: any[]) {
+    try {
+      const user = await this.jwtService.verifyAsync(
+        client.handshake.auth.token
+      )
+      client.user = user
+      console.log({ user })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  handleDisconnect(client: CustomSocket) {
+    console.log(client.user)
+  }
 
   @SubscribeMessage('joinTeam')
   async handleJoinTeam(
@@ -124,5 +157,10 @@ export class WorkspaceGateway {
   @SubscribeMessage('joins')
   async joins(@WsUser() user: TJwtUser, @WsClient() client: Socket) {
     this.workspaceService.subscribeAllRooms(user.sub, client)
+  }
+
+  @SubscribeMessage('disconnect')
+  async disconnect(@WsUser() user: TJwtUser, @WsClient() client: Socket) {
+    console.log('disconnect:', 11111)
   }
 }

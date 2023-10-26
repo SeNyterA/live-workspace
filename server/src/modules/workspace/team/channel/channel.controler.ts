@@ -8,7 +8,7 @@ import {
   Post
 } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
+
 import { EMessageFor } from '../../message/message.schema'
 import { MessageService } from '../../message/message.service'
 import {
@@ -17,6 +17,7 @@ import {
   UpdateChannelDto
 } from './channel.dto'
 import { ChannelService } from './channel.service'
+import { TJwtUser } from '../../workspace.gateway'
 
 @Controller('workspace')
 export class ChannelController {
