@@ -38,8 +38,7 @@ export class WorkspaceService {
     @Inject(forwardRef(() => GroupService))
     private readonly groupService: GroupService,
 
-    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
-    // @InjectModel(Member.name) private readonly memberModel: Model<Member>
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>
   ) {
     this.redisClient = new Redis()
     this.subRedis = this.redisClient.duplicate()

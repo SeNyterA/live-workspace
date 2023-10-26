@@ -1,5 +1,5 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common'
-import { CustomSocket } from 'src/modules/adapters/redis-io.adapter'
+import { CustomSocket } from 'src/modules/workspace/workspace.gateway'
 
 export const WsUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {

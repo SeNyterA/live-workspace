@@ -8,10 +8,10 @@ import {
   Post
 } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
 import { EMessageFor } from '../message/message.schema'
 import { MessageService } from '../message/message.service'
 import { CreateWorkspaceDto, UpdateWorkspaceDto } from '../workspace.dto'
+import { TJwtUser } from '../workspace.gateway'
 import { GroupService } from './group.service'
 
 @Controller('workspace/groups')
