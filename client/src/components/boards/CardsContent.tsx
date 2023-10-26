@@ -4,7 +4,7 @@ import kanbanData from './data.test'
 
 export default function CardsContent() {
   return (
-    <div className='flex-1 relative'>
+    <div className='relative flex-1'>
       <ScrollArea className='absolute inset-0' scrollbarSize={8}>
         <DragDropContext onDragEnd={e => console.log(e)}>
           <Droppable
@@ -26,7 +26,7 @@ export default function CardsContent() {
                   >
                     {provided => (
                       <div
-                        className='mx-2 rounded w-64'
+                        className='mx-2 w-64 rounded'
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                       >
@@ -40,7 +40,7 @@ export default function CardsContent() {
                           {column.cards.map(card => (
                             <div
                               key={card.id}
-                              className='mt-2 w-full p-2 bg-gray-50'
+                              className='mt-2 w-full bg-gray-50 p-2'
                             >
                               <p>{card.title}</p>
                               <p className='text-xs'>{card.description}</p>

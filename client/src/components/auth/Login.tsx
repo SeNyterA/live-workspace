@@ -38,7 +38,7 @@ export default function Authentication() {
   console.log({ formState })
 
   return (
-    <div className='w-screen h-screen flex items-center justify-center'>
+    <div className='flex h-screen w-screen items-center justify-center'>
       <Paper radius='md' className='w-96' p='xl' withBorder>
         <Text size='lg' fw={500}>
           Welcome to Mantine, {type === 'register' ? 'Register' : 'Login'} with

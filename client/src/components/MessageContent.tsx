@@ -1,8 +1,8 @@
 import { Avatar, Divider, Drawer, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
-import Editor from './new-message/NewMessage'
 import MemberContent from './layouts/MemberContent'
+import Editor from './new-message/NewMessage'
 
 export default function MessageContent() {
   const [messes, setMesses] = useState<{ content: string; isOwner: boolean }[]>(
@@ -26,10 +26,10 @@ export default function MessageContent() {
 
   return (
     <>
-      <div className='flex-1 flex flex-col'>
+      <div className='flex flex-1 flex-col'>
         <div className='h-12 bg-slate-500'></div>
 
-        <div className='flex-1 relative'>
+        <div className='relative flex-1'>
           <ScrollArea
             className='absolute inset-0 overflow-auto'
             viewportRef={scrollableRef}
@@ -49,7 +49,7 @@ export default function MessageContent() {
                 <div className=''>
                   <p className='text-base font-medium'>Senytera</p>
                   <p className='text-xs leading-3 text-gray-500'>1 mins ago</p>
-                  <div className='p-1 rounded bg-gray-50 mt-2'>
+                  <div className='mt-2 rounded bg-gray-50 p-1'>
                     {value.content}
                   </div>
                 </div>
@@ -87,7 +87,7 @@ export default function MessageContent() {
         position='right'
       >
         <Drawer.Overlay color='#000' backgroundOpacity={0.35} blur={15} />
-        <Drawer.Content className='p-8 rounded-lg'>
+        <Drawer.Content className='rounded-lg p-8'>
           <MemberContent />
         </Drawer.Content>
       </Drawer.Root>
