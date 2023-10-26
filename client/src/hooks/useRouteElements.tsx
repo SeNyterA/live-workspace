@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
-import Layout from '../Layout'
-import SocketProvider from '../SocketProvider'
-import MessageContent from '../components/MessageContent'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
+import MessageContent from '../components/MessageContent'
+import Layout from '../Layout'
 import { authActions } from '../redux/slices/auth.slice'
 import { useAppSelector } from '../redux/store'
 import { useAppQuery } from '../services/apis/useAppQuery'
+import SocketProvider from '../SocketProvider'
 import { lsActions } from '../utils/auth'
 
 export const paths = {
@@ -77,7 +77,7 @@ export default function useRouteElements() {
         {
           path: '/',
           element: (
-            <div className='h-screen w-screen flex items-center justify-center'>
+            <div className='flex h-screen w-screen items-center justify-center'>
               Lading page
             </div>
           )
@@ -89,7 +89,7 @@ export default function useRouteElements() {
         {
           path: paths.register,
           element: (
-            <div className='h-screen w-screen flex items-center justify-center'>
+            <div className='flex h-screen w-screen items-center justify-center'>
               Register
             </div>
           )
@@ -137,7 +137,7 @@ export default function useRouteElements() {
     {
       path: '*',
       element: (
-        <div className='h-screen w-screen flex items-center justify-center'>
+        <div className='flex h-screen w-screen items-center justify-center'>
           Not found
         </div>
       )

@@ -14,11 +14,11 @@ const YourComponent = () => {
   }, [socket])
 
   return (
-    <div className='w-full h-full items-center justify-center flex gap-3 flex-wrap'>
+    <div className='flex h-full w-full flex-wrap items-center justify-center gap-3'>
       <div className='flex flex-col gap-2'>
         <div className='flex gap-3'>
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('joinTeam', '10')
               console.log('joinTeam', '10')
@@ -28,7 +28,7 @@ const YourComponent = () => {
           </button>
 
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('joinTeam', '11')
               console.log('joinTeam', '11')
@@ -37,7 +37,7 @@ const YourComponent = () => {
             join team 11
           </button>
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('joinTeam', '12')
               console.log('joinTeam', '12')
@@ -49,7 +49,7 @@ const YourComponent = () => {
 
         <div className='flex gap-2'>
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('leaveTeam', '10')
               console.log('leaveTeam', '10')
@@ -59,7 +59,7 @@ const YourComponent = () => {
           </button>
 
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('leaveTeam', '11')
               console.log('leaveTeam', '11')
@@ -69,7 +69,7 @@ const YourComponent = () => {
           </button>
 
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('leaveTeam', '12')
               console.log('leaveTeam', '12')
@@ -81,7 +81,7 @@ const YourComponent = () => {
 
         <div className='flex gap-2'>
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('startTyping', 'target_10')
               console.log('startTyping', 'target_10')
@@ -91,7 +91,7 @@ const YourComponent = () => {
           </button>
 
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('startTyping', 'target_11')
               console.log('startTyping', 'target_11')
@@ -101,7 +101,7 @@ const YourComponent = () => {
           </button>
 
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('startTyping', 'target_12')
               console.log('startTyping', 'target_12')
@@ -113,7 +113,7 @@ const YourComponent = () => {
 
         <div className='flex gap-2'>
           <button
-            className='bg-gray-100 px-3 py-1.5 rounded'
+            className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('joins')
               console.log('joins')

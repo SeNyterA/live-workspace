@@ -5,5 +5,9 @@
   "endOfLine": "lf",
   "jsxSingleQuote": true,
   "useTabs": false,
-  "singleQuote": true
+  "singleQuote": true,
+  "plugins": [
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ]
 }
