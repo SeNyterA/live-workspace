@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module'
 import { AWSModule } from './modules/aws/aws.module'
 import { UsersModule } from './modules/users/users.module'
 import { WorkspaceModule } from './modules/workspace/workspace.module'
+import { RedisService } from './redis.service'
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { WorkspaceModule } from './modules/workspace/workspace.module'
     {
       provide: APP_GUARD,
       useClass: AuthGuard
-    }
+    },
+    RedisService
   ]
 })
 export class AppModule {}
