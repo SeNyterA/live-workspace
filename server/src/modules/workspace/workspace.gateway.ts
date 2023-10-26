@@ -7,6 +7,7 @@ import {
   WebSocketGateway
 } from '@nestjs/websockets'
 import { Socket } from 'socket.io'
+import { RedisService } from 'src/redis.service'
 import { WsClient, WsUser } from './../../decorators/users.decorator'
 import { WorkspaceService } from './workspace.service'
 
@@ -29,24 +30,53 @@ export interface CustomSocket extends Socket {
 export class WorkspaceGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
+  private connectedUsers: Set<TJwtUser> = new Set()
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private readonly redisService: RedisService
   ) {}
 
   async handleConnection(client: CustomSocket, ...args: any[]) {
     try {
-      const user = await this.jwtService.verifyAsync(
+      const user = (await this.jwtService.verifyAsync(
         client.handshake.auth.token
-      )
+      )) as TJwtUser
       client.user = user
-      console.log({ user })
+
+      const _log = await this.redisService.redisClient.get(
+        `presence:${user.sub}`
+      )
+
+      const _status = parseInt(_log) || 0
+
+      if (_status > 0) {
+        this.redisService.redisClient.set(`presence:${user.sub}`, _status + 1)
+      } else {
+        this.redisService.redisClient.set(`presence:${user.sub}`, 1)
+      }
     } catch (error) {
       console.log(error)
     }
   }
-  handleDisconnect(client: CustomSocket) {
-    console.log(client.user)
+
+  async handleDisconnect(client: CustomSocket) {
+    const time = Date.now().toString()
+
+    const _log = await this.redisService.redisClient.get(
+      `presence:${client.user.sub}`
+    )
+
+    const _status = parseInt(_log) || 0
+
+    if (_status > 0) {
+      this.redisService.redisClient.set(
+        `presence:${client.user.sub}`,
+        _status - 1
+      )
+    } else {
+      this.redisService.redisClient.set(`presence:${client.user.sub}`, -time)
+    }
   }
 
   @SubscribeMessage('joinTeam')

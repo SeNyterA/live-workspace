@@ -22,6 +22,7 @@ import { TeamService } from './team/team.service'
 import { WorkspaceGateway } from './workspace.gateway'
 import { Workspace } from './workspace.schema'
 import { WorkspaceService } from './workspace.service'
+import { RedisService } from 'src/redis.service'
 
 @Module({
   imports: [
@@ -55,7 +56,8 @@ import { WorkspaceService } from './workspace.service'
     MessageService,
     WorkspaceGateway,
     WorkspaceService,
-    MemberService
+    MemberService,
+    RedisService
   ]
 })
 export class WorkspaceModule {}

@@ -1,9 +1,9 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import { Redis } from 'ioredis'
 import { Model } from 'mongoose'
 import { Server, Socket } from 'socket.io'
+import { RedisService } from 'src/redis.service'
 import { Group } from './group/group.schema'
 import { GroupService } from './group/group.service'
 import { EMemberType, Member } from './member/member.schema'
@@ -25,10 +25,6 @@ export class WorkspaceService {
   @WebSocketServer()
   server: Server
 
-  private readonly redisClient: Redis
-  private readonly subRedis: Redis
-  private readonly pubRedis: Redis
-
   constructor(
     private readonly memberService: MemberService,
     @Inject(forwardRef(() => TeamService))
@@ -38,25 +34,14 @@ export class WorkspaceService {
     @Inject(forwardRef(() => GroupService))
     private readonly groupService: GroupService,
 
-    @InjectModel(Member.name) private readonly memberModel: Model<Member>
-  ) {
-    this.redisClient = new Redis()
-    this.subRedis = this.redisClient.duplicate()
-    this.pubRedis = this.redisClient.duplicate()
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
 
-    this.listenToExpiredKeys()
-  }
-
-  async listenToExpiredKeys() {
-    await this.subRedis.psubscribe(`*:expired`)
-    await this.subRedis.on('pmessage', async (pattern, channel, key) => {
-      console.log({ pattern, channel, key })
-    })
-  }
+    private readonly redisService: RedisService
+  ) {}
 
   private async getKeysByPattern(pattern: string): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
-      this.redisClient.keys(pattern, (err, keys) => {
+      this.redisService.redisClient.keys(pattern, (err, keys) => {
         if (err) {
           reject(err)
         } else {
@@ -98,7 +83,7 @@ export class WorkspaceService {
   //#region Typing
   async startTyping(userId: string, targetId: string) {
     console.log(`typing:${targetId}:${userId}`)
-    await this.redisClient.set(
+    await this.redisService.redisClient.set(
       `typing:${targetId}:${userId}`,
       'typing',
       'EX',
@@ -107,23 +92,23 @@ export class WorkspaceService {
   }
 
   async stopTyping(userId: string, targetId: string) {
-    await this.redisClient.del(`typing:${targetId}:${userId}`)
+    await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
   }
   //#endregion
 
   //#region Unread
   async incrementUnread(userId: string, targetId: string) {
-    const unreadCount = await this.redisClient.get(
+    const unreadCount = await this.redisService.redisClient.get(
       `unread:${userId}:${targetId}`
     )
-    return this.redisClient.set(
+    return this.redisService.redisClient.set(
       `unread:${userId}:${targetId}`,
       Number(unreadCount) + 1
     )
   }
 
   async markAsRead(userId: string, targetId: string) {
-    return this.redisClient.del(`unread:${userId}:${targetId}`)
+    return this.redisService.redisClient.del(`unread:${userId}:${targetId}`)
   }
 
   async getAllUnreadData(
@@ -137,7 +122,9 @@ export class WorkspaceService {
     }
 
     const unreadData: { [key: string]: string | null } = {}
-    const values = await Promise.all(keys.map(key => this.redisClient.get(key)))
+    const values = await Promise.all(
+      keys.map(key => this.redisService.redisClient.get(key))
+    )
 
     keys.forEach((key, index) => {
       const [, targetId] = key.split(':')
@@ -151,7 +138,7 @@ export class WorkspaceService {
   //#region Read
   async markMessageAsRead(userId: string, targetId: string, messageId: string) {
     const key = `read:${targetId}:${userId}`
-    return this.redisClient.set(key, messageId)
+    return this.redisService.redisClient.set(key, messageId)
   }
 
   async getReadMessagesForTarget(
@@ -163,7 +150,7 @@ export class WorkspaceService {
     const readMessages: { [userId: string]: string } = {}
     for (const k of keys) {
       const [, , readUserId] = k.split(':')
-      const messageId = await this.redisClient.get(k)
+      const messageId = await this.redisService.redisClient.get(k)
       readMessages[readUserId] = messageId
     }
 
@@ -177,7 +164,9 @@ export class WorkspaceService {
   ): Promise<{ [userId: string]: string }> {
     const usersPresence: { [userId: string]: string } = {}
     for (const userId of usersId) {
-      const status = await this.redisClient.get(`presence:${userId}`)
+      const status = await this.redisService.redisClient.get(
+        `presence:${userId}`
+      )
       usersPresence[userId] = status
     }
 

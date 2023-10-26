@@ -70,7 +70,7 @@ export default function Sidebar() {
               ))}
 
               <NavLink
-                className='p-1 pl-3 opacity-70'
+                className='p-1 pl-3 opacity-70 mb-2'
                 label={`Create ${group.type}`}
                 rightSection={<IconPlus size={14} />}
               />

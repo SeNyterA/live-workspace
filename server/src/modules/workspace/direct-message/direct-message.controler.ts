@@ -16,7 +16,6 @@ import { DirectMessageService } from './direct-message.service'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from '../workspace.gateway'
 
-
 @Controller('/workspace/direct-messages')
 export class DirectMessageController {
   constructor(
