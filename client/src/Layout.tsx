@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Avatar,
   Button,
   Checkbox,
@@ -21,25 +22,41 @@ export default function Layout({ children }: { children: ReactNode }) {
         <AppHeader />
         <Divider variant='dashed' />
         <div className='flex flex-1'>
-          <div className='flex h-full w-[54px] flex-col justify-center gap-2 py-2'>
-            <Avatar className='mx-2' />
+          <div className='flex h-full w-[56px] flex-col justify-center gap-2 py-2'>
+            <ActionIcon
+              className='mx-2 flex h-fit w-fit items-center justify-center rounded-full p-0'
+              variant='subtle'
+            >
+              <Avatar />
+            </ActionIcon>
+
             <Divider variant='dashed' className='mx-4' />
             <div className='relative flex-1'>
               <ScrollArea className='absolute inset-0 px-2' scrollbarSize={6}>
                 {Array(10)
                   .fill(1)
                   .map((_, index) => (
-                    <Avatar className='mt-1 first:mt-0' key={index} />
+                    <ActionIcon
+                      key={index}
+                      className='mt-1 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0'
+                      variant='subtle'
+                    >
+                      <Avatar key={index} />
+                    </ActionIcon>
                   ))}
               </ScrollArea>
             </div>
             <Divider variant='dashed' className='mx-4' />
-            <Avatar
-              className='mx-2'
+
+            <ActionIcon
+              className='mx-2 flex h-fit w-fit items-center justify-center rounded-full p-0'
+              variant='subtle'
               onClick={() => {
                 toggleDrawer(true)
               }}
-            />
+            >
+              <Avatar />
+            </ActionIcon>
           </div>
 
           <Divider variant='dashed' orientation='vertical' />
