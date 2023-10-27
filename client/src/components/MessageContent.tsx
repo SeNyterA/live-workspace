@@ -82,7 +82,7 @@ export default function MessageContent() {
         />
       </div>
       <Drawer.Root
-        opened={openDrawer}
+        opened={false}
         onClose={() => toggleDrawer(false)}
         position='right'
       >
