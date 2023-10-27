@@ -1,24 +1,25 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
+import Layout from '../Layout'
+import SocketProvider from '../SocketProvider'
+import MessageContent from '../components/MessageContent'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
-import MessageContent from '../components/MessageContent'
-import Layout from '../Layout'
 import { authActions } from '../redux/slices/auth.slice'
 import { useAppSelector } from '../redux/store'
 import { useAppQuery } from '../services/apis/useAppQuery'
-import SocketProvider from '../SocketProvider'
 import { lsActions } from '../utils/auth'
 
 export const paths = {
   login: 'auth/login',
   register: 'auth/register',
 
-  board: 'board/:boardId',
-  channel: 'channel/:channelId',
-  group: 'group/:groupId',
-  message: 'direct-message/:messageId'
+  team: 'team/:teamId',
+  board: 'team/:teamId/board/:boardId',
+  channel: 'team/:teamId/channel/:channelId',
+  group: 'team/:teamId/group/:groupId',
+  message: 'team/:teamId/direct-message/:messageId'
 }
 
 function PrivateRoute() {
@@ -31,18 +32,6 @@ function PrivateRoute() {
       baseUrl: '/auth/profile'
     }
   })
-
-  const { data: workspaceData } = useAppQuery({
-    key: 'workspace',
-    url: {
-      baseUrl: '/workspace'
-    },
-    options: {
-      queryKey: ['/workspace']
-    }
-  })
-
-  console.log({ workspaceData })
 
   useEffect(() => {
     if (user)
@@ -100,6 +89,14 @@ export default function useRouteElements() {
       path: '/',
       element: <PrivateRoute />,
       children: [
+        {
+          path: paths.team,
+          element: (
+            <Layout>
+              <></>
+            </Layout>
+          )
+        },
         {
           path: paths.board,
           element: (

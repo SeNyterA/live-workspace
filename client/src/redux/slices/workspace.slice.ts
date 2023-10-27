@@ -1,52 +1,37 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TUser } from '../../types/user.type'
-import { lsActions } from '../../utils/auth'
+import { assign } from 'lodash'
+import { TChannel, TGroup, TMember, TTeam } from '../../types/workspace.type'
 
-interface UserState {
-  userInfo: TUser | null
-  isAuthenticated: boolean | null
-  token: string | null
+type TWorkpsaceStore = {
+  teams: { [teamId: string]: TTeam }
+  channels: { [channelId: string]: TChannel }
+  groups: { [groupId: string]: TGroup }
+  members: { [membersId: string]: TMember }
 }
 
-const initialState: UserState = {
-  userInfo: lsActions.getUser(),
-  isAuthenticated: !!lsActions.getToken(),
-  token: lsActions.getToken()
+const initialState: TWorkpsaceStore = {
+  channels: {},
+  groups: {},
+  teams: {},
+  members: {}
 }
 
-const authSlice = createSlice({
-  name: 'auth',
+const workspaceSlice = createSlice({
+  name: 'workspace',
   initialState,
   reducers: {
-    loginSuccess: (
+    init: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
+      assign(state, action.payload)
+    },
+    addMembers: (
       state,
-      action: PayloadAction<{ user: TUser; token: string }>
+      action: PayloadAction<{ [membersId: string]: TMember }>
     ) => {
-      state.isAuthenticated = true
-      state.userInfo = action.payload.user
-      state.token = action.payload.token
-
-      lsActions.setToken(action.payload.token)
-      lsActions.setUser(action.payload.user)
-    },
-    loginFailure: state => {
-      state.isAuthenticated = false
-      lsActions.clearLS()
-    },
-    loadSuccess: (state, action: PayloadAction<{ user: TUser }>) => {
-      state.isAuthenticated = true
-      state.userInfo = action.payload.user
-      state.token = lsActions.getToken()
-    },
-    logout: state => {
-      state.isAuthenticated = false
-      state.userInfo = null
-      state.token = null
-      lsActions.clearLS()
+      assign(state.members, action.payload)
     }
   }
 })
 
-export const authActions = authSlice.actions
+export const workspaceActions = workspaceSlice.actions
 
-export default authSlice.reducer
+export default workspaceSlice.reducer

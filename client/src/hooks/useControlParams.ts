@@ -1,7 +1,10 @@
 import { useNavigate } from 'react-router-dom'
+import useAppParams from './useAppParams'
 
 export default function useControlParams() {
   const navigate = useNavigate()
+
+  const { teamId } = useAppParams()
 
   return {
     switchTo: ({
@@ -10,6 +13,9 @@ export default function useControlParams() {
     }: {
       targetId: string
       target: 'board' | 'channel' | 'group' | 'direct-message'
-    }) => navigate(`/${target}/${targetId}`)
+    }) => navigate(`/team/${teamId || 'personal'}/${target}/${targetId}`),
+    switchTeam: ({ teamId }: { teamId: string }) => {
+      navigate(`/team/${teamId || 'personal'}`)
+    }
   }
 }

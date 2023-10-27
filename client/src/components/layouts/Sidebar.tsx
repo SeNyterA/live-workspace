@@ -8,12 +8,27 @@ import {
 import { useLocation } from 'react-router-dom'
 import useAppParams from '../../hooks/useAppParams'
 import useControlParams from '../../hooks/useControlParams'
+import { useAppSelector } from '../../redux/store'
+import { EMemberRole } from '../../types/workspace.type'
 import { intData } from './data.test'
 
 export default function Sidebar() {
-  const { boardId, channelId, groupId, messageId } = useAppParams()
+  const { boardId, channelId, groupId, messageId, teamId } = useAppParams()
+
   const { switchTo } = useControlParams()
   const path = useLocation()
+
+  const hasPermission = useAppSelector(
+    state =>
+      !!Object.values(state.workspace.members).find(member => {
+        return (
+          member.targetId === teamId &&
+          member.isAvailable &&
+          member.userId === state.auth.userInfo?._id &&
+          [EMemberRole.Admin, EMemberRole.Owner].includes(member.role)
+        )
+      })
+  )
 
   return (
     <div className='flex w-72 flex-col gap-2 py-3'>
@@ -69,11 +84,13 @@ export default function Sidebar() {
                 />
               ))}
 
-              <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
-                label={`Create ${group.type}`}
-                rightSection={<IconPlus size={14} />}
-              />
+              {hasPermission && (
+                <NavLink
+                  className='mb-2 p-1 pl-3 opacity-70'
+                  label={`Create ${group.type}`}
+                  rightSection={<IconPlus size={14} />}
+                />
+              )}
 
               {/* <NavLink className='p-1' label='Nested parent link'>
                 <NavLink className='p-1' label='First child link' />

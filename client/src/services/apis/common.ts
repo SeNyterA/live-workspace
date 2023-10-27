@@ -6,7 +6,8 @@ export const replaceDynamicValues = (
   let replacedUrl = template
 
   dynamicKeys.forEach(key => {
-    const pattern = new RegExp(`\\$\\{${key}\\}`, 'g')
+    // Use a regex pattern that matches colons and the key
+    const pattern = new RegExp(`:${key}`, 'g')
     replacedUrl = replacedUrl.replace(pattern, dynamicValues[key]?.toString())
   })
 

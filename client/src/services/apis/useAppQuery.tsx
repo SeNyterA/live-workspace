@@ -1,5 +1,6 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { TUser } from '../../types/user.type'
+import { TChannel, TGroup, TMember, TTeam } from '../../types/workspace.type'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
@@ -32,10 +33,20 @@ type ApiQueryType = {
       baseUrl: '/workspace'
     }
     response: {
-      teams: any[]
-      channels: any[]
-      groups: any[]
+      teams: TTeam[]
+      channels: TChannel[]
+      groups: TGroup[]
     }
+  }
+
+  targetMembers: {
+    url: {
+      baseUrl: '/workspace/members/:targetId'
+      urlParams: {
+        targetId: string
+      }
+    }
+    response: TMember[]
   }
 }
 

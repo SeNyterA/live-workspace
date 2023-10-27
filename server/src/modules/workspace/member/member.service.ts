@@ -54,4 +54,25 @@ export class MemberService {
 
     return members
   }
+
+  async getMembersByTargetId({
+    userId,
+    targetId
+  }: {
+    userId: string
+    targetId: string
+  }) {
+    await this._checkExisting({
+      targetId,
+      userId
+    })
+
+    const members = await this.memberModel
+      .find({
+        targetId
+      })
+      .lean()
+
+    return members
+  }
 }

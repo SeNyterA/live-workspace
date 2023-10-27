@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { useSelector } from 'react-redux'
 import authReducer from './slices/auth.slice'
+import workspaceReducer from './slices/workspace.slice'
 
 const rootReducer = combineReducers({
-  auth: authReducer
+  auth: authReducer,
+  workspace: workspaceReducer
 })
 
 const store = configureStore({

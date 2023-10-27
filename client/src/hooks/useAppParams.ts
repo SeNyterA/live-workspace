@@ -5,6 +5,7 @@ export type TParams = {
   channelId?: string
   groupId?: string
   messageId?: string
+  teamId?: string
 }
 
 export default function useAppParams() {

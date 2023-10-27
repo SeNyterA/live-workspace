@@ -36,7 +36,7 @@ type ApiMutationType = {
   }
   createTeam: {
     url: {
-      baseUrl: '/workspace/teamsF'
+      baseUrl: '/workspace/teams'
     }
     method: 'post'
     payload: TWorkspacePlayload
