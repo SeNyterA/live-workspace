@@ -11,11 +11,13 @@ import {
   TextInput
 } from '@mantine/core'
 import { ReactNode, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import AppHeader from './components/layouts/AppHeader'
 import Sidebar from './components/layouts/Sidebar'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [openDrawer, toggleDrawer] = useState(false)
+  const { control, handleSubmit } = useForm()
   return (
     <>
       <div className='flex h-screen w-screen flex-col text-sm'>
@@ -75,55 +77,89 @@ export default function Layout({ children }: { children: ReactNode }) {
       >
         <Drawer.Overlay color='#000' backgroundOpacity={0.35} blur={15} />
         <Drawer.Content className='rounded-lg p-8'>
-          <div className='flex h-full w-full flex-col justify-between'>
+          <form
+            onSubmit={handleSubmit(data => console.log(data))}
+            className='flex h-full w-full flex-col justify-between'
+          >
             <div>
               <p className='text-2xl font-semibold'>Create team</p>
 
-              <TextInput
-                label='Name'
-                placeholder='Team name'
-                radius='md'
-                className='mt-3'
-                description='This is anosssssssssssnymous'
-              />
-              <Textarea
-                label='Description'
-                placeholder='description for team ...'
-                radius='md'
-                error={'sssss'}
-                className='mt-3'
-                description='This is anosssssssssssnymous'
-              />
-              <TextInput
-                label='Display url'
-                placeholder='Team name'
-                radius='md'
-                className='mt-3'
-                description='This is anosssssssssssnymous'
+              <Controller
+                name='teamName'
+                control={control}
+                rules={{ required: 'Team name is required' }}
+                render={({ field, fieldState }) => (
+                  <TextInput
+                    label='Name'
+                    placeholder='Team name'
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={fieldState.error && fieldState.error.message}
+                    radius='md'
+                  />
+                )}
               />
 
-              <Checkbox.Group
-                defaultValue={['react']}
-                label='Select default channel'
-                description='This is anosssssssssssnymous'
-                error='sssssssssssssss'
-                className='mt-3'
-              >
-                <Group mt='xs'>
-                  <Checkbox value='react' label='React' />
-                  <Checkbox value='svelte' label='Svelte' />
-                  <Checkbox value='ng' label='Angular' />
-                  <Checkbox value='vue' label='Vue' />
-                </Group>
-              </Checkbox.Group>
+              <Controller
+                name='description'
+                control={control}
+                rules={{ required: 'Description is required' }}
+                render={({ field, fieldState }) => (
+                  <Textarea
+                    label='Description'
+                    placeholder='Description for team ...'
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={fieldState.error && fieldState.error.message}
+                    radius='md'
+                  />
+                )}
+              />
+
+              <Controller
+                name='displayUrl'
+                control={control}
+                // rules={{ required: 'Display URL is required' }}
+                render={({ field, fieldState }) => (
+                  <TextInput
+                    label='Display URL'
+                    placeholder='Display URL'
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={fieldState.error && fieldState.error.message}
+                    radius='md'
+                  />
+                )}
+              />
+
+              <Controller
+                name='defaultChannel'
+                control={control}
+                // rules={{ required: 'Select at least one channel' }}
+                render={({ field, fieldState }) => (
+                  <Checkbox.Group
+                    label='Select default channel'
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={fieldState.error && fieldState.error.message}
+                  >
+                    <Group mt='xs'>
+                      <Checkbox value='react' label='React' />
+                      <Checkbox value='svelte' label='Svelte' />
+                      <Checkbox value='ng' label='Angular' />
+                      <Checkbox value='vue' label='Vue' />
+                    </Group>
+                  </Checkbox.Group>
+                )}
+              />
             </div>
             <div className='flex items-center gap-10'>
               <Button variant='default'>Close</Button>
-              <Button variant='filled' color='dark'>
+              <Button variant='filled' type='submit' color='dark'>
                 Create
               </Button>
             </div>
-          </div>
+          </form>
         </Drawer.Content>
       </Drawer.Root>
     </>
