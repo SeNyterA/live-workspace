@@ -40,7 +40,7 @@ export default function Sidebar() {
         </ActionIcon>
       </div>
 
-      <Divider className='mx-4' />
+      <Divider className='mx-4' variant='dashed' />
 
       <div className='relative flex-1'>
         <ScrollArea scrollbarSize={6} className='absolute inset-0 px-4'>
@@ -70,7 +70,7 @@ export default function Sidebar() {
               ))}
 
               <NavLink
-                className='p-1 pl-3 opacity-70 mb-2'
+                className='mb-2 p-1 pl-3 opacity-70'
                 label={`Create ${group.type}`}
                 rightSection={<IconPlus size={14} />}
               />
