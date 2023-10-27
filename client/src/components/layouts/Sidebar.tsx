@@ -16,9 +16,9 @@ export default function Sidebar() {
   const path = useLocation()
 
   return (
-    <div className='w-72 flex py-3 flex-col gap-2'>
-      <p className='text-xl px-4'>Team name </p>
-      <div className='flex gap-2 items-center justify-center px-4'>
+    <div className='flex w-72 flex-col gap-2 py-3'>
+      <p className='px-4 text-xl'>Team name </p>
+      <div className='flex items-center justify-center gap-2 px-4'>
         <Button
           variant='default'
           size='xs'
@@ -31,7 +31,7 @@ export default function Sidebar() {
         <ActionIcon
           variant='default'
           aria-label='Settings'
-          className='w-[30px] h-[30px]'
+          className='h-[30px] w-[30px]'
         >
           <IconAdjustments
             style={{ width: '70%', height: '70%' }}
@@ -40,14 +40,14 @@ export default function Sidebar() {
         </ActionIcon>
       </div>
 
-      <Divider className='mx-4' />
+      <Divider className='mx-4' variant='dashed' />
 
-      <div className='flex-1 relative'>
-        <ScrollArea scrollbarSize={6} className='inset-0 absolute px-4'>
+      <div className='relative flex-1'>
+        <ScrollArea scrollbarSize={6} className='absolute inset-0 px-4'>
           {intData.map(group => (
             <NavLink
               key={group.id}
-              className='p-1'
+              className='mb-1 p-1'
               label={group.title}
               leftSection={group.icon}
               active={path.pathname.includes(group.type)}
@@ -55,7 +55,7 @@ export default function Sidebar() {
               {group.children.map(item => (
                 <NavLink
                   key={item.id}
-                  className='p-1'
+                  className='p-1 pl-3'
                   label={item.title}
                   active={
                     (groupId || channelId || boardId || messageId) === item.id
@@ -70,7 +70,7 @@ export default function Sidebar() {
               ))}
 
               <NavLink
-                className='p-1 opacity-70'
+                className='mb-2 p-1 pl-3 opacity-70'
                 label={`Create ${group.type}`}
                 rightSection={<IconPlus size={14} />}
               />

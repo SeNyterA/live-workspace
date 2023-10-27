@@ -17,7 +17,7 @@ export const UserInfo = ({ status = 'unknown' }: { status?: TStatus }) => {
   const statusColor = getStatusColor()
 
   return (
-    <div className='flex w-full cursor-pointer items-center gap-1 rounded-md p-1 hover:bg-gray-100 mt-2 first:mt-0'>
+    <div className='mt-2 flex w-full cursor-pointer items-center gap-1 rounded-md p-1 first:mt-0 hover:bg-gray-100'>
       <div className='relative flex h-8 w-8 items-center justify-center overflow-visible rounded-full bg-slate-200'>
         <Avatar />
         <div

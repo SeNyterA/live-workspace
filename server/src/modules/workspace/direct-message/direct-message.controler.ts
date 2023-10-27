@@ -14,7 +14,7 @@ import { MessageService } from '../message/message.service'
 import { DirectMessage } from './direct-message.schema'
 import { DirectMessageService } from './direct-message.service'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
+import { TJwtUser } from '../workspace.gateway'
 
 @Controller('/workspace/direct-messages')
 export class DirectMessageController {

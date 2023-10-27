@@ -5,16 +5,15 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  Request
+  Post
 } from '@nestjs/common'
+import { HttpUser } from 'src/decorators/users.decorator'
+import { TJwtUser } from '../../workspace.gateway'
 import {
   CreateBoardDto,
   CreateBoardMembersDto,
   UpdateBoardDto
 } from './board.dto'
-import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from 'src/modules/adapters/redis-io.adapter'
 
 @Controller('workspace')
 export class BoardController {
