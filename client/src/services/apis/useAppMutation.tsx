@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { TUser } from '../../types/user.type'
+import { TWorkspace, TWorkspacePlayload } from '../../types/workspace.type'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
@@ -32,6 +33,14 @@ type ApiMutationType = {
       user: TUser
       token: string
     }
+  }
+  createTeam: {
+    url: {
+      baseUrl: '/workspace/teamsF'
+    }
+    method: 'post'
+    payload: TWorkspacePlayload
+    response: TWorkspace
   }
 }
 
