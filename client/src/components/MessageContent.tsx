@@ -8,7 +8,7 @@ import { workspaceActions } from '../redux/slices/workspace.slice'
 import { useAppSelector } from '../redux/store'
 import { useAppMutation } from '../services/apis/useAppMutation'
 import { useAppQuery } from '../services/apis/useAppQuery'
-import { useAppSocket } from '../SocketProvider'
+import { useAppSocket } from '../services/socket/useAppSocket'
 import { EMessageType, TMessage } from '../types/workspace.type'
 import Editor from './new-message/NewMessage'
 
@@ -19,13 +19,12 @@ export default function MessageContent() {
   >()
   const dispatch = useDispatch()
 
-  const { socket } = useAppSocket()
-  useEffect(() => {
-    socket?.on('message', (data: any) => console.log({ data }))
-    return () => {
-      socket?.off('message')
+  useAppSocket({
+    key: 'message',
+    resFunc: ({ message }) => {
+      dispatch(workspaceActions.addMessages({ [message._id]: message }))
     }
-  }, [socket])
+  })
 
   const { channelId } = useAppParams()
   const { data: channelMessages } = useAppQuery({
@@ -132,8 +131,10 @@ export default function MessageContent() {
                   }
                 },
                 {
-                  onSuccess(data) {
-                    dispatch(workspaceActions.addMessages({ [data._id]: data }))
+                  onSuccess(message) {
+                    dispatch(
+                      workspaceActions.addMessages({ [message._id]: message })
+                    )
                   }
                 }
               )

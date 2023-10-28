@@ -6,7 +6,7 @@ import {
   useState
 } from 'react'
 import io, { Socket } from 'socket.io-client'
-import { useAppSelector } from './redux/store'
+import { useAppSelector } from '../../redux/store'
 
 interface SocketProviderProps {
   children?: ReactNode
@@ -14,7 +14,7 @@ interface SocketProviderProps {
 
 const socketContext = createContext<{ socket?: Socket<any, any> }>({})
 
-export const useAppSocket = () => useContext(socketContext)
+export const useSocketContext = () => useContext(socketContext)
 
 export default function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket<any, any>>()

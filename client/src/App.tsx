@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import YourComponent from './components/TestSocket'
 import useRouteElements from './hooks/useRouteElements'
 import { authActions } from './redux/slices/auth.slice'
-import SocketProvider from './SocketProvider'
+import SocketProvider from './services/socket/SocketProvider'
 import { LocalStorageEventTarget } from './utils/auth'
 
 function App() {
