@@ -85,9 +85,9 @@ export class WorkspaceService {
     console.log(`typing:${targetId}:${userId}`)
     await this.redisService.redisClient.set(
       `typing:${targetId}:${userId}`,
-      'typing',
+      '',
       'EX',
-      1
+      10
     )
   }
 

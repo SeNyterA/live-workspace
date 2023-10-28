@@ -11,7 +11,7 @@ type ApiSocketType = {
   }
 }
 
-export const useAppSocket = <T extends keyof ApiSocketType>({
+export const useAppOnSocket = <T extends keyof ApiSocketType>({
   key,
   resFunc
 }: Omit<ApiSocketType[T], 'response'> & {

@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common'
+import { Global, Injectable } from '@nestjs/common'
 import { Redis } from 'ioredis'
 
-@Injectable()
+@Global()
 export class RedisService {
   readonly redisClient: Redis
   private readonly subRedis: Redis
@@ -16,6 +16,13 @@ export class RedisService {
     await this.subRedis.psubscribe(`*:expired`)
     await this.subRedis.on('pmessage', async (pattern, channel, key) => {
       console.log({ pattern, channel, key })
+
+      const [type, targetId, userId] = key.split(':')
+      console.log({
+        type,
+        targetId,
+        userId
+      })
     })
   }
 

@@ -178,9 +178,9 @@ export class WorkspaceGateway
   @SubscribeMessage('startTyping')
   async startTyping(
     @WsUser() user: TJwtUser,
-    @WsClient() client: Socket,
-    @MessageBody() targetId: string
+    @MessageBody() { targetId }: { targetId: string }
   ) {
+    console.log(targetId)
     this.workspaceService.startTyping(user.sub, targetId)
   }
 

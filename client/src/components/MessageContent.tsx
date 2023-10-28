@@ -8,7 +8,8 @@ import { workspaceActions } from '../redux/slices/workspace.slice'
 import { useAppSelector } from '../redux/store'
 import { useAppMutation } from '../services/apis/useAppMutation'
 import { useAppQuery } from '../services/apis/useAppQuery'
-import { useAppSocket } from '../services/socket/useAppSocket'
+import { useAppEmitSocket } from '../services/socket/useAppEmitSocket'
+import { useAppOnSocket } from '../services/socket/useAppOnSocket'
 import { EMessageType, TMessage } from '../types/workspace.type'
 import Editor from './new-message/NewMessage'
 
@@ -19,12 +20,14 @@ export default function MessageContent() {
   >()
   const dispatch = useDispatch()
 
-  useAppSocket({
+  useAppOnSocket({
     key: 'message',
     resFunc: ({ message }) => {
       dispatch(workspaceActions.addMessages({ [message._id]: message }))
     }
   })
+
+  const socketEmit = useAppEmitSocket()
 
   const { channelId } = useAppParams()
   const { data: channelMessages } = useAppQuery({
@@ -115,6 +118,13 @@ export default function MessageContent() {
 
         <Divider variant='dashed' />
         <Editor
+          onChange={() => {
+            channelId &&
+              socketEmit({
+                key: 'startTyping',
+                targetId: channelId
+              })
+          }}
           onSubmit={value => {
             if (channelId && value)
               createChannelMessage(
