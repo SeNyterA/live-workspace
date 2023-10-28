@@ -1,6 +1,12 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { TUser } from '../../types/user.type'
-import { TChannel, TGroup, TMember, TTeam } from '../../types/workspace.type'
+import {
+  TChannel,
+  TGroup,
+  TMember,
+  TMessage,
+  TTeam
+} from '../../types/workspace.type'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
@@ -47,6 +53,19 @@ type ApiQueryType = {
       }
     }
     response: TMember[]
+  }
+
+  channelMessages: {
+    url: {
+      baseUrl: '/workspace/channels/:channelId/messages'
+      urlParams: {
+        channelId: string
+      }
+    }
+    response: {
+      messages: TMessage[]
+      total: number
+    }
   }
 }
 

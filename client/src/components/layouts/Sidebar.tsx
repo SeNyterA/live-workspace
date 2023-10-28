@@ -1,22 +1,34 @@
-import { ActionIcon, Button, Divider, NavLink, ScrollArea } from '@mantine/core'
+import {
+  ActionIcon,
+  Button,
+  Divider,
+  Modal,
+  NavLink,
+  ScrollArea
+} from '@mantine/core'
 import {
   IconAdjustments,
   IconArrowRight,
+  IconHash,
   IconPlus,
   IconSearch
 } from '@tabler/icons-react'
+import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import useAppParams from '../../hooks/useAppParams'
 import useControlParams from '../../hooks/useControlParams'
 import { useAppSelector } from '../../redux/store'
 import { EMemberRole } from '../../types/workspace.type'
-import { intData } from './data.test'
+import ChannelForm from './channel.form'
 
 export default function Sidebar() {
   const { boardId, channelId, groupId, messageId, teamId } = useAppParams()
-
   const { switchTo } = useControlParams()
   const path = useLocation()
+
+  const [toggle, setToggle] = useState<
+    'createBoard' | 'createChannel' | 'createGroup'
+  >()
 
   const hasPermission = useAppSelector(
     state =>
@@ -30,55 +42,57 @@ export default function Sidebar() {
       })
   )
 
+  const channels =
+    useAppSelector(state =>
+      Object.values(state.workspace.channels).filter(e => e.teamId === teamId)
+    ) || []
+
   return (
-    <div className='flex w-72 flex-col gap-2 py-3'>
-      <p className='px-4 text-xl'>Team name </p>
-      <div className='flex items-center justify-center gap-2 px-4'>
-        <Button
-          variant='default'
-          size='xs'
-          className='flex-1'
-          leftSection={<IconSearch size={14} />}
-          rightSection={<IconArrowRight size={14} />}
-        >
-          <p>Search on team</p>
-        </Button>
-        <ActionIcon
-          variant='default'
-          aria-label='Settings'
-          className='h-[30px] w-[30px]'
-        >
-          <IconAdjustments
-            style={{ width: '70%', height: '70%' }}
-            stroke={1.5}
-          />
-        </ActionIcon>
-      </div>
+    <>
+      <div className='flex w-72 flex-col gap-2 py-3'>
+        <p className='px-4 text-xl'>Team name </p>
+        <div className='flex items-center justify-center gap-2 px-4'>
+          <Button
+            variant='default'
+            size='xs'
+            className='flex-1'
+            leftSection={<IconSearch size={14} />}
+            rightSection={<IconArrowRight size={14} />}
+          >
+            <p>Search on team</p>
+          </Button>
+          <ActionIcon
+            variant='default'
+            aria-label='Settings'
+            className='h-[30px] w-[30px]'
+          >
+            <IconAdjustments
+              style={{ width: '70%', height: '70%' }}
+              stroke={1.5}
+            />
+          </ActionIcon>
+        </div>
 
-      <Divider className='mx-4' variant='dashed' />
+        <Divider className='mx-4' variant='dashed' />
 
-      <div className='relative flex-1'>
-        <ScrollArea scrollbarSize={6} className='absolute inset-0 px-4'>
-          {intData.map(group => (
+        <div className='relative flex-1'>
+          <ScrollArea scrollbarSize={6} className='absolute inset-0 px-4'>
             <NavLink
-              key={group.id}
               className='mb-1 p-1'
-              label={group.title}
-              leftSection={group.icon}
-              active={path.pathname.includes(group.type)}
+              label='Channels'
+              leftSection={<IconHash size='1rem' stroke={1.5} />}
+              active={path.pathname.includes('channel')}
             >
-              {group.children.map(item => (
+              {channels.map(item => (
                 <NavLink
-                  key={item.id}
+                  key={item._id}
                   className='p-1 pl-3'
                   label={item.title}
-                  active={
-                    (groupId || channelId || boardId || messageId) === item.id
-                  }
+                  active={channelId === item._id}
                   onClick={() => {
                     switchTo({
-                      target: group.type as any,
-                      targetId: item.id
+                      target: 'channel',
+                      targetId: item._id
                     })
                   }}
                 />
@@ -87,20 +101,65 @@ export default function Sidebar() {
               {hasPermission && (
                 <NavLink
                   className='mb-2 p-1 pl-3 opacity-70'
-                  label={`Create ${group.type}`}
+                  label={`Create channel`}
                   rightSection={<IconPlus size={14} />}
+                  onClick={() => {
+                    setToggle('createBoard')
+                  }}
                 />
               )}
-
-              {/* <NavLink className='p-1' label='Nested parent link'>
-                <NavLink className='p-1' label='First child link' />
-                <NavLink className='p-1' label='Second child link' />
-                <NavLink className='p-1' label='Third child link' />
-              </NavLink> */}
             </NavLink>
-          ))}
-        </ScrollArea>
+
+            {/* {intData.map(group => (
+              <NavLink
+                key={group.id}
+                className='mb-1 p-1'
+                label={group.title}
+                leftSection={group.icon}
+                active={path.pathname.includes(group.type)}
+              >
+                {group.children.map(item => (
+                  <NavLink
+                    key={item.id}
+                    className='p-1 pl-3'
+                    label={item.title}
+                    active={
+                      (groupId || channelId || boardId || messageId) === item.id
+                    }
+                    onClick={() => {
+                      switchTo({
+                        target: group.type as any,
+                        targetId: item.id
+                      })
+                    }}
+                  />
+                ))}
+
+                {hasPermission && (
+                  <NavLink
+                    className='mb-2 p-1 pl-3 opacity-70'
+                    label={`Create ${group.type}`}
+                    rightSection={<IconPlus size={14} />}
+                    onClick={() => {
+                      setToggle('createBoard')
+                    }}
+                  />
+                )}
+              </NavLink>
+            ))} */}
+          </ScrollArea>
+        </div>
       </div>
-    </div>
+
+      <Modal.Root opened={!!toggle} onClose={() => setToggle(undefined)}>
+        <Modal.Overlay color='#000' backgroundOpacity={0.35} blur={15} />
+
+        <Modal.Content className='rounded-xl'>
+          <Modal.Body>
+            <ChannelForm></ChannelForm>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal.Root>
+    </>
   )
 }

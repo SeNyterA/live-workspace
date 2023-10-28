@@ -25,6 +25,10 @@ export type TWorkspacePlayload = {
   avatar?: string
 }
 
+export type TChannelPayload = TWorkspacePlayload & {
+  channelType: EStatusType
+}
+
 export type TWorkspace = {
   _id: string
   title: string
@@ -58,4 +62,24 @@ export type TMember = {
   createdAt: Date
   updatedAt: Date
   isAvailable: boolean
+}
+
+export enum EMessageFor {
+  Channel = 'Channel',
+  Group = 'Group',
+  Direct = 'Direct'
+}
+
+export enum EMessageType {
+  Normal = 'Normal',
+  System = 'System'
+}
+
+export type TMessage = TWorkspace & {
+  content: string
+  messageReferenceId: string
+  messageFor: EMessageFor
+  messageType: EMessageType
+  attachments?: string[]
+  replyToMessageId?: string
 }

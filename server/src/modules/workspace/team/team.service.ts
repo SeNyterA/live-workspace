@@ -92,7 +92,7 @@ export class TeamService {
       modifiedById: userId
     })
 
-    this.channelService.create({
+    const channelData = await this.channelService.create({
       channel: {
         channelType: EStatusType.Public,
         title: 'General'
@@ -119,7 +119,8 @@ export class TeamService {
 
     return {
       team: createdTeam,
-      member: owner
+      member: owner,
+      channelData: channelData
     }
   }
 

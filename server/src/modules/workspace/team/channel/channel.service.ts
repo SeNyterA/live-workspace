@@ -9,14 +9,14 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
-import { EMemberRole, Member } from '../../member/member.schema'
+import { EMemberRole, EMemberType, Member } from '../../member/member.schema'
 import { MemberService } from '../../member/member.service'
+import { EMessageFor } from '../../message/message.schema'
 import { MessageService } from '../../message/message.service'
 import { Team } from '../team.schema'
 import { TeamService } from '../team.service'
 import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
 import { Channel } from './channel.schema'
-import { EMessageFor } from '../../message/message.schema'
 
 @Injectable()
 export class ChannelService {
@@ -103,7 +103,17 @@ export class ChannelService {
     createdChannel.path = `${teamId.toString()}/${createdChannel._id.toString()}`
     createdChannel.save()
 
-    await this.messageService._createSystemMessage({
+    const owner = await this.memberModel.create({
+      userId,
+      targetId: createdChannel._id.toString(),
+      path: createdChannel._id.toString(),
+      type: EMemberType.Channel,
+      role: EMemberRole.Owner,
+      createdById: userId,
+      modifiedById: userId
+    })
+
+    const message = await this.messageService._createSystemMessage({
       targetId: createdChannel._id.toString(),
       userId: userId,
       messagePayload: `Channel has been created by \$\{${userId}\}`,
@@ -112,7 +122,8 @@ export class ChannelService {
 
     return {
       channel: createdChannel,
-      members: []
+      members: [owner],
+      messages: [message]
     }
   }
 

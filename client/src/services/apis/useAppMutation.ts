@@ -1,6 +1,11 @@
 import { useMutation } from '@tanstack/react-query'
 import { TUser } from '../../types/user.type'
-import { TWorkspace, TWorkspacePlayload } from '../../types/workspace.type'
+import {
+  TChannelPayload,
+  TMessage,
+  TWorkspace,
+  TWorkspacePlayload
+} from '../../types/workspace.type'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
@@ -41,6 +46,29 @@ type ApiMutationType = {
     method: 'post'
     payload: TWorkspacePlayload
     response: TWorkspace
+  }
+  createChannel: {
+    url: {
+      baseUrl: '/workspace/teams/:teamId/channels'
+      urlParams: {
+        teamId: string
+      }
+    }
+    method: 'post'
+    payload: TChannelPayload
+    response: TWorkspace
+  }
+
+  createChannelMessage: {
+    url: {
+      baseUrl: '/workspace/channels/:channelId/messages'
+      urlParams: {
+        channelId: string
+      }
+    }
+    method: 'post'
+    payload: { content: string }
+    response: TMessage
   }
 }
 

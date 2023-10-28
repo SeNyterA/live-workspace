@@ -1,20 +1,69 @@
-import { Avatar, Divider, Drawer, ScrollArea } from '@mantine/core'
+import { Avatar, Divider, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
-import MemberContent from './layouts/MemberContent'
+import DOMPurify from 'dompurify'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import useAppParams from '../hooks/useAppParams'
+import { workspaceActions } from '../redux/slices/workspace.slice'
+import { useAppSelector } from '../redux/store'
+import { useAppMutation } from '../services/apis/useAppMutation'
+import { useAppQuery } from '../services/apis/useAppQuery'
+import { useAppSocket } from '../SocketProvider'
+import { EMessageType, TMessage } from '../types/workspace.type'
 import Editor from './new-message/NewMessage'
 
 export default function MessageContent() {
-  const [messes, setMesses] = useState<{ content: string; isOwner: boolean }[]>(
-    []
-  )
-  //   const [id, setId] = useState('')
-  const [openDrawer, toggleDrawer] = useState(true)
-
   const { targetRef, scrollableRef, scrollIntoView } = useScrollIntoView<
     HTMLDivElement,
     HTMLDivElement
   >()
+  const dispatch = useDispatch()
+
+  const { socket } = useAppSocket()
+  useEffect(() => {
+    socket?.on('message', (data: any) => console.log({ data }))
+    return () => {
+      socket?.off('message')
+    }
+  }, [socket])
+
+  const { channelId } = useAppParams()
+  const { data: channelMessages } = useAppQuery({
+    key: 'channelMessages',
+    url: {
+      baseUrl: '/workspace/channels/:channelId/messages',
+      urlParams: {
+        channelId: channelId!
+      }
+    },
+    options: {
+      queryKey: [channelId],
+      enabled: !!channelId
+    }
+  })
+
+  const { mutateAsync: createChannelMessage } = useAppMutation(
+    'createChannelMessage'
+  )
+
+  const messages =
+    useAppSelector(state =>
+      Object.values(state.workspace.messages).filter(
+        e => e.messageReferenceId === channelId
+      )
+    ) || []
+
+  useEffect(() => {
+    if (channelMessages)
+      dispatch(
+        workspaceActions.addMessages(
+          channelMessages?.messages.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {} as { [channelId: string]: TMessage }
+          )
+        )
+      )
+  }, [channelMessages])
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -22,7 +71,7 @@ export default function MessageContent() {
     }, 300)
 
     return () => clearTimeout(timeoutId)
-  }, [messes, scrollIntoView])
+  }, [channelMessages, scrollIntoView])
 
   return (
     <>
@@ -38,59 +87,59 @@ export default function MessageContent() {
               console.log({ x, y })
             }}
           >
-            {messes.map((value, index) => (
+            {messages.map((message, index) => (
               <div
                 id={`id_${index}`}
-                className='mt-3 flex gap-2 pl-4'
+                className='my-3 flex gap-2 pl-4'
                 key={index}
                 ref={targetRef}
               >
                 <Avatar />
                 <div className=''>
-                  <p className='text-base font-medium'>Senytera</p>
+                  <p className='text-base font-medium'>
+                    {message.messageType === EMessageType.System
+                      ? message.messageType
+                      : message.createdById}
+                  </p>
                   <p className='text-xs leading-3 text-gray-500'>1 mins ago</p>
-                  <div className='mt-2 rounded bg-gray-50 p-1'>
-                    {value.content}
-                  </div>
+                  <div
+                    className='mt-2 rounded bg-gray-50 p-1'
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(message.content)
+                    }}
+                  />
                 </div>
               </div>
             ))}
           </ScrollArea>
         </div>
 
-        {/* <div className='flex'>
-        <Input value={id} onChange={e => setId(e.target.value)}></Input>
-        <Button
-          variant='default'
-          onClick={() => {
-            const element = document.querySelector(`#id_${id}`)
-            if (element) {
-              ;(targetRef as any).current = element as HTMLDivElement
-              scrollIntoView()
-            }
-          }}
-        ></Button>
-      </div> */}
         <Divider variant='dashed' />
         <Editor
-          onSubmit={value =>
-            setMesses([
-              ...messes,
-              { content: value || '', isOwner: !!(Math.random() > 0.5) }
-            ])
-          }
+          onSubmit={value => {
+            if (channelId && value)
+              createChannelMessage(
+                {
+                  url: {
+                    baseUrl: '/workspace/channels/:channelId/messages',
+                    urlParams: {
+                      channelId: channelId
+                    }
+                  },
+                  method: 'post',
+                  payload: {
+                    content: value
+                  }
+                },
+                {
+                  onSuccess(data) {
+                    dispatch(workspaceActions.addMessages({ [data._id]: data }))
+                  }
+                }
+              )
+          }}
         />
       </div>
-      <Drawer.Root
-        opened={false}
-        onClose={() => toggleDrawer(false)}
-        position='right'
-      >
-        <Drawer.Overlay color='#000' backgroundOpacity={0.35} blur={15} />
-        <Drawer.Content className='rounded-lg p-8'>
-          <MemberContent />
-        </Drawer.Content>
-      </Drawer.Root>
     </>
   )
 }

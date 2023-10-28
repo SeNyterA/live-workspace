@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { useSocket } from '../SocketProvider'
+import { useAppSocket } from '../SocketProvider'
 
 const YourComponent = () => {
-  const { socket } = useSocket()
+  const { socket } = useAppSocket()
 
   useEffect(() => {
     socket?.on('createdTeam', (data: any) => {

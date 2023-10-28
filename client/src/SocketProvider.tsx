@@ -14,7 +14,7 @@ interface SocketProviderProps {
 
 const socketContext = createContext<{ socket?: Socket<any, any> }>({})
 
-export const useSocket = () => useContext(socketContext)
+export const useAppSocket = () => useContext(socketContext)
 
 export default function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket<any, any>>()
