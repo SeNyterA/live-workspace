@@ -1,15 +1,19 @@
 import { Avatar, Divider, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
 import DOMPurify from 'dompurify'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../hooks/useAppParams'
+import useTyping from '../hooks/useTyping'
 import { workspaceActions } from '../redux/slices/workspace.slice'
 import { useAppSelector } from '../redux/store'
 import { useAppMutation } from '../services/apis/useAppMutation'
 import { useAppQuery } from '../services/apis/useAppQuery'
 import { useAppEmitSocket } from '../services/socket/useAppEmitSocket'
-import { useAppOnSocket } from '../services/socket/useAppOnSocket'
+import {
+  ApiSocketType,
+  useAppOnSocket
+} from '../services/socket/useAppOnSocket'
 import { EMessageType, TMessage } from '../types/workspace.type'
 import Editor from './new-message/NewMessage'
 
@@ -20,6 +24,9 @@ export default function MessageContent() {
   >()
   const dispatch = useDispatch()
 
+  const [userTypings, setUserTypings] =
+    useState<ApiSocketType['typing']['response'][]>()
+
   useAppOnSocket({
     key: 'message',
     resFunc: ({ message }) => {
@@ -28,15 +35,15 @@ export default function MessageContent() {
   })
 
   useAppOnSocket({
-    key: 'startTyping',
-    resFunc: ({ targetId, userId }) => {
-      console.log({
-        targetId,
-        userId
-      })
+    key: 'typing',
+    resFunc: ({ targetId, userId, type }) => {
+      setUserTypings([...(userTypings || []), { targetId, userId, type }])
     }
   })
+
   const socketEmit = useAppEmitSocket()
+
+  const typing = useTyping()
 
   const { channelId } = useAppParams()
   const { data: channelMessages } = useAppQuery({
@@ -126,13 +133,13 @@ export default function MessageContent() {
         </div>
 
         <Divider variant='dashed' />
+        {
+          userTypings?.find(e => e.targetId === channelId && e.type === 1)
+            ?.userId
+        }
         <Editor
           onChange={() => {
-            channelId &&
-              socketEmit({
-                key: 'startTyping',
-                targetId: channelId
-              })
+            channelId && typing(channelId)
           }}
           onSubmit={value => {
             if (channelId && value)

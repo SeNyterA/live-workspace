@@ -2,17 +2,19 @@ import { useEffect } from 'react'
 import { TMessage } from '../../types/workspace.type'
 import { useSocketContext } from './SocketProvider'
 
-type ApiSocketType = {
+export type ApiSocketType = {
   message: {
     response: {
       message: TMessage
       action: 'create' | 'update' | 'delete'
     }
   }
-  startTyping: {
+
+  typing: {
     response: {
       targetId: string
       userId: string
+      type: 1 | 0
     }
   }
 }

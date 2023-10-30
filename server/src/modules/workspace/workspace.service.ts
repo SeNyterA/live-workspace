@@ -1,9 +1,9 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Model } from 'mongoose'
-import { Server, Socket } from 'socket.io'
+import { Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
+import { SocketService } from '../socket/socket.service'
 import { Group } from './group/group.schema'
 import { GroupService } from './group/group.service'
 import { Member } from './member/member.schema'
@@ -16,15 +16,7 @@ import { Team } from './team/team.schema'
 import { TeamService } from './team/team.service'
 
 @Injectable()
-@WebSocketGateway({
-  cors: {
-    origin: '*'
-  }
-})
 export class WorkspaceService {
-  @WebSocketServer()
-  server: Server
-
   constructor(
     private readonly memberService: MemberService,
     @Inject(forwardRef(() => TeamService))
@@ -36,18 +28,10 @@ export class WorkspaceService {
 
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
 
-    private readonly redisService: RedisService
+    private readonly redisService: RedisService,
+    private readonly socketService: SocketService
   ) {
     this.listenToExpiredKeys()
-    // this.listenToDeletedKeys()
-  }
-
-  private async listenToDeletedKeys() {
-    await this.redisService.subRedis.psubscribe('__keyspace@0__:del') // Sử dụng số database thích hợp, thay 0 bằng số database của bạn
-
-    this.redisService.subRedis.on('pmessage', async (pattern, channel, key) => {
-      console.log('Key deleted:', key)
-    })
   }
 
   private async listenToExpiredKeys() {
@@ -55,10 +39,15 @@ export class WorkspaceService {
     await this.redisService.subRedis.on(
       'pmessage',
       async (pattern, channel, key) => {
-        console.log('expired', { pattern, channel, key })
+        console.log('expired', { key })
 
-        const [type] = key.split(':d')
-        console.log(type)
+        const [type] = key.split(':')
+
+        switch (type) {
+          case 'typing':
+            const [type, targetId, userId] = key.split(':')
+            this.toggleTyping({ targetId, userId, type: 0 })
+        }
       }
     )
   }
@@ -84,15 +73,13 @@ export class WorkspaceService {
       .lean()
 
     const rooms = [...members.map(member => member.targetId.toString()), userId]
-
     client.join(rooms)
-
     console.log(userId, client.rooms)
   }
 
   //#region Typing
   async startTyping(userId: string, targetId: string) {
-    this.server.to(targetId).emit('startTyping', { userId, targetId })
+    await this.toggleTyping({ targetId, userId, type: 1 })
     await this.redisService.redisClient.set(
       `typing:${targetId}:${userId}`,
       '',
@@ -105,6 +92,21 @@ export class WorkspaceService {
     await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
   }
 
+  async toggleTyping({
+    targetId,
+    type,
+    userId
+  }: {
+    targetId: string
+    userId: string
+    type: 0 | 1
+  }) {
+    this.socketService.server.to([targetId]).emit('typing', {
+      userId,
+      targetId,
+      type
+    })
+  }
   //#endregion
 
   //#region Unread
@@ -195,7 +197,7 @@ export class WorkspaceService {
       action: 'create' | 'update' | 'delete'
     }
   }) {
-    this.server.to(rooms).emit('team', data)
+    this.socketService.server.to(rooms).emit('team', data)
   }
 
   async channel({
@@ -208,7 +210,7 @@ export class WorkspaceService {
       action: 'create' | 'update' | 'delete'
     }
   }) {
-    this.server.to(rooms).emit('channel', data)
+    this.socketService.server.to(rooms).emit('channel', data)
   }
 
   async board({
@@ -221,7 +223,7 @@ export class WorkspaceService {
       action: 'create' | 'update' | 'delete'
     }
   }) {
-    this.server.to(rooms).emit('board', data)
+    this.socketService.server.to(rooms).emit('board', data)
   }
 
   async group({
@@ -234,7 +236,7 @@ export class WorkspaceService {
       action: 'create' | 'update' | 'delete'
     }
   }) {
-    this.server.to(rooms).emit('group', data)
+    this.socketService.server.to(rooms).emit('group', data)
   }
 
   async member({
@@ -247,7 +249,7 @@ export class WorkspaceService {
       action: 'create' | 'update' | 'delete'
     }
   }) {
-    this.server.to(rooms).emit('member', data)
+    this.socketService.server.to(rooms).emit('member', data)
   }
 
   async message({
@@ -260,7 +262,12 @@ export class WorkspaceService {
       action: 'create' | 'update' | 'delete'
     }
   }) {
-    this.server.to(rooms).emit('message', data)
+    console.log({
+      rooms,
+      data,
+      server: this.socketService.server
+    })
+    this.socketService.server.to(rooms).emit('message', data)
   }
 
   async getWorkspaceData(userId: string) {

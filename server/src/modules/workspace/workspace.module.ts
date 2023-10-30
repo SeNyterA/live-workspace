@@ -24,6 +24,7 @@ import { WorkspaceGateway } from './workspace.gateway'
 import { Workspace } from './workspace.schema'
 import { WorkspaceService } from './workspace.service'
 import { RedisModule } from '../redis/redis.module'
+import { SocketModule } from '../socket/socket.module'
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { RedisModule } from '../redis/redis.module'
       { name: Workspace.name, schema: SchemaFactory.createForClass(Workspace) }
     ]),
     UsersModule,
-    RedisModule
+    RedisModule,
+    SocketModule
   ],
   controllers: [
     TeamController,
