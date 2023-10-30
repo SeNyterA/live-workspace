@@ -6,7 +6,7 @@ import { Server, Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { Group } from './group/group.schema'
 import { GroupService } from './group/group.service'
-import { EMemberType, Member } from './member/member.schema'
+import { Member } from './member/member.schema'
 import { MemberService } from './member/member.service'
 import { Message } from './message/message.schema'
 import { Board } from './team/board/board.schema'
@@ -83,22 +83,8 @@ export class WorkspaceService {
       })
       .lean()
 
-    const rooms = members.map(member => {
-      switch (member.type) {
-        case EMemberType.Team:
-          return `team:${member.targetId}`
-        case EMemberType.Board:
-          return `board:${member.targetId}`
-        case EMemberType.Channel:
-          return `channel:${member.targetId}`
-        case EMemberType.DirectMessage:
-          return `directMessage:${member.targetId}`
-        case EMemberType.Group:
-          return `group:${member.targetId}`
-      }
-    })
+    const rooms = [...members.map(member => member.targetId.toString()), userId]
 
-    rooms.push(`user:${userId}`)
     client.join(rooms)
 
     console.log(userId, client.rooms)
@@ -106,9 +92,7 @@ export class WorkspaceService {
 
   //#region Typing
   async startTyping(userId: string, targetId: string) {
-    this.server
-      .to(`channel:${targetId}`)
-      .emit('startTyping', { userId, targetId })
+    this.server.to(targetId).emit('startTyping', { userId, targetId })
     await this.redisService.redisClient.set(
       `typing:${targetId}:${userId}`,
       '',

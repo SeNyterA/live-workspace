@@ -85,8 +85,7 @@ export class WorkspaceGateway
     @WsClient() client: Socket,
     @MessageBody() teamId: string
   ) {
-    console.log('user', user, teamId)
-    client.join(`team:${teamId}`)
+    client.join(teamId)
   }
 
   @SubscribeMessage('joinBoard')
@@ -95,7 +94,7 @@ export class WorkspaceGateway
     @WsClient() client: Socket,
     @MessageBody() boardId: string
   ) {
-    client.join(`board:${boardId}`)
+    client.join(boardId)
   }
 
   @SubscribeMessage('joinChannel')
@@ -105,7 +104,7 @@ export class WorkspaceGateway
     @MessageBody()
     channelId: string
   ) {
-    client.join(`channel:${channelId}`)
+    client.join(channelId)
   }
 
   @SubscribeMessage('joinDirectMessage')
@@ -124,7 +123,7 @@ export class WorkspaceGateway
     @WsClient() client: Socket,
     @MessageBody() groupId: string
   ) {
-    client.join(`group:${groupId}`)
+    client.join(groupId)
   }
 
   @SubscribeMessage('leaveTeam')
@@ -133,8 +132,7 @@ export class WorkspaceGateway
     @WsClient() client: Socket,
     @MessageBody() teamId: string
   ) {
-    console.log(`team:${teamId}`)
-    client.leave(`team:${teamId}`)
+    client.leave(teamId)
   }
 
   @SubscribeMessage('leaveBoard')
@@ -143,7 +141,7 @@ export class WorkspaceGateway
     @WsClient() client: Socket,
     @MessageBody() boardId: string
   ) {
-    client.leave(`board:${boardId}`)
+    client.leave(boardId)
   }
 
   @SubscribeMessage('leaveChannel')
@@ -153,7 +151,7 @@ export class WorkspaceGateway
     @MessageBody()
     channelId: string
   ) {
-    client.leave(`channel:${channelId}`)
+    client.leave(channelId)
   }
 
   @SubscribeMessage('leaveDirectMessage')
@@ -172,7 +170,7 @@ export class WorkspaceGateway
     @WsClient() client: Socket,
     @MessageBody() groupId: string
   ) {
-    client.leave(`group:${groupId}`)
+    client.leave(groupId)
   }
 
   @SubscribeMessage('startTyping')

@@ -45,7 +45,7 @@ export class MessageService {
     })
 
     this.workspaceService.message({
-      rooms: [`user:${targetId}`, `user:${userId}`],
+      rooms: [targetId, userId],
       data: {
         action: 'create',
         message: newMess
@@ -79,7 +79,7 @@ export class MessageService {
     })
 
     this.workspaceService.message({
-      rooms: [`channel:${channelId}`],
+      rooms: [channelId],
       data: {
         action: 'create',
         message: newMess
@@ -113,7 +113,7 @@ export class MessageService {
     })
 
     this.workspaceService.message({
-      rooms: [`group:${groupId}`],
+      rooms: [groupId],
       data: {
         action: 'create',
         message: newMess
@@ -224,7 +224,7 @@ export class MessageService {
     })
 
     this.workspaceService.message({
-      rooms: [targetId, `user:${userId}`],
+      rooms: [targetId, userId],
       data: {
         action: 'create',
         message: newMess

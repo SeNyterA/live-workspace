@@ -101,7 +101,7 @@ export class TeamService {
       userId: userId
     })
 
-    const rooms = [`team:${createdTeam._id.toString()}`, `user:${userId}`]
+    const rooms = [createdTeam._id.toString(), userId]
     this.workspaceService.team({
       rooms,
       data: {
@@ -158,7 +158,7 @@ export class TeamService {
       throw new ForbiddenException('Your dont have permission')
     }
 
-    const rooms = [`team:${id}`, `user:${userId}`]
+    const rooms = [team._id.toString(), userId]
     this.workspaceService.team({
       rooms,
       data: {
@@ -200,7 +200,7 @@ export class TeamService {
       throw new ForbiddenException('Your dont have permission')
     }
 
-    const rooms = [`team:${id}`, `user:${userId}`]
+    const rooms = [team._id.toString(), userId]
     this.workspaceService.team({
       rooms,
       data: {
