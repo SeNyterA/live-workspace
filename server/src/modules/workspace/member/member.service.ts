@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 
 import { User } from 'src/modules/users/user.schema'
-import { EMemberRole, Member } from './member.schema'
+import { EMemberRole, EMemberType, Member } from './member.schema'
 
 @Injectable()
 export class MemberService {

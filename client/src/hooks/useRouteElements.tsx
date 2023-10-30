@@ -48,7 +48,7 @@ function PrivateRoute() {
       <Outlet />
     </SocketProvider>
   ) : (
-    <Navigate to='/login' />
+    <Navigate to='/auth/login' />
   )
 }
 

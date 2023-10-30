@@ -1,7 +1,6 @@
-import { ActionIcon, Avatar, Divider, Input, ScrollArea } from '@mantine/core'
+import { ActionIcon, Divider, Input, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
 import { IconSearch } from '@tabler/icons-react'
-import DOMPurify from 'dompurify'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../hooks/useAppParams'
@@ -16,7 +15,8 @@ import {
   ApiSocketType,
   useAppOnSocket
 } from '../services/socket/useAppOnSocket'
-import { EMessageType, TMessage } from '../types/workspace.type'
+import { TMessage } from '../types/workspace.type'
+import Message from './message/Message'
 import Editor from './new-message/NewMessage'
 
 export default function MessageContent() {
@@ -130,29 +130,8 @@ export default function MessageContent() {
               console.log({ x, y })
             }}
           >
-            {messages.map((message, index) => (
-              <div
-                id={`id_${index}`}
-                className='my-3 flex gap-2 pl-4'
-                key={index}
-                ref={targetRef}
-              >
-                <Avatar />
-                <div className=''>
-                  <p className='text-base font-medium'>
-                    {message.messageType === EMessageType.System
-                      ? message.messageType
-                      : message.createdById}
-                  </p>
-                  <p className='text-xs leading-3 text-gray-500'>1 mins ago</p>
-                  <div
-                    className='mt-2 rounded bg-gray-50 p-1'
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(message.content)
-                    }}
-                  />
-                </div>
-              </div>
+            {messages.map(message => (
+              <Message message={message} key={message._id} />
             ))}
           </ScrollArea>
         </div>

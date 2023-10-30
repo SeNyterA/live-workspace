@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assign } from 'lodash'
+import { TUser } from '../../types/user.type'
 import {
   TChannel,
   TGroup,
@@ -13,6 +14,7 @@ type TWorkpsaceStore = {
   channels: { [channelId: string]: TChannel }
   groups: { [groupId: string]: TGroup }
   members: { [membersId: string]: TMember }
+  users: { [userId: string]: TUser }
   messages: {
     [messageId: string]: TMessage
   }
@@ -23,7 +25,8 @@ const initialState: TWorkpsaceStore = {
   groups: {},
   teams: {},
   members: {},
-  messages: {}
+  messages: {},
+  users: {}
 }
 
 const workspaceSlice = createSlice({
@@ -35,9 +38,13 @@ const workspaceSlice = createSlice({
     },
     addMembers: (
       state,
-      action: PayloadAction<{ [membersId: string]: TMember }>
+      action: PayloadAction<{
+        members: { [membersId: string]: TMember }
+        users?: { [userId: string]: TUser }
+      }>
     ) => {
-      assign(state.members, action.payload)
+      assign(state.members, action.payload.members)
+      assign(state.users, action.payload.users)
     },
     addMessages: (
       state,

@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { checkPermission } from 'src/libs/checkPermistion'
+import { User } from 'src/modules/users/user.schema'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
 import { EStatusType } from '../workspace.schema'
@@ -20,6 +22,7 @@ export class TeamService {
   constructor(
     @InjectModel(Team.name) private readonly teamModel: Model<Team>,
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly memberService: MemberService,
 
     @Inject(forwardRef(() => ChannelService))
@@ -209,5 +212,72 @@ export class TeamService {
       }
     })
     return true
+  }
+
+  async addMember({
+    teamId,
+    userId,
+    member
+  }: {
+    teamId: string
+    userId: string
+    member: {
+      userId: string
+      targetId: string
+      role: EMemberRole
+    }
+  }) {
+    const operator = await this.memberModel.findOne({
+      targetId: teamId,
+      userId: userId,
+      isAvailable: true
+    })
+
+    if (!operator) {
+      return {
+        success: false,
+        message: 'The adding user does not have the required permissions'
+      }
+    }
+
+    const newMember = await this.memberModel.findOne({
+      targetId: teamId,
+      userId: member.userId
+    })
+
+    if (newMember) {
+      return { success: false, message: 'Member already exists in the group' }
+    }
+
+    const user = await this.userModel.findOne({
+      _id: member.userId,
+      isAvailable: true
+    })
+
+    if (!user) {
+      return {
+        success: false,
+        message: 'User does not exist or is unavailable'
+      }
+    }
+
+    if (checkPermission(operator.role, member.role)) {
+      const members = await this.memberModel.create({
+        userId: member.userId,
+        targetId: teamId,
+        path: teamId,
+        type: EMemberType.Team,
+        role: member.role,
+        createdById: userId,
+        modifiedById: userId
+      })
+
+      return { success: true, data: members }
+    }
+
+    return {
+      success: false,
+      message: 'No permission to add the user to the team'
+    }
   }
 }

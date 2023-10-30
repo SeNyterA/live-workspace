@@ -7,6 +7,7 @@ import {
   IconSettings,
   IconTrash
 } from '@tabler/icons-react'
+import { lsActions } from '../../utils/auth'
 
 export default function AppHeader() {
   return (
@@ -76,8 +77,9 @@ export default function AppHeader() {
             leftSection={
               <IconTrash style={{ width: rem(14), height: rem(14) }} />
             }
+            onClick={() => lsActions.clearLS(true)}
           >
-            Delete my account
+            Logout
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>

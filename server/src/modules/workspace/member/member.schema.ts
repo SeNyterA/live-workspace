@@ -8,7 +8,6 @@ export enum EMemberRole {
 }
 
 export enum EMemberType {
-  Workspace = 'Workspace',
   Team = 'Team',
   Channel = 'Channel',
   Board = 'Board',
