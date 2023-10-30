@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Model } from 'mongoose'
 import { Server, Socket } from 'socket.io'
-import { RedisService } from 'src/redis.service'
+import { RedisService } from 'src/modules/redis/redis.service'
 import { Group } from './group/group.schema'
 import { GroupService } from './group/group.service'
 import { EMemberType, Member } from './member/member.schema'
@@ -37,7 +37,31 @@ export class WorkspaceService {
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
 
     private readonly redisService: RedisService
-  ) {}
+  ) {
+    this.listenToExpiredKeys()
+    // this.listenToDeletedKeys()
+  }
+
+  private async listenToDeletedKeys() {
+    await this.redisService.subRedis.psubscribe('__keyspace@0__:del') // Sử dụng số database thích hợp, thay 0 bằng số database của bạn
+
+    this.redisService.subRedis.on('pmessage', async (pattern, channel, key) => {
+      console.log('Key deleted:', key)
+    })
+  }
+
+  private async listenToExpiredKeys() {
+    await this.redisService.subRedis.psubscribe(`*:expired`)
+    await this.redisService.subRedis.on(
+      'pmessage',
+      async (pattern, channel, key) => {
+        console.log('expired', { pattern, channel, key })
+
+        const [type] = key.split(':d')
+        console.log(type)
+      }
+    )
+  }
 
   private async getKeysByPattern(pattern: string): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
@@ -82,18 +106,21 @@ export class WorkspaceService {
 
   //#region Typing
   async startTyping(userId: string, targetId: string) {
-    console.log(`typing:${targetId}:${userId}`)
+    this.server
+      .to(`channel:${targetId}`)
+      .emit('startTyping', { userId, targetId })
     await this.redisService.redisClient.set(
       `typing:${targetId}:${userId}`,
       '',
       'EX',
-      10
+      3
     )
   }
 
   async stopTyping(userId: string, targetId: string) {
     await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
   }
+
   //#endregion
 
   //#region Unread

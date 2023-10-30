@@ -7,7 +7,7 @@ import {
   WebSocketGateway
 } from '@nestjs/websockets'
 import { Socket } from 'socket.io'
-import { RedisService } from 'src/redis.service'
+import { RedisService } from 'src/modules/redis/redis.service'
 import { WsClient, WsUser } from './../../decorators/users.decorator'
 import { WorkspaceService } from './workspace.service'
 
@@ -180,8 +180,15 @@ export class WorkspaceGateway
     @WsUser() user: TJwtUser,
     @MessageBody() { targetId }: { targetId: string }
   ) {
-    console.log(targetId)
     this.workspaceService.startTyping(user.sub, targetId)
+  }
+
+  @SubscribeMessage('stopTyping')
+  async stopTyping(
+    @WsUser() user: TJwtUser,
+    @MessageBody() { targetId }: { targetId: string }
+  ) {
+    this.workspaceService.stopTyping(user.sub, targetId)
   }
 
   @SubscribeMessage('joins')

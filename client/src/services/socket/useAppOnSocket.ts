@@ -9,6 +9,12 @@ type ApiSocketType = {
       action: 'create' | 'update' | 'delete'
     }
   }
+  startTyping: {
+    response: {
+      targetId: string
+      userId: string
+    }
+  }
 }
 
 export const useAppOnSocket = <T extends keyof ApiSocketType>({

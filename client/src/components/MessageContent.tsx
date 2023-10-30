@@ -27,6 +27,15 @@ export default function MessageContent() {
     }
   })
 
+  useAppOnSocket({
+    key: 'startTyping',
+    resFunc: ({ targetId, userId }) => {
+      console.log({
+        targetId,
+        userId
+      })
+    }
+  })
   const socketEmit = useAppEmitSocket()
 
   const { channelId } = useAppParams()
@@ -145,6 +154,11 @@ export default function MessageContent() {
                     dispatch(
                       workspaceActions.addMessages({ [message._id]: message })
                     )
+
+                    socketEmit({
+                      key: 'stopTyping',
+                      targetId: channelId
+                    })
                   }
                 }
               )

@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module'
 import { AWSModule } from './modules/aws/aws.module'
 import { UsersModule } from './modules/users/users.module'
 import { WorkspaceModule } from './modules/workspace/workspace.module'
+import { RedisModule } from './modules/redis/redis.module'
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { WorkspaceModule } from './modules/workspace/workspace.module'
     AuthModule,
     UsersModule,
     WorkspaceModule,
-    AWSModule
+    AWSModule,
+    RedisModule
   ],
   providers: [
     {
