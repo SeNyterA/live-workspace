@@ -51,8 +51,14 @@ type ApiQueryType = {
       urlParams: {
         targetId: string
       }
+      queryParams?: {
+        includeUsers?: boolean
+      }
     }
-    response: TMember[]
+    response: {
+      members: TMember[]
+      users: TUser[]
+    }
   }
 
   channelMessages: {

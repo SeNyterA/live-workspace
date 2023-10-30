@@ -2,12 +2,14 @@ import { ForbiddenException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 
+import { User } from 'src/modules/users/user.schema'
 import { EMemberRole, Member } from './member.schema'
 
 @Injectable()
 export class MemberService {
   constructor(
-    @InjectModel(Member.name) private readonly memberModel: Model<Member>
+    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    @InjectModel(User.name) private readonly userModel: Model<User>
   ) {}
 
   async _checkExisting({
@@ -57,22 +59,30 @@ export class MemberService {
 
   async getMembersByTargetId({
     userId,
-    targetId
+    targetId,
+    includeUsers = false
   }: {
     userId: string
     targetId: string
+    includeUsers?: boolean
   }) {
     await this._checkExisting({
       targetId,
       userId
     })
 
-    const members = await this.memberModel
-      .find({
-        targetId
-      })
-      .lean()
+    const members = await this.memberModel.find({ targetId }).lean()
 
-    return members
+    let users
+    if (includeUsers) {
+      users = await this.userModel
+        .find({ _id: { $in: members.map(e => e.userId.toString()) } })
+        .lean()
+    }
+
+    return {
+      members,
+      users
+    }
   }
 }

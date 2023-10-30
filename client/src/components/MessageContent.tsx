@@ -1,9 +1,11 @@
-import { Avatar, Divider, ScrollArea } from '@mantine/core'
+import { ActionIcon, Avatar, Divider, Input, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
+import { IconSearch } from '@tabler/icons-react'
 import DOMPurify from 'dompurify'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../hooks/useAppParams'
+import userMembers from '../hooks/userMembers'
 import useTyping from '../hooks/useTyping'
 import { workspaceActions } from '../redux/slices/workspace.slice'
 import { useAppSelector } from '../redux/store'
@@ -59,6 +61,9 @@ export default function MessageContent() {
       enabled: !!channelId
     }
   })
+  userMembers({
+    targetId: channelId
+  })
 
   const { mutateAsync: createChannelMessage } = useAppMutation(
     'createChannelMessage'
@@ -94,7 +99,27 @@ export default function MessageContent() {
   return (
     <>
       <div className='flex flex-1 flex-col'>
-        <div className='h-12 bg-slate-500'></div>
+        <div className='flex h-12 items-center gap-3 px-4'>
+          <p className='flex-1 text-lg'>Channel name</p>
+          <Input
+            className=''
+            size='sm'
+            placeholder='Search'
+            variant='unstyled'
+            leftSection={<IconSearch className='h-4 w-4' />}
+          />
+          <ActionIcon variant='default'>
+            <IconSearch className='h-4 w-4' />
+          </ActionIcon>
+          <ActionIcon variant='default'>
+            <IconSearch className='h-4 w-4' />
+          </ActionIcon>
+          <ActionIcon variant='default'>
+            <IconSearch className='h-4 w-4' />
+          </ActionIcon>
+        </div>
+
+        <Divider variant='dashed' />
 
         <div className='relative flex-1'>
           <ScrollArea

@@ -21,6 +21,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   })
 
   useEffect(() => {
+    console.log({
+      workspaceData
+    })
     dispatch(
       workspaceActions.init({
         channels:

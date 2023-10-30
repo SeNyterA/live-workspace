@@ -10,8 +10,11 @@ import {
   IconAdjustments,
   IconArrowRight,
   IconHash,
+  IconLayoutKanban,
+  IconMessage,
   IconPlus,
-  IconSearch
+  IconSearch,
+  IconUsersGroup
 } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -73,10 +76,40 @@ export default function Sidebar() {
           </ActionIcon>
         </div>
 
-        <Divider className='mx-4' variant='dashed' />
-
         <div className='relative flex-1'>
           <ScrollArea scrollbarSize={6} className='absolute inset-0 px-4'>
+            <NavLink
+              className='mb-1 p-1'
+              label='Boards'
+              leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
+              active={path.pathname.includes('board')}
+            >
+              {channels.map(item => (
+                <NavLink
+                  key={item._id}
+                  className='p-1 pl-3'
+                  label={item.title}
+                  active={channelId === item._id}
+                  onClick={() => {
+                    switchTo({
+                      target: 'board',
+                      targetId: item._id
+                    })
+                  }}
+                />
+              ))}
+
+              {hasPermission && (
+                <NavLink
+                  className='mb-2 p-1 pl-3 opacity-70'
+                  label={`Create channel`}
+                  rightSection={<IconPlus size={14} />}
+                  onClick={() => {
+                    setToggle('createBoard')
+                  }}
+                />
+              )}
+            </NavLink>
             <NavLink
               className='mb-1 p-1'
               label='Channels'
@@ -110,43 +143,73 @@ export default function Sidebar() {
               )}
             </NavLink>
 
-            {/* {intData.map(group => (
-              <NavLink
-                key={group.id}
-                className='mb-1 p-1'
-                label={group.title}
-                leftSection={group.icon}
-                active={path.pathname.includes(group.type)}
-              >
-                {group.children.map(item => (
-                  <NavLink
-                    key={item.id}
-                    className='p-1 pl-3'
-                    label={item.title}
-                    active={
-                      (groupId || channelId || boardId || messageId) === item.id
-                    }
-                    onClick={() => {
-                      switchTo({
-                        target: group.type as any,
-                        targetId: item.id
-                      })
-                    }}
-                  />
-                ))}
+            <Divider variant='dashed' />
 
-                {hasPermission && (
-                  <NavLink
-                    className='mb-2 p-1 pl-3 opacity-70'
-                    label={`Create ${group.type}`}
-                    rightSection={<IconPlus size={14} />}
-                    onClick={() => {
-                      setToggle('createBoard')
-                    }}
-                  />
-                )}
-              </NavLink>
-            ))} */}
+            <NavLink
+              className='my-1 p-1'
+              label='Groups'
+              leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
+              active={path.pathname.includes('group')}
+            >
+              {channels.map(item => (
+                <NavLink
+                  key={item._id}
+                  className='p-1 pl-3'
+                  label={item.title}
+                  active={channelId === item._id}
+                  onClick={() => {
+                    switchTo({
+                      target: 'group',
+                      targetId: item._id
+                    })
+                  }}
+                />
+              ))}
+
+              {hasPermission && (
+                <NavLink
+                  className='mb-2 p-1 pl-3 opacity-70'
+                  label={`Create channel`}
+                  rightSection={<IconPlus size={14} />}
+                  onClick={() => {
+                    setToggle('createBoard')
+                  }}
+                />
+              )}
+            </NavLink>
+
+            <NavLink
+              className='my-1 p-1'
+              label='Direct messages'
+              leftSection={<IconMessage size='1rem' stroke={1.5} />}
+              active={path.pathname.includes('direct-message')}
+            >
+              {channels.map(item => (
+                <NavLink
+                  key={item._id}
+                  className='p-1 pl-3'
+                  label={item.title}
+                  active={channelId === item._id}
+                  onClick={() => {
+                    switchTo({
+                      target: 'direct-message',
+                      targetId: item._id
+                    })
+                  }}
+                />
+              ))}
+
+              {hasPermission && (
+                <NavLink
+                  className='mb-2 p-1 pl-3 opacity-70'
+                  label={`Create channel`}
+                  rightSection={<IconPlus size={14} />}
+                  onClick={() => {
+                    setToggle('createBoard')
+                  }}
+                />
+              )}
+            </NavLink>
           </ScrollArea>
         </div>
       </div>

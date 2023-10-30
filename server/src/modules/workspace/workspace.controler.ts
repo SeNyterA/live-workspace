@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common'
+import { Controller, Get, Param, Query } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 
 import { MemberService } from './member/member.service'
@@ -20,11 +20,14 @@ export class WorkpaceController {
   @Get('/members/:targetId')
   getMembersByTargetId(
     @HttpUser() user: TJwtUser,
-    @Param('targetId') targetId: string
+    @Param('targetId') targetId: string,
+    @Query('includeUsers') includeUsers?: string
   ) {
+    const includeUsersFlag = includeUsers === 'true'
     return this.memberService.getMembersByTargetId({
-      targetId: targetId,
-      userId: user.sub
+      targetId,
+      userId: user.sub,
+      includeUsers: includeUsersFlag
     })
   }
 }

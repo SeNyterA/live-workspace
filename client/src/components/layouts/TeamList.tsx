@@ -8,50 +8,28 @@ import {
   Textarea,
   TextInput
 } from '@mantine/core'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../hooks/useAppParams'
 import useControlParams from '../../hooks/useControlParams'
+import userMembers from '../../hooks/userMembers'
 import { useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/useAppMutation'
-import { useAppQuery } from '../../services/apis/useAppQuery'
-import { TMember, TWorkspacePlayload } from '../../types/workspace.type'
-import { useDispatch } from 'react-redux'
-import { workspaceActions } from '../../redux/slices/workspace.slice'
+import { TWorkspacePlayload } from '../../types/workspace.type'
 
 export default function TeamList() {
   const teams =
     useAppSelector(state => Object.values(state.workspace.teams)) || []
   const { switchTeam } = useControlParams()
-  const dispatch = useDispatch()
+
   const { teamId } = useAppParams()
   const [openDrawer, toggleDrawer] = useState(false)
   const { control, handleSubmit } = useForm<TWorkspacePlayload>()
   const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
-  const { data: members } = useAppQuery({
-    key: 'targetMembers',
-    url: {
-      baseUrl: '/workspace/members/:targetId',
-      urlParams: {
-        targetId: teamId!
-      }
-    },
-    options: {
-      enabled: !!teamId,
-      queryKey: [teamId]
-    }
+  userMembers({
+    targetId: teamId,
+    includeUsers: true
   })
-
-  useEffect(() => {
-    dispatch(
-      workspaceActions.addMembers(
-        members?.reduce(
-          (pre, next) => ({ ...pre, [next._id]: next }),
-          {} as { [memberId: string]: TMember }
-        ) || {}
-      )
-    )
-  }, [dispatch, members])
 
   return (
     <>

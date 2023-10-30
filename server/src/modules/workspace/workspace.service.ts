@@ -39,8 +39,6 @@ export class WorkspaceService {
     await this.redisService.subRedis.on(
       'pmessage',
       async (pattern, channel, key) => {
-        console.log('expired', { key })
-
         const [type] = key.split(':')
 
         switch (type) {
@@ -74,7 +72,6 @@ export class WorkspaceService {
 
     const rooms = [...members.map(member => member.targetId.toString()), userId]
     client.join(rooms)
-    console.log(userId, client.rooms)
   }
 
   //#region Typing
@@ -262,11 +259,6 @@ export class WorkspaceService {
       action: 'create' | 'update' | 'delete'
     }
   }) {
-    console.log({
-      rooms,
-      data,
-      server: this.socketService.server
-    })
     this.socketService.server.to(rooms).emit('message', data)
   }
 
