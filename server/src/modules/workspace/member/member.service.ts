@@ -8,8 +8,8 @@ import { EMemberRole, EMemberType, Member } from './member.schema'
 @Injectable()
 export class MemberService {
   constructor(
-    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
-    @InjectModel(User.name) private readonly userModel: Model<User>
+    @InjectModel(Member.name) readonly memberModel: Model<Member>,
+    @InjectModel(User.name) readonly userModel: Model<User>
   ) {}
 
   async _checkExisting({

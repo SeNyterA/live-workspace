@@ -10,18 +10,19 @@ export default function Message({ message }: { message: TMessage }) {
   )
 
   const isOwner = useAppSelector(
-    state => state.auth.userInfo?._id === message.createdById
+    state =>
+      state.auth.userInfo?._id === message.createdById &&
+      message.messageType === EMessageType.Normal
   )
 
-  console.log({
-    createByUser,
-    isOwner
-  })
   return (
-    <div id={`id_${message._id}`} className='my-3 flex justify-end gap-2 px-4'>
+    <div
+      id={`id_${message._id}`}
+      className={`my-3 flex gap-2 px-4 ${isOwner && 'justify-end'}`}
+    >
       {isOwner || <Avatar />}
 
-      <div className='flex flex-col items-end'>
+      <div className={`flex flex-col ${isOwner && 'items-end'}`}>
         {isOwner || (
           <p className='font-medium'>
             {message.messageType === EMessageType.System

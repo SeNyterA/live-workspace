@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { checkPermission } from 'src/libs/checkPermistion'
+import { getTeamPermission } from 'src/libs/checkPermistion'
 import { User } from 'src/modules/users/user.schema'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
@@ -20,16 +20,16 @@ import { Team } from './team.schema'
 @Injectable()
 export class TeamService {
   constructor(
-    @InjectModel(Team.name) private readonly teamModel: Model<Team>,
-    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
-    @InjectModel(User.name) private readonly userModel: Model<User>,
-    private readonly memberService: MemberService,
+    @InjectModel(Team.name) readonly teamModel: Model<Team>,
+    @InjectModel(Member.name) readonly memberModel: Model<Member>,
+    @InjectModel(User.name) readonly userModel: Model<User>,
+    readonly memberService: MemberService,
 
     @Inject(forwardRef(() => ChannelService))
-    private readonly channelService: ChannelService,
+    readonly channelService: ChannelService,
 
     @Inject(forwardRef(() => WorkspaceService))
-    private readonly workspaceService: WorkspaceService
+    readonly workspaceService: WorkspaceService
   ) {}
 
   async _checkExisting({ teamId }: { teamId: string }) {
@@ -41,6 +41,39 @@ export class TeamService {
       throw new ForbiddenException('Your dont have permission')
     }
     return !!existingTeam
+  }
+
+  async getPermisstion({
+    targetId,
+    userId
+  }: {
+    targetId: string
+    userId: string
+  }) {
+    const _member = this.memberService.memberModel.findOne({
+      userId,
+      targetId: targetId,
+      isAvailable: true
+    })
+    const _target = this.teamModel.findOne({
+      _id: targetId,
+      isAvailable: true
+    })
+
+    const [member, target] = await Promise.all([_member, _target])
+
+    if (member && target) {
+      return {
+        permissions: getTeamPermission(member.role),
+        member,
+        target
+      }
+    }
+    return {
+      member,
+      target,
+      permissions: {}
+    }
   }
 
   async getTeamsByUserId(userId: string) {
@@ -223,45 +256,37 @@ export class TeamService {
     userId: string
     member: {
       userId: string
-      targetId: string
       role: EMemberRole
     }
   }) {
-    const operator = await this.memberModel.findOne({
+    const { permissions } = await this.getPermisstion({
       targetId: teamId,
-      userId: userId,
-      isAvailable: true
+      userId
     })
 
-    if (!operator) {
-      return {
-        success: false,
-        message: 'The adding user does not have the required permissions'
+    if (permissions?.memberAction?.add?.includes(member.role)) {
+      const newMember = await this.memberModel.findOne({
+        targetId: teamId,
+        userId: member.userId,
+        isAvailable: true
+      })
+
+      if (newMember) {
+        return { success: false, error: 'Member already exists in the group' }
       }
-    }
 
-    const newMember = await this.memberModel.findOne({
-      targetId: teamId,
-      userId: member.userId
-    })
+      const user = await this.userModel.findOne({
+        _id: member.userId,
+        isAvailable: true
+      })
 
-    if (newMember) {
-      return { success: false, message: 'Member already exists in the group' }
-    }
-
-    const user = await this.userModel.findOne({
-      _id: member.userId,
-      isAvailable: true
-    })
-
-    if (!user) {
-      return {
-        success: false,
-        message: 'User does not exist or is unavailable'
+      if (!user) {
+        return {
+          success: false,
+          error: 'User does not exist or is unavailable'
+        }
       }
-    }
 
-    if (checkPermission(operator.role, member.role)) {
       const members = await this.memberModel.create({
         userId: member.userId,
         targetId: teamId,
@@ -272,12 +297,32 @@ export class TeamService {
         modifiedById: userId
       })
 
-      return { success: true, data: members }
-    }
+      const _channels = this.channelService.channelModel
+        .find({
+          teamId,
+          isAvailable: true
+        })
+        .lean()
 
+      const [channels] = await Promise.all([_channels])
+
+      console.log(channels)
+
+      const _createChannelsMember = channels.map(channel =>
+        this.channelService.addMember({
+          member,
+          targetId: channel._id.toString(),
+          userId
+        })
+      )
+
+      const channelsMember = await Promise.all(_createChannelsMember)
+
+      return { success: true, data: members, channelsMember }
+    }
     return {
       success: false,
-      message: 'No permission to add the user to the team'
+      error: 'No permission to add the user to the team'
     }
   }
 }

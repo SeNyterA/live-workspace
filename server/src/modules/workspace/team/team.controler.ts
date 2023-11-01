@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 
+import { EMemberRole } from '../member/member.schema'
 import { TJwtUser } from '../workspace.gateway'
 import { TCreateTeamPayload, TUpdateTeamPayload } from './team.dto'
 import { TeamService } from './team.service'
@@ -56,6 +57,19 @@ export class TeamController {
     return this.teamService.delete({
       id: id,
       userId: user.sub
+    })
+  }
+
+  @Post(':id/members')
+  addMember(
+    @HttpUser() user: TJwtUser,
+    @Param('id') id: string,
+    @Body() member: { userId: string; role: EMemberRole }
+  ) {
+    return this.teamService.addMember({
+      userId: user.sub,
+      teamId: id,
+      member
     })
   }
 }
