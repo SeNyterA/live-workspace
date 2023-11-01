@@ -9,6 +9,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
+import { getChannelPermission } from 'src/libs/checkPermistion'
 import { User } from 'src/modules/users/user.schema'
 import { EMemberRole, EMemberType, Member } from '../../member/member.schema'
 import { MemberService } from '../../member/member.service'
@@ -17,9 +18,9 @@ import { MessageService } from '../../message/message.service'
 import { EStatusType } from '../../workspace.schema'
 import { WorkspaceService } from '../../workspace.service'
 import { Team } from '../team.schema'
+import { TeamService } from '../team.service'
 import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
 import { Channel } from './channel.schema'
-import { getChannelPermission } from 'src/libs/checkPermistion'
 
 @Injectable()
 export class ChannelService {
@@ -33,7 +34,9 @@ export class ChannelService {
     @Inject(forwardRef(() => MessageService))
     readonly messageService: MessageService,
     @Inject(forwardRef(() => WorkspaceService))
-    readonly workspaceService: WorkspaceService
+    readonly workspaceService: WorkspaceService,
+    @Inject(forwardRef(() => TeamService))
+    readonly teamService: TeamService
   ) {}
 
   async _checkExisting({ channelId }: { channelId: string }): Promise<boolean> {
@@ -124,43 +127,44 @@ export class ChannelService {
     userId: string
     teamId: string
   }) {
-    await this.memberService._checkExisting({
-      userId,
+    const { permissions } = await this.teamService.getPermisstion({
       targetId: teamId,
-      inRoles: [EMemberRole.Admin, EMemberRole.Owner]
+      userId
     })
 
-    const createdChannel = await this.channelModel.create({
-      ...channel,
-      teamId,
-      createdById: userId,
-      modifiedById: userId
-    })
+    if (permissions?.createChannel) {
+      const createdChannel = await this.channelModel.create({
+        ...channel,
+        teamId,
+        createdById: userId,
+        modifiedById: userId
+      })
 
-    const owner = await this.memberModel.create({
-      userId,
-      targetId: createdChannel._id.toString(),
-      path: createdChannel._id.toString(),
-      type: EMemberType.Channel,
-      role: EMemberRole.Owner,
-      createdById: userId,
-      modifiedById: userId
-    })
+      const owner = await this.memberModel.create({
+        userId,
+        targetId: createdChannel._id.toString(),
+        path: createdChannel._id.toString(),
+        type: EMemberType.Channel,
+        role: EMemberRole.Owner,
+        createdById: userId,
+        modifiedById: userId
+      })
 
-    if (createdChannel.channelType === EStatusType.Public) {
-    }
+      if (createdChannel.channelType === EStatusType.Public) {
+      }
 
-    const message = await this.messageService._createSystemMessage({
-      targetId: createdChannel._id.toString(),
-      userId: userId,
-      messagePayload: `Channel has been created by \$\{${userId}\}`,
-      messageFor: EMessageFor.Channel
-    })
+      const message = await this.messageService._createSystemMessage({
+        targetId: createdChannel._id.toString(),
+        userId: userId,
+        messagePayload: `Channel has been created by \$\{${userId}\}`,
+        messageFor: EMessageFor.Channel
+      })
 
-    return {
-      channel: createdChannel,
-      members: [owner],
-      messages: [message]
+      return {
+        channel: createdChannel,
+        members: [owner],
+        messages: [message]
+      }
     }
   }
 
