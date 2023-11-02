@@ -1,4 +1,3 @@
-
 import { Member } from '../member/member.schema'
 import { Team } from './team.schema'
 

@@ -30,7 +30,6 @@ export interface CustomSocket extends Socket {
 export class WorkspaceGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
-  private connectedUsers: Set<TJwtUser> = new Set()
   constructor(
     private readonly workspaceService: WorkspaceService,
     private readonly jwtService: JwtService,

@@ -14,6 +14,7 @@ import { Channel } from './team/channel/channel.schema'
 import { ChannelService } from './team/channel/channel.service'
 import { Team } from './team/team.schema'
 import { TeamService } from './team/team.service'
+import { CustomSocket } from './workspace.gateway'
 
 @Injectable()
 export class WorkspaceService {
@@ -188,20 +189,39 @@ export class WorkspaceService {
     rooms,
     data
   }: {
-    rooms: string | string[]
+    rooms: string[]
     data: {
       team: Team
       action: 'create' | 'update' | 'delete'
     }
   }) {
     this.socketService.server.to(rooms).emit('team', data)
+    if (data.action === 'create') {
+      const allSocket = await this.socketService.server.fetchSockets()
+
+      allSocket.forEach(client => {
+        if (rooms.includes((client as unknown as CustomSocket).user.sub)) {
+          client.join(rooms)
+        }
+      })
+    }
+
+    if (data.action === 'delete') {
+      const allSocket = await this.socketService.server.fetchSockets()
+
+      allSocket.forEach(client => {
+        if (rooms.includes((client as unknown as CustomSocket).user.sub)) {
+          client.join(rooms)
+        }
+      })
+    }
   }
 
   async channel({
     rooms,
     data
   }: {
-    rooms: string | string[]
+    rooms: string[]
     data: {
       channel: Channel
       action: 'create' | 'update' | 'delete'
@@ -214,7 +234,7 @@ export class WorkspaceService {
     rooms,
     data
   }: {
-    rooms: string | string[]
+    rooms: string[]
     data: {
       board: Board
       action: 'create' | 'update' | 'delete'
@@ -227,7 +247,7 @@ export class WorkspaceService {
     rooms,
     data
   }: {
-    rooms: string | string[]
+    rooms: string[]
     data: {
       group: Group
       action: 'create' | 'update' | 'delete'
@@ -240,7 +260,7 @@ export class WorkspaceService {
     rooms,
     data
   }: {
-    rooms: string | string[]
+    rooms: string[]
     data: {
       member: Member
       action: 'create' | 'update' | 'delete'
@@ -253,7 +273,7 @@ export class WorkspaceService {
     rooms,
     data
   }: {
-    rooms: string | string[]
+    rooms: string[]
     data: {
       message: Message
       action: 'create' | 'update' | 'delete'
