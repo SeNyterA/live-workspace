@@ -39,7 +39,8 @@ export class WorkspaceGateway
   async handleConnection(client: CustomSocket, ...args: any[]) {
     try {
       const user = (await this.jwtService.verifyAsync(
-        client.handshake.auth.token
+        client.handshake.auth.token,
+        { secret: process.env.JWT_SECRET }
       )) as TJwtUser
       client.user = user
 

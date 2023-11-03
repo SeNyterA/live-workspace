@@ -29,7 +29,7 @@ export class AuthService {
       userName: user.userName,
       sub: user._id
     }
-    return this.jwtService.sign(payload)
+    return this.jwtService.sign(payload, { secret: process.env.JWT_SECRET })
   }
 
   async signIn({

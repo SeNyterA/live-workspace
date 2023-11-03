@@ -9,7 +9,6 @@ import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
 import { UsersService } from 'src/modules/users/users.service'
-import { jwtConstants } from './constants'
 
 export const IS_PUBLIC_KEY = 'isPublic'
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
@@ -39,7 +38,7 @@ export class AuthGuard implements CanActivate {
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: jwtConstants.secret
+        secret: process.env.JWT_SECRET
       })
 
       await this.usersService.findById(payload?.sub)

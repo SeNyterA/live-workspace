@@ -5,16 +5,15 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  Request
+  Post
 } from '@nestjs/common'
-import { getUserId } from 'src/libs/getUserId'
+
+import { HttpUser } from 'src/decorators/users.decorator'
 import { EMessageFor } from '../message/message.schema'
 import { MessageService } from '../message/message.service'
+import { TJwtUser } from '../workspace.gateway'
 import { DirectMessage } from './direct-message.schema'
 import { DirectMessageService } from './direct-message.service'
-import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from '../workspace.gateway'
 
 @Controller('/workspace/direct-messages')
 export class DirectMessageController {
