@@ -22,10 +22,9 @@ import useAppParams from '../../hooks/useAppParams'
 import useControlParams from '../../hooks/useControlParams'
 import { useAppSelector } from '../../redux/store'
 import { EMemberRole } from '../../types/workspace.type'
-import ChannelForm from './channel.form'
 
 export default function Sidebar() {
-  const { boardId, channelId, groupId, messageId, teamId } = useAppParams()
+  const { channelId, teamId } = useAppParams()
   const { switchTo } = useControlParams()
   const path = useLocation()
 
@@ -214,15 +213,21 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <Modal.Root opened={!!toggle} onClose={() => setToggle(undefined)}>
-        <Modal.Overlay color='#000' backgroundOpacity={0.35} blur={15} />
-
-        <Modal.Content className='rounded-xl'>
-          <Modal.Body>
-            <ChannelForm></ChannelForm>
-          </Modal.Body>
-        </Modal.Content>
-      </Modal.Root>
+      <Modal
+        opened={!!toggle}
+        onClose={() => setToggle(undefined)}
+        size='100%'
+        classNames={{
+          content: 'h-full'
+        }}
+        overlayProps={{
+          color: '#000',
+          backgroundOpacity: 0.35,
+          blur: 15
+        }}
+      >
+        <div className='h-10 w-10 bg-black'></div>
+      </Modal>
     </>
   )
 }
