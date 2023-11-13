@@ -1,7 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
 import { TUser } from '../../types/user.type'
 import {
+  EMemberRole,
   TChannelPayload,
+  TMember,
   TMessage,
   TWorkspace,
   TWorkspacePlayload
@@ -39,6 +41,7 @@ type ApiMutationType = {
       token: string
     }
   }
+
   createTeam: {
     url: {
       baseUrl: '/workspace/teams'
@@ -47,6 +50,24 @@ type ApiMutationType = {
     payload: TWorkspacePlayload
     response: TWorkspace
   }
+  editTeamMemberRole: {
+    url: {
+      baseUrl: '/workspace/teams/:teamId/members/:memberId'
+      urlParams: {
+        teamId: string
+        memberId: string
+      }
+    }
+    method: 'patch'
+    payload: { role: EMemberRole }
+    response:
+      | {
+          success: true
+          data: TMember
+        }
+      | { success: false; error: string }
+  }
+
   createChannel: {
     url: {
       baseUrl: '/workspace/teams/:teamId/channels'
@@ -86,6 +107,7 @@ export const useAppMutation = <T extends keyof ApiMutationType>(_key: T) => {
         (url as any)?.urlParams || {}
       )
       const response = await http[method](_url, payload)
+
       return response.data
     }
   })

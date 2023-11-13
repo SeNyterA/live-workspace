@@ -72,4 +72,19 @@ export class TeamController {
       member
     })
   }
+
+  @Patch(':teamId/members/:memberId')
+  changeRole(
+    @HttpUser() user: TJwtUser,
+    @Param('teamId') teamId: string,
+    @Param('memberId') memberId: string,
+    @Body() payload: { role: EMemberRole }
+  ) {
+    return this.teamService.editMember({
+      userId: user.sub,
+      teamId,
+      memberId,
+      role: payload.role
+    })
+  }
 }

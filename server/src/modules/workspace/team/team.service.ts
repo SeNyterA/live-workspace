@@ -325,4 +325,40 @@ export class TeamService {
       error: 'No permission to add the user to the team'
     }
   }
+
+  async editMember({
+    teamId,
+    userId,
+    memberId,
+    role
+  }: {
+    teamId: string
+    userId: string
+    memberId: string
+    role: EMemberRole
+  }) {
+    console.log('ssss', role as any)
+    const { permissions } = await this.getPermisstion({
+      targetId: teamId,
+      userId
+    })
+
+    if (permissions?.memberAction?.toggleRole?.includes(role)) {
+      const updatedMember = await this.memberModel.findOneAndUpdate(
+        { _id: memberId, targetId: teamId, isAvailable: true },
+        { role: role, modifiedById: userId, updatedAt: new Date() },
+        { new: true }
+      )
+
+      if (updatedMember) {
+        return { success: true, data: updatedMember }
+      } else {
+        return { success: false, error: 'Member not found or not available' }
+      }
+    }
+    return {
+      success: false,
+      error: 'No permission to update the user role in the team'
+    }
+  }
 }

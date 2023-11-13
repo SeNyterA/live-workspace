@@ -1,19 +1,12 @@
+import { ActionIcon, Button, Divider, NavLink, ScrollArea } from '@mantine/core'
 import {
-  ActionIcon,
-  Button,
-  Divider,
-  Modal,
-  NavLink,
-  ScrollArea
-} from '@mantine/core'
-import {
-  IconAdjustments,
   IconArrowRight,
   IconHash,
   IconLayoutKanban,
   IconMessage,
   IconPlus,
   IconSearch,
+  IconSettings,
   IconUsersGroup
 } from '@tabler/icons-react'
 import { useState } from 'react'
@@ -22,6 +15,7 @@ import useAppParams from '../../hooks/useAppParams'
 import useControlParams from '../../hooks/useControlParams'
 import { useAppSelector } from '../../redux/store'
 import { EMemberRole } from '../../types/workspace.type'
+import TeamSetting from '../team-setting/TeamSetting'
 
 export default function Sidebar() {
   const { channelId, teamId } = useAppParams()
@@ -29,7 +23,7 @@ export default function Sidebar() {
   const path = useLocation()
 
   const [toggle, setToggle] = useState<
-    'createBoard' | 'createChannel' | 'createGroup'
+    'createBoard' | 'createChannel' | 'createGroup' | 'teamSetting'
   >()
 
   const hasPermission = useAppSelector(
@@ -67,8 +61,9 @@ export default function Sidebar() {
             variant='default'
             aria-label='Settings'
             className='h-[30px] w-[30px]'
+            onClick={() => setToggle('teamSetting')}
           >
-            <IconAdjustments
+            <IconSettings
               style={{ width: '70%', height: '70%' }}
               stroke={1.5}
             />
@@ -213,21 +208,10 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <Modal
-        opened={!!toggle}
+      <TeamSetting
+        isOpen={toggle === 'teamSetting'}
         onClose={() => setToggle(undefined)}
-        size='100%'
-        classNames={{
-          content: 'h-full'
-        }}
-        overlayProps={{
-          color: '#000',
-          backgroundOpacity: 0.35,
-          blur: 15
-        }}
-      >
-        <div className='h-10 w-10 bg-black'></div>
-      </Modal>
+      />
     </>
   )
 }

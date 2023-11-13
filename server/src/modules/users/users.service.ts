@@ -60,4 +60,21 @@ export class UsersService {
 
     return updatedUser
   }
+
+  async findByKeyword(key: string, page: number = 1, pageSize: number = 10) {
+    const regex = new RegExp(key, 'i')
+
+    const users = await this.userModel.find({
+      $or: [
+        { nickname: { $regex: regex } },
+        { userName: { $regex: regex } },
+        { email: { $regex: regex } }
+      ],
+      isAvailable: true
+    })
+
+    return {
+      users
+    }
+  }
 }

@@ -26,6 +26,7 @@ type ApiQueryType = {
     }
     response: TUser
   }
+
   login: {
     url: {
       baseUrl: '/auth/profile'
@@ -71,6 +72,20 @@ type ApiQueryType = {
     response: {
       messages: TMessage[]
       total: number
+    }
+  }
+
+  findUsersByKeyword: {
+    url: {
+      baseUrl: '/users'
+      queryParams: {
+        keyword: string
+        page?: number
+        pageSize?: number
+      }
+    }
+    response: {
+      users: TUser[]
     }
   }
 }
