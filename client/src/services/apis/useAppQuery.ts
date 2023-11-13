@@ -2,6 +2,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { TUser } from '../../types/user.type'
 import {
   TChannel,
+  TDirect,
   TGroup,
   TMember,
   TMessage,
@@ -43,6 +44,7 @@ type ApiQueryType = {
       teams: TTeam[]
       channels: TChannel[]
       groups: TGroup[]
+      directs: TDirect[]
     }
   }
 
@@ -77,7 +79,7 @@ type ApiQueryType = {
 
   findUsersByKeyword: {
     url: {
-      baseUrl: '/users'
+      baseUrl: '/users/by-keyword'
       queryParams: {
         keyword: string
         page?: number
@@ -86,6 +88,18 @@ type ApiQueryType = {
     }
     response: {
       users: TUser[]
+    }
+  }
+
+  findUserByUserName: {
+    url: {
+      baseUrl: '/user/by-username/:userName'
+      urlParams: {
+        userName: string
+      }
+    }
+    response: {
+      user: TUser
     }
   }
 }

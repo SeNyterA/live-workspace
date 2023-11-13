@@ -93,4 +93,15 @@ export class DirectMessageService {
     }
     return deletedDirectMessage
   }
+
+  async getDirectByUserId(userId: string) {
+    const directs = await this.directMessageModel
+      .find({
+        userIds: { $in: [userId] },
+        isAvailable: true
+      })
+      .lean()
+
+    return directs
+  }
 }

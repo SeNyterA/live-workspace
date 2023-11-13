@@ -6,7 +6,7 @@ import Sidebar from './components/layouts/Sidebar'
 import TeamList from './components/layouts/TeamList'
 import { workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
-import { TChannel, TGroup, TTeam } from './types/workspace.type'
+import { TChannel, TDirect, TGroup, TTeam } from './types/workspace.type'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
@@ -40,6 +40,11 @@ export default function Layout({ children }: { children: ReactNode }) {
           workspaceData?.teams.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {} as { [teamId: string]: TTeam }
+          ) || {},
+        directs:
+          workspaceData?.directs.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {} as { [teamId: string]: TDirect }
           ) || {}
       })
     )

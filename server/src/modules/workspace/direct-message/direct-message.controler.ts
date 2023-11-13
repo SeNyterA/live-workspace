@@ -50,11 +50,13 @@ export class DirectMessageController {
     return this.directMessageService.remove(id)
   }
 
-  @Post(':targetId/')
+  @Post(':targetId/messages')
   sendMesage(
     @Param('targetId') targetId: string,
     @HttpUser() user: TJwtUser,
-    @Body() messagePayload: any
+    messagePayload: {
+      content: string
+    }
   ) {
     return this.messageService._createForDirect({
       targetId: targetId,

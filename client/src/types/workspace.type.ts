@@ -47,8 +47,10 @@ export type TChannel = {
   channelType: EStatusType
   path: string
 } & TWorkspace
-
 export type TGroup = TWorkspace
+export type TDirect = {
+  userIds: string[]
+} & TWorkspace
 
 export type TMember = {
   _id: string

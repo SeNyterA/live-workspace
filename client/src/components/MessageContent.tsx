@@ -1,23 +1,17 @@
 import { ActionIcon, Divider, Input, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
 import { IconSearch } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../hooks/useAppParams'
 import userMembers from '../hooks/userMembers'
-import useTyping from '../hooks/useTyping'
 import { workspaceActions } from '../redux/slices/workspace.slice'
 import { useAppSelector } from '../redux/store'
-import { useAppMutation } from '../services/apis/useAppMutation'
 import { useAppQuery } from '../services/apis/useAppQuery'
-import { useAppEmitSocket } from '../services/socket/useAppEmitSocket'
-import {
-  ApiSocketType,
-  useAppOnSocket
-} from '../services/socket/useAppOnSocket'
+import { useAppOnSocket } from '../services/socket/useAppOnSocket'
 import { TMessage } from '../types/workspace.type'
 import Message from './message/Message'
-import Editor from './new-message/NewMessage'
+import SendMessage from './message/SendMessage'
 
 export default function MessageContent() {
   const { targetRef, scrollableRef, scrollIntoView } = useScrollIntoView<
@@ -26,26 +20,12 @@ export default function MessageContent() {
   >()
   const dispatch = useDispatch()
 
-  const [userTypings, setUserTypings] =
-    useState<ApiSocketType['typing']['response'][]>()
-
   useAppOnSocket({
     key: 'message',
     resFunc: ({ message }) => {
       dispatch(workspaceActions.addMessages({ [message._id]: message }))
     }
   })
-
-  useAppOnSocket({
-    key: 'typing',
-    resFunc: ({ targetId, userId, type }) => {
-      setUserTypings([...(userTypings || []), { targetId, userId, type }])
-    }
-  })
-
-  const socketEmit = useAppEmitSocket()
-
-  const typing = useTyping()
 
   const { channelId } = useAppParams()
   const { data: channelMessages } = useAppQuery({
@@ -61,13 +41,10 @@ export default function MessageContent() {
       enabled: !!channelId
     }
   })
+
   userMembers({
     targetId: channelId
   })
-
-  const { mutateAsync: createChannelMessage } = useAppMutation(
-    'createChannelMessage'
-  )
 
   const messages =
     useAppSelector(state =>
@@ -137,44 +114,8 @@ export default function MessageContent() {
         </div>
 
         <Divider variant='dashed' />
-        {
-          userTypings?.find(e => e.targetId === channelId && e.type === 1)
-            ?.userId
-        }
-        <Editor
-          onChange={() => {
-            channelId && typing(channelId)
-          }}
-          onSubmit={value => {
-            if (channelId && value)
-              createChannelMessage(
-                {
-                  url: {
-                    baseUrl: '/workspace/channels/:channelId/messages',
-                    urlParams: {
-                      channelId: channelId
-                    }
-                  },
-                  method: 'post',
-                  payload: {
-                    content: value
-                  }
-                },
-                {
-                  onSuccess(message) {
-                    dispatch(
-                      workspaceActions.addMessages({ [message._id]: message })
-                    )
 
-                    socketEmit({
-                      key: 'stopTyping',
-                      targetId: channelId
-                    })
-                  }
-                }
-              )
-          }}
-        />
+        <SendMessage />
       </div>
     </>
   )

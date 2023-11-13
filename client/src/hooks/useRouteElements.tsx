@@ -19,7 +19,7 @@ export const paths = {
   board: 'team/:teamId/board/:boardId',
   channel: 'team/:teamId/channel/:channelId',
   group: 'team/:teamId/group/:groupId',
-  message: 'team/:teamId/direct-message/:messageId'
+  message: 'team/:teamId/direct-message/:directUserName'
 }
 
 function PrivateRoute() {

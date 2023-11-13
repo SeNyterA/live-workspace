@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import useAppParams from './useAppParams'
 
-export default function useControlParams() {
+export default function useAppControlParams() {
   const navigate = useNavigate()
 
   const { teamId } = useAppParams()

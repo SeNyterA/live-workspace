@@ -11,7 +11,7 @@ import {
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../hooks/useAppParams'
-import useControlParams from '../../hooks/useControlParams'
+import useAppControlParams from '../../hooks/useAppControlParams'
 import userMembers from '../../hooks/userMembers'
 import { useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/useAppMutation'
@@ -20,7 +20,7 @@ import { TWorkspacePlayload } from '../../types/workspace.type'
 export default function TeamList() {
   const teams =
     useAppSelector(state => Object.values(state.workspace.teams)) || []
-  const { switchTeam } = useControlParams()
+  const { switchTeam } = useAppControlParams()
 
   const { teamId } = useAppParams()
   const [openDrawer, toggleDrawer] = useState(false)

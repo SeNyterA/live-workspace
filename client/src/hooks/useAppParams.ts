@@ -4,7 +4,7 @@ export type TParams = {
   boardId?: string
   channelId?: string
   groupId?: string
-  messageId?: string
+  directUserName?: string
   teamId?: string
 }
 

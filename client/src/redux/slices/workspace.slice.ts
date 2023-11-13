@@ -3,6 +3,7 @@ import { assign } from 'lodash'
 import { TUser } from '../../types/user.type'
 import {
   TChannel,
+  TDirect,
   TGroup,
   TMember,
   TMessage,
@@ -13,6 +14,7 @@ type TWorkpsaceStore = {
   teams: { [teamId: string]: TTeam }
   channels: { [channelId: string]: TChannel }
   groups: { [groupId: string]: TGroup }
+  directs: { [directId: string]: TDirect }
   members: { [membersId: string]: TMember }
   users: { [userId: string]: TUser }
   messages: {
@@ -26,7 +28,8 @@ const initialState: TWorkpsaceStore = {
   teams: {},
   members: {},
   messages: {},
-  users: {}
+  users: {},
+  directs: {}
 }
 
 const workspaceSlice = createSlice({

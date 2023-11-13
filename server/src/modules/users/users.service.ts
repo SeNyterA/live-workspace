@@ -77,4 +77,32 @@ export class UsersService {
       users
     }
   }
+
+  async findByUsername(userName: string) {
+    const user = await this.userModel.findOne({
+      userName,
+      isAvailable: true
+    })
+
+    return {
+      user
+    }
+  }
+
+  // async findOneByKeyword(key: string) {
+  //   const regex = new RegExp(key, 'i')
+
+  //   const user = await this.userModel.findOne({
+  //     $or: [
+  //       { nickname: { $regex: regex } },
+  //       { userName: { $regex: regex } },
+  //       { email: { $regex: regex } }
+  //     ],
+  //     isAvailable: true
+  //   })
+
+  //   return {
+  //     user
+  //   }
+  // }
 }

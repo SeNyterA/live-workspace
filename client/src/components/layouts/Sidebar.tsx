@@ -11,19 +11,25 @@ import {
 } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
-import useControlParams from '../../hooks/useControlParams'
 import { useAppSelector } from '../../redux/store'
 import { EMemberRole } from '../../types/workspace.type'
+import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
+import DirectNavLink from './DirectNavLink'
 
 export default function Sidebar() {
   const { channelId, teamId } = useAppParams()
-  const { switchTo } = useControlParams()
+  const { switchTo } = useAppControlParams()
   const path = useLocation()
 
   const [toggle, setToggle] = useState<
-    'createBoard' | 'createChannel' | 'createGroup' | 'teamSetting'
+    | 'createBoard'
+    | 'createChannel'
+    | 'createGroup'
+    | 'teamSetting'
+    | 'createDirect'
   >()
 
   const hasPermission = useAppSelector(
@@ -42,6 +48,9 @@ export default function Sidebar() {
     useAppSelector(state =>
       Object.values(state.workspace.channels).filter(e => e.teamId === teamId)
     ) || []
+
+  const directs =
+    useAppSelector(state => Object.values(state.workspace.directs)) || []
 
   return (
     <>
@@ -178,19 +187,22 @@ export default function Sidebar() {
               leftSection={<IconMessage size='1rem' stroke={1.5} />}
               active={path.pathname.includes('direct-message')}
             >
-              {channels.map(item => (
-                <NavLink
-                  key={item._id}
-                  className='p-1 pl-3'
-                  label={item.title}
-                  active={channelId === item._id}
-                  onClick={() => {
-                    switchTo({
-                      target: 'direct-message',
-                      targetId: item._id
-                    })
-                  }}
-                />
+              {directs.map(item => (
+                <>
+                  <DirectNavLink direct={item} />
+                  <NavLink
+                    key={item._id}
+                    className='p-1 pl-3'
+                    label={item.title || item._id}
+                    active={channelId === item._id}
+                    onClick={() => {
+                      switchTo({
+                        target: 'direct-message',
+                        targetId: item._id
+                      })
+                    }}
+                  />
+                </>
               ))}
 
               {hasPermission && (
@@ -199,7 +211,7 @@ export default function Sidebar() {
                   label={`Create channel`}
                   rightSection={<IconPlus size={14} />}
                   onClick={() => {
-                    setToggle('createBoard')
+                    setToggle('createDirect')
                   }}
                 />
               )}
@@ -210,6 +222,11 @@ export default function Sidebar() {
 
       <TeamSetting
         isOpen={toggle === 'teamSetting'}
+        onClose={() => setToggle(undefined)}
+      />
+
+      <CreateDirect
+        isOpen={toggle === 'createDirect'}
         onClose={() => setToggle(undefined)}
       />
     </>

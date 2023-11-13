@@ -4,6 +4,7 @@ import { Model } from 'mongoose'
 import { Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { SocketService } from '../socket/socket.service'
+import { DirectMessageService } from './direct-message/direct-message.service'
 import { Group } from './group/group.schema'
 import { GroupService } from './group/group.service'
 import { Member } from './member/member.schema'
@@ -26,6 +27,8 @@ export class WorkspaceService {
     private readonly channelSerivce: ChannelService,
     @Inject(forwardRef(() => GroupService))
     private readonly groupService: GroupService,
+    @Inject(forwardRef(() => DirectMessageService))
+    private readonly directService: DirectMessageService,
 
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
 
@@ -286,12 +289,14 @@ export class WorkspaceService {
     const _teams = this.teamService.getTeamsByUserId(userId)
     const _channels = this.channelSerivce.getChannelsByUserId(userId)
     const _groups = this.groupService.getGroupsByUserId(userId)
+    const _directs = this.directService.getDirectByUserId(userId)
 
-    const [teams, channels, groups] = await Promise.all([
+    const [teams, channels, groups, directs] = await Promise.all([
       _teams,
       _channels,
-      _groups
+      _groups,
+      _directs
     ])
-    return { teams, channels, groups }
+    return { teams, channels, groups, directs }
   }
 }

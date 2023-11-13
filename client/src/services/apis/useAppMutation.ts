@@ -91,6 +91,18 @@ type ApiMutationType = {
     payload: { content: string }
     response: TMessage
   }
+
+  createDirectMessage: {
+    url: {
+      baseUrl: '/workspace/direct-messages/:targetId/messages'
+      urlParams: {
+        targetId: string
+      }
+    }
+    method: 'post'
+    payload: { content: string }
+    response: TMessage
+  }
 }
 
 export const useAppMutation = <T extends keyof ApiMutationType>(_key: T) => {
