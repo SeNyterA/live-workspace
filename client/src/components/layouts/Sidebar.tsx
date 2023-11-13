@@ -14,13 +14,14 @@ import { useLocation } from 'react-router-dom'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
+import Watching from '../../redux/Watching'
 import { EMemberRole } from '../../types/workspace.type'
 import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
 import DirectNavLink from './DirectNavLink'
 
 export default function Sidebar() {
-  const { channelId, teamId } = useAppParams()
+  const { channelId, teamId, directId } = useAppParams()
   const { switchTo } = useAppControlParams()
   const path = useLocation()
 
@@ -43,14 +44,6 @@ export default function Sidebar() {
         )
       })
   )
-
-  const channels =
-    useAppSelector(state =>
-      Object.values(state.workspace.channels).filter(e => e.teamId === teamId)
-    ) || []
-
-  const directs =
-    useAppSelector(state => Object.values(state.workspace.directs)) || []
 
   return (
     <>
@@ -87,21 +80,6 @@ export default function Sidebar() {
               leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
               active={path.pathname.includes('board')}
             >
-              {channels.map(item => (
-                <NavLink
-                  key={item._id}
-                  className='p-1 pl-3'
-                  label={item.title}
-                  active={channelId === item._id}
-                  onClick={() => {
-                    switchTo({
-                      target: 'board',
-                      targetId: item._id
-                    })
-                  }}
-                />
-              ))}
-
               {hasPermission && (
                 <NavLink
                   className='mb-2 p-1 pl-3 opacity-70'
@@ -119,20 +97,32 @@ export default function Sidebar() {
               leftSection={<IconHash size='1rem' stroke={1.5} />}
               active={path.pathname.includes('channel')}
             >
-              {channels.map(item => (
-                <NavLink
-                  key={item._id}
-                  className='p-1 pl-3'
-                  label={item.title}
-                  active={channelId === item._id}
-                  onClick={() => {
-                    switchTo({
-                      target: 'channel',
-                      targetId: item._id
-                    })
-                  }}
-                />
-              ))}
+              <Watching
+                watchingFn={state =>
+                  Object.values(state.workspace.channels).filter(
+                    e => e.teamId === teamId
+                  )
+                }
+              >
+                {channels => (
+                  <>
+                    {channels?.map(item => (
+                      <NavLink
+                        key={item._id}
+                        className='p-1 pl-3'
+                        label={item.title}
+                        active={channelId === item._id}
+                        onClick={() => {
+                          switchTo({
+                            target: 'channel',
+                            targetId: item._id
+                          })
+                        }}
+                      />
+                    ))}
+                  </>
+                )}
+              </Watching>
 
               {hasPermission && (
                 <NavLink
@@ -154,21 +144,6 @@ export default function Sidebar() {
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={path.pathname.includes('group')}
             >
-              {channels.map(item => (
-                <NavLink
-                  key={item._id}
-                  className='p-1 pl-3'
-                  label={item.title}
-                  active={channelId === item._id}
-                  onClick={() => {
-                    switchTo({
-                      target: 'group',
-                      targetId: item._id
-                    })
-                  }}
-                />
-              ))}
-
               {hasPermission && (
                 <NavLink
                   className='mb-2 p-1 pl-3 opacity-70'
@@ -187,23 +162,37 @@ export default function Sidebar() {
               leftSection={<IconMessage size='1rem' stroke={1.5} />}
               active={path.pathname.includes('direct-message')}
             >
-              {directs.map(item => (
-                <>
-                  <DirectNavLink direct={item} />
-                  <NavLink
-                    key={item._id}
-                    className='p-1 pl-3'
-                    label={item.title || item._id}
-                    active={channelId === item._id}
-                    onClick={() => {
-                      switchTo({
-                        target: 'direct-message',
-                        targetId: item._id
-                      })
-                    }}
-                  />
-                </>
-              ))}
+              <Watching
+                watchingFn={state => Object.values(state.workspace.directs)}
+              >
+                {directs => (
+                  <>
+                    {directs?.map(item => (
+                      <>
+                        <DirectNavLink direct={item}>
+                          {({ targetUser }) => (
+                            <NavLink
+                              key={item._id}
+                              className='p-1 pl-3'
+                              label={
+                                item.title || targetUser?.userName || item._id
+                              }
+                              active={directId === item._id}
+                              onClick={() => {
+                                if (item._id)
+                                  switchTo({
+                                    target: 'direct-message',
+                                    targetId: item._id
+                                  })
+                              }}
+                            />
+                          )}
+                        </DirectNavLink>
+                      </>
+                    ))}
+                  </>
+                )}
+              </Watching>
 
               {hasPermission && (
                 <NavLink

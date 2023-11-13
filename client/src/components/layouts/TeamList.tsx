@@ -10,8 +10,8 @@ import {
 } from '@mantine/core'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import useAppParams from '../../hooks/useAppParams'
 import useAppControlParams from '../../hooks/useAppControlParams'
+import useAppParams from '../../hooks/useAppParams'
 import userMembers from '../../hooks/userMembers'
 import { useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/useAppMutation'
@@ -26,6 +26,7 @@ export default function TeamList() {
   const [openDrawer, toggleDrawer] = useState(false)
   const { control, handleSubmit } = useForm<TWorkspacePlayload>()
   const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
+
   userMembers({
     targetId: teamId,
     includeUsers: true
@@ -130,43 +131,6 @@ export default function TeamList() {
                   />
                 )}
               />
-
-              {/* <Controller
-                name='displayUrl'
-                control={control}
-                // rules={{ required: 'Display URL is required' }}
-                render={({ field, fieldState }) => (
-                  <TextInput
-                    label='Display URL'
-                    placeholder='Display URL'
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={fieldState.error && fieldState.error.message}
-                    radius='md'
-                  />
-                )}
-              />
-
-              <Controller
-                name='defaultChannel'
-                control={control}
-                // rules={{ required: 'Select at least one channel' }}
-                render={({ field, fieldState }) => (
-                  <Checkbox.Group
-                    label='Select default channel'
-                    value={field.value}
-                    onChange={field.onChange}
-                    error={fieldState.error && fieldState.error.message}
-                  >
-                    <Group mt='xs'>
-                      <Checkbox value='react' label='React' />
-                      <Checkbox value='svelte' label='Svelte' />
-                      <Checkbox value='ng' label='Angular' />
-                      <Checkbox value='vue' label='Vue' />
-                    </Group>
-                  </Checkbox.Group>
-                )}
-              /> */}
             </div>
             <div className='flex items-center justify-end gap-3'>
               <Button variant='default' onClick={() => toggleDrawer(false)}>

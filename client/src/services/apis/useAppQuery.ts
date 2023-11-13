@@ -77,6 +77,19 @@ type ApiQueryType = {
     }
   }
 
+  directMessages: {
+    url: {
+      baseUrl: '/workspace/direct-messages/:directId/messages'
+      urlParams: {
+        directId: string
+      }
+    }
+    response: {
+      messages: TMessage[]
+      total: number
+    }
+  }
+
   findUsersByKeyword: {
     url: {
       baseUrl: '/users/by-keyword'

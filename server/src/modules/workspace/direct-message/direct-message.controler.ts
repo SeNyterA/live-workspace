@@ -22,11 +22,6 @@ export class DirectMessageController {
     private readonly messageService: MessageService
   ) {}
 
-  // @Post()
-  // create(@Body() directMessage: DirectMessage) {
-  //   return this.directMessageService.create(directMessage)
-  // }
-
   @Get()
   findAll() {
     return this.directMessageService.findAll()

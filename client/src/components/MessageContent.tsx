@@ -3,13 +3,9 @@ import { useScrollIntoView } from '@mantine/hooks'
 import { IconSearch } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import useAppParams from '../hooks/useAppParams'
-import userMembers from '../hooks/userMembers'
 import { workspaceActions } from '../redux/slices/workspace.slice'
-import { useAppSelector } from '../redux/store'
-import { useAppQuery } from '../services/apis/useAppQuery'
 import { useAppOnSocket } from '../services/socket/useAppOnSocket'
-import { TMessage } from '../types/workspace.type'
+import useMessages from './message/hooks/useMessages'
 import Message from './message/Message'
 import SendMessage from './message/SendMessage'
 
@@ -27,43 +23,7 @@ export default function MessageContent() {
     }
   })
 
-  const { channelId } = useAppParams()
-  const { data: channelMessages } = useAppQuery({
-    key: 'channelMessages',
-    url: {
-      baseUrl: '/workspace/channels/:channelId/messages',
-      urlParams: {
-        channelId: channelId!
-      }
-    },
-    options: {
-      queryKey: [channelId],
-      enabled: !!channelId
-    }
-  })
-
-  userMembers({
-    targetId: channelId
-  })
-
-  const messages =
-    useAppSelector(state =>
-      Object.values(state.workspace.messages).filter(
-        e => e.messageReferenceId === channelId
-      )
-    ) || []
-
-  useEffect(() => {
-    if (channelMessages)
-      dispatch(
-        workspaceActions.addMessages(
-          channelMessages?.messages.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [channelId: string]: TMessage }
-          )
-        )
-      )
-  }, [channelMessages])
+  const { messages } = useMessages()
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -71,7 +31,7 @@ export default function MessageContent() {
     }, 300)
 
     return () => clearTimeout(timeoutId)
-  }, [channelMessages, scrollIntoView])
+  }, [messages, scrollIntoView])
 
   return (
     <>

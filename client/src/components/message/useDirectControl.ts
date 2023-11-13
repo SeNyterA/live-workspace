@@ -7,19 +7,19 @@ import {
 } from '../../services/socket/useAppOnSocket'
 
 export default function useDirectControl() {
-  const { directUserName } = useAppParams()
+  const { directId } = useAppParams()
 
   const { data } = useAppQuery({
     key: 'findUserByUserName',
     url: {
       baseUrl: '/user/by-username/:userName',
       urlParams: {
-        userName: directUserName!
+        userName: directId!
       }
     },
     options: {
-      queryKey: [directUserName],
-      enabled: !!directUserName
+      queryKey: [directId],
+      enabled: !!directId
     }
   })
 

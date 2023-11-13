@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { workspaceActions } from '../redux/slices/workspace.slice'
-import { useAppSelector } from '../redux/store'
-import { useAppQuery } from '../services/apis/useAppQuery'
-import { useAppOnSocket } from '../services/socket/useAppOnSocket'
-import { TMessage } from '../types/workspace.type'
-import useAppParams from './useAppParams'
+import useAppParams from '../../../hooks/useAppParams'
+import { workspaceActions } from '../../../redux/slices/workspace.slice'
+import { useAppSelector } from '../../../redux/store'
+import { useAppQuery } from '../../../services/apis/useAppQuery'
+import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
+import { TMessage } from '../../../types/workspace.type'
 
-export default function useMessages() {
-  const { channelId, directId } = useAppParams()
+export default function useChannelMesages() {
+  const { channelId } = useAppParams()
   const dispatch = useDispatch()
 
   const { data: channelMessages } = useAppQuery({
@@ -24,27 +24,6 @@ export default function useMessages() {
       enabled: !!channelId
     }
   })
-
-  const { data: directMessages } = useAppQuery({
-    key: 'directMessages',
-    url: {
-      baseUrl: '/workspace/direct-messages/:directId/messages',
-      urlParams: {
-        directId: directId!
-      }
-    },
-    options: {
-      queryKey: [directId],
-      enabled: !!directId
-    }
-  })
-
-  const messages =
-    useAppSelector(state =>
-      Object.values(state.workspace.messages).filter(
-        e => e.messageReferenceId === channelId
-      )
-    ) || []
 
   useEffect(() => {
     if (channelMessages)
@@ -64,6 +43,13 @@ export default function useMessages() {
       dispatch(workspaceActions.addMessages({ [message._id]: message }))
     }
   })
+
+  const messages =
+    useAppSelector(state =>
+      Object.values(state.workspace.messages).filter(
+        e => e.messageReferenceId === channelId
+      )
+    ) || []
 
   return {
     messages
