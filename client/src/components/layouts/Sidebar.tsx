@@ -98,11 +98,16 @@ export default function Sidebar() {
               active={path.pathname.includes('channel')}
             >
               <Watching
-                watchingFn={state =>
-                  Object.values(state.workspace.channels).filter(
-                    e => e.teamId === teamId
-                  )
-                }
+                watchingFn={state => {
+                  try {
+                    return Object.values(state.workspace.channels).filter(
+                      e => e.teamId === teamId
+                    )
+                  } catch (error) {
+                    console.log(error)
+                    return undefined
+                  }
+                }}
               >
                 {channels => (
                   <>
@@ -144,7 +149,7 @@ export default function Sidebar() {
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={path.pathname.includes('group')}
             >
-              {hasPermission && (
+              {/* {hasPermission && (
                 <NavLink
                   className='mb-2 p-1 pl-3 opacity-70'
                   label={`Create channel`}
@@ -153,7 +158,7 @@ export default function Sidebar() {
                     setToggle('createBoard')
                   }}
                 />
-              )}
+              )} */}
             </NavLink>
 
             <NavLink
@@ -163,38 +168,43 @@ export default function Sidebar() {
               active={path.pathname.includes('direct-message')}
             >
               <Watching
-                watchingFn={state => Object.values(state.workspace.directs)}
+                watchingFn={state => {
+                  try {
+                    return Object.values(state.workspace.directs)
+                  } catch (error) {
+                    console.log(error)
+                    return undefined
+                  }
+                }}
               >
                 {directs => (
                   <>
                     {directs?.map(item => (
-                      <>
-                        <DirectNavLink direct={item}>
-                          {({ targetUser }) => (
-                            <NavLink
-                              key={item._id}
-                              className='p-1 pl-3'
-                              label={
-                                item.title || targetUser?.userName || item._id
-                              }
-                              active={directId === item._id}
-                              onClick={() => {
-                                if (item._id)
-                                  switchTo({
-                                    target: 'direct-message',
-                                    targetId: item._id
-                                  })
-                              }}
-                            />
-                          )}
-                        </DirectNavLink>
-                      </>
+                      <DirectNavLink direct={item}>
+                        {({ targetUser }) => (
+                          <NavLink
+                            key={item._id}
+                            className='p-1 pl-3'
+                            label={
+                              item.title || targetUser?.userName || item._id
+                            }
+                            active={directId === item._id}
+                            onClick={() => {
+                              if (item._id)
+                                switchTo({
+                                  target: 'direct-message',
+                                  targetId: item._id
+                                })
+                            }}
+                          />
+                        )}
+                      </DirectNavLink>
                     ))}
                   </>
                 )}
               </Watching>
 
-              {hasPermission && (
+              {/* {hasPermission && (
                 <NavLink
                   className='mb-2 p-1 pl-3 opacity-70'
                   label={`Create channel`}
@@ -203,7 +213,7 @@ export default function Sidebar() {
                     setToggle('createDirect')
                   }}
                 />
-              )}
+              )} */}
             </NavLink>
           </ScrollArea>
         </div>

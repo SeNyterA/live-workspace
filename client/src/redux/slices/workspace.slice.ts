@@ -45,7 +45,8 @@ const workspaceSlice = createSlice({
   initialState,
   reducers: {
     init: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
-      assign(state, action.payload)
+      console.log(action.payload)
+      return assign(state, action.payload)
     },
 
     updateData: (_state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {

@@ -8,5 +8,6 @@ export default function Watching<T>({
   watchingFn: (state: RootState) => T
 }) {
   const state = useAppSelector(watchingFn)
+  console.log({ state })
   return children(state)
 }
