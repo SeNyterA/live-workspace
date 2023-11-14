@@ -88,7 +88,10 @@ export class TeamService {
         isAvailable: true
       })
       .lean()
-    return teams
+    return {
+      teams,
+      members
+    }
   }
 
   async getTeamById({

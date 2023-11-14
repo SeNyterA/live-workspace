@@ -41,10 +41,23 @@ type ApiQueryType = {
       baseUrl: '/workspace'
     }
     response: {
-      teams: TTeam[]
-      channels: TChannel[]
-      groups: TGroup[]
-      directs: TDirect[]
+      teams: {
+        teams: TTeam[]
+        members: TMember[]
+      }
+      channels: {
+        channels: TChannel[]
+        members: TMember[]
+      }
+      groups: {
+        groups: TGroup[]
+        members: TMember[]
+      }
+      directs: {
+        directs: TDirect[]
+        directUserId: string[]
+      }
+      users: TUser[]
     }
   }
 
@@ -113,6 +126,22 @@ type ApiQueryType = {
     }
     response: {
       user: TUser
+    }
+  }
+
+  findDirectInfo: {
+    url: {
+      baseUrl: '/workspace/direct-messages'
+      queryParams: {
+        directId?: string
+        targetEmail?: string
+        targetId?: string
+        targetUserName?: string
+      }
+    }
+    response: {
+      users: TUser[]
+      direct: TDirect
     }
   }
 }

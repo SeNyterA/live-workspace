@@ -4,9 +4,16 @@ import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
 import Sidebar from './components/layouts/Sidebar'
 import TeamList from './components/layouts/TeamList'
-import { workspaceActions } from './redux/slices/workspace.slice'
+import {
+  TChannels,
+  TDirects,
+  TGroups,
+  TMembers,
+  TTeams,
+  TUsers,
+  workspaceActions
+} from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
-import { TChannel, TDirect, TGroup, TTeam } from './types/workspace.type'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
@@ -21,31 +28,49 @@ export default function Layout({ children }: { children: ReactNode }) {
   })
 
   useEffect(() => {
+    const channels = workspaceData?.channels.channels.reduce(
+      (pre, next) => ({ ...pre, [next._id]: next }),
+      {} as TChannels
+    )
+    const teams = workspaceData?.teams.teams.reduce(
+      (pre, next) => ({ ...pre, [next._id]: next }),
+      {} as TTeams
+    )
+    const directs = workspaceData?.directs.directs.reduce(
+      (pre, next) => ({ ...pre, [next._id]: next }),
+      {} as TDirects
+    )
+    const groups = workspaceData?.groups.groups.reduce(
+      (pre, next) => ({ ...pre, [next._id]: next }),
+      {} as TGroups
+    )
+    const users = workspaceData?.users.reduce(
+      (pre, next) => ({ ...pre, [next._id]: next }),
+      {} as TUsers
+    )
+    const members = [
+      ...(workspaceData?.channels.members || []),
+      ...(workspaceData?.teams.members || []),
+      ...(workspaceData?.groups.members || [])
+    ].reduce((pre, next) => ({ ...pre, [next._id]: next }), {} as TMembers)
+
     console.log({
-      workspaceData
+      channels,
+      directs,
+      groups,
+      members,
+      teams,
+      users
     })
+
     dispatch(
-      workspaceActions.init({
-        channels:
-          workspaceData?.channels.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [channelId: string]: TChannel }
-          ) || {},
-        groups:
-          workspaceData?.groups.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [groupId: string]: TGroup }
-          ) || {},
-        teams:
-          workspaceData?.teams.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [teamId: string]: TTeam }
-          ) || {},
-        directs:
-          workspaceData?.directs.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [teamId: string]: TDirect }
-          ) || {}
+      workspaceActions.updateData({
+        channels,
+        directs,
+        groups,
+        members,
+        teams,
+        users
       })
     )
   }, [dispatch, workspaceData])

@@ -102,7 +102,11 @@ export class DirectMessageService {
       })
       .lean()
 
-    return directs
+    const directUserId = directs.reduce((pre, next) => {
+      return [...pre, ...next.userIds.map(e => e.toString())]
+    }, [] as string[])
+
+    return { directs, directUserId }
   }
 
   async getDirectMessInfo({

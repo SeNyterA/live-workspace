@@ -4,6 +4,7 @@ import { Model } from 'mongoose'
 import { Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { SocketService } from '../socket/socket.service'
+import { User } from '../users/user.schema'
 import { DirectMessageService } from './direct-message/direct-message.service'
 import { Group } from './group/group.schema'
 import { GroupService } from './group/group.service'
@@ -31,6 +32,7 @@ export class WorkspaceService {
     private readonly directService: DirectMessageService,
 
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
 
     private readonly redisService: RedisService,
     private readonly socketService: SocketService
@@ -297,6 +299,29 @@ export class WorkspaceService {
       _groups,
       _directs
     ])
-    return { teams, channels, groups, directs }
+
+    const userIds = Array.from(
+      new Set([
+        ...teams.members.map(e => e.userId.toString()),
+        ...channels.members.map(e => e.userId.toString()),
+        ...groups.members.map(e => e.userId.toString()),
+        ...directs.directUserId
+      ])
+    )
+
+    const users = await this.userModel
+      .find({
+        _id: { $in: userIds }
+      })
+      .lean()
+
+    return {
+      teams,
+      channels,
+      groups,
+      directs,
+      userIds,
+      users
+    }
   }
 }

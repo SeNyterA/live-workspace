@@ -95,7 +95,10 @@ export class ChannelService {
         isAvailable: true
       })
       .lean()
-    return channels
+    return {
+      channels,
+      members
+    }
   }
 
   async getChannelById({
