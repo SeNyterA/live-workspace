@@ -24,7 +24,9 @@ export class DirectMessageService {
     targetId: string
   }): Promise<DirectMessage> {
     const existingDirectMessage = await this.directMessageModel.findOne({
-      userIds: { $all: [userId.toString(), targetId.toString()] },
+      // userIds: { $all: [userId.toString(), targetId.toString()] },
+      _id: targetId,
+      userIds: { $in: [userId.toString()] },
       isAvailable: true
     })
 
