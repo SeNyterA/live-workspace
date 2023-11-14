@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import useAppParams from '../../../hooks/useAppParams'
+import useDirectId from '../../../hooks/useDiectId'
 import {
   TMessages,
   workspaceActions
@@ -10,60 +10,22 @@ import { useAppQuery } from '../../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
 
 export default function useDirectMessages() {
-  const { directId } = useAppParams()
   const dispatch = useDispatch()
+  const directInfo = useDirectId()
 
   const { data: directMessages } = useAppQuery({
     key: 'directMessages',
     url: {
       baseUrl: '/workspace/direct-messages/:directId/messages',
       urlParams: {
-        directId: directId!
+        directId: directInfo?.direct._id!
       }
     },
     options: {
-      queryKey: [directId],
-      enabled: !!directId
+      queryKey: [directInfo?.direct._id],
+      enabled: !!directInfo?.direct._id
     }
   })
-
-  // const { data: findDirectInfo } = useAppQuery({
-  //   key: 'findDirectInfo',
-  //   url: {
-  //     baseUrl: '/workspace/direct-messages',
-  //     queryParams: {
-  //       directId: directId,
-  //       targetEmail: directId,
-  //       targetId: directId,
-  //       targetUserName: directId
-  //     }
-  //   },
-  //   options: {
-  //     queryKey: [directId],
-  //     enabled: !!directId
-  //   }
-  // })
-
-  // useEffect(() => {
-  //   if (findDirectInfo) {
-  //     dispatch(
-  //       workspaceActions.addUsers(
-  //         findDirectInfo.users.reduce(
-  //           (pre, next) => ({ ...pre, [next._id]: next }),
-  //           {} as TUsers
-  //         )
-  //       )
-  //     )
-  //     dispatch(
-  //       workspaceActions.addUsers(
-  //         findDirectInfo.users.reduce(
-  //           (pre, next) => ({ ...pre, [next._id]: next }),
-  //           {} as TUsers
-  //         )
-  //       )
-  //     )
-  //   }
-  // }, [findDirectInfo])
 
   useEffect(() => {
     if (directMessages)
@@ -86,9 +48,12 @@ export default function useDirectMessages() {
 
   const messages =
     useAppSelector(state =>
-      Object.values(state.workspace.messages).filter(e => e._id)
+      Object.values(state.workspace.messages).filter(
+        e => directInfo?.direct._id === e.messageReferenceId
+      )
     ) || []
 
+  console.log({ messages, directInfo })
   return {
     messages
   }

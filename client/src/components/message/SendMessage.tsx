@@ -12,7 +12,7 @@ import {
 import Editor from '../new-message/NewMessage'
 
 export default function SendMessage() {
-  const { channelId, directUserName } = useAppParams()
+  const { channelId, directId } = useAppParams()
 
   const dispatch = useDispatch()
   const [userTypings, setUserTypings] =
