@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
-import Layout from '../Layout'
-import SocketProvider from '../services/socket/SocketProvider'
-import MessageContent from '../components/MessageContent'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
+import MessageContent from '../components/MessageContent'
+import Layout from '../Layout'
 import { authActions } from '../redux/slices/auth.slice'
 import { useAppSelector } from '../redux/store'
 import { useAppQuery } from '../services/apis/useAppQuery'
+import SocketProvider from '../services/socket/SocketProvider'
 import { lsActions } from '../utils/auth'
 
 export const paths = {

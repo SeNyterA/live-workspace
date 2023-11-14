@@ -33,17 +33,19 @@ export default function Sidebar() {
     | 'createDirect'
   >()
 
-  const hasPermission = useAppSelector(
-    state =>
-      !!Object.values(state.workspace.members).find(member => {
-        return (
-          member.targetId === teamId &&
-          member.isAvailable &&
-          member.userId === state.auth.userInfo?._id &&
-          [EMemberRole.Admin, EMemberRole.Owner].includes(member.role)
-        )
-      })
-  )
+  // const hasPermission = useAppSelector(
+  //   state =>
+  //     !!Object.values(state.workspace.members).find(member => {
+  //       return (
+  //         member.targetId === teamId &&
+  //         member.isAvailable &&
+  //         member.userId === state.auth.userInfo?._id &&
+  //         [EMemberRole.Admin, EMemberRole.Owner].includes(member.role)
+  //       )
+  //     })
+  // )
+
+  const hasPermission=true
 
   return (
     <>
@@ -149,7 +151,7 @@ export default function Sidebar() {
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={path.pathname.includes('group')}
             >
-              {/* {hasPermission && (
+              {hasPermission && (
                 <NavLink
                   className='mb-2 p-1 pl-3 opacity-70'
                   label={`Create channel`}
@@ -158,7 +160,7 @@ export default function Sidebar() {
                     setToggle('createBoard')
                   }}
                 />
-              )} */}
+              )}
             </NavLink>
 
             <NavLink
@@ -204,7 +206,7 @@ export default function Sidebar() {
                 )}
               </Watching>
 
-              {/* {hasPermission && (
+              {hasPermission && (
                 <NavLink
                   className='mb-2 p-1 pl-3 opacity-70'
                   label={`Create channel`}
@@ -213,7 +215,7 @@ export default function Sidebar() {
                     setToggle('createDirect')
                   }}
                 />
-              )} */}
+              )}
             </NavLink>
           </ScrollArea>
         </div>

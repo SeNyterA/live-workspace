@@ -1,4 +1,4 @@
-import { Divider, Loader } from '@mantine/core'
+import { Divider, Loader, LoadingOverlay } from '@mantine/core'
 import { ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
@@ -55,8 +55,10 @@ export default function Layout({ children }: { children: ReactNode }) {
         ...(workspaceData?.groups.members || [])
       ].reduce((pre, next) => ({ ...pre, [next._id]: next }), {} as TMembers)
 
+      console.log({ channels, directs, groups, members, teams, users })
+
       dispatch(
-        workspaceActions.init({
+        workspaceActions.updateData({
           channels,
           directs,
           groups,
@@ -70,28 +72,24 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {!workspaceData ? (
-        <div className='flex h-screen w-screen items-center justify-center'>
-          <Loader />
-        </div>
-      ) : (
-        <>
-          <div className='flex h-screen w-screen flex-col text-sm'>
-            <AppHeader />
-            <Divider variant='dashed' />
-            <div className='flex flex-1'>
-              <TeamList />
+      <div className='relative flex h-screen w-screen flex-col text-sm'>
+        <LoadingOverlay
+          visible={isPending}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+        />
+        <AppHeader />
+        <Divider variant='dashed' />
+        <div className='flex flex-1'>
+          <TeamList />
 
-              <Divider variant='dashed' orientation='vertical' />
-              <div className='flex flex-1'>
-                <Sidebar />
-                <Divider variant='dashed' orientation='vertical' />
-                {children}
-              </div>
-            </div>
+          <Divider variant='dashed' orientation='vertical' />
+          <div className='flex flex-1'>
+            <Sidebar />
+            <Divider variant='dashed' orientation='vertical' />
+            {children}
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </>
   )
 }

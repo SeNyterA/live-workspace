@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { assign, cloneDeep } from 'lodash'
+import { assign } from 'lodash'
 import { TUser } from '../../types/user.type'
 import {
   TChannel,
@@ -15,7 +15,7 @@ export type TMembers = { [membersId: string]: TMember }
 export type TChannels = { [channelId: string]: TChannel }
 export type TGroups = { [groupId: string]: TGroup }
 export type TTeams = { [teamId: string]: TTeam }
-export type TDirects = { [teamId: string]: TDirect }
+export type TDirects = { [directId: string]: TDirect }
 export type TMessages = {
   [messageId: string]: TMessage
 }
@@ -39,7 +39,6 @@ const initialState: TWorkpsaceStore = {
   users: {},
   directs: {}
 }
-
 const workspaceSlice = createSlice({
   name: 'workspace',
   initialState,
@@ -49,18 +48,17 @@ const workspaceSlice = createSlice({
       return assign(state, action.payload)
     },
 
-    updateData: (_state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
-      const state = cloneDeep(_state)
+    updateData: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
       const { channels, directs, groups, members, messages, teams, users } =
         action.payload
-      if (channels) assign(state.users, channels)
-      if (directs) assign(state.users, directs)
-      if (groups) assign(state.users, groups)
-      if (members) assign(state.users, members)
-      if (messages) assign(state.users, messages)
-      if (teams) assign(state.users, teams)
+
+      if (channels) assign(state.channels, channels)
+      if (directs) assign(state.directs, directs)
+      if (groups) assign(state.groups, groups)
+      if (members) assign(state.members, members)
+      if (messages) assign(state.messages, messages)
+      if (teams) assign(state.teams, teams)
       if (users) assign(state.users, users)
-      return state
     },
 
     addUsers: (state, action: PayloadAction<TUsers>) => {
