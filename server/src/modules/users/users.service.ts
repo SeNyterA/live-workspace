@@ -6,7 +6,7 @@ import { TCreateUser, TUser } from './user.dto'
 import { User } from './user.schema'
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) public userModel: Model<User>) {}
 
   async _findByUserNameOrEmail(userNameOrEmail: string): Promise<User> {
     const user = await this.userModel.findOne({

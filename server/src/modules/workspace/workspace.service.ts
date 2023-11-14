@@ -289,7 +289,7 @@ export class WorkspaceService {
     const _teams = this.teamService.getTeamsByUserId(userId)
     const _channels = this.channelSerivce.getChannelsByUserId(userId)
     const _groups = this.groupService.getGroupsByUserId(userId)
-    const _directs = this.directService.getDirectByUserId(userId)
+    const _directs = this.directService.getDirectsByUserId(userId)
 
     const [teams, channels, groups, directs] = await Promise.all([
       _teams,

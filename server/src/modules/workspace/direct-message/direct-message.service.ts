@@ -4,7 +4,7 @@ import {
   NotFoundException
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { FilterQuery, Model } from 'mongoose'
 import { UsersService } from 'src/modules/users/users.service'
 import { DirectMessage } from './direct-message.schema'
 
@@ -94,7 +94,7 @@ export class DirectMessageService {
     return deletedDirectMessage
   }
 
-  async getDirectByUserId(userId: string) {
+  async getDirectsByUserId(userId: string) {
     const directs = await this.directMessageModel
       .find({
         userIds: { $in: [userId] },
@@ -103,5 +103,73 @@ export class DirectMessageService {
       .lean()
 
     return directs
+  }
+
+  async getDirectMessInfo({
+    userId,
+    directId,
+    targetEmail,
+    targetId,
+    targetUserName
+  }: {
+    userId: string
+    directId?: string
+    targetUserName?: string
+    targetEmail?: string
+    targetId?: string
+  }) {
+    try {
+      let _targetId: string
+      if (targetId) {
+        _targetId = targetId
+      } else if (targetEmail || targetUserName) {
+        console.log(targetEmail, targetUserName)
+        const target = await this.usersService.userModel.findOne({
+          isAvailable: true,
+          $or: [
+            {
+              userName: targetUserName
+            },
+            { email: targetEmail }
+          ]
+        })
+        if (target._id.toString() !== userId) _targetId = target._id.toString()
+      }
+
+      const filterQueries: FilterQuery<DirectMessage>[] = []
+      if (userId && _targetId) {
+        filterQueries.push({
+          userIds: { $all: [userId, _targetId] }
+        })
+      }
+      if (directId && userId) {
+        filterQueries.push({
+          _id: directId || '',
+          userIds: { $in: [userId] }
+        })
+      }
+
+      const direct = await this.directMessageModel.findOne({
+        isAvailable: true,
+        $or: filterQueries
+      })
+      if (!direct) {
+        throw new NotFoundException()
+      }
+
+      const users = await this.usersService.userModel
+        .find({
+          _id: { $in: direct.userIds }
+        })
+        .lean()
+
+      return {
+        direct,
+        users
+      }
+    } catch (error) {
+      console.log(error)
+      throw new NotFoundException()
+    }
   }
 }

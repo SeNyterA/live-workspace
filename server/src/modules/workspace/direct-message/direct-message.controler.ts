@@ -5,7 +5,8 @@ import {
   Get,
   Param,
   Patch,
-  Post
+  Post,
+  Query
 } from '@nestjs/common'
 
 import { HttpUser } from 'src/decorators/users.decorator'
@@ -22,14 +23,26 @@ export class DirectMessageController {
     private readonly messageService: MessageService
   ) {}
 
-  @Get()
+  @Get('/all')
   findAll() {
     return this.directMessageService.findAll()
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.directMessageService.findById(id)
+  @Get('')
+  getDirectMessInfo(
+    @HttpUser() user: TJwtUser,
+    @Query('directId') directId?: string,
+    @Query('targetEmail') targetEmail?: string,
+    @Query('targetId') targetId?: string,
+    @Query('targetUserName') targetUserName?: string
+  ) {
+    return this.directMessageService.getDirectMessInfo({
+      userId: user.sub,
+      directId,
+      targetEmail,
+      targetId,
+      targetUserName
+    })
   }
 
   @Patch(':id')
