@@ -1,4 +1,4 @@
-import { Checkbox, TextInput, Textarea } from '@mantine/core'
+import { Checkbox, Textarea, TextInput } from '@mantine/core'
 import { Controller, useForm } from 'react-hook-form'
 
 export default function TeamForm() {

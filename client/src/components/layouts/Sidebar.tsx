@@ -13,9 +13,7 @@ import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
-import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { EMemberRole } from '../../types/workspace.type'
 import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
 import DirectNavLink from './DirectNavLink'
@@ -45,7 +43,7 @@ export default function Sidebar() {
   //     })
   // )
 
-  const hasPermission=true
+  const hasPermission = true
 
   return (
     <>

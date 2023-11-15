@@ -1,4 +1,4 @@
-import { Divider, Loader, LoadingOverlay } from '@mantine/core'
+import { Divider, LoadingOverlay } from '@mantine/core'
 import { ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'

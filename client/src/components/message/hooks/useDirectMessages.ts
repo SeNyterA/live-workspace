@@ -7,7 +7,6 @@ import {
 } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
-import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
 
 export default function useDirectMessages() {
   const dispatch = useDispatch()
@@ -39,13 +38,6 @@ export default function useDirectMessages() {
       )
   }, [directMessages])
 
-  useAppOnSocket({
-    key: 'message',
-    resFunc: ({ message }) => {
-      dispatch(workspaceActions.addMessages({ [message._id]: message }))
-    }
-  })
-
   const messages =
     useAppSelector(state =>
       Object.values(state.workspace.messages).filter(
@@ -53,7 +45,6 @@ export default function useDirectMessages() {
       )
     ) || []
 
-  console.log({ messages, directInfo })
   return {
     messages
   }

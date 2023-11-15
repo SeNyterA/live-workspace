@@ -12,7 +12,7 @@ import {
 import Editor from '../new-message/NewMessage'
 
 export default function SendMessage() {
-  const { channelId, directId } = useAppParams()
+  const { channelId } = useAppParams()
 
   const dispatch = useDispatch()
   const [userTypings, setUserTypings] =
@@ -28,9 +28,6 @@ export default function SendMessage() {
 
   const { mutateAsync: createChannelMessage } = useAppMutation(
     'createChannelMessage'
-  )
-  const { mutateAsync: createDirectMessage } = useAppMutation(
-    'createDirectMessage'
   )
 
   return (
