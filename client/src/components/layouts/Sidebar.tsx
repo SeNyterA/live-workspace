@@ -19,7 +19,7 @@ import TeamSetting from '../team-setting/TeamSetting'
 import DirectNavLink from './DirectNavLink'
 
 export default function Sidebar() {
-  const { channelId, teamId, directId } = useAppParams()
+  const { channelId, teamId, directId, boardId, groupId } = useAppParams()
   const { switchTo } = useAppControlParams()
   const path = useLocation()
 
@@ -30,18 +30,6 @@ export default function Sidebar() {
     | 'teamSetting'
     | 'createDirect'
   >()
-
-  // const hasPermission = useAppSelector(
-  //   state =>
-  //     !!Object.values(state.workspace.members).find(member => {
-  //       return (
-  //         member.targetId === teamId &&
-  //         member.isAvailable &&
-  //         member.userId === state.auth.userInfo?._id &&
-  //         [EMemberRole.Admin, EMemberRole.Owner].includes(member.role)
-  //       )
-  //     })
-  // )
 
   const hasPermission = true
 
@@ -79,6 +67,7 @@ export default function Sidebar() {
               label='Boards'
               leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
               active={path.pathname.includes('board')}
+              defaultOpened={!!boardId}
             >
               {hasPermission && (
                 <NavLink
@@ -96,6 +85,7 @@ export default function Sidebar() {
               label='Channels'
               leftSection={<IconHash size='1rem' stroke={1.5} />}
               active={path.pathname.includes('channel')}
+              defaultOpened={!!channelId}
             >
               <Watching
                 watchingFn={state => {
@@ -148,6 +138,7 @@ export default function Sidebar() {
               label='Groups'
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={path.pathname.includes('group')}
+              defaultOpened={!!groupId}
             >
               {hasPermission && (
                 <NavLink
@@ -166,6 +157,7 @@ export default function Sidebar() {
               label='Direct messages'
               leftSection={<IconMessage size='1rem' stroke={1.5} />}
               active={path.pathname.includes('direct-message')}
+              defaultOpened={!!directId}
             >
               <Watching
                 watchingFn={state => {
@@ -188,12 +180,20 @@ export default function Sidebar() {
                             label={
                               item.title || targetUser?.userName || item._id
                             }
-                            active={directId === item._id}
+                            active={
+                              !!directId &&
+                              [
+                                item._id,
+                                targetUser?._id,
+                                targetUser?.userName,
+                                targetUser?.email
+                              ].includes(directId)
+                            }
                             onClick={() => {
-                              if (item._id)
+                              if (targetUser?.userName)
                                 switchTo({
                                   target: 'direct-message',
-                                  targetId: item._id
+                                  targetId: targetUser?.userName
                                 })
                             }}
                           />
