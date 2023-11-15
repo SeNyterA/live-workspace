@@ -1,9 +1,6 @@
 import { useAppSelector } from '../redux/store'
-import useAppParams from './useAppParams'
 
-export default function useDirectId() {
-  const { directId } = useAppParams()
-
+export default function useDirect(directId?: string) {
   const direct = useAppSelector(state => {
     const meId = state.auth.userInfo?._id!
 

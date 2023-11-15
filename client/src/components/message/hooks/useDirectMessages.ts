@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import useDirectId from '../../../hooks/useDiectId'
+import useDirect from '../../../hooks/useDirect'
 import {
   TMessages,
   workspaceActions
@@ -10,7 +10,7 @@ import { useAppQuery } from '../../../services/apis/useAppQuery'
 
 export default function useDirectMessages() {
   const dispatch = useDispatch()
-  const directInfo = useDirectId()
+  const directInfo = useDirect()
 
   const { data: directMessages } = useAppQuery({
     key: 'directMessages',

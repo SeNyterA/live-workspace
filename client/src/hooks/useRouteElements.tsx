@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
+import ChannelMessage from '../components/message/ChannelMessage'
+import DirectMessage from '../components/message/DirectMessage'
 import MessageContent from '../components/MessageContent'
 import Layout from '../Layout'
 import { authActions } from '../redux/slices/auth.slice'
@@ -19,7 +21,7 @@ export const paths = {
   board: 'team/:teamId/board/:boardId',
   channel: 'team/:teamId/channel/:channelId',
   group: 'team/:teamId/group/:groupId',
-  message: 'team/:teamId/direct-message/:directId'
+  direct: 'team/:teamId/direct-message/:directId'
 }
 
 function PrivateRoute() {
@@ -109,7 +111,7 @@ export default function useRouteElements() {
           path: paths.channel,
           element: (
             <Layout>
-              <MessageContent />
+              <ChannelMessage />
             </Layout>
           )
         },
@@ -122,10 +124,10 @@ export default function useRouteElements() {
           )
         },
         {
-          path: paths.message,
+          path: paths.direct,
           element: (
             <Layout>
-              <MessageContent />
+              <DirectMessage />
             </Layout>
           )
         }

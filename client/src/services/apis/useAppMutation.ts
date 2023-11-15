@@ -11,7 +11,7 @@ import {
 import { replaceDynamicValues } from './common'
 import http from './http'
 
-type ApiMutationType = {
+export type ApiMutationType = {
   login: {
     url: {
       baseUrl: '/auth/login'
