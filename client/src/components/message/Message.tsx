@@ -9,6 +9,14 @@ export default function Message({ message }: { message: TMessage }) {
     state => state.workspace.users[message.createdById]
   )
 
+  const listUserIdsReaded = useAppSelector(state => {
+    const keys = Object.values(state.workspace.userReadedMessages).filter(e =>
+      e.includes(`${message.messageReferenceId}`)
+    )
+
+    return keys
+  })
+
   const isOwner = useAppSelector(
     state =>
       state.auth.userInfo?._id === message.createdById &&

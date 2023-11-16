@@ -144,6 +144,16 @@ type ApiQueryType = {
       direct: TDirect
     }
   }
+
+  usersReadedMessage: {
+    url: {
+      baseUrl: '/workspace/usersReadedMessage/:targetId'
+      urlParams: {
+        targetId: string
+      }
+    }
+    response: any
+  }
 }
 
 export const useAppQuery = <T extends keyof ApiQueryType>({

@@ -1,6 +1,8 @@
-import { createContext, ReactNode, useContext } from 'react'
+import { useDocumentVisibility } from '@mantine/hooks'
+import { createContext, ReactNode, useContext, useEffect } from 'react'
 import { TParams } from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
+import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { TMessage } from '../../types/workspace.type'
 
 export type TTargetMessageId = Partial<
@@ -29,7 +31,6 @@ export default function MessageContentProvider({
   children: ReactNode
 }) {
   const { targetId } = value
-
   const messages =
     useAppSelector(state =>
       Object.values(state.workspace.messages).filter(
@@ -38,6 +39,24 @@ export default function MessageContentProvider({
           e.messageReferenceId
       )
     ) || []
+
+  const isVisible = useDocumentVisibility()
+  const emitSocket = useAppEmitSocket()
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMess = messages[messages.length - 1]
+      const _targetId =
+        targetId.channelId || targetId.directId || targetId.groupId
+
+      if (_targetId && isVisible)
+        emitSocket({
+          key: 'makeReadMessage',
+          messageId: lastMess._id,
+          targetId: _targetId
+        })
+    }
+  }, [messages])
 
   return (
     <messageContentContext.Provider

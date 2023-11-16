@@ -3,6 +3,7 @@ import { useSocketContext } from './SocketProvider'
 type ApiEmitocketType = {
   startTyping: { targetId: string }
   stopTyping: { targetId: string }
+  makeReadMessage: { targetId: string; messageId: string }
 }
 
 export const useAppEmitSocket = () => {

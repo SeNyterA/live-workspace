@@ -19,6 +19,9 @@ export type TDirects = { [directId: string]: TDirect }
 export type TMessages = {
   [messageId: string]: TMessage
 }
+export type TUserReadedMessages = {
+  [key: string]: string //targetId:userId:messageId
+}
 
 type TWorkpsaceStore = {
   teams: TTeams
@@ -28,6 +31,7 @@ type TWorkpsaceStore = {
   members: TMembers
   users: TUsers
   messages: TMessages
+  userReadedMessages: TUserReadedMessages
 }
 
 const initialState: TWorkpsaceStore = {
@@ -37,7 +41,8 @@ const initialState: TWorkpsaceStore = {
   members: {},
   messages: {},
   users: {},
-  directs: {}
+  directs: {},
+  userReadedMessages: {}
 }
 const workspaceSlice = createSlice({
   name: 'workspace',
@@ -83,6 +88,17 @@ const workspaceSlice = createSlice({
 
     addMessages: (state, action: PayloadAction<TMessages>) => {
       assign(state.messages, action.payload)
+    },
+    toogleUserReadedMessage: (
+      state,
+      action: PayloadAction<{
+        userId: string
+        targetId: string
+        messageId: string
+      }>
+    ) => {
+      const { messageId, targetId, userId } = action.payload
+      state.userReadedMessages[`${targetId}_${userId}`] = messageId
     }
   }
 })

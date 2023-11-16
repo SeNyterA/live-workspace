@@ -12,8 +12,8 @@ import { DirectMessage } from './direct-message.schema'
 export class DirectMessageService {
   constructor(
     @InjectModel(DirectMessage.name)
-    private readonly directMessageModel: Model<DirectMessage>,
-    private readonly usersService: UsersService
+    public readonly directMessageModel: Model<DirectMessage>,
+    public readonly usersService: UsersService
   ) {}
 
   async _checkExisting({

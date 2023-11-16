@@ -16,6 +16,9 @@ export default function MessageContent() {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      (targetRef as any).current = document.querySelector(
+        `#id_${messages[messages.length - 1]._id}`
+      )
       scrollIntoView()
     }, 300)
 
@@ -53,7 +56,7 @@ export default function MessageContent() {
             viewportRef={scrollableRef}
             scrollbarSize={6}
             onScrollPositionChange={({ x, y }) => {
-              console.log({ x, y })
+              // console.log({ x, y })
             }}
           >
             {messages.map(message => (

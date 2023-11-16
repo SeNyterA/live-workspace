@@ -75,9 +75,20 @@ export class WorkspaceService {
         isAvailable: true
       })
       .lean()
+    const directs = await this.directService.directMessageModel.find({
+      isAvailable: true,
+      userIds: { $in: [userId] }
+    })
 
-    const rooms = [...members.map(member => member.targetId.toString()), userId]
+    const rooms = [
+      ...members.map(member => member.targetId.toString()),
+      ...directs.map(direct => direct._id.toString()),
+      userId
+    ]
+
     client.join(rooms)
+
+    console.log(rooms)
   }
 
   //#region Typing
@@ -154,23 +165,26 @@ export class WorkspaceService {
   //#region Read
   async markMessageAsRead(userId: string, targetId: string, messageId: string) {
     const key = `read:${targetId}:${userId}`
-    return this.redisService.redisClient.set(key, messageId)
+
+    await this.redisService.redisClient.set(key, messageId)
+
+    await this.socketService.server
+      .to([targetId])
+      .emit('userReadedMessage', `${targetId}:${userId}:${messageId}`)
   }
 
-  async getReadMessagesForTarget(
-    targetId: string
-  ): Promise<{ [userId: string]: string }> {
+  async getReadMessagesForTarget(targetId: string): Promise<string[]> {
     const key = `read:${targetId}:*`
     const keys = await this.getKeysByPattern(key)
 
-    const readMessages: { [userId: string]: string } = {}
-    for (const k of keys) {
-      const [, , readUserId] = k.split(':')
-      const messageId = await this.redisService.redisClient.get(k)
-      readMessages[readUserId] = messageId
-    }
+    const res = await Promise.all(
+      keys.map(async key => {
+        const messageId = await this.redisService.redisClient.get(key)
+        return `${key}:${messageId}`.replace('read:', '')
+      })
+    )
 
-    return readMessages
+    return res
   }
   //#endregion
 
@@ -284,7 +298,9 @@ export class WorkspaceService {
       action: 'create' | 'update' | 'delete'
     }
   }) {
-    this.socketService.server.to(rooms).emit('message', data)
+    await this.socketService.server.to(rooms).emit('message', data)
+
+    console.log(rooms)
   }
 
   async getWorkspaceData(userId: string) {

@@ -27,7 +27,7 @@ export class MessageService {
   }: {
     userId: string
     targetId: string
-    messagePayload: any
+    messagePayload: { content: string }
   }) {
     const directMessage =
       await this.directMessageService._getOrCreateDirectMessage({
@@ -39,13 +39,13 @@ export class MessageService {
       messageReferenceId: directMessage._id.toString(),
       createdById: userId,
       modifiedById: userId,
-      content: 'content',
+      content: messagePayload.content,
       messageFor: EMessageFor.Direct,
       messageType: EMessageType.Normal
     })
 
     this.workspaceService.message({
-      rooms: [targetId, userId],
+      rooms: [targetId, userId, directMessage._id.toString()],
       data: {
         action: 'create',
         message: newMess

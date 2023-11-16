@@ -62,6 +62,7 @@ export class DirectMessageController {
   sendMesage(
     @Param('targetId') targetId: string,
     @HttpUser() user: TJwtUser,
+    @Body()
     messagePayload: {
       content: string
     }
@@ -75,9 +76,6 @@ export class DirectMessageController {
 
   @Get(':targetId/messages')
   messages(@Param('targetId') targetId: string, @HttpUser() user: TJwtUser) {
-    console.log({
-      targetId
-    })
     return this.messageService._getMessages({
       messageReferenceId: targetId,
       userId: user.sub,

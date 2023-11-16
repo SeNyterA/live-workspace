@@ -198,4 +198,13 @@ export class WorkspaceGateway
   async disconnect(@WsUser() user: TJwtUser, @WsClient() client: Socket) {
     console.log('disconnect:', 11111)
   }
+
+  @SubscribeMessage('makeReadMessage')
+  async makeReadMessage(
+    @WsUser() user: TJwtUser,
+    @MessageBody()
+    { targetId, messageId }: { targetId: string; messageId: string }
+  ) {
+    await this.workspaceService.markMessageAsRead(user.sub, targetId, messageId)
+  }
 }

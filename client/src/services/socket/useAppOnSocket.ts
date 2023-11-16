@@ -17,6 +17,10 @@ export type ApiSocketType = {
       type: 1 | 0
     }
   }
+
+  userReadedMessage: {
+    response: string
+  }
 }
 
 export const useAppOnSocket = <T extends keyof ApiSocketType>({
