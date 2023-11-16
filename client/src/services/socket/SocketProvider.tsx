@@ -28,7 +28,7 @@ export default function SocketProvider({ children }: SocketProviderProps) {
         }
       }).connect()
 
-      newSocket.emit('joins')
+      // newSocket.emit('joins')
 
       setSocket(newSocket)
 

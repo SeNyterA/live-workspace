@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
-import { SocketService } from '../socket/socket.service'
 import { User } from '../users/user.schema'
 import { DirectMessageService } from './direct-message/direct-message.service'
 import { Group } from './group/group.schema'
@@ -16,7 +15,7 @@ import { Channel } from './team/channel/channel.schema'
 import { ChannelService } from './team/channel/channel.service'
 import { Team } from './team/team.schema'
 import { TeamService } from './team/team.service'
-import { CustomSocket } from './workspace.gateway'
+import { CustomSocket, WorkspaceGateway } from './workspace.gateway'
 
 @Injectable()
 export class WorkspaceService {
@@ -35,7 +34,9 @@ export class WorkspaceService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
 
     private readonly redisService: RedisService,
-    private readonly socketService: SocketService
+
+    @Inject(forwardRef(() => WorkspaceGateway))
+    private readonly socketService: WorkspaceGateway
   ) {
     this.listenToExpiredKeys()
   }
@@ -166,11 +167,15 @@ export class WorkspaceService {
   async markMessageAsRead(userId: string, targetId: string, messageId: string) {
     const key = `read:${targetId}:${userId}`
 
-    await this.redisService.redisClient.set(key, messageId)
+    const _messageId = await this.redisService.redisClient.get(key)
 
-    await this.socketService.server
-      .to([targetId])
-      .emit('userReadedMessage', `${targetId}:${userId}:${messageId}`)
+    if (_messageId !== messageId) {
+      this.redisService.redisClient.set(key, messageId)
+
+      this.socketService.server
+        .to([targetId])
+        .emit('userReadedMessage', `${targetId}:${userId}:${messageId}`)
+    }
   }
 
   async getReadMessagesForTarget(targetId: string): Promise<string[]> {
@@ -300,7 +305,8 @@ export class WorkspaceService {
   }) {
     await this.socketService.server.to(rooms).emit('message', data)
 
-    console.log(rooms)
+    const clients = await this.socketService.server.fetchSockets()
+    console.log(clients.map(e => e.rooms))
   }
 
   async getWorkspaceData(userId: string) {

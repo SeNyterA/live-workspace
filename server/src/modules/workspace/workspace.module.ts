@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule, SchemaFactory } from '@nestjs/mongoose'
 import { RedisModule } from '../redis/redis.module'
-import { SocketModule } from '../socket/socket.module'
 import { User } from '../users/user.schema'
 import { UsersModule } from '../users/users.module'
 import { DirectMessageController } from './direct-message/direct-message.controler'
@@ -42,8 +41,7 @@ import { WorkspaceService } from './workspace.service'
       { name: User.name, schema: SchemaFactory.createForClass(User) }
     ]),
     UsersModule,
-    RedisModule,
-    SocketModule
+    RedisModule
   ],
   controllers: [
     TeamController,

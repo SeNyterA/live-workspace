@@ -6,7 +6,6 @@ import { AuthGuard } from './modules/auth/auth.guard'
 import { AuthModule } from './modules/auth/auth.module'
 import { AWSModule } from './modules/aws/aws.module'
 import { RedisModule } from './modules/redis/redis.module'
-import { SocketModule } from './modules/socket/socket.module'
 import { UsersModule } from './modules/users/users.module'
 import { WorkspaceModule } from './modules/workspace/workspace.module'
 
@@ -18,8 +17,7 @@ import { WorkspaceModule } from './modules/workspace/workspace.module'
     UsersModule,
     WorkspaceModule,
     AWSModule,
-    RedisModule,
-    SocketModule
+    RedisModule
   ],
   providers: [
     {
