@@ -1,7 +1,8 @@
 import { ActionIcon, Divider, Input, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
 import { IconSearch } from '@tabler/icons-react'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import { TMessage } from '../../types/workspace.type'
 import Message from './Message'
 import { useMessageContent } from './MessageContentProvider'
 import SendMessage from './SendMessage'
@@ -10,20 +11,41 @@ export default function MessageContent() {
   const { targetRef, scrollableRef, scrollIntoView } = useScrollIntoView<
     HTMLDivElement,
     HTMLDivElement
-  >()
-
+  >({ duration: 300 })
+  const refMessages = useRef<TMessage[]>([])
   const { messages, title } = useMessageContent()
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      (targetRef as any).current = document.querySelector(
-        `#id_${messages[messages.length - 1]._id}`
-      )
-      scrollIntoView()
-    }, 300)
+  const scrollToBottom = () => {
+    const scrollableDiv = scrollableRef.current
+    if (scrollableDiv) {
+      scrollableDiv.scrollTop = scrollableDiv.scrollHeight
+    }
+  }
 
-    return () => clearTimeout(timeoutId)
+  useEffect(() => {
+    if (refMessages.current.length === 0) {
+      scrollToBottom()
+    }
+
+    if (messages.length !== refMessages.current.length) {
+      scrollToBottom()
+    }
+
+    // const timeoutId = setTimeout(() => {
+    //   ;(targetRef as any).current = document.querySelector(
+    //     `#id_${messages[messages.length - 1]._id}`
+    //   )
+    //   scrollIntoView()
+    // }, 300)
+
+    refMessages.current = messages
+
+    // return () => clearTimeout(timeoutId)
   }, [messages, scrollIntoView])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [])
 
   return (
     <>
@@ -55,9 +77,6 @@ export default function MessageContent() {
             className='absolute inset-0 overflow-auto'
             viewportRef={scrollableRef}
             scrollbarSize={6}
-            onScrollPositionChange={({ x, y }) => {
-              // console.log({ x, y })
-            }}
           >
             {messages.map(message => (
               <Message message={message} key={message._id} />
