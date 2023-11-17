@@ -5,12 +5,8 @@ const YourComponent = () => {
   const { socket } = useSocketContext()
 
   useEffect(() => {
-    socket?.on('createdTeam', (data: any) => {
-      console.log('Received event:', data)
-    })
-    socket?.on('team', (data: any) => {
-      console.log('Received event:', data)
-    })
+    socket?.on('createdTeam', (data: any) => {})
+    socket?.on('team', (data: any) => {})
   }, [socket])
 
   return (
@@ -21,7 +17,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('joinTeam', '10')
-              console.log('joinTeam', '10')
             }}
           >
             join team 10
@@ -31,7 +26,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('joinTeam', '11')
-              console.log('joinTeam', '11')
             }}
           >
             join team 11
@@ -40,7 +34,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('joinTeam', '12')
-              console.log('joinTeam', '12')
             }}
           >
             join team 12
@@ -52,7 +45,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('leaveTeam', '10')
-              console.log('leaveTeam', '10')
             }}
           >
             leave team 10
@@ -62,7 +54,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('leaveTeam', '11')
-              console.log('leaveTeam', '11')
             }}
           >
             leave team 11
@@ -72,7 +63,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('leaveTeam', '12')
-              console.log('leaveTeam', '12')
             }}
           >
             leave team 12
@@ -84,7 +74,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('startTyping', 'target_10')
-              console.log('startTyping', 'target_10')
             }}
           >
             Typing 10
@@ -94,7 +83,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('startTyping', 'target_11')
-              console.log('startTyping', 'target_11')
             }}
           >
             Typing 11
@@ -104,7 +92,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('startTyping', 'target_12')
-              console.log('startTyping', 'target_12')
             }}
           >
             Typing 12
@@ -116,7 +103,6 @@ const YourComponent = () => {
             className='rounded bg-gray-100 px-3 py-1.5'
             onClick={() => {
               socket?.emit('joins')
-              console.log('joins')
             }}
           >
             Joins

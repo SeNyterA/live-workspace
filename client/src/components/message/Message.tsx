@@ -5,17 +5,17 @@ import { useAppSelector } from '../../redux/store'
 import { EMessageType, TMessage } from '../../types/workspace.type'
 
 export default function Message({ message }: { message: TMessage }) {
-  const createByUser = useAppSelector(
+  const createdByUser = useAppSelector(
     state => state.workspace.users[message.createdById]
   )
 
-  const listUserIdsReaded = useAppSelector(state => {
-    const keys = Object.values(state.workspace.userReadedMessages).filter(e =>
-      e.includes(`${message.messageReferenceId}`)
-    )
+  // const listUserIdsReaded = useAppSelector(state => {
+  //   const keys = Object.values(state.workspace.userReadedMessages).filter(e =>
+  //     e.includes(`${message.messageReferenceId}`)
+  //   )
 
-    return keys
-  })
+  //   return keys
+  // })
 
   const isOwner = useAppSelector(
     state =>
@@ -26,16 +26,18 @@ export default function Message({ message }: { message: TMessage }) {
   return (
     <div
       id={`id_${message._id}`}
-      className={`my-3 flex gap-2 px-4 ${isOwner && 'justify-end'}`}
+      className={`my-3 flex gap-2 px-4 ${
+        isOwner ? 'justify-end' : 'justify-start'
+      }`}
     >
-      {isOwner || <Avatar />}
+      {!isOwner && <Avatar />}
 
-      <div className={`flex flex-col ${isOwner && 'items-end'}`}>
-        {isOwner || (
+      <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
+        {!isOwner && (
           <p className='font-medium'>
             {message.messageType === EMessageType.System
               ? EMessageType.System
-              : createByUser?.userName}
+              : createdByUser?.userName}
           </p>
         )}
 

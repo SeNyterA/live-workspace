@@ -13,7 +13,6 @@ export const useAppEmitSocket = () => {
     key,
     ...value
   }: { key: T } & ApiEmitocketType[T]) => {
-    console.log({ value })
     socket?.emit(key, value)
   }
 

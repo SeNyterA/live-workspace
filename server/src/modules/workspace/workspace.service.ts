@@ -88,8 +88,6 @@ export class WorkspaceService {
     ]
 
     client.join(rooms)
-
-    console.log(rooms)
   }
 
   //#region Typing
@@ -306,7 +304,6 @@ export class WorkspaceService {
     await this.socketService.server.to(rooms).emit('message', data)
 
     const clients = await this.socketService.server.fetchSockets()
-    console.log(clients.map(e => e.rooms))
   }
 
   async getWorkspaceData(userId: string) {

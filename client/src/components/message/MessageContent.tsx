@@ -77,6 +77,11 @@ export default function MessageContent() {
             className='absolute inset-0 overflow-auto'
             viewportRef={scrollableRef}
             scrollbarSize={6}
+            onScrollPositionChange={({ y }) => {
+              if (y < 100) {
+                console.log('position', y)
+              }
+            }}
           >
             {messages.map(message => (
               <Message message={message} key={message._id} />

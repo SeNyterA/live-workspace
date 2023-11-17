@@ -6,8 +6,6 @@ export default function useAppControlParams() {
 
   const { teamId, directId } = useAppParams()
 
-  console.log(directId)
-
   return {
     switchTo: ({
       targetId,

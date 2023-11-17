@@ -34,7 +34,7 @@ export default function DirectMessage() {
   useAppOnSocket({
     key: 'userReadedMessage',
     resFunc: data => {
-      console.log('1111')
+      console.log(data)
     }
   })
 
@@ -65,8 +65,6 @@ export default function DirectMessage() {
       enabled: !!directInfo?.direct?._id
     }
   })
-
-  console.log({ usersReadedMessage })
 
   useEffect(() => {
     if (directMessages)

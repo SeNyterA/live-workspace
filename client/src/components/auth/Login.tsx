@@ -35,7 +35,6 @@ export default function Authentication() {
         terms: false
       }
     })
-  console.log({ formState })
 
   return (
     <div className='flex h-screen w-screen items-center justify-center'>
@@ -57,8 +56,6 @@ export default function Authentication() {
 
         <form
           onSubmit={handleSubmit(data => {
-            console.log(`${type === 'register' ? 'Register' : 'Login'}:`, data)
-
             if (type === 'login') {
               login(
                 {
@@ -93,9 +90,7 @@ export default function Authentication() {
                   }
                 },
                 {
-                  onSuccess(data) {
-                    console.log(data)
-                  }
+                  onSuccess(data) {}
                 }
               )
             }

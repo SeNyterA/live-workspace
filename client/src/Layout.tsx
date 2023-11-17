@@ -55,8 +55,6 @@ export default function Layout({ children }: { children: ReactNode }) {
         ...(workspaceData?.groups.members || [])
       ].reduce((pre, next) => ({ ...pre, [next._id]: next }), {} as TMembers)
 
-      console.log({ channels, directs, groups, members, teams, users })
-
       dispatch(
         workspaceActions.updateData({
           channels,

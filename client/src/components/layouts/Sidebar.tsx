@@ -172,7 +172,7 @@ export default function Sidebar() {
                 {directs => (
                   <>
                     {directs?.map(item => (
-                      <DirectNavLink direct={item}>
+                      <DirectNavLink direct={item} key={item._id}>
                         {({ targetUser }) => (
                           <NavLink
                             key={item._id}

@@ -10,7 +10,6 @@ export default function DirectNavLink({
   children: ({ targetUser }: { targetUser?: TUser }) => any
 }) {
   const targetUser = useAppSelector(state => {
-    console.log(state.workspace.users)
     return Object.values(state.workspace.users).find(
       user =>
         user._id === direct.userIds.find(id => id !== state.auth.userInfo?._id)
