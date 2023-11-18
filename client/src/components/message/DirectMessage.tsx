@@ -1,5 +1,4 @@
-import { useDocumentVisibility } from '@mantine/hooks'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
 import useDirect from '../../hooks/useDirect'
@@ -14,7 +13,8 @@ export default function DirectMessage() {
   const { directId } = useAppParams()
   const directInfo = useDirect(directId)
   const dispatch = useDispatch()
-  const isVisible = useDocumentVisibility()
+
+  const [formId, setFormId] = useState<string>()
   const emitSocket = useAppEmitSocket()
 
   useAppOnSocket({
@@ -38,31 +38,25 @@ export default function DirectMessage() {
     }
   })
 
-  const { data: directMessages } = useAppQuery({
+  const {
+    data: directMessages,
+    isLoading,
+    queryCount
+  } = useAppQuery({
     key: 'directMessages',
     url: {
       baseUrl: '/workspace/direct-messages/:directId/messages',
       urlParams: {
         directId: directInfo?.targetUser?._id || ''
+      },
+      queryParams: {
+        pageSize: 10,
+        formId
       }
     },
     options: {
       queryKey: [directInfo?.targetUser?._id],
       enabled: !!directInfo?.targetUser?._id
-    }
-  })
-
-  const { data: usersReadedMessage } = useAppQuery({
-    key: 'usersReadedMessage',
-    url: {
-      baseUrl: '/workspace/usersReadedMessage/:targetId',
-      urlParams: {
-        targetId: directInfo?.direct?._id || ''
-      }
-    },
-    options: {
-      queryKey: [directInfo?.direct?._id],
-      enabled: !!directInfo?.direct?._id
     }
   })
 
@@ -88,7 +82,7 @@ export default function DirectMessage() {
         userTargetId: directInfo?.targetUser?._id
       }}
     >
-      <MessageContent />
+      <MessageContent loadMore={setFormId} isLoading={isLoading} />
     </MessageContentProvider>
   )
 }

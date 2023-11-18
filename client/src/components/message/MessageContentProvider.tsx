@@ -33,11 +33,16 @@ export default function MessageContentProvider({
   const { targetId } = value
   const messages =
     useAppSelector(state =>
-      Object.values(state.workspace.messages).filter(
-        e =>
-          (targetId.channelId || targetId.directId || targetId.groupId) ===
-          e.messageReferenceId
-      )
+      Object.values(state.workspace.messages)
+        .filter(
+          e =>
+            (targetId.channelId || targetId.directId || targetId.groupId) ===
+            e.messageReferenceId
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        )
     ) || []
 
   const isVisible = useDocumentVisibility()

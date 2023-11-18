@@ -1,18 +1,35 @@
-import { ActionIcon, Divider, Input, ScrollArea } from '@mantine/core'
+import { ActionIcon, Divider, Input, Loader, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
 import { IconSearch } from '@tabler/icons-react'
 import { useEffect, useRef } from 'react'
-import { TMessage } from '../../types/workspace.type'
+import { useInView } from 'react-intersection-observer'
 import Message from './Message'
 import { useMessageContent } from './MessageContentProvider'
 import SendMessage from './SendMessage'
 
-export default function MessageContent() {
+export default function MessageContent({
+  loadMore,
+  isLoading,
+  queryCount
+}: {
+  loadMore?: (fromId?: string) => void
+  isLoading?: boolean
+  queryCount?: number
+}) {
   const { targetRef, scrollableRef, scrollIntoView } = useScrollIntoView<
     HTMLDivElement,
     HTMLDivElement
   >({ duration: 300 })
-  const refMessages = useRef<TMessage[]>([])
+
+  const {
+    ref: observerRef,
+    inView,
+    entry
+  } = useInView({
+    threshold: 0
+  })
+
+  const lastMessageIdRef = useRef<string>('')
   const { messages, title } = useMessageContent()
 
   const scrollToBottom = () => {
@@ -23,29 +40,26 @@ export default function MessageContent() {
   }
 
   useEffect(() => {
-    if (refMessages.current.length === 0) {
-      scrollToBottom()
-    }
-
-    if (messages.length !== refMessages.current.length) {
-      scrollToBottom()
-    }
-
-    // const timeoutId = setTimeout(() => {
-    //   ;(targetRef as any).current = document.querySelector(
-    //     `#id_${messages[messages.length - 1]._id}`
-    //   )
-    //   scrollIntoView()
-    // }, 300)
-
-    refMessages.current = messages
-
-    // return () => clearTimeout(timeoutId)
-  }, [messages, scrollIntoView])
-
-  useEffect(() => {
     scrollToBottom()
   }, [])
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      if (messages[messages.length - 1]._id !== lastMessageIdRef.current)
+        // scrollToBottom()
+
+        lastMessageIdRef.current = messages[0]._id
+    }
+  }, [messages, scrollIntoView])
+
+  useEffect(() => {}, [queryCount])
+
+  useEffect(() => {
+    if (inView && !isLoading && messages.length > 0) {
+      const lastMessId = messages[0]._id
+      loadMore && loadMore(lastMessId)
+    }
+  }, [inView])
 
   return (
     <>
@@ -77,12 +91,10 @@ export default function MessageContent() {
             className='absolute inset-0 overflow-auto'
             viewportRef={scrollableRef}
             scrollbarSize={6}
-            onScrollPositionChange={({ y }) => {
-              if (y < 100) {
-                console.log('position', y)
-              }
-            }}
           >
+            <div ref={observerRef} className='flex items-center justify-center'>
+              {isLoading && <Loader size='xs' type='dots' />}
+            </div>
             {messages.map(message => (
               <Message message={message} key={message._id} />
             ))}

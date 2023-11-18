@@ -101,39 +101,34 @@ export default function SendMessage() {
               )
 
             if (typeApi === 'direct' && userTargetId)
-              Array(1000)
-                .fill(1)
-                .map((e, index) =>
-                  createMess(
-                    {
-                      url: {
-                        baseUrl:
-                          '/workspace/direct-messages/:targetId/messages',
-                        urlParams: {
-                          targetId: userTargetId
-                        }
-                      },
-                      method: 'post',
-                      payload: {
-                        content: value + index + '_______' + Date.now()
-                      }
-                    },
-                    {
-                      onSuccess(message) {
-                        dispatch(
-                          workspaceActions.addMessages({
-                            [message._id]: message
-                          })
-                        )
-
-                        socketEmit({
-                          key: 'stopTyping',
-                          targetId: userTargetId
-                        })
-                      }
+              createMess(
+                {
+                  url: {
+                    baseUrl: '/workspace/direct-messages/:targetId/messages',
+                    urlParams: {
+                      targetId: userTargetId
                     }
-                  )
-                )
+                  },
+                  method: 'post',
+                  payload: {
+                    content: value
+                  }
+                },
+                {
+                  onSuccess(message) {
+                    dispatch(
+                      workspaceActions.addMessages({
+                        [message._id]: message
+                      })
+                    )
+
+                    socketEmit({
+                      key: 'stopTyping',
+                      targetId: userTargetId
+                    })
+                  }
+                }
+              )
           }
         }}
       />

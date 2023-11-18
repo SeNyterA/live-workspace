@@ -162,13 +162,18 @@ export class MessageService {
   async _getMessages({
     messageReferenceId,
     userId,
-    messgaeFor
+    messgaeFor,
+    pageSize = 100,
+    fromId
   }: {
     userId: string
     messageReferenceId: string
     messgaeFor: EMessageFor
+    fromId?: string
+    pageSize?: number
   }) {
     let _messageReferenceId = messageReferenceId
+
     switch (messgaeFor) {
       case EMessageFor.Channel:
       case EMessageFor.Group: {
@@ -176,7 +181,6 @@ export class MessageService {
           targetId: messageReferenceId,
           userId
         })
-
         break
       }
       case EMessageFor.Direct: {
@@ -184,7 +188,6 @@ export class MessageService {
           targetId: messageReferenceId,
           userId
         })
-
         _messageReferenceId = directMess._id.toString()
         break
       }
@@ -193,13 +196,23 @@ export class MessageService {
     const messages = await this.messageModel
       .find({
         messageReferenceId: _messageReferenceId,
-        isAvailable: true
+        isAvailable: true,
+        ...(fromId && { _id: { $lt: fromId } })
       })
-      .lean()
+      .sort({ createdAt: -1 })
+      .limit(pageSize)
+
+    const remainingCount = await this.messageModel
+      .find({
+        messageReferenceId: _messageReferenceId,
+        isAvailable: true,
+        ...(fromId && { _id: { $lt: fromId } })
+      })
+      .countDocuments()
 
     return {
       messages,
-      total: messages.length
+      remainingCount: remainingCount - messages.length
     }
   }
 
