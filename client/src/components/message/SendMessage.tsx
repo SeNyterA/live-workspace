@@ -71,8 +71,14 @@ export default function SendMessage() {
           messRefId && typing(messRefId)
         }}
         onSubmit={value => {
-          if (messRefId && value) {
-            if (typeApi === 'channel')
+          console.log({
+            value,
+            messRefId,
+            typeApi,
+            userTargetId
+          })
+          if (value) {
+            if (typeApi === 'channel' && messRefId)
               createMess(
                 {
                   url: {

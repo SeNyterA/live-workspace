@@ -14,6 +14,7 @@ import {
   workspaceActions
 } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
+import { useAppOnSocket } from './services/socket/useAppOnSocket'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
@@ -67,6 +68,42 @@ export default function Layout({ children }: { children: ReactNode }) {
       )
     }
   }, [dispatch, workspaceData])
+
+  useAppOnSocket({
+    key: 'workspace',
+    resFunc: ({ action, data, type }) => {
+      switch (type) {
+        case 'direct':
+          dispatch(
+            workspaceActions.addDirects({
+              [data._id]: data
+            })
+          )
+          break
+        case 'team':
+          dispatch(
+            workspaceActions.addTeams({
+              [data._id]: data
+            })
+          )
+          break
+        case 'channel':
+          dispatch(
+            workspaceActions.addChannels({
+              [data._id]: data
+            })
+          )
+          break
+        case 'group':
+          dispatch(
+            workspaceActions.addGroups({
+              [data._id]: data
+            })
+          )
+          break
+      }
+    }
+  })
 
   return (
     <>

@@ -42,7 +42,7 @@ export class DirectMessageService {
   }: {
     userId: string
     targetId: string
-  }): Promise<DirectMessage> {
+  }) {
     const userTarget = await this.usersService._findById(targetId)
     const existingDirectMessage = await this.directMessageModel.findOne({
       userIds: { $all: [userId, userTarget._id.toString()] },
@@ -50,14 +50,20 @@ export class DirectMessageService {
     })
 
     if (existingDirectMessage) {
-      return existingDirectMessage.toJSON()
+      return {
+        direct: existingDirectMessage.toJSON(),
+        isNew: false
+      }
     }
 
     const newDirectMessage = await this.directMessageModel.create({
       userIds: [targetId, userId]
     })
 
-    return newDirectMessage.toJSON()
+    return {
+      direct: newDirectMessage.toJSON(),
+      isNew: true
+    }
   }
 
   async findAll(): Promise<DirectMessage[]> {

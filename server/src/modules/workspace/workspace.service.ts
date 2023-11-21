@@ -4,6 +4,7 @@ import { Model } from 'mongoose'
 import { Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { User } from '../users/user.schema'
+import { DirectMessage } from './direct-message/direct-message.schema'
 import { DirectMessageService } from './direct-message/direct-message.service'
 import { Group } from './group/group.schema'
 import { GroupService } from './group/group.service'
@@ -15,7 +16,7 @@ import { Channel } from './team/channel/channel.schema'
 import { ChannelService } from './team/channel/channel.service'
 import { Team } from './team/team.schema'
 import { TeamService } from './team/team.service'
-import { CustomSocket, WorkspaceGateway } from './workspace.gateway'
+import { WorkspaceGateway } from './workspace.gateway'
 
 @Injectable()
 export class WorkspaceService {
@@ -207,90 +208,6 @@ export class WorkspaceService {
   }
   //#endregion
 
-  async team({
-    rooms,
-    data
-  }: {
-    rooms: string[]
-    data: {
-      team: Team
-      action: 'create' | 'update' | 'delete'
-    }
-  }) {
-    this.socketService.server.to(rooms).emit('team', data)
-    if (data.action === 'create') {
-      const allSocket = await this.socketService.server.fetchSockets()
-
-      allSocket.forEach(client => {
-        if (rooms.includes((client as unknown as CustomSocket).user.sub)) {
-          client.join(rooms)
-        }
-      })
-    }
-
-    if (data.action === 'delete') {
-      const allSocket = await this.socketService.server.fetchSockets()
-
-      allSocket.forEach(client => {
-        if (rooms.includes((client as unknown as CustomSocket).user.sub)) {
-          client.join(rooms)
-        }
-      })
-    }
-  }
-
-  async channel({
-    rooms,
-    data
-  }: {
-    rooms: string[]
-    data: {
-      channel: Channel
-      action: 'create' | 'update' | 'delete'
-    }
-  }) {
-    this.socketService.server.to(rooms).emit('channel', data)
-  }
-
-  async board({
-    rooms,
-    data
-  }: {
-    rooms: string[]
-    data: {
-      board: Board
-      action: 'create' | 'update' | 'delete'
-    }
-  }) {
-    this.socketService.server.to(rooms).emit('board', data)
-  }
-
-  async group({
-    rooms,
-    data
-  }: {
-    rooms: string[]
-    data: {
-      group: Group
-      action: 'create' | 'update' | 'delete'
-    }
-  }) {
-    this.socketService.server.to(rooms).emit('group', data)
-  }
-
-  async member({
-    rooms,
-    data
-  }: {
-    rooms: string[]
-    data: {
-      member: Member
-      action: 'create' | 'update' | 'delete'
-    }
-  }) {
-    this.socketService.server.to(rooms).emit('member', data)
-  }
-
   async message({
     rooms,
     data
@@ -302,8 +219,30 @@ export class WorkspaceService {
     }
   }) {
     await this.socketService.server.to(rooms).emit('message', data)
-
     const clients = await this.socketService.server.fetchSockets()
+  }
+
+  async workspace({
+    rooms,
+    data,
+    action,
+    type
+  }: {
+    action: 'create' | 'update' | 'delete'
+    rooms: string[]
+  } & (
+    | { data: Channel; type: 'channel' }
+    | { data: Board; type: 'board' }
+    | { data: Team; type: 'team' }
+    | { data: DirectMessage; type: 'direct' }
+    | { data: Group; type: 'group' }
+    | { data: Member; type: 'member' }
+  )) {
+    await this.socketService.server.to(rooms).emit('workspace', {
+      data,
+      action,
+      type
+    })
   }
 
   async getWorkspaceData(userId: string) {

@@ -5,9 +5,7 @@ import { Workspace } from '../workspace.schema'
 @Schema()
 export class DirectMessage extends Workspace {
   @Prop({
-    type: [{ type: Types.ObjectId, ref: 'User' }],
-    unique: true,
-    sparse: true
+    type: [{ type: Types.ObjectId, ref: 'User' }]
   })
   userIds: string[]
 }

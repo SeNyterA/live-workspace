@@ -13,7 +13,6 @@ export default function DirectMessage() {
   const { directId } = useAppParams()
   const directInfo = useDirect(directId)
   const dispatch = useDispatch()
-
   const [formId, setFormId] = useState<string>()
   const emitSocket = useAppEmitSocket()
 
@@ -30,6 +29,19 @@ export default function DirectMessage() {
         })
     }
   })
+  const { data: targetUser } = useAppQuery({
+    key: 'findUserByUserName',
+    url: {
+      baseUrl: '/user/by-username/:userName',
+      urlParams: {
+        userName: directId!
+      }
+    },
+    options: {
+      queryKey: [directId],
+      enabled: !!directId
+    }
+  })
 
   useAppOnSocket({
     key: 'userReadedMessage',
@@ -41,9 +53,9 @@ export default function DirectMessage() {
   const { data: directMessages, isLoading } = useAppQuery({
     key: 'directMessages',
     url: {
-      baseUrl: '/workspace/direct-messages/:directId/messages',
+      baseUrl: '/workspace/direct-messages/:targetId/messages',
       urlParams: {
-        directId: directInfo?.targetUser?._id || ''
+        targetId: directInfo?.targetUser?._id || ''
       },
       queryParams: {
         pageSize: 100,
@@ -71,14 +83,22 @@ export default function DirectMessage() {
   return (
     <MessageContentProvider
       value={{
-        title: directInfo?.targetUser?.userName || '',
+        title:
+          directInfo?.direct.title ||
+          directInfo?.targetUser?.userName ||
+          targetUser?.user.userName ||
+          '',
         targetId: {
           directId: directInfo?.direct?._id
         },
-        userTargetId: directInfo?.targetUser?._id
+        userTargetId: directInfo?.targetUser?._id || targetUser?.user._id
       }}
     >
-      <MessageContent loadMore={setFormId} isLoading={isLoading} />
+      <MessageContent
+        loadMore={setFormId}
+        isLoading={isLoading}
+        remainingCount={directMessages?.remainingCount}
+      />
     </MessageContentProvider>
   )
 }

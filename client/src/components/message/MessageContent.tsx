@@ -9,10 +9,12 @@ import SendMessage from './SendMessage'
 
 export default function MessageContent({
   loadMore,
-  isLoading
+  isLoading,
+  remainingCount
 }: {
   loadMore?: (fromId?: string) => void
   isLoading?: boolean
+  remainingCount?: number
 }) {
   const { messages, title } = useMessageContent()
   const lastMessageIdRef = useRef<string>()
@@ -80,12 +82,17 @@ export default function MessageContent({
   }, [messages])
 
   useEffect(() => {
-    if (loadMoreInView && lastMessageIdRef.current && !isLoading && loadMore) {
+    if (
+      loadMoreInView &&
+      lastMessageIdRef.current &&
+      !isLoading &&
+      loadMore &&
+      remainingCount
+    ) {
       loadMoreMessageIdRef.current = lastMessageIdRef.current
       loadMore(lastMessageIdRef.current)
     }
   }, [loadMoreInView])
-
 
   console.log(messages.length)
 
@@ -115,35 +122,43 @@ export default function MessageContent({
         <Divider variant='dashed' />
 
         <div className='relative flex-1'>
-          <ScrollArea
-            className='absolute inset-0 overflow-auto'
-            viewportRef={scrollableRef}
-            scrollbarSize={6}
-          >
-            <div className='relative'>
-              <div
-                ref={loadMoreObserverRef}
-                className='flex items-center justify-center'
-              >
-                {isLoading && <Loader size='xs' type='dots' />}
+          {messages.length > 0 && (
+            <ScrollArea
+              className='absolute inset-0 overflow-auto'
+              viewportRef={scrollableRef}
+              scrollbarSize={6}
+            >
+              {remainingCount ? (
+                <div className='relative'>
+                  <div
+                    ref={loadMoreObserverRef}
+                    className='flex items-center justify-center'
+                  >
+                    {isLoading && <Loader size='xs' type='dots' />}
+                  </div>
+                  <div
+                    ref={loadMoreObserverRef}
+                    className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-slate-300'
+                  />
+                </div>
+              ) : (
+                <div className='flex items-center justify-center p-2'>
+                  This is all
+                </div>
+              )}
+
+              {messages.map(message => (
+                <Message message={message} key={message._id} />
+              ))}
+
+              <div className='relative'>
+                <div
+                  ref={bottomObserverRef}
+                  className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center bg-slate-300'
+                />
               </div>
-              <div
-                ref={loadMoreObserverRef}
-                className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-slate-300'
-              />
-            </div>
-
-            {messages.map(message => (
-              <Message message={message} key={message._id} />
-            ))}
-
-            <div className='relative'>
-              <div
-                ref={bottomObserverRef}
-                className='absolute inset-0 top-[-100px] z-[-10] flex items-center justify-center bg-slate-300'
-              />
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          )}
         </div>
 
         <Divider variant='dashed' />

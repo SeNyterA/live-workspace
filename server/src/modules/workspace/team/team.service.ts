@@ -140,20 +140,18 @@ export class TeamService {
       userId: userId
     })
 
-    const rooms = [createdTeam._id.toString(), userId]
-    this.workspaceService.team({
-      rooms,
-      data: {
-        action: 'create',
-        team: createdTeam
-      }
+    this.workspaceService.workspace({
+      rooms: [createdTeam._id.toString(), userId],
+      action: 'create',
+      type: 'team',
+      data: createdTeam
     })
-    this.workspaceService.member({
-      rooms,
-      data: {
-        action: 'create',
-        member: owner
-      }
+
+    this.workspaceService.workspace({
+      rooms: [createdTeam._id.toString(), userId],
+      data: owner,
+      action: 'create',
+      type: 'member'
     })
 
     return {
@@ -198,12 +196,11 @@ export class TeamService {
     }
 
     const rooms = [team._id.toString(), userId]
-    this.workspaceService.team({
+    this.workspaceService.workspace({
       rooms,
-      data: {
-        action: 'update',
-        team: team
-      }
+      action: 'update',
+      data: team,
+      type: 'team'
     })
 
     return { team }
@@ -239,13 +236,11 @@ export class TeamService {
       throw new ForbiddenException('Your dont have permission')
     }
 
-    const rooms = [team._id.toString(), userId]
-    this.workspaceService.team({
-      rooms,
-      data: {
-        action: 'delete',
-        team: team
-      }
+    this.workspaceService.workspace({
+      rooms: [team._id.toString(), userId],
+      action: 'delete',
+      type: 'team',
+      data: team
     })
     return true
   }

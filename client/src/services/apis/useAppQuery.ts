@@ -86,15 +86,15 @@ type ApiQueryType = {
     }
     response: {
       messages: TMessage[]
-      total: number
+      remainingCount: number
     }
   }
 
   directMessages: {
     url: {
-      baseUrl: '/workspace/direct-messages/:directId/messages'
+      baseUrl: '/workspace/direct-messages/:targetId/messages'
       urlParams: {
-        directId: string
+        targetId: string
       }
       queryParams?: {
         formId?: string
@@ -103,7 +103,7 @@ type ApiQueryType = {
     }
     response: {
       messages: TMessage[]
-      total: number
+      remainingCount: number
     }
   }
 
