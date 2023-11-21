@@ -13,7 +13,7 @@ import {
   TUsers,
   workspaceActions
 } from './redux/slices/workspace.slice'
-import { useAppQuery } from './services/apis/useAppQuery'
+import { appGetFn, useAppQuery } from './services/apis/useAppQuery'
 import { useAppOnSocket } from './services/socket/useAppOnSocket'
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -71,14 +71,29 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   useAppOnSocket({
     key: 'workspace',
-    resFunc: ({ action, data, type }) => {
+    resFunc: async ({ data, type }) => {
       switch (type) {
         case 'direct':
-          dispatch(
-            workspaceActions.addDirects({
-              [data._id]: data
-            })
-          )
+          appGetFn({
+            key: 'findDirectInfo',
+            url: {
+              baseUrl: '/workspace/direct-messages',
+              queryParams: {
+                directId: data._id
+              }
+            }
+          }).then(({ direct, users }) => {
+            dispatch(
+              workspaceActions.updateData({
+                directs: { [direct._id]: direct },
+                users: users.reduce(
+                  (pre, next) => ({ ...pre, [next._id]: next }),
+                  {}
+                )
+              })
+            )
+          })
+
           break
         case 'team':
           dispatch(

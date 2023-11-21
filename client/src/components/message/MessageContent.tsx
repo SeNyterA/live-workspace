@@ -138,7 +138,7 @@ export default function MessageContent({
                   </div>
                   <div
                     ref={loadMoreObserverRef}
-                    className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-slate-300'
+                    className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center'
                   />
                 </div>
               ) : (
@@ -154,7 +154,7 @@ export default function MessageContent({
               <div className='relative'>
                 <div
                   ref={bottomObserverRef}
-                  className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center bg-slate-300'
+                  className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center'
                 />
               </div>
             </ScrollArea>

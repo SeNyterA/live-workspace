@@ -185,5 +185,27 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
       return response.data
     }
   })
+
   return data
+}
+
+export const appGetFn = async <T extends keyof ApiQueryType>({
+  url
+}: Omit<ApiQueryType[T], 'response'> & { key: T }): Promise<
+  ApiQueryType[T]['response']
+> => {
+  const urlApi = `${replaceDynamicValues(
+    url.baseUrl,
+    (url as any)?.urlParams || {}
+  )}`
+
+  try {
+    const response = await http.get(urlApi, {
+      params: (url as any)?.queryParams
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error making API request:', error)
+    throw error
+  }
 }
