@@ -29,7 +29,6 @@ export default function Message({ message }: { message: TMessage }) {
       className={`my-3 flex gap-2 px-4 ${
         isOwner ? 'justify-end' : 'justify-start'
       }`}
-      onClick={e => console.log(e)}
     >
       {!isOwner && <Avatar />}
 

@@ -1,5 +1,4 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { useState } from 'react'
 import { TUser } from '../../types/user.type'
 import {
   TChannel,
@@ -168,7 +167,6 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
   options?: Omit<UseQueryOptions<ApiQueryType[T]['response']>, 'queryFn'>
 }) => {
   const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
-  const [queryCount, setQueryCount] = useState(0)
 
   const urlApi = `${replaceDynamicValues(
     url.baseUrl,
@@ -183,12 +181,9 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
       const response = await http.get(urlApi, {
         params: (url as any)?.queryParams
       })
-      setQueryCount(e => e + 1)
+
       return response.data
     }
   })
-  return {
-    ...data,
-    queryCount
-  }
+  return data
 }

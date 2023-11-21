@@ -9,28 +9,31 @@ import SendMessage from './SendMessage'
 
 export default function MessageContent({
   loadMore,
-  isLoading,
-  queryCount
+  isLoading
 }: {
   loadMore?: (fromId?: string) => void
   isLoading?: boolean
-  queryCount?: number
 }) {
-  const { targetRef, scrollableRef, scrollIntoView } = useScrollIntoView<
-    HTMLDivElement,
-    HTMLDivElement
-  >({ duration: 300 })
-
-  const {
-    ref: observerRef,
-    inView,
-    entry
-  } = useInView({
-    threshold: 0
-  })
-
-  const lastMessageIdRef = useRef<string>('')
   const { messages, title } = useMessageContent()
+  const lastMessageIdRef = useRef<string>()
+  const loadMoreMessageIdRef = useRef<string>()
+  const { scrollableRef } = useScrollIntoView<HTMLDivElement, HTMLDivElement>({
+    duration: 300
+  })
+  const loadMoreRef = useRef<boolean>(false)
+  const bottomRef = useRef<boolean>(false)
+  const { ref: loadMoreObserverRef, inView: loadMoreInView } = useInView({
+    threshold: 0,
+    onChange: inView => {
+      loadMoreRef.current = inView
+    }
+  })
+  const { ref: bottomObserverRef } = useInView({
+    threshold: 0,
+    onChange: inView => {
+      bottomRef.current = inView
+    }
+  })
 
   const scrollToBottom = () => {
     const scrollableDiv = scrollableRef.current
@@ -39,27 +42,52 @@ export default function MessageContent({
     }
   }
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [])
+  const scrollTo = (to: number) => {
+    const scrollableDiv = scrollableRef.current
+    if (scrollableDiv) {
+      scrollableDiv.scrollTop = to
+    }
+  }
 
   useEffect(() => {
+    if (!lastMessageIdRef.current) {
+      scrollToBottom()
+    }
+
+    if (bottomRef.current) {
+      scrollToBottom()
+    }
+
     if (messages.length > 0) {
-      if (messages[messages.length - 1]._id !== lastMessageIdRef.current)
-        // scrollToBottom()
-
-        lastMessageIdRef.current = messages[0]._id
+      lastMessageIdRef.current = messages[0]._id
     }
-  }, [messages, scrollIntoView])
 
-  useEffect(() => {}, [queryCount])
+    if (
+      lastMessageIdRef.current &&
+      loadMoreMessageIdRef.current &&
+      lastMessageIdRef.current !== loadMoreMessageIdRef.current
+    ) {
+      const messContent = document.querySelector(
+        `#id_${loadMoreMessageIdRef.current}`
+      )
+
+      if (messContent) {
+        const { top } = messContent.getBoundingClientRect()
+        scrollTo(top)
+        loadMoreMessageIdRef.current = undefined
+      }
+    }
+  }, [messages])
 
   useEffect(() => {
-    if (inView && !isLoading && messages.length > 0) {
-      const lastMessId = messages[0]._id
-      loadMore && loadMore(lastMessId)
+    if (loadMoreInView && lastMessageIdRef.current && !isLoading && loadMore) {
+      loadMoreMessageIdRef.current = lastMessageIdRef.current
+      loadMore(lastMessageIdRef.current)
     }
-  }, [inView])
+  }, [loadMoreInView])
+
+
+  console.log(messages.length)
 
   return (
     <>
@@ -92,12 +120,29 @@ export default function MessageContent({
             viewportRef={scrollableRef}
             scrollbarSize={6}
           >
-            <div ref={observerRef} className='flex items-center justify-center'>
-              {isLoading && <Loader size='xs' type='dots' />}
+            <div className='relative'>
+              <div
+                ref={loadMoreObserverRef}
+                className='flex items-center justify-center'
+              >
+                {isLoading && <Loader size='xs' type='dots' />}
+              </div>
+              <div
+                ref={loadMoreObserverRef}
+                className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-slate-300'
+              />
             </div>
+
             {messages.map(message => (
               <Message message={message} key={message._id} />
             ))}
+
+            <div className='relative'>
+              <div
+                ref={bottomObserverRef}
+                className='absolute inset-0 top-[-100px] z-[-10] flex items-center justify-center bg-slate-300'
+              />
+            </div>
           </ScrollArea>
         </div>
 

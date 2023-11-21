@@ -38,11 +38,7 @@ export default function DirectMessage() {
     }
   })
 
-  const {
-    data: directMessages,
-    isLoading,
-    queryCount
-  } = useAppQuery({
+  const { data: directMessages, isLoading } = useAppQuery({
     key: 'directMessages',
     url: {
       baseUrl: '/workspace/direct-messages/:directId/messages',
@@ -50,7 +46,7 @@ export default function DirectMessage() {
         directId: directInfo?.targetUser?._id || ''
       },
       queryParams: {
-        pageSize: 10,
+        pageSize: 100,
         formId
       }
     },
