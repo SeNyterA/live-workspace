@@ -61,7 +61,134 @@ export default function SendMessage() {
   const socketEmit = useAppEmitSocket()
   const typing = useTyping()
 
-  const { mutateAsync: createMess } = useAppMutation(keyApi)
+  const { mutateAsync: createMessMutation } = useAppMutation(keyApi)
+
+  const _createMessage = (value?: string) => {
+    if (!value) return
+
+    if (typeApi === 'channel' && messRefId)
+      createMessMutation(
+        {
+          url: {
+            baseUrl: '/workspace/channels/:channelId/messages',
+            urlParams: {
+              channelId: messRefId
+            }
+          },
+          method: 'post',
+          payload: {
+            content: value
+          }
+        },
+        {
+          onSuccess(message) {
+            dispatch(workspaceActions.addMessages({ [message._id]: message }))
+
+            socketEmit({
+              key: 'stopTyping',
+              targetId: messRefId
+            })
+          }
+        }
+      )
+
+    if (typeApi === 'direct' && userTargetId)
+      createMessMutation(
+        {
+          url: {
+            baseUrl: '/workspace/direct-messages/:targetId/messages',
+            urlParams: {
+              targetId: userTargetId
+            }
+          },
+          method: 'post',
+          payload: {
+            content: value
+          }
+        },
+        {
+          onSuccess(message) {
+            dispatch(
+              workspaceActions.addMessages({
+                [message._id]: message
+              })
+            )
+
+            socketEmit({
+              key: 'stopTyping',
+              targetId: userTargetId
+            })
+          }
+        }
+      )
+  }
+  const _createMutiMessage = (value?: string) => {
+    if (!value) return
+
+    Array(100)
+      .fill(1)
+      .forEach((_, index) => {
+        const content = `${index} _ _ _ ${value}`
+
+        if (typeApi === 'channel' && messRefId)
+          createMessMutation(
+            {
+              url: {
+                baseUrl: '/workspace/channels/:channelId/messages',
+                urlParams: {
+                  channelId: messRefId
+                }
+              },
+              method: 'post',
+              payload: {
+                content
+              }
+            },
+            {
+              onSuccess(message) {
+                dispatch(
+                  workspaceActions.addMessages({ [message._id]: message })
+                )
+
+                socketEmit({
+                  key: 'stopTyping',
+                  targetId: messRefId
+                })
+              }
+            }
+          )
+
+        if (typeApi === 'direct' && userTargetId)
+          createMessMutation(
+            {
+              url: {
+                baseUrl: '/workspace/direct-messages/:targetId/messages',
+                urlParams: {
+                  targetId: userTargetId
+                }
+              },
+              method: 'post',
+              payload: {
+                content
+              }
+            },
+            {
+              onSuccess(message) {
+                dispatch(
+                  workspaceActions.addMessages({
+                    [message._id]: message
+                  })
+                )
+
+                socketEmit({
+                  key: 'stopTyping',
+                  targetId: userTargetId
+                })
+              }
+            }
+          )
+      })
+  }
 
   return (
     <>
@@ -70,73 +197,7 @@ export default function SendMessage() {
         onChange={() => {
           messRefId && typing(messRefId)
         }}
-        onSubmit={value => {
-          console.log({
-            value,
-            messRefId,
-            typeApi,
-            userTargetId
-          })
-          if (value) {
-            if (typeApi === 'channel' && messRefId)
-              createMess(
-                {
-                  url: {
-                    baseUrl: '/workspace/channels/:channelId/messages',
-                    urlParams: {
-                      channelId: messRefId
-                    }
-                  },
-                  method: 'post',
-                  payload: {
-                    content: value
-                  }
-                },
-                {
-                  onSuccess(message) {
-                    dispatch(
-                      workspaceActions.addMessages({ [message._id]: message })
-                    )
-
-                    socketEmit({
-                      key: 'stopTyping',
-                      targetId: messRefId
-                    })
-                  }
-                }
-              )
-
-            if (typeApi === 'direct' && userTargetId)
-              createMess(
-                {
-                  url: {
-                    baseUrl: '/workspace/direct-messages/:targetId/messages',
-                    urlParams: {
-                      targetId: userTargetId
-                    }
-                  },
-                  method: 'post',
-                  payload: {
-                    content: value
-                  }
-                },
-                {
-                  onSuccess(message) {
-                    dispatch(
-                      workspaceActions.addMessages({
-                        [message._id]: message
-                      })
-                    )
-
-                    socketEmit({
-                      key: 'stopTyping',
-                      targetId: userTargetId
-                    })
-                  }
-                }
-              )
-          }
-        }}
+        onSubmit={_createMutiMessage}
       />
     </>
   )

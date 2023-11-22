@@ -2,7 +2,7 @@ import { Divider, LoadingOverlay } from '@mantine/core'
 import { ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
-import Sidebar from './components/layouts/Sidebar'
+import Sidebar from './components/sidebar/Sidebar'
 import TeamList from './components/layouts/TeamList'
 import {
   TChannels,

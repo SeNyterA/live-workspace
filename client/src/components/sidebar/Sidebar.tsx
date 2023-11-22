@@ -1,6 +1,5 @@
-import { ActionIcon, Button, Divider, NavLink, ScrollArea } from '@mantine/core'
+import { ActionIcon, Divider, Input, NavLink, ScrollArea } from '@mantine/core'
 import {
-  IconArrowRight,
   IconHash,
   IconLayoutKanban,
   IconMessage,
@@ -14,43 +13,48 @@ import { useLocation } from 'react-router-dom'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import Watching from '../../redux/Watching'
+import DirectNavLink from '../layouts/DirectNavLink'
 import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
-import DirectNavLink from './DirectNavLink'
+import CreateGroup from './CreateGroup'
+
+export type TSideBarToggle =
+  | 'createBoard'
+  | 'createChannel'
+  | 'createGroup'
+  | 'teamSetting'
+  | 'createDirect'
+  | 'createGroup'
 
 export default function Sidebar() {
   const { channelId, teamId, directId, boardId, groupId } = useAppParams()
   const { switchTo } = useAppControlParams()
   const path = useLocation()
 
-  const [toggle, setToggle] = useState<
-    | 'createBoard'
-    | 'createChannel'
-    | 'createGroup'
-    | 'teamSetting'
-    | 'createDirect'
-  >()
-
-  const hasPermission = true
+  const [toggle, setToggle] = useState<TSideBarToggle>()
 
   return (
     <>
       <div className='flex w-72 flex-col gap-2 py-3'>
         <p className='px-4 text-xl'>Team name </p>
         <div className='flex items-center justify-center gap-2 px-4'>
-          <Button
-            variant='default'
-            size='xs'
-            className='flex-1'
+          <Input
+            className=''
+            variant='unstyled'
+            size='sm'
+            placeholder='Search on workspace'
             leftSection={<IconSearch size={14} />}
-            rightSection={<IconArrowRight size={14} />}
-          >
-            <p>Search on team</p>
-          </Button>
+            classNames={{
+              wrapper:
+                'flex h-[30px] flex-1 items-center bg-gray-100 rounded-sm',
+              input: 'h-fit'
+            }}
+          />
+
           <ActionIcon
-            variant='default'
+            variant='transparent'
             aria-label='Settings'
-            className='h-[30px] w-[30px]'
+            className='h-[30px] w-[30px] bg-gray-100'
             onClick={() => setToggle('teamSetting')}
           >
             <IconSettings
@@ -69,17 +73,16 @@ export default function Sidebar() {
               active={path.pathname.includes('board')}
               defaultOpened={!!boardId}
             >
-              {hasPermission && (
-                <NavLink
-                  className='mb-2 p-1 pl-3 opacity-70'
-                  label={`Create channel`}
-                  rightSection={<IconPlus size={14} />}
-                  onClick={() => {
-                    setToggle('createBoard')
-                  }}
-                />
-              )}
+              <NavLink
+                className='mb-2 p-1 pl-3 opacity-70'
+                label={`Create channel`}
+                rightSection={<IconPlus size={14} />}
+                onClick={() => {
+                  setToggle('createBoard')
+                }}
+              />
             </NavLink>
+
             <NavLink
               className='mb-1 p-1'
               label='Channels'
@@ -88,16 +91,11 @@ export default function Sidebar() {
               defaultOpened={!!channelId}
             >
               <Watching
-                watchingFn={state => {
-                  try {
-                    return Object.values(state.workspace.channels).filter(
-                      e => e.teamId === teamId
-                    )
-                  } catch (error) {
-                    console.log(error)
-                    return undefined
-                  }
-                }}
+                watchingFn={state =>
+                  Object.values(state.workspace.channels).filter(
+                    e => e.teamId === teamId
+                  )
+                }
               >
                 {channels => (
                   <>
@@ -119,16 +117,14 @@ export default function Sidebar() {
                 )}
               </Watching>
 
-              {hasPermission && (
-                <NavLink
-                  className='mb-2 p-1 pl-3 opacity-70'
-                  label={`Create channel`}
-                  rightSection={<IconPlus size={14} />}
-                  onClick={() => {
-                    setToggle('createBoard')
-                  }}
-                />
-              )}
+              <NavLink
+                className='mb-2 p-1 pl-3 opacity-70'
+                label={`Create channel`}
+                rightSection={<IconPlus size={14} />}
+                onClick={() => {
+                  setToggle('createBoard')
+                }}
+              />
             </NavLink>
 
             <Divider variant='dashed' />
@@ -137,19 +133,41 @@ export default function Sidebar() {
               className='my-1 p-1'
               label='Groups'
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
-              active={path.pathname.includes('group')}
+              active={!!groupId}
               defaultOpened={!!groupId}
             >
-              {hasPermission && (
-                <NavLink
-                  className='mb-2 p-1 pl-3 opacity-70'
-                  label={`Create channel`}
-                  rightSection={<IconPlus size={14} />}
-                  onClick={() => {
-                    setToggle('createBoard')
-                  }}
-                />
-              )}
+              <Watching
+                watchingFn={state => Object.values(state.workspace.groups)}
+              >
+                {groups => (
+                  <>
+                    {groups?.map(item => (
+                      <NavLink
+                        key={item._id}
+                        className='p-1 pl-3'
+                        label={item.title}
+                        active={groupId === item._id}
+                        onClick={() => {
+                          if (item._id)
+                            switchTo({
+                              target: 'group',
+                              targetId: item._id
+                            })
+                        }}
+                      />
+                    ))}
+                  </>
+                )}
+              </Watching>
+
+              <NavLink
+                className='mb-2 p-1 pl-3 opacity-70'
+                label={`Create group`}
+                rightSection={<IconPlus size={14} />}
+                onClick={() => {
+                  setToggle('createGroup')
+                }}
+              />
             </NavLink>
 
             <NavLink
@@ -160,14 +178,7 @@ export default function Sidebar() {
               defaultOpened={!!directId}
             >
               <Watching
-                watchingFn={state => {
-                  try {
-                    return Object.values(state.workspace.directs)
-                  } catch (error) {
-                    console.log(error)
-                    return undefined
-                  }
-                }}
+                watchingFn={state => Object.values(state.workspace.directs)}
               >
                 {directs => (
                   <>
@@ -204,16 +215,14 @@ export default function Sidebar() {
                 )}
               </Watching>
 
-              {hasPermission && (
-                <NavLink
-                  className='mb-2 p-1 pl-3 opacity-70'
-                  label={`Create channel`}
-                  rightSection={<IconPlus size={14} />}
-                  onClick={() => {
-                    setToggle('createDirect')
-                  }}
-                />
-              )}
+              <NavLink
+                className='mb-2 p-1 pl-3 opacity-70'
+                label={`Create channel`}
+                rightSection={<IconPlus size={14} />}
+                onClick={() => {
+                  setToggle('createDirect')
+                }}
+              />
             </NavLink>
           </ScrollArea>
         </div>
@@ -226,6 +235,11 @@ export default function Sidebar() {
 
       <CreateDirect
         isOpen={toggle === 'createDirect'}
+        onClose={() => setToggle(undefined)}
+      />
+
+      <CreateGroup
+        isOpen={toggle === 'createGroup'}
         onClose={() => setToggle(undefined)}
       />
     </>

@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
+import { TMemberDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
 import {
   EMemberRole,
@@ -101,6 +102,23 @@ export type ApiMutationType = {
     }
     method: 'post'
     payload: { content: string }
+    response: TMessage
+  }
+
+  createGroup: {
+    url: {
+      baseUrl: '/workspace/direct-messages/:targetId/messages'
+      urlParams: {
+        targetId: string
+      }
+    }
+    method: 'post'
+    payload: {
+      title: string
+      description?: string
+      avatar?: string
+      members?: TMemberDto[]
+    }
     response: TMessage
   }
 }

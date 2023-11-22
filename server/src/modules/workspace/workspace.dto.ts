@@ -41,6 +41,13 @@ export class CreateWorkspaceDto {
   @IsString()
   @IsOptional()
   avatar?: string
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => MemberDto)
+  members?: MemberDto[]
 }
 
 export class UpdateWorkspaceDto {

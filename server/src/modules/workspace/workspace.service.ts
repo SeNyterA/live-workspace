@@ -18,6 +18,17 @@ import { Team } from './team/team.schema'
 import { TeamService } from './team/team.service'
 import { WorkspaceGateway } from './workspace.gateway'
 
+export type TWorkspaceSocket = {
+  action: 'create' | 'update' | 'delete'
+} & (
+  | { data: Channel; type: 'channel' }
+  | { data: Board; type: 'board' }
+  | { data: Team; type: 'team' }
+  | { data: DirectMessage; type: 'direct' }
+  | { data: Group; type: 'group' }
+  | { data: Member; type: 'member' }
+)
+
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -227,21 +238,27 @@ export class WorkspaceService {
     data,
     action,
     type
-  }: {
-    action: 'create' | 'update' | 'delete'
-    rooms: string[]
-  } & (
-    | { data: Channel; type: 'channel' }
-    | { data: Board; type: 'board' }
-    | { data: Team; type: 'team' }
-    | { data: DirectMessage; type: 'direct' }
-    | { data: Group; type: 'group' }
-    | { data: Member; type: 'member' }
-  )) {
+  }: { rooms: string[] } & TWorkspaceSocket) {
     await this.socketService.server.to(rooms).emit('workspace', {
       data,
       action,
       type
+    })
+  }
+
+  async workspaces({
+    rooms,
+    workspaces
+  }: {
+    rooms: string[]
+    workspaces: TWorkspaceSocket[]
+  }) {
+    workspaces.forEach(workspace => {
+      if (workspace.type === 'member') {
+      }
+    })
+    await this.socketService.server.to(rooms).emit('workspaces', {
+      workspaces
     })
   }
 
