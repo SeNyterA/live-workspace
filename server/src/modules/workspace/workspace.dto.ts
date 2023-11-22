@@ -9,16 +9,16 @@ import {
 } from 'class-validator'
 
 import { Type } from 'class-transformer'
-import { EMemberType } from './member/member.schema'
+import { EMemberRole, EMemberType } from './member/member.schema'
 
 export class MemberDto {
   @IsString()
   @IsNotEmpty()
   userId: string
 
-  @IsEnum(EMemberType)
+  @IsEnum(EMemberRole)
   @IsNotEmpty()
-  type: EMemberType
+  role: EMemberRole
 }
 
 export class MembersDto {

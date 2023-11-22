@@ -123,7 +123,7 @@ export class GroupService {
         } else {
           const newMember = await this.memberModel.create({
             userId: memberDto.userId,
-            role: EMemberRole.Member,
+            role: memberDto.role,
             targetId: createdGroup._id.toString(),
             path: createdGroup._id.toString(),
             type: EMemberType.Group,

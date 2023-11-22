@@ -107,10 +107,7 @@ export type ApiMutationType = {
 
   createGroup: {
     url: {
-      baseUrl: '/workspace/direct-messages/:targetId/messages'
-      urlParams: {
-        targetId: string
-      }
+      baseUrl: '/workspace/groups'
     }
     method: 'post'
     payload: {

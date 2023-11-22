@@ -13,8 +13,9 @@ import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppQuery } from '../../services/apis/useAppQuery'
+import './userCombobox.module.css'
 
-export default function PickUser({
+export default function UserCombobox({
   usersSelectedId = [],
   onPick,
   textInputProps
@@ -25,7 +26,7 @@ export default function PickUser({
 }) {
   const combobox = useCombobox({
     onDropdownClose: () => {
-      setSearchValue('')
+      // setSearchValue('')
     }
   })
   const dispatch = useDispatch()
@@ -57,19 +58,6 @@ export default function PickUser({
       )
   }, [userData])
 
-  const options = userData?.users.map(item => (
-    <Combobox.Option value={item._id} key={item._id}>
-      <div className='mt-3 flex flex-1 gap-2 first:mt-0' key={item._id}>
-        <Avatar src={item.avatar} />
-        <div className='flex flex-1 flex-col justify-center'>
-          <p className='font-medium leading-5'>{item.userName}</p>
-          <p className='text-xs leading-3 text-gray-500'>{item.email}</p>
-        </div>
-        {usersSelectedId.includes(item._id) && <CheckIcon size={12} />}
-      </div>
-    </Combobox.Option>
-  ))
-
   return (
     <Combobox
       onOptionSubmit={value => {
@@ -96,11 +84,29 @@ export default function PickUser({
 
       <Combobox.Dropdown>
         <Combobox.Options style={{ overflowY: 'auto' }}>
-          <ScrollArea.Autosize scrollbarSize={8} mah={230}>
+          <ScrollArea.Autosize scrollbarSize={8} mah={230} type='auto'>
             {!userData || userData?.users.length === 0 ? (
               <Combobox.Empty>Nothing found</Combobox.Empty>
             ) : (
-              options
+              userData?.users.map(item => (
+                <Combobox.Option value={item._id} key={item._id}>
+                  <div
+                    className='mt-3 flex flex-1 items-center gap-2 first:mt-0'
+                    key={item._id}
+                  >
+                    <Avatar src={item.avatar} />
+                    <div className='flex flex-1 flex-col justify-center'>
+                      <p className='font-medium leading-5'>{item.userName}</p>
+                      <p className='text-xs leading-3 text-gray-500'>
+                        {item.email}
+                      </p>
+                    </div>
+                    {usersSelectedId.includes(item._id) && (
+                      <CheckIcon size={12} />
+                    )}
+                  </div>
+                </Combobox.Option>
+              ))
             )}
           </ScrollArea.Autosize>
         </Combobox.Options>

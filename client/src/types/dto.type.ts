@@ -1,7 +1,6 @@
-import { EMemberRole, EMemberType } from './workspace.type'
+import { EMemberRole } from './workspace.type'
 
 export type TMemberDto = {
   userId: string
-  type: EMemberType
   role: EMemberRole
 }

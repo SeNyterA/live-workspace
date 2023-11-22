@@ -1,17 +1,23 @@
 import {
+  ActionIcon,
   Avatar,
   Button,
   Drawer,
   ScrollArea,
+  Select,
   Textarea,
   TextInput
 } from '@mantine/core'
+import { IconX } from '@tabler/icons-react'
 import { Controller, useForm } from 'react-hook-form'
 import { useAppSelector } from '../../redux/store'
-import { ApiMutationType } from '../../services/apis/useAppMutation'
+import {
+  ApiMutationType,
+  useAppMutation
+} from '../../services/apis/useAppMutation'
 import { TMemberDto } from '../../types/dto.type'
 import { EMemberRole } from '../../types/workspace.type'
-import PickUser from './PickUser'
+import UserCombobox from './UserCombobox'
 
 type TForm = ApiMutationType['createGroup']['payload']
 
@@ -21,12 +27,29 @@ const Member = ({ member }: { member: TMemberDto }) => {
   )
 
   return (
-    <div className='mt-3 flex flex-1 gap-2 first:mt-0' key={user?._id}>
+    <div
+      className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
+      key={user?._id}
+    >
       <Avatar src={user?.avatar} />
       <div className='flex flex-1 flex-col justify-center'>
         <p className='font-medium leading-5'>{user?.userName}</p>
         <p className='text-xs leading-3 text-gray-500'>{user?.email}</p>
       </div>
+      <Select
+        classNames={{
+          input: 'border-gray-100'
+        }}
+        value={member.role}
+        className='w-32'
+        data={[EMemberRole.Member, EMemberRole.Admin, EMemberRole.Owner]}
+      />
+      <ActionIcon
+        className='h-[30px] w-[30px] bg-gray-100 text-black'
+        variant='transparent'
+      >
+        <IconX size={12} />
+      </ActionIcon>
     </div>
   )
 }
@@ -38,7 +61,7 @@ export default function CreateGroup({
   onClose: () => void
 }) {
   const { control, handleSubmit } = useForm<TForm>()
-
+  const { mutateAsync: createGroup, isPending } = useAppMutation('createGroup')
   return (
     <Drawer
       onClose={onClose}
@@ -60,6 +83,7 @@ export default function CreateGroup({
         name='title'
         render={({ field: { value, onChange } }) => (
           <TextInput
+            data-autofocus
             label='Group name'
             placeholder='Your name'
             description='Leave it blank to use the names of the group members...'
@@ -90,7 +114,7 @@ export default function CreateGroup({
         name='members'
         render={({ field: { value, onChange } }) => (
           <>
-            <PickUser
+            <UserCombobox
               usersSelectedId={value?.map(e => e.userId) || []}
               onPick={userId => {
                 const member = value?.find(e => e.userId === userId)
@@ -115,7 +139,11 @@ export default function CreateGroup({
             />
 
             <div className='relative flex-1'>
-              <ScrollArea className='absolute inset-0 mt-2' scrollbarSize={8}>
+              <ScrollArea
+                className='absolute inset-0 mt-2'
+                scrollbarSize={8}
+                type='auto'
+              >
                 {value?.map(member => (
                   <Member member={member} key={member.userId} />
                 ))}
@@ -132,7 +160,13 @@ export default function CreateGroup({
 
         <Button
           onClick={handleSubmit(data => {
-            console.log(data)
+            createGroup({
+              url: {
+                baseUrl: '/workspace/groups'
+              },
+              method: 'post',
+              payload: data
+            })
           })}
         >
           Create

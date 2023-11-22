@@ -1,0 +1,3 @@
+[data-combobox-selected] {
+  @apply bg-gray-100 text-black;
+}
