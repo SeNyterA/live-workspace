@@ -73,32 +73,34 @@ export default function Layout({ children }: { children: ReactNode }) {
       const members = workspaces.filter(e => e.type === 'member')
       const users = workspaces.filter(e => e.type === 'user')
 
-      workspaceActions.updateData({
-        teams: teams.reduce(
-          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
-          {}
-        ),
-        channels: channels.reduce(
-          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
-          {}
-        ),
-        groups: groups.reduce(
-          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
-          {}
-        ),
-        directs: directs.reduce(
-          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
-          {}
-        ),
-        members: members.reduce(
-          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
-          {}
-        ),
-        users: users.reduce(
-          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
-          {}
-        )
-      })
+      dispatch(
+        workspaceActions.updateData({
+          teams: teams.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            {}
+          ),
+          channels: channels.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            {}
+          ),
+          groups: groups.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            {}
+          ),
+          directs: directs.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            {}
+          ),
+          members: members.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            {}
+          ),
+          users: users.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            {}
+          )
+        })
+      )
     }
   })
 
