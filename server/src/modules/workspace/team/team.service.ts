@@ -214,7 +214,7 @@ export class TeamService {
           members:
             channel.channelType === EStatusType.Public
               ? resMemnbers.map(member => ({
-                  role: member.role,
+                  role: EMemberRole.Member,
                   userId: member._id.toString()
                 }))
               : [{ role: EMemberRole.Owner, userId }]

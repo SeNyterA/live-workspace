@@ -13,7 +13,11 @@ import { EError } from 'src/libs/errors'
 import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
-import { CreateWorkspaceDto, UpdateWorkspaceDto } from '../workspace.dto'
+import {
+  CreateWorkspaceDto,
+  MemberDto,
+  UpdateWorkspaceDto
+} from '../workspace.dto'
 import { TWorkspaceSocket, WorkspaceService } from '../workspace.service'
 import { Group } from './group.schema'
 
@@ -83,78 +87,73 @@ export class GroupService {
   }
 
   async create({
-    groupDto: { members, ...createData },
+    groupDto: { members: memberDto, ...createData },
     userId
   }: {
     groupDto: CreateWorkspaceDto
     userId: string
   }) {
-    const createdGroup = await this.groupModel.create({
+    const newGroup = await this.groupModel.create({
       ...createData,
       createdById: userId,
       modifiedById: userId
     })
 
-    const ownerMember = await this.memberModel.create({
-      userId,
-      targetId: createdGroup._id.toString(),
-      path: createdGroup._id.toString(),
-      type: EMemberType.Group,
-      role: EMemberRole.Owner,
-      createdById: userId,
-      modifiedById: userId
-    })
-
-    const memberCreations = members
-      ?.filter(user => user.userId !== userId)
-      ?.map(async memberDto => {
-        const user = await this.userService.userModel.findOne({
-          isAvailable: true,
-          _id: memberDto.userId
-        })
-
-        if (!user) {
-          return {
-            error: {
-              code: EError['User not found or disabled'],
-              userId: memberDto.userId
-            }
-          }
-        } else {
-          const newMember = await this.memberModel.create({
-            userId: memberDto.userId,
-            role: memberDto.role,
-            targetId: createdGroup._id.toString(),
-            path: createdGroup._id.toString(),
-            type: EMemberType.Group,
-            createdById: userId,
-            modifiedById: userId
-          })
-          return {
-            member: newMember.toJSON(),
-            user: user.toJSON()
-          }
-        }
-      })
-
-    const createdMembers = await Promise.all(memberCreations)
-
-    const socketMembers = [
-      ownerMember,
-      ...createdMembers
-        .filter(entry => !!entry.member)
-        .map(entry => entry.member)
+    //#region members
+    const _membersDto: MemberDto[] = [
+      { role: EMemberRole.Owner, userId },
+      ...(memberDto?.filter(e => e.userId !== userId) || [])
     ]
 
+    const memberCreations = _membersDto?.map(async memberDto => {
+      const user = await this.userService.userModel.findOne({
+        isAvailable: true,
+        _id: memberDto.userId
+      })
+      if (!user) {
+        return {
+          error: {
+            code: EError['User not found or disabled'],
+            userId: memberDto.userId
+          }
+        }
+      }
+
+      const newMember = await this.memberModel.create({
+        ...memberDto,
+        targetId: newGroup,
+        path: newGroup,
+        type: EMemberType.Team,
+        createdById: userId,
+        modifiedById: userId
+      })
+      return {
+        member: newMember.toJSON(),
+        user: user.toJSON()
+      }
+    })
+
+    const createdMembers = await Promise.all(memberCreations)
+    //#endregion
+
+    //#region res, socket
+    const resMemnbers = createdMembers
+      .filter(entry => !!entry.member)
+      .map(entry => entry.member)
+
+    const usersId = createdMembers
+      .filter(entry => !!entry.user)
+      .map(entry => entry.user._id.toString())
+
     this.workspaceService.workspaces({
-      rooms: socketMembers.map(entry => entry._id),
+      rooms: usersId,
       workspaces: [
         {
-          type: 'group',
+          type: 'team',
           action: 'create',
-          data: createdGroup.toJSON()
+          data: newGroup
         },
-        ...socketMembers.map(
+        ...resMemnbers.map(
           member =>
             ({
               type: 'member',
@@ -164,11 +163,10 @@ export class GroupService {
         )
       ]
     })
+    //#endregion
 
     return {
-      group: createdGroup,
-      members: createdMembers,
-      owner: ownerMember
+      group: newGroup
     }
   }
 

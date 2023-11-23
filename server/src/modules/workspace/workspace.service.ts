@@ -253,10 +253,26 @@ export class WorkspaceService {
     rooms: string[]
     workspaces: TWorkspaceSocket[]
   }) {
-    workspaces.forEach(workspace => {
-      if (workspace.type === 'member') {
-      }
-    })
+    const members = workspaces.filter(e => e.type === 'member')
+
+    if (members) {
+      const sockets = await this.socketService.server.sockets.fetchSockets()
+
+      members.forEach(member => {
+        if (member.type === 'member' && member.action === 'create') {
+          sockets
+            .filter(e => e.rooms.has(member.data.userId))
+            .forEach(_socket => _socket.join(member.data.targetId))
+        }
+
+        if (member.type === 'member' && member.action === 'delete') {
+          sockets
+            .filter(e => e.rooms.has(member.data.userId))
+            .forEach(_socket => _socket.leave(member.data.targetId))
+        }
+      })
+    }
+
     await this.socketService.server.to(rooms).emit('workspaces', {
       workspaces
     })
