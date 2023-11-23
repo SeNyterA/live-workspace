@@ -12,7 +12,7 @@ import { HttpUser } from 'src/decorators/users.decorator'
 import { EMessageFor } from '../../message/message.schema'
 import { MessageService } from '../../message/message.service'
 import { TJwtUser } from '../../workspace.gateway'
-import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
+import { ChannelDto, UpdateChannelDto } from './channel.dto'
 import { ChannelService } from './channel.service'
 
 @Controller('workspace')
@@ -38,11 +38,11 @@ export class ChannelController {
   @Post('teams/:teamId/channels')
   create(
     @HttpUser() user: TJwtUser,
-    @Body() channelPayload: CreateChannelDto,
+    @Body() channelDto: ChannelDto,
     @Param('teamId') teamId: string
   ) {
-    return this.channelService.create({
-      channel: channelPayload,
+    return this.channelService._create({
+      channelDto,
       userId: user.sub,
       teamId
     })

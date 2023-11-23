@@ -2,14 +2,9 @@ import { Divider, LoadingOverlay } from '@mantine/core'
 import { ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
-import TeamList from './components/layouts/TeamList'
 import Sidebar from './components/sidebar/Sidebar'
-import {
-  TGroups,
-  TMembers,
-  TUsers,
-  workspaceActions
-} from './redux/slices/workspace.slice'
+import TeamList from './components/sidebar/TeamList'
+import { TMembers, workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
 import { useAppOnSocket } from './services/socket/useAppOnSocket'
 

@@ -10,14 +10,14 @@ export class CreateChannelMembersDto extends MembersDto {}
 
 export class UpdateChannelMembersDto extends MembersDto {}
 
-export class CreateChannelDto extends CreateWorkspaceDto {
+export class ChannelDto extends CreateWorkspaceDto {
   @IsEnum(EStatusType)
   @IsNotEmpty()
   channelType: EStatusType
 
-  @IsString()
-  @IsNotEmpty()
-  teamId: string
+  // @IsString()
+  // @IsNotEmpty()
+  // teamId: string
 }
 
 export class UpdateChannelDto extends UpdateWorkspaceDto {}
