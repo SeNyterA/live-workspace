@@ -68,30 +68,32 @@ export default function Layout({ children }: { children: ReactNode }) {
       const members = workspaces.filter(e => e.type === 'member')
       const users = workspaces.filter(e => e.type === 'user')
 
+      console.log({ teams })
+
       dispatch(
         workspaceActions.updateData({
           teams: teams.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
             {}
           ),
           channels: channels.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
             {}
           ),
           groups: groups.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
             {}
           ),
           directs: directs.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
             {}
           ),
           members: members.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
             {}
           ),
           users: users.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
             {}
           )
         })

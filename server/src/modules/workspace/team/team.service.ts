@@ -14,16 +14,11 @@ import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
 import { MemberDto } from '../workspace.dto'
+import { EStatusType } from '../workspace.schema'
 import { TWorkspaceSocket, WorkspaceService } from '../workspace.service'
 import { ChannelService } from './channel/channel.service'
-import {
-  TCreateTeamPayload,
-  TTeam,
-  TUpdateTeamPayload,
-  TeamDto
-} from './team.dto'
+import { TTeam, TUpdateTeamPayload, TeamDto } from './team.dto'
 import { Team } from './team.schema'
-import { EStatusType } from '../workspace.schema'
 
 @Injectable()
 export class TeamService {
@@ -126,54 +121,8 @@ export class TeamService {
     return team.toJSON()
   }
 
-  async create({ team, userId }: { team: TCreateTeamPayload; userId: string }) {
-    const createdTeam = (
-      await this.teamModel.create({
-        ...team,
-        createdById: userId,
-        modifiedById: userId
-      })
-    ).toJSON()
-
-    console.log(team)
-
-    const owner = await this.memberModel.create({
-      userId,
-      targetId: createdTeam._id.toString(),
-      path: createdTeam._id.toString(),
-      type: EMemberType.Team,
-      role: EMemberRole.Owner,
-      createdById: userId,
-      modifiedById: userId
-    })
-
-    // const channelData = await this.channelService.create({
-    //   channel: {
-    //     channelType: EStatusType.Public,
-    //     title: 'General',
-    //     teamId:
-    //   },
-    //   teamId: createdTeam._id.toString(),
-    //   userId: userId
-    // })
-
-    this.workspaceService.workspaces({
-      rooms: [createdTeam._id.toString(), userId],
-      workspaces: [
-        { action: 'create', type: 'team', data: createdTeam },
-        { data: owner, action: 'create', type: 'member' }
-      ]
-    })
-
-    return {
-      team: createdTeam,
-      member: owner
-      // channelData: channelData
-    }
-  }
-
   async _create({
-    teamDto: { channel: channelDto, members: memberDto, ...createData },
+    teamDto: { channels: channelDto, members: memberDto, ...teamDto },
     userId
   }: {
     teamDto: TeamDto
@@ -181,7 +130,7 @@ export class TeamService {
   }) {
     const createdTeam = (
       await this.teamModel.create({
-        ...createData,
+        ...teamDto,
         createdById: userId,
         modifiedById: userId
       })
@@ -190,39 +139,37 @@ export class TeamService {
     //#region members
     const _membersDto: MemberDto[] = [
       { role: EMemberRole.Owner, userId },
-      ...memberDto.filter(e => e.userId !== userId)
+      ...(memberDto?.filter(e => e.userId !== userId) || [])
     ]
 
-    const memberCreations = _membersDto
-      ?.filter(user => user.userId !== userId)
-      ?.map(async memberDto => {
-        const user = await this.usersService.userModel.findOne({
-          isAvailable: true,
-          _id: memberDto.userId
-        })
+    const memberCreations = _membersDto?.map(async memberDto => {
+      const user = await this.usersService.userModel.findOne({
+        isAvailable: true,
+        _id: memberDto.userId
+      })
 
-        if (!user) {
-          return {
-            error: {
-              code: EError['User not found or disabled'],
-              userId: memberDto.userId
-            }
-          }
-        } else {
-          const newMember = await this.memberModel.create({
-            ...memberDto,
-            targetId: createdTeam._id.toString(),
-            path: createdTeam._id.toString(),
-            type: EMemberType.Team,
-            createdById: userId,
-            modifiedById: userId
-          })
-          return {
-            member: newMember.toJSON(),
-            user: user.toJSON()
+      if (!user) {
+        return {
+          error: {
+            code: EError['User not found or disabled'],
+            userId: memberDto.userId
           }
         }
-      })
+      } else {
+        const newMember = await this.memberModel.create({
+          ...memberDto,
+          targetId: createdTeam._id.toString(),
+          path: createdTeam._id.toString(),
+          type: EMemberType.Team,
+          createdById: userId,
+          modifiedById: userId
+        })
+        return {
+          member: newMember.toJSON(),
+          user: user.toJSON()
+        }
+      }
+    })
 
     const createdMembers = await Promise.all(memberCreations)
     //#endregion
@@ -231,6 +178,10 @@ export class TeamService {
     const resMemnbers = createdMembers
       .filter(entry => !!entry.member)
       .map(entry => entry.member)
+
+    const usersId = createdMembers
+      .filter(entry => !!entry.user)
+      .map(entry => entry.user._id.toString())
 
     const response: TWorkspaceSocket[] = [
       {
@@ -249,13 +200,13 @@ export class TeamService {
     ]
 
     this.workspaceService.workspaces({
-      rooms: resMemnbers.map(entry => entry._id),
+      rooms: usersId,
       workspaces: response
     })
     //#endregion
 
     //#region create channel
-    channelDto.forEach(channel =>
+    channelDto?.forEach(channel =>
       this.channelService._create({
         userId,
         channelDto: {
@@ -264,11 +215,11 @@ export class TeamService {
             channel.channelType === EStatusType.Public
               ? resMemnbers.map(member => ({
                   role: member.role,
-                  userId: member.role
+                  userId: member._id.toString()
                 }))
               : [{ role: EMemberRole.Owner, userId }]
         },
-        teamId: createdTeam._id
+        teamId: createdTeam._id.toString()
       })
     )
     //#endregion
@@ -417,8 +368,6 @@ export class TeamService {
 
       const [channels] = await Promise.all([_channels])
 
-      console.log(channels)
-
       const _createChannelsMember = channels.map(channel =>
         this.channelService.addMember({
           member,
@@ -448,7 +397,6 @@ export class TeamService {
     memberId: string
     role: EMemberRole
   }) {
-    console.log('ssss', role as any)
     const { permissions } = await this.getPermisstion({
       targetId: teamId,
       userId

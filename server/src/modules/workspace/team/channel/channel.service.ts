@@ -162,36 +162,36 @@ export class ChannelService {
       ...memberDto.filter(e => e.userId !== userId)
     ]
 
-    const memberCreations = _membersDto
-      ?.filter(user => user.userId !== userId)
-      ?.map(async memberDto => {
-        const user = await this.usersService.userModel.findOne({
-          isAvailable: true,
-          _id: memberDto.userId
-        })
+    const memberCreations = _membersDto?.map(async memberDto => {
+      const user = await this.usersService.userModel.findOne({
+        isAvailable: true,
+        _id: memberDto.userId
+      })
 
-        if (!user) {
-          return {
-            error: {
-              code: EError['User not found or disabled'],
-              userId: memberDto.userId
-            }
-          }
-        } else {
-          const newMember = await this.memberModel.create({
-            ...memberDto,
-            targetId: `${teamId}/${createdChannel._id.toString()}`,
-            path: `${teamId}/${createdChannel._id.toString()}`,
-            type: EMemberType.Channel,
-            createdById: userId,
-            modifiedById: userId
-          })
-          return {
-            member: newMember.toJSON(),
-            user: user.toJSON()
+      if (!user) {
+        return {
+          error: {
+            code: EError['User not found or disabled'],
+            userId: memberDto.userId
           }
         }
-      })
+      } else {
+        const newMember = await this.memberModel.create({
+          ...memberDto,
+          targetId: createdChannel._id.toString(),
+          path: `${teamId.toString()}/${createdChannel._id.toString()}`,
+          type: EMemberType.Channel,
+          createdById: userId,
+          modifiedById: userId
+        })
+
+        console.log(newMember)
+        return {
+          member: newMember.toJSON(),
+          user: user.toJSON()
+        }
+      }
+    })
 
     const createdMembers = await Promise.all(memberCreations)
     //#endregion
@@ -200,6 +200,10 @@ export class ChannelService {
     const resMemnbers = createdMembers
       .filter(entry => !!entry.member)
       .map(entry => entry.member)
+
+    const usersId = createdMembers
+      .filter(entry => !!entry.user)
+      .map(entry => entry.user._id.toString())
 
     const response: TWorkspaceSocket[] = [
       {
@@ -218,7 +222,7 @@ export class ChannelService {
     ]
 
     this.workspaceService.workspaces({
-      rooms: resMemnbers.map(entry => entry._id),
+      rooms: usersId,
       workspaces: response
     })
     //#endregion

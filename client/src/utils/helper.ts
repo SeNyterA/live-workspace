@@ -12,3 +12,7 @@ export const cleanObj = <T extends Record<string, any>>(
       },
       {} as Record<string, string>
     )
+
+export const generateId = () => {
+  return Math.random().toString(36).substring(7)
+}

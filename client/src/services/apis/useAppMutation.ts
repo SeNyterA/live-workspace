@@ -5,8 +5,7 @@ import {
   EMemberRole,
   TMember,
   TMessage,
-  TWorkspace,
-  TWorkspacePlayload
+  TWorkspace
 } from '../../types/workspace.type'
 import { replaceDynamicValues } from './common'
 import http from './http'
@@ -104,7 +103,10 @@ export type ApiMutationType = {
 
   createChannel: {
     url: {
-      baseUrl: '/workspace/channels'
+      baseUrl: '/workspace/teams/:teamId/channels'
+      urlParams: {
+        teamId: string
+      }
     }
     method: 'post'
     payload: TChannelDto

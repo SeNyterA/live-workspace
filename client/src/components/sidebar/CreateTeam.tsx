@@ -1,9 +1,18 @@
-import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
+import {
+  ActionIcon,
+  Button,
+  Checkbox,
+  Drawer,
+  ScrollArea,
+  Textarea,
+  TextInput
+} from '@mantine/core'
+import { IconHash, IconX } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { TTeamDto } from '../../types/dto.type'
-import { EMemberRole } from '../../types/workspace.type'
+import { EMemberRole, EStatusType } from '../../types/workspace.type'
 import MemberControl from './MemberControl'
 import UserCombobox from './UserCombobox'
 
@@ -18,13 +27,27 @@ export default function CreateTeam({
   onClose: () => void
   refetchKey?: string
 }) {
-  const { control, handleSubmit, reset, setValue } = useForm<TForm>({})
+  const { control, handleSubmit, reset, setValue } = useForm<TForm>({
+    defaultValues: {
+      title: 'TNF',
+      description: 'any',
+      channels: [
+        {
+          title: 'Genaral',
+          channelType: EStatusType.Public
+        },
+        {
+          title: 'Topic',
+          channelType: EStatusType.Public
+        }
+      ]
+    }
+  })
   const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
 
-  useEffect(() => {
-    reset()
-    // setValue('channelType', EStatusType.Private)
-  }, [refetchKey])
+  // useEffect(() => {
+  //   reset()
+  // }, [refetchKey])
 
   return (
     <Drawer
@@ -69,38 +92,67 @@ export default function CreateTeam({
             className='mt-2'
             value={value}
             onChange={e => onChange(e.target.value)}
+            error='his setting determines who can ac'
           />
         )}
       />
 
-      {/* <Controller
+      <Controller
         control={control}
-        name='channelType'
+        name='channels'
+        defaultValue={[
+          {
+            title: 'Genaral',
+            channelType: EStatusType.Public
+          },
+          {
+            title: 'Topic',
+            channelType: EStatusType.Public
+          }
+        ]}
         render={({ field: { value, onChange } }) => (
-          <Radio.Group
-            name='channelPrivacy'
+          <Checkbox.Group
             label='Select Channel Privacy'
             description='This setting determines who can access the channel.'
             withAsterisk
-            value={value}
             className='mt-2'
-            onChange={onChange}
           >
-            <Group mt='xs'>
-              <Radio
-                value={EStatusType.Public}
-                label='Public Channel'
-                description='Anyone in the team can join and access the content.'
-              />
-              <Radio
-                value={EStatusType.Private}
-                label='Private Channel'
-                description='Only invited members can join and view the content.'
-              />
-            </Group>
-          </Radio.Group>
+            {value?.map(channel => (
+              <div className='flex w-full items-center gap-3'>
+                <TextInput
+                  className='mt-2 flex-1'
+                  value={channel.title}
+                  // onChange={onChange(value.map(e=>()))}
+                  placeholder='Genaral'
+                  leftSection={<IconHash size={16} />}
+                  rightSection={
+                    <ActionIcon variant='transparent' className='bg-gray-100'>
+                      <IconX size={16} />
+                    </ActionIcon>
+                  }
+                  classNames={{
+                    input: 'border border-dashed'
+                  }}
+                  error='setting determines who can access the'
+                />
+              </div>
+            ))}
+            <div className='mt-2 flex justify-end'>
+              <Button
+                variant='light'
+                onClick={() => {
+                  onChange([
+                    ...(value || []),
+                    { title: '', channelType: EStatusType.Public }
+                  ])
+                }}
+              >
+                Add channel
+              </Button>
+            </div>
+          </Checkbox.Group>
         )}
-      /> */}
+      />
 
       <Controller
         control={control}
@@ -165,6 +217,7 @@ export default function CreateTeam({
           loading={isPending}
           disabled={isPending}
           onClick={handleSubmit(data => {
+            console.log(data)
             createTeam({
               url: {
                 baseUrl: '/workspace/teams'

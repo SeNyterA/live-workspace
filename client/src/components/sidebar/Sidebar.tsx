@@ -91,7 +91,7 @@ export default function Sidebar() {
               active={path.pathname.includes('channel')}
               defaultOpened={!!channelId}
             >
-              {/* <Watching
+              <Watching
                 watchingFn={state =>
                   Object.values(state.workspace.channels).filter(
                     e => e.teamId === teamId
@@ -116,7 +116,7 @@ export default function Sidebar() {
                     ))}
                   </>
                 )}
-              </Watching> */}
+              </Watching>
 
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'
@@ -137,7 +137,7 @@ export default function Sidebar() {
               active={!!groupId}
               defaultOpened={!!groupId}
             >
-              {/* <Watching
+              <Watching
                 watchingFn={state => Object.values(state.workspace.groups)}
               >
                 {groups => (
@@ -159,7 +159,7 @@ export default function Sidebar() {
                     ))}
                   </>
                 )}
-              </Watching> */}
+              </Watching>
 
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'
@@ -178,7 +178,7 @@ export default function Sidebar() {
               active={path.pathname.includes('direct-message')}
               defaultOpened={!!directId}
             >
-              {/* <Watching
+              <Watching
                 watchingFn={state => Object.values(state.workspace.directs)}
               >
                 {directs => (
@@ -214,7 +214,7 @@ export default function Sidebar() {
                     ))}
                   </>
                 )}
-              </Watching> */}
+              </Watching>
 
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'

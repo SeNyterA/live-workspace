@@ -14,7 +14,9 @@ export type TWorkspaceDto = {
 
 export type TGroupDto = TWorkspaceDto
 
-export type TTeamDto = TWorkspaceDto
+export type TTeamDto = TWorkspaceDto & {
+  channels?: TChannelDto[]
+}
 
 export type TChannelDto = TWorkspaceDto & {
   channelType: EStatusType

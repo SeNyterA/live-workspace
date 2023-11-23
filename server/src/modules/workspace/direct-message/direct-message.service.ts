@@ -134,7 +134,6 @@ export class DirectMessageService {
       if (targetId) {
         _targetId = targetId
       } else if (targetEmail || targetUserName) {
-        console.log(targetEmail, targetUserName)
         const target = await this.usersService.userModel.findOne({
           isAvailable: true,
           $or: [
@@ -179,7 +178,6 @@ export class DirectMessageService {
         users
       }
     } catch (error) {
-      console.log(error)
       throw new NotFoundException()
     }
   }

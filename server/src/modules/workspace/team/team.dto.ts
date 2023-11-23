@@ -24,6 +24,6 @@ export class TeamDto extends CreateWorkspaceDto {
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
-  @Type(() => MemberDto)
-  channel?: ChannelDto[]
+  @Type(() => ChannelDto)
+  channels?: ChannelDto[]
 }

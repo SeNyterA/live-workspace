@@ -11,7 +11,7 @@ import { HttpUser } from 'src/decorators/users.decorator'
 
 import { EMemberRole } from '../member/member.schema'
 import { TJwtUser } from '../workspace.gateway'
-import { TCreateTeamPayload, TUpdateTeamPayload, TeamDto } from './team.dto'
+import { TUpdateTeamPayload, TeamDto } from './team.dto'
 import { TeamService } from './team.service'
 
 @Controller('/workspace/teams')
@@ -19,9 +19,9 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post()
-  create(@HttpUser() user: TJwtUser, @Body() team: TeamDto) {
-    return this.teamService.create({
-      team: team,
+  create(@HttpUser() user: TJwtUser, @Body() teamDto: TeamDto) {
+    return this.teamService._create({
+      teamDto,
       userId: user.sub
     })
   }

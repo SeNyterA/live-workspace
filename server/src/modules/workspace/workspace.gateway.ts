@@ -202,9 +202,7 @@ export class WorkspaceGateway
   }
 
   @SubscribeMessage('disconnect')
-  async disconnect(@WsUser() user: TJwtUser, @WsClient() client: Socket) {
-    console.log('disconnect:', 11111)
-  }
+  async disconnect(@WsUser() user: TJwtUser, @WsClient() client: Socket) {}
 
   @SubscribeMessage('makeReadMessage')
   async makeReadMessage(
