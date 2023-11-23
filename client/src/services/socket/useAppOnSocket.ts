@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { TUser } from '../../types/user.type'
 import {
   TChannel,
   TDirect,
@@ -8,6 +9,18 @@ import {
   TTeam
 } from '../../types/workspace.type'
 import { useSocketContext } from './SocketProvider'
+
+export type TWorkspaceSocket = {
+  action?: 'create' | 'update' | 'delete'
+} & (
+  | { data: TChannel; type: 'channel' }
+  | { data: TTeam; type: 'board' }
+  | { data: TTeam; type: 'team' }
+  | { data: TDirect; type: 'direct' }
+  | { data: TGroup; type: 'group' }
+  | { data: TMember; type: 'member' }
+  | { data: TUser; type: 'user' }
+)
 
 export type ApiSocketType = {
   message: {
@@ -29,17 +42,10 @@ export type ApiSocketType = {
     response: string
   }
 
-  workspace: {
+  workspaces: {
     response: {
-      action: 'create' | 'update' | 'delete'
-    } & (
-      | { data: TChannel; type: 'channel' }
-      | { data: TTeam; type: 'board' }
-      | { data: TTeam; type: 'team' }
-      | { data: TDirect; type: 'direct' }
-      | { data: TGroup; type: 'group' }
-      | { data: TMember; type: 'member' }
-    )
+      workspaces: TWorkspaceSocket[]
+    }
   }
 }
 
