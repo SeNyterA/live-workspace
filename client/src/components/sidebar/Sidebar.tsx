@@ -12,6 +12,7 @@ import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
+import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import DirectNavLink from '../layouts/DirectNavLink'
 import CreateDirect from '../new-message/CreateDirect'
@@ -31,13 +32,16 @@ export default function Sidebar() {
   const { channelId, teamId, directId, boardId, groupId } = useAppParams()
   const { switchTo } = useAppControlParams()
   const path = useLocation()
-
   const [toggle, setToggle] = useState<TSideBarToggle>()
+
+  const team = useAppSelector(state =>
+    Object.values(state.workspace.teams).find(e => e._id === teamId)
+  )
 
   return (
     <>
       <div className='flex w-72 flex-col gap-2 py-3'>
-        <p className='px-4 text-xl'>Team name </p>
+        <p className='px-4 text-xl'>{team?.title}</p>
         <div className='flex items-center justify-center gap-2 px-4'>
           <Input
             className=''

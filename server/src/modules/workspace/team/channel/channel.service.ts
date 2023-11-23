@@ -10,7 +10,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
 import { getChannelPermission } from 'src/libs/checkPermistion'
-import { EError } from 'src/libs/errors'
+import { EError, Errors } from 'src/libs/errors'
 import { User } from 'src/modules/users/user.schema'
 import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../../member/member.schema'
@@ -134,12 +134,13 @@ export class ChannelService {
     userId: string
     teamId: string
   }) {
-    const { permissions } = await this.teamService.getPermisstion({
-      targetId: teamId,
-      userId
-    })
+    const { permissions: teamPermissions, member: teamMember } =
+      await this.teamService.getPermisstion({
+        targetId: teamId,
+        userId
+      })
 
-    if (!permissions?.createChannel)
+    if (!teamPermissions?.createChannel)
       return {
         error: {
           code: EError['User dont has permission to create channel'],
@@ -159,7 +160,7 @@ export class ChannelService {
     //#region members
     const _membersDto: MemberDto[] = [
       { role: EMemberRole.Owner, userId },
-      ...memberDto.filter(e => e.userId !== userId)
+      ...(memberDto?.filter(e => e.userId !== userId) || [])
     ]
 
     const memberCreations = _membersDto?.map(async memberDto => {
@@ -167,29 +168,42 @@ export class ChannelService {
         isAvailable: true,
         _id: memberDto.userId
       })
-
       if (!user) {
         return {
           error: {
-            code: EError['User not found or disabled'],
+            code: Errors['User not found or disabled'],
             userId: memberDto.userId
           }
         }
-      } else {
-        const newMember = await this.memberModel.create({
-          ...memberDto,
-          targetId: createdChannel._id.toString(),
-          path: `${teamId.toString()}/${createdChannel._id.toString()}`,
-          type: EMemberType.Channel,
-          createdById: userId,
-          modifiedById: userId
-        })
+      }
 
-        console.log(newMember)
+      const teamMember = await this.memberService._checkExisting({
+        targetId: teamId,
+        userId: memberDto.userId
+      })
+      if (!teamMember) {
+        console.log(Errors['User not found on team'])
         return {
-          member: newMember.toJSON(),
-          user: user.toJSON()
+          error: {
+            code: Errors['User not found on team'],
+            userId: memberDto.userId,
+            teamId
+          }
         }
+      }
+
+      const newMember = await this.memberModel.create({
+        ...memberDto,
+        targetId: createdChannel._id.toString(),
+        path: `${teamId.toString()}/${createdChannel._id.toString()}`,
+        type: EMemberType.Channel,
+        createdById: userId,
+        modifiedById: userId
+      })
+
+      return {
+        member: newMember.toJSON(),
+        user: user.toJSON()
       }
     })
 
@@ -228,7 +242,8 @@ export class ChannelService {
     //#endregion
 
     return {
-      response
+      channel: createdChannel,
+      members: createdMembers
     }
   }
 

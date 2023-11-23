@@ -9,6 +9,7 @@ import {
 } from '@mantine/core'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
+import useAppParams from '../../hooks/useAppParams'
 import {
   ApiMutationType,
   useAppMutation
@@ -28,6 +29,7 @@ export default function CreateChannel({
   onClose: () => void
   refetchKey?: string
 }) {
+  const { teamId } = useAppParams()
   const { control, handleSubmit, reset, setValue } = useForm<TForm>({
     defaultValues: {
       channelType: EStatusType.Public
@@ -189,13 +191,19 @@ export default function CreateChannel({
           loading={isPending}
           disabled={isPending}
           onClick={handleSubmit(data => {
-            createChannel({
-              url: {
-                baseUrl: '/workspace/channels'
-              },
-              method: 'post',
-              payload: data
-            })
+            if (data && teamId)
+              createChannel({
+                url: {
+                  baseUrl: '/workspace/teams/:teamId/channels',
+                  urlParams: {
+                    teamId
+                  }
+                },
+                method: 'post',
+                payload: data
+              }).then(() => {
+                onClose()
+              })
           })}
         >
           Create
