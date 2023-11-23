@@ -33,10 +33,11 @@ export default function Sidebar() {
   const { switchTo } = useAppControlParams()
   const path = useLocation()
   const [toggle, setToggle] = useState<TSideBarToggle>()
-
   const team = useAppSelector(state =>
     Object.values(state.workspace.teams).find(e => e._id === teamId)
   )
+
+  const [searchValue, setSearchValue] = useState('')
 
   return (
     <>
@@ -44,16 +45,15 @@ export default function Sidebar() {
         <p className='px-4 text-xl'>{team?.title}</p>
         <div className='flex items-center justify-center gap-2 px-4'>
           <Input
-            className=''
-            variant='unstyled'
+            className='flex h-[30px] flex-1 items-center rounded bg-gray-100'
             size='sm'
             placeholder='Search on workspace'
             leftSection={<IconSearch size={14} />}
             classNames={{
-              wrapper:
-                'flex h-[30px] flex-1 items-center bg-gray-100 rounded-sm',
-              input: 'h-fit'
+              input: 'bg-transparent border-none min-h-[20px] h-[20px]'
             }}
+            value={searchValue}
+            onChange={e => setSearchValue(e.target.value)}
           />
 
           <ActionIcon
@@ -98,7 +98,12 @@ export default function Sidebar() {
               <Watching
                 watchingFn={state =>
                   Object.values(state.workspace.channels).filter(
-                    e => e.teamId === teamId
+                    e =>
+                      e.teamId === teamId &&
+                      [
+                        e.title.toLowerCase(),
+                        e.description?.toLowerCase()
+                      ].some(e => e?.includes(searchValue.toLowerCase()))
                   )
                 }
               >
@@ -142,7 +147,13 @@ export default function Sidebar() {
               defaultOpened={!!groupId}
             >
               <Watching
-                watchingFn={state => Object.values(state.workspace.groups)}
+                watchingFn={state =>
+                  Object.values(state.workspace.groups).filter(e =>
+                    [e.title.toLowerCase(), e.description?.toLowerCase()].some(
+                      e => e?.includes(searchValue.toLowerCase())
+                    )
+                  )
+                }
               >
                 {groups => (
                   <>
@@ -183,7 +194,27 @@ export default function Sidebar() {
               defaultOpened={!!directId}
             >
               <Watching
-                watchingFn={state => Object.values(state.workspace.directs)}
+                watchingFn={state => {
+                  const meId = state.auth.userInfo?._id
+                  const users = Object.values(state.workspace.users)
+                  const directs = Object.values(state.workspace.directs).filter(
+                    direct => {
+                      const user = users.find(
+                        user =>
+                          direct.userIds.find(e => e !== meId) === user._id
+                      )
+
+                      return [
+                        user?.email,
+                        user?.userName,
+                        user?.nickname,
+                        direct.title
+                      ].some(e => e?.includes(searchValue.toLowerCase()))
+                    }
+                  )
+
+                  directs
+                }}
               >
                 {directs => (
                   <>
