@@ -1,9 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
-import { TMemberDto } from '../../types/dto.type'
+import { TChannelDto, TGroupDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
 import {
   EMemberRole,
-  TChannelPayload,
   TMember,
   TMessage,
   TWorkspace,
@@ -69,18 +68,6 @@ export type ApiMutationType = {
       | { success: false; error: string }
   }
 
-  createChannel: {
-    url: {
-      baseUrl: '/workspace/teams/:teamId/channels'
-      urlParams: {
-        teamId: string
-      }
-    }
-    method: 'post'
-    payload: TChannelPayload
-    response: TWorkspace
-  }
-
   createChannelMessage: {
     url: {
       baseUrl: '/workspace/channels/:channelId/messages'
@@ -110,13 +97,17 @@ export type ApiMutationType = {
       baseUrl: '/workspace/groups'
     }
     method: 'post'
-    payload: {
-      title: string
-      description?: string
-      avatar?: string
-      members?: TMemberDto[]
-    }
+    payload: TGroupDto
     response: TMessage
+  }
+
+  createChannel: {
+    url: {
+      baseUrl: '/workspace/channels'
+    }
+    method: 'post'
+    payload: TChannelDto
+    response: TWorkspace
   }
 }
 

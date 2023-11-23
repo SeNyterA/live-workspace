@@ -16,6 +16,7 @@ import Watching from '../../redux/Watching'
 import DirectNavLink from '../layouts/DirectNavLink'
 import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
+import CreateChannel from './CreateChannel'
 import CreateGroup from './CreateGroup'
 
 export type TSideBarToggle =
@@ -122,7 +123,7 @@ export default function Sidebar() {
                 label={`Create channel`}
                 rightSection={<IconPlus size={14} />}
                 onClick={() => {
-                  setToggle('createBoard')
+                  setToggle('createChannel')
                 }}
               />
             </NavLink>
@@ -241,6 +242,13 @@ export default function Sidebar() {
       <CreateGroup
         isOpen={toggle === 'createGroup'}
         onClose={() => setToggle(undefined)}
+        refetchKey={toggle}
+      />
+
+      <CreateChannel
+        isOpen={toggle === 'createChannel'}
+        onClose={() => setToggle(undefined)}
+        refetchKey={toggle}
       />
     </>
   )

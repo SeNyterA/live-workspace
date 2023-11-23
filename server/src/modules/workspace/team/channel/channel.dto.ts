@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty } from 'class-validator'
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator'
 import {
   CreateWorkspaceDto,
   MembersDto,
@@ -14,6 +14,10 @@ export class CreateChannelDto extends CreateWorkspaceDto {
   @IsEnum(EStatusType)
   @IsNotEmpty()
   channelType: EStatusType
+
+  @IsString()
+  @IsNotEmpty()
+  teamId: string
 }
 
 export class UpdateChannelDto extends UpdateWorkspaceDto {}

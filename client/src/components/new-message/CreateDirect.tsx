@@ -15,10 +15,12 @@ import { useAppQuery } from '../../services/apis/useAppQuery'
 
 export default function CreateDirect({
   onClose,
-  isOpen
+  isOpen,
+  refetchKey
 }: {
   isOpen: boolean
   onClose: () => void
+  refetchKey?: string
 }) {
   const [searchValue, setSearchValue] = useState('')
   const [keyword] = useDebouncedValue(searchValue, 200)

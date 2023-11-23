@@ -131,7 +131,8 @@ export class GroupService {
             modifiedById: userId
           })
           return {
-            member: newMember.toJSON()
+            member: newMember.toJSON(),
+            user: user.toJSON()
           }
         }
       })

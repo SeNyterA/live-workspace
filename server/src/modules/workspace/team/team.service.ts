@@ -131,14 +131,15 @@ export class TeamService {
       modifiedById: userId
     })
 
-    const channelData = await this.channelService.create({
-      channel: {
-        channelType: EStatusType.Public,
-        title: 'General'
-      },
-      teamId: createdTeam._id.toString(),
-      userId: userId
-    })
+    // const channelData = await this.channelService.create({
+    //   channel: {
+    //     channelType: EStatusType.Public,
+    //     title: 'General',
+    //     teamId: 
+    //   },
+    //   teamId: createdTeam._id.toString(),
+    //   userId: userId
+    // })
 
     this.workspaceService.workspace({
       rooms: [createdTeam._id.toString(), userId],
@@ -157,7 +158,7 @@ export class TeamService {
     return {
       team: createdTeam,
       member: owner,
-      channelData: channelData
+      // channelData: channelData
     }
   }
 

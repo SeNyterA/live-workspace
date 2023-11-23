@@ -1,67 +1,32 @@
-import {
-  ActionIcon,
-  Avatar,
-  Button,
-  Drawer,
-  ScrollArea,
-  Select,
-  Textarea,
-  TextInput
-} from '@mantine/core'
-import { IconX } from '@tabler/icons-react'
+import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
+import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useAppSelector } from '../../redux/store'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../services/apis/useAppMutation'
-import { TMemberDto } from '../../types/dto.type'
 import { EMemberRole } from '../../types/workspace.type'
+import MemberControl from './MemberControl'
 import UserCombobox from './UserCombobox'
 
 type TForm = ApiMutationType['createGroup']['payload']
 
-const Member = ({ member }: { member: TMemberDto }) => {
-  const user = useAppSelector(state =>
-    Object.values(state.workspace.users).find(e => e._id === member.userId)
-  )
-
-  return (
-    <div
-      className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
-      key={user?._id}
-    >
-      <Avatar src={user?.avatar} />
-      <div className='flex flex-1 flex-col justify-center'>
-        <p className='font-medium leading-5'>{user?.userName}</p>
-        <p className='text-xs leading-3 text-gray-500'>{user?.email}</p>
-      </div>
-      <Select
-        classNames={{
-          input: 'border-gray-100'
-        }}
-        value={member.role}
-        className='w-32'
-        data={[EMemberRole.Member, EMemberRole.Admin, EMemberRole.Owner]}
-      />
-      <ActionIcon
-        className='h-[30px] w-[30px] bg-gray-100 text-black'
-        variant='transparent'
-      >
-        <IconX size={12} />
-      </ActionIcon>
-    </div>
-  )
-}
 export default function CreateGroup({
   onClose,
-  isOpen
+  isOpen,
+  refetchKey
 }: {
   isOpen: boolean
   onClose: () => void
+  refetchKey?: string
 }) {
-  const { control, handleSubmit } = useForm<TForm>()
+  const { control, handleSubmit, reset } = useForm<TForm>()
   const { mutateAsync: createGroup, isPending } = useAppMutation('createGroup')
+
+  useEffect(() => {
+    reset()
+  }, [refetchKey])
+
   return (
     <Drawer
       onClose={onClose}
@@ -139,13 +104,23 @@ export default function CreateGroup({
             />
 
             <div className='relative flex-1'>
-              <ScrollArea
-                className='absolute inset-0 mt-2'
-                scrollbarSize={8}
-                type='auto'
-              >
-                {value?.map(member => (
-                  <Member member={member} key={member.userId} />
+              <ScrollArea className='absolute inset-0 mt-2' scrollbarSize={8}>
+                {value?.map((member, index) => (
+                  <MemberControl
+                    member={member}
+                    key={member.userId}
+                    onChange={role => {
+                      onChange(
+                        value.map((e, _index) => ({
+                          ...e,
+                          ...(index === _index && { role: role })
+                        }))
+                      )
+                    }}
+                    onRemove={() => {
+                      onChange(value.filter((_, _index) => index !== _index))
+                    }}
+                  />
                 ))}
               </ScrollArea>
             </div>
@@ -154,7 +129,13 @@ export default function CreateGroup({
       />
 
       <div className='mt-2 flex items-center justify-end gap-3'>
-        <Button variant='default' color='red'>
+        <Button
+          variant='default'
+          color='red'
+          onClick={onClose}
+          loading={isPending}
+          disabled={isPending}
+        >
           Close
         </Button>
 
