@@ -213,7 +213,7 @@ export default function Sidebar() {
                     }
                   )
 
-                  directs
+                  return directs
                 }}
               >
                 {directs => (

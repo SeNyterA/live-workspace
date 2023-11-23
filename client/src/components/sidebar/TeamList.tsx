@@ -3,6 +3,7 @@ import { useState } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
+import { EStatusType } from '../../types/workspace.type'
 import CreateTeam from './CreateTeam'
 
 export default function TeamList() {
@@ -63,7 +64,12 @@ export default function TeamList() {
       <CreateTeam
         isOpen={openDrawer}
         onClose={() => toggleDrawer(false)}
-        refetchKey={openDrawer ? 'open' : 'close'}
+        defaultValues={{
+          channels: [
+            { channelType: EStatusType.Public, title: 'General' },
+            { channelType: EStatusType.Public, title: 'Topic' }
+          ]
+        }}
       />
     </>
   )

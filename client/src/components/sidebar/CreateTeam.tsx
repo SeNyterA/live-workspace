@@ -8,6 +8,7 @@ import {
   TextInput
 } from '@mantine/core'
 import { IconHash, IconX } from '@tabler/icons-react'
+import { useEffect } from 'react'
 import {
   Control,
   Controller,
@@ -18,6 +19,7 @@ import {
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { TTeamDto } from '../../types/dto.type'
 import { EMemberRole, EStatusType } from '../../types/workspace.type'
+import DropAvt from './DropAvt'
 import MemberControl from './MemberControl'
 import UserCombobox from './UserCombobox'
 
@@ -31,9 +33,8 @@ const Channels = ({ control }: { control: Control<TForm, any> }) => {
 
   return (
     <Checkbox.Group
-      label='Select Channel Privacy'
-      description='This setting determines who can access the channel.'
-      withAsterisk
+      label='Create Channels'
+      description='These are public channels; everyone can join.'
       className='mt-2'
     >
       {fields?.map((_, index) => (
@@ -42,14 +43,14 @@ const Channels = ({ control }: { control: Control<TForm, any> }) => {
           control={control}
           name={`channels.${index}.title`}
           rules={{
-            required: 'Channel name is requited'
+            required: 'Channel name is required'
           }}
           render={({ field: { value, onChange }, fieldState }) => (
             <TextInput
               className='mt-2 flex-1'
               value={value}
               onChange={onChange}
-              placeholder='Genaral'
+              placeholder='General'
               leftSection={<IconHash size={16} />}
               rightSection={
                 <ActionIcon
@@ -79,14 +80,14 @@ const Channels = ({ control }: { control: Control<TForm, any> }) => {
             })
           }}
         >
-          Add channel
+          Add Channel
         </Button>
       </div>
     </Checkbox.Group>
   )
 }
 
-const Member = ({ control }: { control: Control<TForm, any> }) => {
+const Members = ({ control }: { control: Control<TForm, any> }) => {
   const { append, fields, remove } = useFieldArray({
     control,
     name: 'members'
@@ -109,7 +110,7 @@ const Member = ({ control }: { control: Control<TForm, any> }) => {
         }}
         textInputProps={{
           label: 'Add Members',
-          description: 'Type to search and add members to the channel',
+          description: 'Type to search and add members to the team',
           placeholder: 'Search and select members...',
           className: 'mt-2'
         }}
@@ -151,22 +152,20 @@ export default function CreateTeam({
   refetchKey?: string
   defaultValues?: DefaultValues<TForm>
 }) {
-  const {
-    control,
-    handleSubmit,
-    formState
-  } = useForm<TForm>({
+  const { control, handleSubmit, reset } = useForm<TForm>({
     defaultValues
   })
   const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
 
-  console.log(formState.errors)
+  useEffect(() => {
+    isOpen && reset(defaultValues)
+  }, [isOpen])
 
   return (
     <Drawer
       onClose={onClose}
       opened={isOpen}
-      title={<p className='text-lg font-semibold'>Create Channel</p>}
+      title={<p className='text-lg font-semibold'>Create Team</p>}
       overlayProps={{
         color: '#000',
         backgroundOpacity: 0.2,
@@ -178,18 +177,20 @@ export default function CreateTeam({
         body: 'flex flex-col flex-1'
       }}
     >
+      <DropAvt />
       <Controller
         control={control}
         name='title'
         rules={{
-          required: 'Team name is requited'
+          required: 'Team name is required'
         }}
         render={({ field: { value, onChange }, fieldState }) => (
           <TextInput
             data-autofocus
-            label='Channel Name'
-            placeholder='Enter the channel name'
-            description='Leave it blank to use the default name...'
+            withAsterisk
+            label='Team Name'
+            placeholder='Enter the team name'
+            // description='Leave it blank to use the default name...'
             size='sm'
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -203,9 +204,9 @@ export default function CreateTeam({
         name='description'
         render={({ field: { value, onChange } }) => (
           <Textarea
-            label='Channel Description'
-            description='Description for the channel'
-            placeholder='Enter a description for the channel...'
+            label='Team Description'
+            // description='Description for the team'
+            placeholder='Enter a description for the team...'
             className='mt-2'
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -215,7 +216,7 @@ export default function CreateTeam({
 
       <Channels control={control} />
 
-      <Member control={control} />
+      <Members control={control} />
 
       <div className='mt-2 flex items-center justify-end gap-3'>
         <Button variant='default' color='red'>

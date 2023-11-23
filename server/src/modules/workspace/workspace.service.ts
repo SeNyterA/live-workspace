@@ -233,19 +233,6 @@ export class WorkspaceService {
     const clients = await this.socketService.server.fetchSockets()
   }
 
-  // async workspace({
-  //   rooms,
-  //   data,
-  //   action,
-  //   type
-  // }: { rooms: string[] } & TWorkspaceSocket) {
-  //   await this.socketService.server.to(rooms).emit('workspace', {
-  //     data,
-  //     action,
-  //     type
-  //   })
-  // }
-
   async workspaces({
     rooms,
     workspaces
@@ -268,6 +255,19 @@ export class WorkspaceService {
           sockets
             .filter(e => e.rooms.has(member.data.userId))
             .forEach(_socket => _socket.leave(member.data.targetId))
+        }
+      })
+    }
+
+    const directs = workspaces.filter(e => e.type === 'direct')
+    if (directs) {
+      const sockets = await this.socketService.server.sockets.fetchSockets()
+
+      directs.forEach(direct => {
+        if (direct.type === 'direct' && direct.action === 'create') {
+          sockets
+            .filter(e => direct.data.userIds.some(_e => e.rooms.has(_e)))
+            .forEach(_socket => _socket.join(direct.data._id))
         }
       })
     }
