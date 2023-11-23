@@ -254,7 +254,6 @@ export class WorkspaceService {
     workspaces: TWorkspaceSocket[]
   }) {
     const members = workspaces.filter(e => e.type === 'member')
-
     if (members) {
       const sockets = await this.socketService.server.sockets.fetchSockets()
 

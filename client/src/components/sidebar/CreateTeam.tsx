@@ -8,8 +8,13 @@ import {
   TextInput
 } from '@mantine/core'
 import { IconHash, IconX } from '@tabler/icons-react'
-import { useEffect } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import {
+  Control,
+  Controller,
+  DefaultValues,
+  useFieldArray,
+  useForm
+} from 'react-hook-form'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { TTeamDto } from '../../types/dto.type'
 import { EMemberRole, EStatusType } from '../../types/workspace.type'
@@ -18,36 +23,144 @@ import UserCombobox from './UserCombobox'
 
 type TForm = TTeamDto
 
+const Channels = ({ control }: { control: Control<TForm, any> }) => {
+  const { append, fields, remove } = useFieldArray({
+    control,
+    name: 'channels'
+  })
+
+  return (
+    <Checkbox.Group
+      label='Select Channel Privacy'
+      description='This setting determines who can access the channel.'
+      withAsterisk
+      className='mt-2'
+    >
+      {fields?.map((_, index) => (
+        <Controller
+          key={_.id}
+          control={control}
+          name={`channels.${index}.title`}
+          rules={{
+            required: 'Channel name is requited'
+          }}
+          render={({ field: { value, onChange }, fieldState }) => (
+            <TextInput
+              className='mt-2 flex-1'
+              value={value}
+              onChange={onChange}
+              placeholder='Genaral'
+              leftSection={<IconHash size={16} />}
+              rightSection={
+                <ActionIcon
+                  variant='transparent'
+                  className='bg-gray-100'
+                  onClick={() => remove(index)}
+                >
+                  <IconX size={16} />
+                </ActionIcon>
+              }
+              classNames={{
+                input: 'border border-dashed'
+              }}
+              error={fieldState.error && fieldState.error.message}
+            />
+          )}
+        />
+      ))}
+      <div className='mt-2 flex justify-end'>
+        <Button
+          size='sm'
+          variant='light'
+          onClick={() => {
+            append({
+              title: '',
+              channelType: EStatusType.Public
+            })
+          }}
+        >
+          Add channel
+        </Button>
+      </div>
+    </Checkbox.Group>
+  )
+}
+
+const Member = ({ control }: { control: Control<TForm, any> }) => {
+  const { append, fields, remove } = useFieldArray({
+    control,
+    name: 'members'
+  })
+
+  return (
+    <>
+      <UserCombobox
+        usersSelectedId={fields?.map(e => e.userId) || []}
+        onPick={userId => {
+          const idx = fields?.findIndex(e => e.userId === userId)
+          if (idx < 0) {
+            append({
+              userId,
+              role: EMemberRole.Member
+            })
+          } else {
+            remove(idx)
+          }
+        }}
+        textInputProps={{
+          label: 'Add Members',
+          description: 'Type to search and add members to the channel',
+          placeholder: 'Search and select members...',
+          className: 'mt-2'
+        }}
+      />
+
+      <div className='relative flex-1'>
+        <ScrollArea className='absolute inset-0 mt-2' scrollbarSize={8}>
+          {fields?.map((member, index) => (
+            <Controller
+              key={member.id}
+              control={control}
+              name={`members.${index}.role`}
+              render={({ field: { value, onChange } }) => (
+                <MemberControl
+                  member={{ ...member, role: value }}
+                  onChange={role => {
+                    onChange(role)
+                  }}
+                  onRemove={() => {
+                    remove(index)
+                  }}
+                />
+              )}
+            />
+          ))}
+        </ScrollArea>
+      </div>
+    </>
+  )
+}
+
 export default function CreateTeam({
   onClose,
   isOpen,
-  refetchKey
+  defaultValues
 }: {
   isOpen: boolean
   onClose: () => void
   refetchKey?: string
+  defaultValues?: DefaultValues<TForm>
 }) {
-  const { control, handleSubmit, reset, setValue } = useForm<TForm>({
-    defaultValues: {
-      title: 'TNF',
-      description: 'any',
-      channels: [
-        {
-          title: 'Genaral',
-          channelType: EStatusType.Public
-        },
-        {
-          title: 'Topic',
-          channelType: EStatusType.Public
-        }
-      ]
-    }
+  const {
+    control,
+    handleSubmit,
+    formState
+  } = useForm<TForm>({
+    defaultValues
   })
   const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
 
-  // useEffect(() => {
-  //   reset()
-  // }, [refetchKey])
+  console.log(formState.errors)
 
   return (
     <Drawer
@@ -68,7 +181,10 @@ export default function CreateTeam({
       <Controller
         control={control}
         name='title'
-        render={({ field: { value, onChange } }) => (
+        rules={{
+          required: 'Team name is requited'
+        }}
+        render={({ field: { value, onChange }, fieldState }) => (
           <TextInput
             data-autofocus
             label='Channel Name'
@@ -77,6 +193,7 @@ export default function CreateTeam({
             size='sm'
             value={value}
             onChange={e => onChange(e.target.value)}
+            error={fieldState.error && fieldState.error.message}
           />
         )}
       />
@@ -92,121 +209,13 @@ export default function CreateTeam({
             className='mt-2'
             value={value}
             onChange={e => onChange(e.target.value)}
-            error='his setting determines who can ac'
           />
         )}
       />
 
-      <Controller
-        control={control}
-        name='channels'
-        defaultValue={[
-          {
-            title: 'Genaral',
-            channelType: EStatusType.Public
-          },
-          {
-            title: 'Topic',
-            channelType: EStatusType.Public
-          }
-        ]}
-        render={({ field: { value, onChange } }) => (
-          <Checkbox.Group
-            label='Select Channel Privacy'
-            description='This setting determines who can access the channel.'
-            withAsterisk
-            className='mt-2'
-          >
-            {value?.map(channel => (
-              <div className='flex w-full items-center gap-3'>
-                <TextInput
-                  className='mt-2 flex-1'
-                  value={channel.title}
-                  // onChange={onChange(value.map(e=>()))}
-                  placeholder='Genaral'
-                  leftSection={<IconHash size={16} />}
-                  rightSection={
-                    <ActionIcon variant='transparent' className='bg-gray-100'>
-                      <IconX size={16} />
-                    </ActionIcon>
-                  }
-                  classNames={{
-                    input: 'border border-dashed'
-                  }}
-                  error='setting determines who can access the'
-                />
-              </div>
-            ))}
-            <div className='mt-2 flex justify-end'>
-              <Button
-                variant='light'
-                onClick={() => {
-                  onChange([
-                    ...(value || []),
-                    { title: '', channelType: EStatusType.Public }
-                  ])
-                }}
-              >
-                Add channel
-              </Button>
-            </div>
-          </Checkbox.Group>
-        )}
-      />
+      <Channels control={control} />
 
-      <Controller
-        control={control}
-        name='members'
-        render={({ field: { value, onChange } }) => (
-          <>
-            <UserCombobox
-              usersSelectedId={value?.map(e => e.userId) || []}
-              onPick={userId => {
-                const member = value?.find(e => e.userId === userId)
-                if (!member) {
-                  onChange([
-                    ...(value || []),
-                    {
-                      userId,
-                      role: EMemberRole.Member
-                    }
-                  ])
-                } else {
-                  onChange((value || []).filter(e => e.userId !== userId))
-                }
-              }}
-              textInputProps={{
-                label: 'Add Members',
-                description: 'Type to search and add members to the channel',
-                placeholder: 'Search and select members...',
-                className: 'mt-2'
-              }}
-            />
-
-            <div className='relative flex-1'>
-              <ScrollArea className='absolute inset-0 mt-2' scrollbarSize={8}>
-                {value?.map((member, index) => (
-                  <MemberControl
-                    member={member}
-                    key={member.userId}
-                    onChange={role => {
-                      onChange(
-                        value.map((e, _index) => ({
-                          ...e,
-                          ...(index === _index && { role: role })
-                        }))
-                      )
-                    }}
-                    onRemove={() => {
-                      onChange(value.filter((_, _index) => index !== _index))
-                    }}
-                  />
-                ))}
-              </ScrollArea>
-            </div>
-          </>
-        )}
-      />
+      <Member control={control} />
 
       <div className='mt-2 flex items-center justify-end gap-3'>
         <Button variant='default' color='red'>

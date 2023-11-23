@@ -20,7 +20,7 @@ export class CreateMessageDto extends CreateWorkspaceDto {
 
   @IsString({ each: true })
   @IsArray()
-  @ArrayMinSize(1)
+  // @ArrayMinSize(1)
   attachments: string[]
 
   @IsOptional()

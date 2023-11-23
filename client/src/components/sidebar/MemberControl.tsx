@@ -29,7 +29,7 @@ const MemberControl = ({
       </div>
       <Select
         classNames={{
-          input: 'border-gray-100'
+          input: 'border-gray-100 border-none bg-gray-100 min-h-[30px] h-[30px]'
         }}
         value={member.role}
         className='w-32'

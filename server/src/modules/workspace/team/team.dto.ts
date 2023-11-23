@@ -22,7 +22,7 @@ export type TTeamMemberPayload = Partial<TTeam>
 export class TeamDto extends CreateWorkspaceDto {
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(1)
+  // @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ChannelDto)
   channels?: ChannelDto[]

@@ -197,7 +197,7 @@ export default function SendMessage() {
         onChange={() => {
           messRefId && typing(messRefId)
         }}
-        onSubmit={_createMutiMessage}
+        onSubmit={_createMessage}
       />
     </>
   )
