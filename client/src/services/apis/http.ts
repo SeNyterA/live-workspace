@@ -25,9 +25,9 @@ class Http {
     this.instance.interceptors.response.use(
       response => response,
       (error: AxiosError) => {
-        // if (error.response?.status === 401) {
-        //   lsActions.clearLS(true)
-        // }
+        if (error.response?.status === 401) {
+          lsActions.clearLS(true)
+        }
         return Promise.reject(error)
       }
     )

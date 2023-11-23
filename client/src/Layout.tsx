@@ -2,18 +2,15 @@ import { Divider, LoadingOverlay } from '@mantine/core'
 import { ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
-import Sidebar from './components/sidebar/Sidebar'
 import TeamList from './components/layouts/TeamList'
+import Sidebar from './components/sidebar/Sidebar'
 import {
-  TChannels,
-  TDirects,
   TGroups,
   TMembers,
-  TTeams,
   TUsers,
   workspaceActions
 } from './redux/slices/workspace.slice'
-import { appGetFn, useAppQuery } from './services/apis/useAppQuery'
+import { useAppQuery } from './services/apis/useAppQuery'
 import { useAppOnSocket } from './services/socket/useAppOnSocket'
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -30,26 +27,6 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (workspaceData) {
-      const channels = workspaceData?.channels.channels.reduce(
-        (pre, next) => ({ ...pre, [next._id]: next }),
-        {} as TChannels
-      )
-      const teams = workspaceData?.teams.teams.reduce(
-        (pre, next) => ({ ...pre, [next._id]: next }),
-        {} as TTeams
-      )
-      const directs = workspaceData?.directs.directs.reduce(
-        (pre, next) => ({ ...pre, [next._id]: next }),
-        {} as TDirects
-      )
-      const groups = workspaceData?.groups.groups.reduce(
-        (pre, next) => ({ ...pre, [next._id]: next }),
-        {} as TGroups
-      )
-      const users = workspaceData?.users.reduce(
-        (pre, next) => ({ ...pre, [next._id]: next }),
-        {} as TUsers
-      )
       const members = [
         ...(workspaceData?.channels.members || []),
         ...(workspaceData?.teams.members || []),
@@ -58,65 +35,70 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       dispatch(
         workspaceActions.updateData({
-          channels,
-          directs,
-          groups,
-          members,
-          teams,
-          users
+          teams: workspaceData?.teams.teams.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          ),
+          channels: workspaceData?.channels.channels.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          ),
+          directs: workspaceData?.directs.directs.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          ),
+          groups: workspaceData?.groups.groups.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          ),
+
+          users: workspaceData?.users.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          ),
+          members
         })
       )
     }
   }, [dispatch, workspaceData])
 
   useAppOnSocket({
-    key: 'workspace',
-    resFunc: async ({ data, type }) => {
-      switch (type) {
-        case 'direct':
-          appGetFn({
-            key: 'findDirectInfo',
-            url: {
-              baseUrl: '/workspace/direct-messages',
-              queryParams: {
-                directId: data._id
-              }
-            }
-          }).then(({ direct, users }) => {
-            dispatch(
-              workspaceActions.updateData({
-                directs: { [direct._id]: direct },
-                users: users.reduce(
-                  (pre, next) => ({ ...pre, [next._id]: next }),
-                  {}
-                )
-              })
-            )
-          })
+    key: 'workspaces',
+    resFunc: ({ workspaces }) => {
+      console.log(workspaces)
+      const teams = workspaces.filter(e => e.type === 'team')
+      const channels = workspaces.filter(e => e.type === 'channel')
+      const directs = workspaces.filter(e => e.type === 'direct')
+      const groups = workspaces.filter(e => e.type === 'group')
+      const members = workspaces.filter(e => e.type === 'member')
+      const users = workspaces.filter(e => e.type === 'user')
 
-          break
-        case 'team':
-          dispatch(
-            workspaceActions.addTeams({
-              [data._id]: data
-            })
-          )
-          break
-        case 'channel':
-          dispatch(
-            workspaceActions.addChannels({
-              [data._id]: data
-            })
-          )
-          break
-        case 'group':
-          dispatch(
-            workspaceActions.addGroups({
-              [data._id]: data
-            })
-          )
-          break
-      }
+      workspaceActions.updateData({
+        teams: teams.reduce(
+          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+          {}
+        ),
+        channels: channels.reduce(
+          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+          {}
+        ),
+        groups: groups.reduce(
+          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+          {}
+        ),
+        directs: directs.reduce(
+          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+          {}
+        ),
+        members: members.reduce(
+          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+          {}
+        ),
+        users: users.reduce(
+          (pre, next) => ({ ...pre, [next.data._id]: next.data._id }),
+          {}
+        )
+      })
     }
   })
 

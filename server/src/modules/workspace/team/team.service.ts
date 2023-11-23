@@ -11,7 +11,6 @@ import { getTeamPermission } from 'src/libs/checkPermistion'
 import { User } from 'src/modules/users/user.schema'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
-import { EStatusType } from '../workspace.schema'
 import { WorkspaceService } from '../workspace.service'
 import { ChannelService } from './channel/channel.service'
 import { TCreateTeamPayload, TTeam, TUpdateTeamPayload } from './team.dto'
@@ -135,29 +134,23 @@ export class TeamService {
     //   channel: {
     //     channelType: EStatusType.Public,
     //     title: 'General',
-    //     teamId: 
+    //     teamId:
     //   },
     //   teamId: createdTeam._id.toString(),
     //   userId: userId
     // })
 
-    this.workspaceService.workspace({
+    this.workspaceService.workspaces({
       rooms: [createdTeam._id.toString(), userId],
-      action: 'create',
-      type: 'team',
-      data: createdTeam
-    })
-
-    this.workspaceService.workspace({
-      rooms: [createdTeam._id.toString(), userId],
-      data: owner,
-      action: 'create',
-      type: 'member'
+      workspaces: [
+        { action: 'create', type: 'team', data: createdTeam },
+        { data: owner, action: 'create', type: 'member' }
+      ]
     })
 
     return {
       team: createdTeam,
-      member: owner,
+      member: owner
       // channelData: channelData
     }
   }
@@ -197,11 +190,9 @@ export class TeamService {
     }
 
     const rooms = [team._id.toString(), userId]
-    this.workspaceService.workspace({
+    this.workspaceService.workspaces({
       rooms,
-      action: 'update',
-      data: team,
-      type: 'team'
+      workspaces: [{ action: 'update', data: team, type: 'team' }]
     })
 
     return { team }
@@ -237,11 +228,9 @@ export class TeamService {
       throw new ForbiddenException('Your dont have permission')
     }
 
-    this.workspaceService.workspace({
+    this.workspaceService.workspaces({
       rooms: [team._id.toString(), userId],
-      action: 'delete',
-      type: 'team',
-      data: team
+      workspaces: [{ action: 'delete', type: 'team', data: team }]
     })
     return true
   }

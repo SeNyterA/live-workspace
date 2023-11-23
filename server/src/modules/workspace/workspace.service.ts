@@ -233,18 +233,18 @@ export class WorkspaceService {
     const clients = await this.socketService.server.fetchSockets()
   }
 
-  async workspace({
-    rooms,
-    data,
-    action,
-    type
-  }: { rooms: string[] } & TWorkspaceSocket) {
-    await this.socketService.server.to(rooms).emit('workspace', {
-      data,
-      action,
-      type
-    })
-  }
+  // async workspace({
+  //   rooms,
+  //   data,
+  //   action,
+  //   type
+  // }: { rooms: string[] } & TWorkspaceSocket) {
+  //   await this.socketService.server.to(rooms).emit('workspace', {
+  //     data,
+  //     action,
+  //     type
+  //   })
+  // }
 
   async workspaces({
     rooms,

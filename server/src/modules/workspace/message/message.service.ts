@@ -45,11 +45,12 @@ export class MessageService {
     })
 
     if (isNew) {
-      this.workspaceService.workspace({
-        action: 'create',
-        type: 'direct',
-        data: directMessage,
-        rooms: directMessage.userIds.map(e => e.toString())
+      this.workspaceService.workspaces({
+        rooms: [
+          ...directMessage.userIds.map(e => e.toString()),
+          directMessage._id.toString()
+        ],
+        workspaces: [{ action: 'create', type: 'direct', data: directMessage }]
       })
     }
 

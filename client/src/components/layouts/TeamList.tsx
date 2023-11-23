@@ -20,6 +20,8 @@ import { TWorkspacePlayload } from '../../types/workspace.type'
 export default function TeamList() {
   const teams =
     useAppSelector(state => Object.values(state.workspace.teams)) || []
+
+  console.log({ teams })
   const { switchTeam } = useAppControlParams()
 
   const { teamId } = useAppParams()

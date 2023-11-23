@@ -415,11 +415,9 @@ export class ChannelService {
         messageFor: EMessageFor.Channel
       })
 
-      this.workspaceService.workspace({
+      this.workspaceService.workspaces({
         rooms: [targetId, member.userId],
-        action: 'create',
-        data: _member,
-        type: 'member'
+        workspaces: [{ action: 'create', data: _member, type: 'member' }]
       })
 
       this.workspaceService.message({
