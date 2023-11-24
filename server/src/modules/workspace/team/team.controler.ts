@@ -66,11 +66,11 @@ export class TeamController {
     @Param('id') id: string,
     @Body() member: { userId: string; role: EMemberRole }
   ) {
-    return this.teamService.addMember({
-      userId: user.sub,
-      teamId: id,
-      member
-    })
+    // return this.teamService.addMember({
+    //   userId: user.sub,
+    //   teamId: id,
+    //   member
+    // })
   }
 
   @Patch(':teamId/members/:memberId')
@@ -80,11 +80,11 @@ export class TeamController {
     @Param('memberId') memberId: string,
     @Body() payload: { role: EMemberRole }
   ) {
-    return this.teamService.editMember({
-      userId: user.sub,
-      teamId,
-      memberId,
-      role: payload.role
-    })
+    // return this.teamService.editMember({
+    //   userId: user.sub,
+    //   teamId,
+    //   memberId,
+    //   role: payload.role
+    // })
   }
 }

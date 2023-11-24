@@ -10,6 +10,7 @@ import {
   Text,
   TextInput
 } from '@mantine/core'
+import { randomId } from '@mantine/hooks'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
@@ -77,22 +78,27 @@ export default function Authentication() {
             }
 
             if (type === 'register') {
-              register(
-                {
-                  method: 'post',
-                  url: {
-                    baseUrl: '/auth/register'
-                  },
-                  payload: {
-                    email: data.email,
-                    password: data.password,
-                    userName: data.userName
-                  }
-                },
-                {
-                  onSuccess(data) {}
-                }
-              )
+              Array(1000)
+                .fill(1)
+                .forEach((_, index) => {
+                  const ramdom = randomId().replace('mantine-', '')
+                  register(
+                    {
+                      method: 'post',
+                      url: {
+                        baseUrl: '/auth/register'
+                      },
+                      payload: {
+                        email: `${index}___${ramdom}_${data.email}`,
+                        password: data.password,
+                        userName: `${index}___${ramdom}_${data.userName}`
+                      }
+                    },
+                    {
+                      onSuccess(data) {}
+                    }
+                  )
+                })
             }
 
             reset()

@@ -9,7 +9,6 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
-import { EError } from 'src/libs/errors'
 import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
@@ -20,6 +19,7 @@ import {
 } from '../workspace.dto'
 import { TWorkspaceSocket, WorkspaceService } from '../workspace.service'
 import { Group } from './group.schema'
+import { Errors } from 'src/libs/errors'
 
 @Injectable()
 export class GroupService {
@@ -113,7 +113,7 @@ export class GroupService {
       if (!user) {
         return {
           error: {
-            code: EError['User not found or disabled'],
+            code: Errors['User not found or disabled'],
             userId: memberDto.userId
           }
         }

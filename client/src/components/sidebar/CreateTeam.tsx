@@ -158,7 +158,7 @@ export default function CreateTeam({
   const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
 
   useEffect(() => {
-    isOpen && reset(defaultValues)
+    // isOpen && reset(defaultValues)
   }, [isOpen])
 
   return (
@@ -177,7 +177,7 @@ export default function CreateTeam({
         body: 'flex flex-col flex-1'
       }}
     >
-      <DropAvt />
+      {/* <DropAvt /> */}
       <Controller
         control={control}
         name='title'
@@ -228,16 +228,20 @@ export default function CreateTeam({
           disabled={isPending}
           onClick={handleSubmit(data => {
             console.log(data)
-            createTeam({
-              url: {
-                baseUrl: '/workspace/teams'
-              },
-              method: 'post',
-              payload: data
-            }).then(data => {
-              console.log(data)
-              onClose()
-            })
+            Array(30)
+              .fill(1)
+              .forEach(() => {
+                createTeam({
+                  url: {
+                    baseUrl: '/workspace/teams'
+                  },
+                  method: 'post',
+                  payload: data
+                }).then(data => {
+                  console.log(data)
+                  onClose()
+                })
+              })
           })}
         >
           Create

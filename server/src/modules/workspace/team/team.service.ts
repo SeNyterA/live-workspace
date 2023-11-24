@@ -8,7 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { getTeamPermission } from 'src/libs/checkPermistion'
-import { EError } from 'src/libs/errors'
+import { Errors } from 'src/libs/errors'
 import { User } from 'src/modules/users/user.schema'
 import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
@@ -77,23 +77,30 @@ export class TeamService {
     }
     return {
       member,
-      target,
-      permissions: {}
+      target
     }
   }
 
   async getTeamsByUserId(userId: string) {
-    const members = await this.memberService._getByUserId({
+    const _members = await this.memberService._getByUserId({
       userId
     })
+
     const teams = await this.teamModel
       .find({
         _id: {
-          $in: members.map(e => e.targetId)
+          $in: _members.map(e => e.targetId.toString())
         },
         isAvailable: true
       })
       .lean()
+
+    const members = await this.memberService.memberModel
+      .find({
+        targetId: { $in: teams.map(team => team._id.toString()) }
+      })
+      .lean()
+
     return {
       teams,
       members
@@ -151,7 +158,7 @@ export class TeamService {
       if (!user) {
         return {
           error: {
-            code: EError['User not found or disabled'],
+            code: Errors['User not found or disabled'],
             userId: memberDto.userId
           }
         }
@@ -215,7 +222,7 @@ export class TeamService {
             channel.channelType === EStatusType.Public
               ? resMemnbers.map(member => ({
                   role: EMemberRole.Member,
-                  userId: member._id.toString()
+                  userId: member.userId.toString()
                 }))
               : [{ role: EMemberRole.Owner, userId }]
         },
@@ -307,117 +314,5 @@ export class TeamService {
       workspaces: [{ action: 'delete', type: 'team', data: team }]
     })
     return true
-  }
-
-  async addMember({
-    teamId,
-    userId,
-    member
-  }: {
-    teamId: string
-    userId: string
-    member: {
-      userId: string
-      role: EMemberRole
-    }
-  }) {
-    const { permissions } = await this.getPermisstion({
-      targetId: teamId,
-      userId
-    })
-
-    if (permissions?.memberAction?.add?.includes(member.role)) {
-      const newMember = await this.memberModel.findOne({
-        targetId: teamId,
-        userId: member.userId,
-        isAvailable: true
-      })
-
-      if (newMember) {
-        return { success: false, error: 'Member already exists in the group' }
-      }
-
-      const user = await this.userModel.findOne({
-        _id: member.userId,
-        isAvailable: true
-      })
-
-      if (!user) {
-        return {
-          success: false,
-          error: 'User does not exist or is unavailable'
-        }
-      }
-
-      const members = await this.memberModel.create({
-        userId: member.userId,
-        targetId: teamId,
-        path: teamId,
-        type: EMemberType.Team,
-        role: member.role,
-        createdById: userId,
-        modifiedById: userId
-      })
-
-      const _channels = this.channelService.channelModel
-        .find({
-          teamId,
-          isAvailable: true
-        })
-        .lean()
-
-      const [channels] = await Promise.all([_channels])
-
-      const _createChannelsMember = channels.map(channel =>
-        this.channelService.addMember({
-          member,
-          targetId: channel._id.toString(),
-          userId
-        })
-      )
-
-      const channelsMember = await Promise.all(_createChannelsMember)
-
-      return { success: true, data: members, channelsMember }
-    }
-    return {
-      success: false,
-      error: 'No permission to add the user to the team'
-    }
-  }
-
-  async editMember({
-    teamId,
-    userId,
-    memberId,
-    role
-  }: {
-    teamId: string
-    userId: string
-    memberId: string
-    role: EMemberRole
-  }) {
-    const { permissions } = await this.getPermisstion({
-      targetId: teamId,
-      userId
-    })
-
-    if (permissions?.memberAction?.toggleRole?.includes(role)) {
-      const updatedMember = await this.memberModel.findOneAndUpdate(
-        { _id: memberId, targetId: teamId, isAvailable: true },
-        { role: role, modifiedById: userId, updatedAt: new Date() },
-        { new: true }
-      )
-
-      if (updatedMember) {
-        return { success: true, data: updatedMember }
-      } else {
-        return { success: false, error: 'Member not found or not available' }
-      }
-    }
-    return {
-      success: false,
-      error: 'No permission to update the user role in the team'
-    }
   }
 }

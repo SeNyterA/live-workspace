@@ -12,7 +12,10 @@ import {
   useAppOnSocket
 } from '../../services/socket/useAppOnSocket'
 import Editor from '../new-message/NewMessage'
-import { TTargetMessageId, useMessageContent } from './MessageContentProvider'
+import {
+  TMessageContentValue,
+  TTargetMessageId
+} from './MessageContentProvider'
 
 const getApiInfo = (
   targetId: TTargetMessageId
@@ -46,8 +49,10 @@ const getApiInfo = (
   }
 }
 
-export default function SendMessage() {
-  const { targetId, userTargetId } = useMessageContent()
+export default function SendMessage({
+  targetId,
+  userTargetId
+}: Pick<TMessageContentValue, 'userTargetId' | 'targetId'>) {
   const dispatch = useDispatch()
   const { keyApi, messRefId, typeApi } = getApiInfo(targetId)
   const [userTypings, setUserTypings] =
@@ -121,73 +126,6 @@ export default function SendMessage() {
           }
         }
       )
-  }
-  const _createMutiMessage = (value?: string) => {
-    if (!value) return
-
-    Array(100)
-      .fill(1)
-      .forEach((_, index) => {
-        const content = `${index} _ _ _ ${value}`
-
-        if (typeApi === 'channel' && messRefId)
-          createMessMutation(
-            {
-              url: {
-                baseUrl: '/workspace/channels/:channelId/messages',
-                urlParams: {
-                  channelId: messRefId
-                }
-              },
-              method: 'post',
-              payload: {
-                content
-              }
-            },
-            {
-              onSuccess(message) {
-                dispatch(
-                  workspaceActions.addMessages({ [message._id]: message })
-                )
-
-                socketEmit({
-                  key: 'stopTyping',
-                  targetId: messRefId
-                })
-              }
-            }
-          )
-
-        if (typeApi === 'direct' && userTargetId)
-          createMessMutation(
-            {
-              url: {
-                baseUrl: '/workspace/direct-messages/:targetId/messages',
-                urlParams: {
-                  targetId: userTargetId
-                }
-              },
-              method: 'post',
-              payload: {
-                content
-              }
-            },
-            {
-              onSuccess(message) {
-                dispatch(
-                  workspaceActions.addMessages({
-                    [message._id]: message
-                  })
-                )
-
-                socketEmit({
-                  key: 'stopTyping',
-                  targetId: userTargetId
-                })
-              }
-            }
-          )
-      })
   }
 
   return (

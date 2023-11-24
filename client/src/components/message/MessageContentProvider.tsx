@@ -9,7 +9,7 @@ export type TTargetMessageId = Partial<
   Pick<TParams, 'channelId' | 'groupId' | 'directId'>
 >
 
-type TMessageContentValue = {
+export type TMessageContentValue = {
   title: string
   messages: TMessage[]
   targetId: TTargetMessageId
