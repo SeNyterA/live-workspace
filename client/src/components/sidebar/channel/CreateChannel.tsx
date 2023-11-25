@@ -1,14 +1,14 @@
 import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import useAppParams from '../../hooks/useAppParams'
+import useAppParams from '../../../hooks/useAppParams'
 import {
   ApiMutationType,
   useAppMutation
-} from '../../services/apis/useAppMutation'
-import { EMemberRole } from '../../types/workspace.type'
-import MemberControl from './MemberControl'
-import UserCombobox from './UserCombobox'
+} from '../../../services/apis/useAppMutation'
+import { EMemberRole } from '../../../types/workspace.type'
+import MemberControl from '../MemberControl'
+import UserCombobox from '../UserCombobox'
 
 type TForm = ApiMutationType['createChannel']['payload']
 

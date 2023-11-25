@@ -87,17 +87,24 @@ export class ChannelService {
   }
 
   async getChannelsByUserId(userId: string) {
-    const members = await this.memberService._getByUserId({
+    const _members = await this.memberService._getByUserId({
       userId
     })
     const channels = await this.channelModel
       .find({
         _id: {
-          $in: members.map(e => e.targetId)
+          $in: _members.map(e => e.targetId.toString())
         },
         isAvailable: true
       })
       .lean()
+
+    const members = await this.memberService.memberModel
+      .find({
+        targetId: { $in: channels.map(team => team._id.toString()) }
+      })
+      .lean()
+
     return {
       channels,
       members

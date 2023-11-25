@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useAppSelector } from '../../redux/store'
 import { EMessageType, TMessage } from '../../types/workspace.type'
+import UserDetailProvider from '../user/UserDetailProvider'
 
 export default function Message({ message }: { message: TMessage }) {
   const createdByUser = useAppSelector(
@@ -30,7 +31,11 @@ export default function Message({ message }: { message: TMessage }) {
         isOwner ? 'justify-end' : 'justify-start'
       }`}
     >
-      {!isOwner && <Avatar />}
+      {!isOwner && (
+        <UserDetailProvider user={createdByUser}>
+          <Avatar />
+        </UserDetailProvider>
+      )}
 
       <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
         {!isOwner && (

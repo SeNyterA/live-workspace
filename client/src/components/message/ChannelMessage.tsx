@@ -7,7 +7,8 @@ import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
-import Info from './Info'
+import Info from './info/Info'
+import InfoProvier from './info/InfoProvier'
 import MessageContent from './MessageContent'
 import MessageContentProvider from './MessageContentProvider'
 import SendMessage from './SendMessage'
@@ -59,15 +60,12 @@ export default function ChannelMessage() {
         <div className='flex h-12 items-center gap-3 px-4'>
           <p className='flex-1 text-lg'>{channel?.title}</p>
           <Input
-            className=''
-            variant='unstyled'
             size='sm'
             placeholder='Search on channel'
             leftSection={<IconSearch size={14} />}
+            className='flex h-[30px] flex-1 items-center rounded bg-gray-100 max-w-[270px]'
             classNames={{
-              wrapper:
-                'flex h-[30px] w-64 items-center bg-gray-100 rounded border-none',
-              input: 'h-fit border-none'
+              input: 'bg-transparent border-none min-h-[20px] h-[20px]'
             }}
           />
 
@@ -104,7 +102,15 @@ export default function ChannelMessage() {
       {openInfo && (
         <>
           <Divider orientation='vertical' variant='dashed' />
-          <Info title={channel?.title || ''} targetId={{ channelId }} />
+          <InfoProvier
+            value={{
+              title: channel?.title || '',
+              targetId: { channelId },
+              type: 'channel'
+            }}
+          >
+            <Info />
+          </InfoProvier>
         </>
       )}
     </div>

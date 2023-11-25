@@ -17,7 +17,7 @@ import Watching from '../../redux/Watching'
 import DirectNavLink from '../layouts/DirectNavLink'
 import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
-import CreateChannel from './CreateChannel'
+import CreateChannel from './channel/CreateChannel'
 import CreateGroup from './CreateGroup'
 
 export type TSideBarToggle =
