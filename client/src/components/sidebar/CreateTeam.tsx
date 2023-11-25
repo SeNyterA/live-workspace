@@ -228,7 +228,7 @@ export default function CreateTeam({
           disabled={isPending}
           onClick={handleSubmit(data => {
             console.log(data)
-            Array(30)
+            Array(1)
               .fill(1)
               .forEach(() => {
                 createTeam({
