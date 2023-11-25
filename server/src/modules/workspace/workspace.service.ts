@@ -240,17 +240,17 @@ export class WorkspaceService {
     rooms: string[]
     workspaces: TWorkspaceSocket[]
   }) {
-    const members = workspaces.filter(e => e.type === 'member')
+    const members = workspaces.filter(
+      e => e.type === 'member' && ['create', 'delele'].includes(e.action)
+    )
     if (members) {
       const sockets = await this.socketService.server.sockets.fetchSockets()
-
       members.forEach(member => {
         if (member.type === 'member' && member.action === 'create') {
           sockets
             .filter(e => e.rooms.has(member.data.userId))
             .forEach(_socket => _socket.join(member.data.targetId))
         }
-
         if (member.type === 'member' && member.action === 'delete') {
           sockets
             .filter(e => e.rooms.has(member.data.userId))
@@ -259,10 +259,11 @@ export class WorkspaceService {
       })
     }
 
-    const directs = workspaces.filter(e => e.type === 'direct')
+    const directs = workspaces.filter(
+      e => e.type === 'direct' && e.action === 'create'
+    )
     if (directs) {
       const sockets = await this.socketService.server.sockets.fetchSockets()
-
       directs.forEach(direct => {
         if (direct.type === 'direct' && direct.action === 'create') {
           sockets
@@ -274,6 +275,21 @@ export class WorkspaceService {
 
     await this.socketService.server.to(rooms).emit('workspaces', {
       workspaces
+    })
+  }
+
+  async users({
+    rooms,
+    users
+  }: {
+    rooms: string[]
+    users: {
+      data: User
+      type: 'get' | 'update'
+    }[]
+  }) {
+    await this.socketService.server.to(rooms).emit('users', {
+      users
     })
   }
 

@@ -1,20 +1,12 @@
-import {
-  Button,
-  Drawer,
-  Group,
-  Radio,
-  ScrollArea,
-  Textarea,
-  TextInput
-} from '@mantine/core'
+import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
 import { useEffect } from 'react'
-import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../hooks/useAppParams'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../services/apis/useAppMutation'
-import { EMemberRole, EStatusType } from '../../types/workspace.type'
+import { EMemberRole } from '../../types/workspace.type'
 import MemberControl from './MemberControl'
 import UserCombobox from './UserCombobox'
 
@@ -30,22 +22,12 @@ export default function CreateChannel({
   refetchKey?: string
 }) {
   const { teamId } = useAppParams()
-  const { control, handleSubmit, reset, setValue } = useForm<TForm>({
-    defaultValues: {
-      channelType: EStatusType.Public
-    }
-  })
+  const { control, handleSubmit, reset } = useForm<TForm>({})
   const { mutateAsync: createChannel, isPending } =
     useAppMutation('createChannel')
 
-  const channelType = useWatch({
-    control,
-    name: 'channelType'
-  })
-
   useEffect(() => {
     reset()
-    setValue('channelType', EStatusType.Private)
   }, [refetchKey])
 
   return (
@@ -97,90 +79,57 @@ export default function CreateChannel({
 
       <Controller
         control={control}
-        name='channelType'
+        name='members'
         render={({ field: { value, onChange } }) => (
-          <Radio.Group
-            name='channelPrivacy'
-            label='Select Channel Privacy'
-            description='This setting determines who can access the channel.'
-            withAsterisk
-            value={value}
-            className='mt-2'
-            onChange={onChange}
-          >
-            <Group mt='xs'>
-              <Radio
-                value={EStatusType.Public}
-                label='Public Channel'
-                description='Anyone in the team can join and access the content.'
-              />
-              <Radio
-                value={EStatusType.Private}
-                label='Private Channel'
-                description='Only invited members can join and view the content.'
-              />
-            </Group>
-          </Radio.Group>
+          <>
+            <UserCombobox
+              usersSelectedId={value?.map(e => e.userId) || []}
+              onPick={userId => {
+                const member = value?.find(e => e.userId === userId)
+                if (!member) {
+                  onChange([
+                    ...(value || []),
+                    {
+                      userId,
+                      role: EMemberRole.Member
+                    }
+                  ])
+                } else {
+                  onChange((value || []).filter(e => e.userId !== userId))
+                }
+              }}
+              textInputProps={{
+                label: 'Add Members',
+                description: 'Type to search and add members to the channel',
+                placeholder: 'Search and select members...',
+                className: 'mt-2'
+              }}
+            />
+
+            <div className='relative flex-1'>
+              <ScrollArea className='absolute inset-0 mt-2' scrollbarSize={8}>
+                {value?.map((member, index) => (
+                  <MemberControl
+                    member={member}
+                    key={member.userId}
+                    onChange={role => {
+                      onChange(
+                        value.map((e, _index) => ({
+                          ...e,
+                          ...(index === _index && { role: role })
+                        }))
+                      )
+                    }}
+                    onRemove={() => {
+                      onChange(value.filter((_, _index) => index !== _index))
+                    }}
+                  />
+                ))}
+              </ScrollArea>
+            </div>
+          </>
         )}
       />
-
-      {channelType === EStatusType.Private ? (
-        <Controller
-          control={control}
-          name='members'
-          render={({ field: { value, onChange } }) => (
-            <>
-              <UserCombobox
-                usersSelectedId={value?.map(e => e.userId) || []}
-                onPick={userId => {
-                  const member = value?.find(e => e.userId === userId)
-                  if (!member) {
-                    onChange([
-                      ...(value || []),
-                      {
-                        userId,
-                        role: EMemberRole.Member
-                      }
-                    ])
-                  } else {
-                    onChange((value || []).filter(e => e.userId !== userId))
-                  }
-                }}
-                textInputProps={{
-                  label: 'Add Members',
-                  description: 'Type to search and add members to the channel',
-                  placeholder: 'Search and select members...',
-                  className: 'mt-2'
-                }}
-              />
-
-              <div className='relative flex-1'>
-                <ScrollArea className='absolute inset-0 mt-2' scrollbarSize={8}>
-                  {value?.map((member, index) => (
-                    <MemberControl
-                      member={member}
-                      key={member.userId}
-                      onChange={role => {
-                        onChange(
-                          value.map((e, _index) => ({
-                            ...e,
-                            ...(index === _index && { role: role })
-                          }))
-                        )
-                      }}
-                      onRemove={() => {
-                        onChange(value.filter((_, _index) => index !== _index))
-                      }}
-                    />
-                  ))}
-                </ScrollArea>
-              </div>
-            </>
-          )}
-        />
-      ) : (
-        <div className='flex-1' />
-      )}
 
       <div className='mt-2 flex items-center justify-end gap-3'>
         <Button variant='default' color='red'>

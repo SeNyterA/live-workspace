@@ -21,6 +21,10 @@ export type TWorkspaceSocket = {
   | { data: TMember; type: 'member' }
   | { data: TUser; type: 'user' }
 )
+export type TUserSocket = {
+  data: TUser
+  type: 'get' | 'update'
+}
 
 export type ApiSocketType = {
   message: {
@@ -45,6 +49,12 @@ export type ApiSocketType = {
   workspaces: {
     response: {
       workspaces: TWorkspaceSocket[]
+    }
+  }
+
+  users: {
+    response: {
+      users: TUserSocket[]
     }
   }
 }

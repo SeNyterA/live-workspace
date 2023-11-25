@@ -81,7 +81,6 @@ export default function Authentication() {
               Array(1000)
                 .fill(1)
                 .forEach((_, index) => {
-                  const ramdom = randomId().replace('mantine-', '')
                   register(
                     {
                       method: 'post',
@@ -89,9 +88,9 @@ export default function Authentication() {
                         baseUrl: '/auth/register'
                       },
                       payload: {
-                        email: `${index}___${ramdom}_${data.email}`,
+                        email: `${index}_${data.email}`,
                         password: data.password,
-                        userName: `${index}___${ramdom}_${data.userName}`
+                        userName: `${index}_${data.userName}`
                       }
                     },
                     {

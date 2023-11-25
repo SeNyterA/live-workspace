@@ -60,15 +60,12 @@ export default function Layout({ children }: { children: ReactNode }) {
   useAppOnSocket({
     key: 'workspaces',
     resFunc: ({ workspaces }) => {
-      console.log(workspaces)
       const teams = workspaces.filter(e => e.type === 'team')
       const channels = workspaces.filter(e => e.type === 'channel')
       const directs = workspaces.filter(e => e.type === 'direct')
       const groups = workspaces.filter(e => e.type === 'group')
       const members = workspaces.filter(e => e.type === 'member')
       const users = workspaces.filter(e => e.type === 'user')
-
-      console.log({ teams })
 
       dispatch(
         workspaceActions.updateData({
@@ -97,6 +94,20 @@ export default function Layout({ children }: { children: ReactNode }) {
             {}
           )
         })
+      )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'users',
+    resFunc: ({ users }) => {
+      dispatch(
+        workspaceActions.addUsers(
+          users.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          )
+        )
       )
     }
   })

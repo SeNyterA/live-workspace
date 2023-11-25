@@ -281,7 +281,7 @@ export class ChannelService {
   }
 
   async _create({
-    channelDto: { channelType, members: memberDto, ...createData },
+    channelDto: { members: memberDto, ...createData },
     userId,
     teamId
   }: {
@@ -306,7 +306,6 @@ export class ChannelService {
 
     const newChannel = await this.channelModel.create({
       ...createData,
-      channelType,
       teamId,
       createdById: userId,
       modifiedById: userId
@@ -378,8 +377,6 @@ export class ChannelService {
         ]
       }
     })
-
-    console.log(members)
 
     // const resMemnbers = createdMembers
     //   .filter(entry => !!entry.member)

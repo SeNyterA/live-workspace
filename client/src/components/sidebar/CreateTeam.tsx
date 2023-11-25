@@ -18,12 +18,11 @@ import {
 } from 'react-hook-form'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { TTeamDto } from '../../types/dto.type'
-import { EMemberRole, EStatusType } from '../../types/workspace.type'
-import DropAvt from './DropAvt'
+import { EMemberRole } from '../../types/workspace.type'
 import MemberControl from './MemberControl'
 import UserCombobox from './UserCombobox'
 
-type TForm = TTeamDto
+type TForm = TTeamDto & { channels?: { title: string }[] }
 
 const Channels = ({ control }: { control: Control<TForm, any> }) => {
   const { append, fields, remove } = useFieldArray({
@@ -33,8 +32,8 @@ const Channels = ({ control }: { control: Control<TForm, any> }) => {
 
   return (
     <Checkbox.Group
-      label='Create Channels'
-      description='These are public channels; everyone can join.'
+      label='Init channels'
+      description='Members will be added when created.'
       className='mt-2'
     >
       {fields?.map((_, index) => (
@@ -75,8 +74,7 @@ const Channels = ({ control }: { control: Control<TForm, any> }) => {
           variant='light'
           onClick={() => {
             append({
-              title: '',
-              channelType: EStatusType.Public
+              title: ''
             })
           }}
         >
@@ -158,7 +156,7 @@ export default function CreateTeam({
   const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
 
   useEffect(() => {
-    // isOpen && reset(defaultValues)
+    isOpen && reset(defaultValues)
   }, [isOpen])
 
   return (
@@ -226,22 +224,17 @@ export default function CreateTeam({
         <Button
           loading={isPending}
           disabled={isPending}
-          onClick={handleSubmit(data => {
-            console.log(data)
-            Array(1)
-              .fill(1)
-              .forEach(() => {
-                createTeam({
-                  url: {
-                    baseUrl: '/workspace/teams'
-                  },
-                  method: 'post',
-                  payload: data
-                }).then(data => {
-                  console.log(data)
-                  onClose()
-                })
-              })
+          onClick={handleSubmit(({ channels, channelTitles, ...data }) => {
+            createTeam({
+              url: {
+                baseUrl: '/workspace/teams'
+              },
+              method: 'post',
+              payload: { ...data, channelTitles: channels?.map(e => e.title) }
+            }).then(data => {
+              console.log(data)
+              onClose()
+            })
           })}
         >
           Create

@@ -1,16 +1,14 @@
 import {
   Button,
   CloseButton,
-  Group,
   MultiSelect,
-  Radio,
   Textarea,
   TextInput
 } from '@mantine/core'
 import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppMutation } from '../../services/apis/useAppMutation'
-import { EStatusType, TChannelPayload } from '../../types/workspace.type'
+import { TChannelPayload } from '../../types/workspace.type'
 
 export default function ChannelForm() {
   const { teamId } = useAppParams()
@@ -66,29 +64,6 @@ export default function ChannelForm() {
             error={fieldState.error && fieldState.error.message}
             radius='md'
           />
-        )}
-      />
-
-      <Controller
-        name='channelType'
-        control={control}
-        rules={{ required: 'Select at least one channel' }}
-        render={({ field, fieldState }) => (
-          <Radio.Group
-            name='favoriteFramework'
-            label='Select yssour favorite framework/library'
-            description='This isss anonymous'
-            withAsterisk
-            value={field.value}
-            defaultValue={EStatusType.Public}
-            onChange={field.onChange}
-            error={fieldState.error && fieldState.error.message}
-          >
-            <Group mt='xs'>
-              <Radio value={EStatusType.Private} label='Private' />
-              <Radio value={EStatusType.Public} label='Public' />
-            </Group>
-          </Radio.Group>
         )}
       />
 

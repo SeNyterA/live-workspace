@@ -3,6 +3,7 @@ import {
   ArrayMinSize,
   IsArray,
   IsOptional,
+  IsString,
   ValidateNested
 } from 'class-validator'
 import { Member } from '../member/member.schema'
@@ -22,8 +23,6 @@ export type TTeamMemberPayload = Partial<TTeam>
 export class TeamDto extends CreateWorkspaceDto {
   @IsOptional()
   @IsArray()
-  // @ArrayMinSize(1)
-  @ValidateNested({ each: true })
-  @Type(() => ChannelDto)
-  channels?: ChannelDto[]
+  @IsString({ each: true })
+  channelTitles?: string[]
 }

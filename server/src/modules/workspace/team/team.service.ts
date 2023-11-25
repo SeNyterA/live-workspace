@@ -14,7 +14,6 @@ import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
 import { MemberDto } from '../workspace.dto'
-import { EStatusType } from '../workspace.schema'
 import { TWorkspaceSocket, WorkspaceService } from '../workspace.service'
 import { ChannelService } from './channel/channel.service'
 import { TTeam, TUpdateTeamPayload, TeamDto } from './team.dto'
@@ -129,13 +128,13 @@ export class TeamService {
   }
 
   async _create({
-    teamDto: { channels: channelDto, members: memberDto, ...teamDto },
+    teamDto: { channelTitles, members: memberDto, ...teamDto },
     userId
   }: {
     teamDto: TeamDto
     userId: string
   }) {
-    const createdTeam = (
+    const newTeam = (
       await this.teamModel.create({
         ...teamDto,
         createdById: userId,
@@ -143,18 +142,15 @@ export class TeamService {
       })
     ).toJSON()
 
-    //#region members
     const _membersDto: MemberDto[] = [
       { role: EMemberRole.Owner, userId },
       ...(memberDto?.filter(e => e.userId !== userId) || [])
     ]
-
-    const memberCreations = _membersDto?.map(async memberDto => {
+    const _teamMembers = _membersDto?.map(async memberDto => {
       const user = await this.usersService.userModel.findOne({
         isAvailable: true,
         _id: memberDto.userId
       })
-
       if (!user) {
         return {
           error: {
@@ -165,8 +161,8 @@ export class TeamService {
       } else {
         const newMember = await this.memberModel.create({
           ...memberDto,
-          targetId: createdTeam._id.toString(),
-          path: createdTeam._id.toString(),
+          targetId: newTeam._id.toString(),
+          path: newTeam._id.toString(),
           type: EMemberType.Team,
           createdById: userId,
           modifiedById: userId
@@ -177,26 +173,21 @@ export class TeamService {
         }
       }
     })
+    const teamMembers = await Promise.all(_teamMembers)
 
-    const createdMembers = await Promise.all(memberCreations)
-    //#endregion
-
-    //#region res, socket
-    const resMemnbers = createdMembers
+    const validMembers = teamMembers
       .filter(entry => !!entry.member)
       .map(entry => entry.member)
-
-    const usersId = createdMembers
+    const validUsers = teamMembers
       .filter(entry => !!entry.user)
-      .map(entry => entry.user._id.toString())
-
+      .map(entry => entry.user)
     const response: TWorkspaceSocket[] = [
       {
         type: 'team',
         action: 'create',
-        data: createdTeam
+        data: newTeam
       },
-      ...resMemnbers.map(
+      ...validMembers.map(
         member =>
           ({
             type: 'member',
@@ -207,33 +198,53 @@ export class TeamService {
     ]
 
     this.workspaceService.workspaces({
-      rooms: usersId,
+      rooms: validMembers.map(e => e.userId.toString()),
       workspaces: response
     })
-    //#endregion
 
-    //#region create channel
-    channelDto?.forEach(channel =>
-      this.channelService._create({
-        userId,
-        channelDto: {
-          ...channel,
-          members:
-            channel.channelType === EStatusType.Public
-              ? resMemnbers.map(member => ({
-                  role: EMemberRole.Member,
-                  userId: member.userId.toString()
-                }))
-              : [{ role: EMemberRole.Owner, userId }]
-        },
-        teamId: createdTeam._id.toString()
-      })
-    )
-    //#endregion
+    this.workspaceService.users({
+      rooms: validUsers.map(e => e._id.toString()),
+      users: validUsers.map(e => ({ type: 'get', data: e }))
+    })
 
-    return {
-      response
-    }
+    const channels =
+      channelTitles?.map(async channelTitle => {
+        const newChannel = await this.channelService.channelModel.create({
+          title: channelTitle,
+          teamId: newTeam._id.toString(),
+          createdById: userId,
+          modifiedById: userId
+        })
+        const _channelMembers = validMembers.map(
+          async teamMember =>
+            await this.memberModel.create({
+              userId: teamMember.userId.toString(),
+              targetId: newChannel._id.toString(),
+              role: teamMember.role,
+              path: `${teamMember.targetId.toString()}/${newChannel._id.toString()}`,
+              type: EMemberType.Channel,
+              createdById: userId,
+              modifiedById: userId
+            })
+        )
+        const channelMembers = await Promise.all(_channelMembers)
+        this.workspaceService.workspaces({
+          rooms: channelMembers.map(({ userId }) => userId.toString()),
+          workspaces: [
+            { type: 'channel', action: 'create', data: newChannel.toJSON() },
+            ...channelMembers.map(
+              channelMember =>
+                ({
+                  type: 'member',
+                  action: 'create',
+                  data: channelMember
+                } as TWorkspaceSocket)
+            )
+          ]
+        })
+      }) || []
+
+    return response
   }
 
   async update({

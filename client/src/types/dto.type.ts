@@ -1,4 +1,4 @@
-import { EMemberRole, EStatusType } from './workspace.type'
+import { EMemberRole } from './workspace.type'
 
 export type TMemberDto = {
   userId: string
@@ -15,9 +15,7 @@ export type TWorkspaceDto = {
 export type TGroupDto = TWorkspaceDto
 
 export type TTeamDto = TWorkspaceDto & {
-  channels?: TChannelDto[]
+  channelTitles?: string[]
 }
 
-export type TChannelDto = TWorkspaceDto & {
-  channelType: EStatusType
-}
+export type TChannelDto = TWorkspaceDto
