@@ -2,8 +2,8 @@ import { Loader, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
 import { useEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
-import Message from './Message'
 import { useMessageContent } from './MessageContentProvider'
+import MessageGroup from './MessageGroup'
 
 export default function MessageContent({
   loadMore,
@@ -14,7 +14,7 @@ export default function MessageContent({
   isLoading?: boolean
   remainingCount?: number
 }) {
-  const { messages } = useMessageContent()
+  const { messages, groupedMessages } = useMessageContent()
   const lastMessageIdRef = useRef<string>()
   const loadMoreMessageIdRef = useRef<string>()
   const { scrollableRef } = useScrollIntoView<HTMLDivElement, HTMLDivElement>({
@@ -117,8 +117,8 @@ export default function MessageContent({
             <></>
           )}
 
-          {messages.map(message => (
-            <Message message={message} key={message._id} />
+          {groupedMessages.map(groupMessage => (
+            <MessageGroup messageGroup={groupMessage} />
           ))}
 
           <div className='relative'>

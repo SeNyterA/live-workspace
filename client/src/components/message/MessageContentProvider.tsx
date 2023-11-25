@@ -3,20 +3,27 @@ import { createContext, ReactNode, useContext, useEffect } from 'react'
 import { TParams } from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
 import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
-import { TMessage } from '../../types/workspace.type'
+import { EMessageType, TMessage } from '../../types/workspace.type'
 
 export type TTargetMessageId = Partial<
   Pick<TParams, 'channelId' | 'groupId' | 'directId'>
 >
+export type TGroupedMessage = {
+  userId: string
+  messages: TMessage[]
+  type: EMessageType
+}
 
 export type TMessageContentValue = {
   title: string
   messages: TMessage[]
+  groupedMessages: TGroupedMessage[]
   targetId: TTargetMessageId
   userTargetId?: string
 }
 const messageContentContext = createContext<TMessageContentValue>({
   messages: [],
+  groupedMessages: [],
   targetId: {},
   title: ''
 })
@@ -27,7 +34,7 @@ export default function MessageContentProvider({
   children,
   value
 }: {
-  value: Omit<TMessageContentValue, 'messages'>
+  value: Omit<TMessageContentValue, 'messages' | 'groupedMessages'>
   children: ReactNode
 }) {
   const { targetId } = value
@@ -67,10 +74,35 @@ export default function MessageContentProvider({
     <messageContentContext.Provider
       value={{
         ...value,
-        messages
+        messages,
+        groupedMessages: groupMessages(messages)
       }}
     >
       {children}
     </messageContentContext.Provider>
   )
+}
+
+export const groupMessages = (messages: TMessage[]): TGroupedMessage[] => {
+  const groupedMessages: TGroupedMessage[] = []
+  let currentGroup: TGroupedMessage | null = null
+
+  messages.forEach(message => {
+    if (
+      currentGroup &&
+      currentGroup.type === message.messageType &&
+      currentGroup.userId === message.createdById
+    ) {
+      currentGroup.messages.push(message)
+    } else {
+      currentGroup = {
+        userId: message.createdById,
+        messages: [message],
+        type: message.messageType
+      }
+      groupedMessages.push(currentGroup)
+    }
+  })
+
+  return groupedMessages
 }

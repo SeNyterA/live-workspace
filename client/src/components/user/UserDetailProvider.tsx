@@ -18,7 +18,7 @@ export default function UserDetailProvider({
 }) {
   return (
     <>
-      <Menu shadow='md' width={200} position='bottom-end' withArrow>
+      <Menu shadow='md' width={200} position='top-start' withArrow>
         <Menu.Target>
           <ActionIcon
             variant='transparent'
