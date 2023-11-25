@@ -1,6 +1,6 @@
 import { Loader, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useMessageContent } from './MessageContentProvider'
 import MessageGroup from './MessageGroup'
@@ -38,6 +38,7 @@ export default function MessageContent({
   const scrollToBottom = () => {
     const scrollableDiv = scrollableRef.current
     if (scrollableDiv) {
+      console.log(scrollableDiv.scrollHeight)
       scrollableDiv.scrollTop = scrollableDiv.scrollHeight
     }
   }
@@ -49,17 +50,19 @@ export default function MessageContent({
     }
   }
 
+  useLayoutEffect(() => {
+    if (!lastMessageIdRef.current && messages) {
+      scrollToBottom()
+    }
+  }, [messages])
+
   useEffect(() => {
-    if (!lastMessageIdRef.current) {
+    if (!lastMessageIdRef.current && messages) {
       scrollToBottom()
     }
 
     if (bottomRef.current) {
       scrollToBottom()
-    }
-
-    if (messages.length > 0) {
-      lastMessageIdRef.current = messages[0]._id
     }
 
     if (
@@ -76,6 +79,13 @@ export default function MessageContent({
         scrollTo(top)
         loadMoreMessageIdRef.current = undefined
       }
+    }
+
+    const timeOut = setTimeout(() => {
+      if (messages.length > 0) lastMessageIdRef.current = messages[0]._id
+    }, 0)
+    return () => {
+      clearTimeout(timeOut)
     }
   }, [messages])
 
@@ -99,6 +109,8 @@ export default function MessageContent({
           className='absolute inset-0 overflow-auto'
           viewportRef={scrollableRef}
           scrollbarSize={6}
+          onCompositionStart={e => console.log(e)}
+          onCompositionEnd={e => console.log(e)}
         >
           {remainingCount ? (
             <div className='relative'>

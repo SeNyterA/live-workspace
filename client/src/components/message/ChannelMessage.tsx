@@ -63,7 +63,7 @@ export default function ChannelMessage() {
             size='sm'
             placeholder='Search on channel'
             leftSection={<IconSearch size={14} />}
-            className='flex h-[30px] flex-1 items-center rounded bg-gray-100 max-w-[270px]'
+            className='flex h-[30px] max-w-[270px] flex-1 items-center rounded bg-gray-100'
             classNames={{
               input: 'bg-transparent border-none min-h-[20px] h-[20px]'
             }}
@@ -90,7 +90,13 @@ export default function ChannelMessage() {
             }
           }}
         >
-          <MessageContent />
+          <MessageContent
+            key={JSON.stringify({
+              targetId: {
+                channelId
+              }
+            })}
+          />
         </MessageContentProvider>
         <Divider variant='dashed' />
         <SendMessage
