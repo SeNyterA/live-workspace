@@ -161,7 +161,7 @@ export default function Sidebar() {
                       <NavLink
                         key={item._id}
                         className='p-1 pl-3'
-                        label={item.title}
+                        label={item.title || item._id}
                         active={groupId === item._id}
                         onClick={() => {
                           if (item._id)

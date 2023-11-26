@@ -10,8 +10,9 @@ import {
 import { HttpUser } from 'src/decorators/users.decorator'
 import { EMessageFor } from '../message/message.schema'
 import { MessageService } from '../message/message.service'
-import { CreateWorkspaceDto, UpdateWorkspaceDto } from '../workspace.dto'
+import { UpdateWorkspaceDto } from '../workspace.dto'
 import { TJwtUser } from '../workspace.gateway'
+import { GroupDto } from './group.dto'
 import { GroupService } from './group.service'
 
 @Controller('workspace/groups')
@@ -35,8 +36,8 @@ export class GroupController {
   }
 
   @Post()
-  create(@HttpUser() user: TJwtUser, @Body() groupPayload: CreateWorkspaceDto) {
-    return this.groupService.create({
+  create(@HttpUser() user: TJwtUser, @Body() groupPayload: GroupDto) {
+    return this.groupService._create({
       groupDto: groupPayload,
       userId: user.sub
     })
@@ -67,7 +68,10 @@ export class GroupController {
   sendMesage(
     @Param('id') id: string,
     @HttpUser() user: TJwtUser,
-    @Body() messagePayload: any
+    @Body()
+    messagePayload: {
+      content: string
+    }
   ) {
     return this.messageService._createForGroup({
       groupId: id,

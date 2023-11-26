@@ -23,7 +23,7 @@ const getApiInfo = (
   typeApi: 'channel' | 'direct' | 'group'
   keyApi: keyof Pick<
     ApiMutationType,
-    'createChannelMessage' | 'createDirectMessage'
+    'createChannelMessage' | 'createDirectMessage' | 'createGroupMessage'
   >
   messRefId?: string
 } => {
@@ -39,6 +39,14 @@ const getApiInfo = (
       keyApi: 'createDirectMessage',
       messRefId: targetId.directId,
       typeApi: 'direct'
+    }
+  }
+
+  if (targetId.groupId) {
+    return {
+      keyApi: 'createGroupMessage',
+      messRefId: targetId.groupId,
+      typeApi: 'group'
     }
   }
 
@@ -78,6 +86,32 @@ export default function SendMessage({
             baseUrl: '/workspace/channels/:channelId/messages',
             urlParams: {
               channelId: messRefId
+            }
+          },
+          method: 'post',
+          payload: {
+            content: value
+          }
+        },
+        {
+          onSuccess(message) {
+            dispatch(workspaceActions.addMessages({ [message._id]: message }))
+
+            socketEmit({
+              key: 'stopTyping',
+              targetId: messRefId
+            })
+          }
+        }
+      )
+
+    if (typeApi === 'group' && messRefId)
+      createMessMutation(
+        {
+          url: {
+            baseUrl: '/workspace/groups/:groupId/messages',
+            urlParams: {
+              groupId: messRefId
             }
           },
           method: 'post',

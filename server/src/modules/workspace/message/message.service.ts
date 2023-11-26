@@ -106,7 +106,7 @@ export class MessageService {
   }: {
     userId: string
     groupId: string
-    messagePayload: any
+    messagePayload: { content: string }
   }) {
     await this.memberService._checkExisting({
       userId,
@@ -117,7 +117,7 @@ export class MessageService {
       messageReferenceId: groupId,
       createdById: userId,
       modifiedById: userId,
-      content: 'content',
+      content: messagePayload.content,
       messageFor: EMessageFor.Group,
       messageType: EMessageType.Normal
     })

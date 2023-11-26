@@ -1,14 +1,6 @@
-import { Type } from 'class-transformer'
-import {
-  ArrayMinSize,
-  IsArray,
-  IsOptional,
-  IsString,
-  ValidateNested
-} from 'class-validator'
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator'
 import { Member } from '../member/member.schema'
-import { CreateWorkspaceDto, MemberDto } from '../workspace.dto'
-import { ChannelDto } from './channel/channel.dto'
+import { CreateWorkspaceDto } from '../workspace.dto'
 import { Team } from './team.schema'
 
 export type TTeam = Team
@@ -25,4 +17,8 @@ export class TeamDto extends CreateWorkspaceDto {
   @IsArray()
   @IsString({ each: true })
   channelTitles?: string[]
+
+  @IsString()
+  @IsNotEmpty()
+  title?: string
 }

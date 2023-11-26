@@ -1,5 +1,4 @@
 import {
-  ArrayMinSize,
   IsArray,
   IsEnum,
   IsNotEmpty,
@@ -9,7 +8,7 @@ import {
 } from 'class-validator'
 
 import { Type } from 'class-transformer'
-import { EMemberRole, EMemberType } from './member/member.schema'
+import { EMemberRole } from './member/member.schema'
 
 export class MemberDto {
   @IsString()
@@ -30,9 +29,9 @@ export class MembersDto {
 }
 
 export class CreateWorkspaceDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  title: string
+  title?: string
 
   @IsString()
   @IsOptional()
@@ -42,12 +41,10 @@ export class CreateWorkspaceDto {
   @IsOptional()
   avatar?: string
 
-  @IsOptional()
   @IsArray()
-  // @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => MemberDto)
-  members?: MemberDto[]
+  members: MemberDto[]
 }
 
 export class UpdateWorkspaceDto {

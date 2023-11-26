@@ -90,6 +90,19 @@ type ApiQueryType = {
     }
   }
 
+  groupMessages: {
+    url: {
+      baseUrl: '/workspace/groups/:groupId/messages'
+      urlParams: {
+        groupId: string
+      }
+    }
+    response: {
+      messages: TMessage[]
+      remainingCount: number
+    }
+  }
+
   directMessages: {
     url: {
       baseUrl: '/workspace/direct-messages/:targetId/messages'

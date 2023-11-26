@@ -5,6 +5,7 @@ import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
 import ChannelMessage from '../components/message/ChannelMessage'
 import DirectMessage from '../components/message/DirectMessage'
+import GroupMessage from '../components/message/GroupMessage'
 import Layout from '../Layout'
 import { authActions } from '../redux/slices/auth.slice'
 import { useAppSelector } from '../redux/store'
@@ -118,8 +119,7 @@ export default function useRouteElements() {
           path: paths.group,
           element: (
             <Layout>
-              {/* <MessageContent /> */}
-              <ChannelMessage />
+              <GroupMessage />
             </Layout>
           )
         },

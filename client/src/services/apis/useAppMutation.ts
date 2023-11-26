@@ -83,6 +83,18 @@ export type ApiMutationType = {
     response: TMessage
   }
 
+  createGroupMessage: {
+    url: {
+      baseUrl: '/workspace/groups/:groupId/messages'
+      urlParams: {
+        groupId: string
+      }
+    }
+    method: 'post'
+    payload: { content: string }
+    response: TMessage
+  }
+
   createGroup: {
     url: {
       baseUrl: '/workspace/groups'

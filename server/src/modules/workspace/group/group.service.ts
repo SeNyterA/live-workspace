@@ -9,17 +9,14 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
+import { Errors } from 'src/libs/errors'
 import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
-import {
-  CreateWorkspaceDto,
-  MemberDto,
-  UpdateWorkspaceDto
-} from '../workspace.dto'
+import { MemberDto, UpdateWorkspaceDto } from '../workspace.dto'
 import { TWorkspaceSocket, WorkspaceService } from '../workspace.service'
+import { GroupDto } from './group.dto'
 import { Group } from './group.schema'
-import { Errors } from 'src/libs/errors'
 
 @Injectable()
 export class GroupService {
@@ -90,7 +87,7 @@ export class GroupService {
     groupDto: { members: memberDto, ...createData },
     userId
   }: {
-    groupDto: CreateWorkspaceDto
+    groupDto: GroupDto
     userId: string
   }) {
     const newGroup = await this.groupModel.create({
@@ -123,7 +120,7 @@ export class GroupService {
         ...memberDto,
         targetId: newGroup,
         path: newGroup,
-        type: EMemberType.Team,
+        type: EMemberType.Group,
         createdById: userId,
         modifiedById: userId
       })
@@ -149,7 +146,7 @@ export class GroupService {
       rooms: usersId,
       workspaces: [
         {
-          type: 'team',
+          type: 'group',
           action: 'create',
           data: newGroup
         },
@@ -242,5 +239,88 @@ export class GroupService {
       throw new ForbiddenException('Your dont have permission')
     }
     return true
+  }
+
+  async _create({
+    groupDto: { members: memberDto, ...groupDto },
+    userId
+  }: {
+    groupDto: GroupDto
+    userId: string
+  }) {
+    const newTeam = (
+      await this.groupModel.create({
+        ...groupDto,
+        createdById: userId,
+        modifiedById: userId
+      })
+    ).toJSON()
+
+    const _membersDto: MemberDto[] = [
+      { role: EMemberRole.Owner, userId },
+      ...(memberDto?.filter(e => e.userId !== userId) || [])
+    ]
+    const _groupMembers = _membersDto?.map(async memberDto => {
+      const user = await this.userService.userModel.findOne({
+        isAvailable: true,
+        _id: memberDto.userId
+      })
+      if (!user) {
+        return {
+          error: {
+            code: Errors['User not found or disabled'],
+            userId: memberDto.userId
+          }
+        }
+      } else {
+        const newMember = await this.memberModel.create({
+          ...memberDto,
+          targetId: newTeam._id.toString(),
+          path: newTeam._id.toString(),
+          type: EMemberType.Team,
+          createdById: userId,
+          modifiedById: userId
+        })
+        return {
+          member: newMember.toJSON(),
+          user: user.toJSON()
+        }
+      }
+    })
+    const groupMembers = await Promise.all(_groupMembers)
+
+    const validMembers = groupMembers
+      .filter(entry => !!entry.member)
+      .map(entry => entry.member)
+    const validUsers = groupMembers
+      .filter(entry => !!entry.user)
+      .map(entry => entry.user)
+    const response: TWorkspaceSocket[] = [
+      {
+        type: 'group',
+        action: 'create',
+        data: newTeam
+      },
+      ...validMembers.map(
+        member =>
+          ({
+            type: 'member',
+            action: 'create',
+            data: member
+          } as TWorkspaceSocket)
+      )
+    ]
+
+    this.workspaceService.workspaces({
+      rooms: validMembers.map(e => e.userId.toString()),
+      workspaces: response
+    })
+
+    this.workspaceService.users({
+      rooms: validUsers.map(e => e._id.toString()),
+      users: validUsers.map(e => ({ type: 'get', data: e }))
+    })
+
+    return response
   }
 }
