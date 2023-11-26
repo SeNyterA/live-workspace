@@ -17,8 +17,10 @@ import Watching from '../../redux/Watching'
 import DirectNavLink from '../layouts/DirectNavLink'
 import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
+import ChannelItem from './channel/ChannelItem'
 import CreateChannel from './channel/CreateChannel'
 import CreateGroup from './CreateGroup'
+import GroupItem from './group/GroupItem'
 
 export type TSideBarToggle =
   | 'createBoard'
@@ -36,7 +38,6 @@ export default function Sidebar() {
   const team = useAppSelector(state =>
     Object.values(state.workspace.teams).find(e => e._id === teamId)
   )
-
   const [searchValue, setSearchValue] = useState('')
 
   return (
@@ -110,18 +111,7 @@ export default function Sidebar() {
                 {channels => (
                   <>
                     {channels?.map(item => (
-                      <NavLink
-                        key={item._id}
-                        className='p-1 pl-3'
-                        label={item.title}
-                        active={channelId === item._id}
-                        onClick={() => {
-                          switchTo({
-                            target: 'channel',
-                            targetId: item._id
-                          })
-                        }}
-                      />
+                      <ChannelItem channel={item} key={item._id} />
                     ))}
                   </>
                 )}
@@ -145,6 +135,7 @@ export default function Sidebar() {
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={!!groupId}
               defaultOpened={!!groupId}
+              classNames={{ children: 'w-full' }}
             >
               <Watching
                 watchingFn={state =>
@@ -158,19 +149,7 @@ export default function Sidebar() {
                 {groups => (
                   <>
                     {groups?.map(item => (
-                      <NavLink
-                        key={item._id}
-                        className='p-1 pl-3'
-                        label={item.title || item._id}
-                        active={groupId === item._id}
-                        onClick={() => {
-                          if (item._id)
-                            switchTo({
-                              target: 'group',
-                              targetId: item._id
-                            })
-                        }}
-                      />
+                      <GroupItem key={item._id} group={item} />
                     ))}
                   </>
                 )}

@@ -19,6 +19,7 @@ export default function TeamList() {
         <ActionIcon
           className='mx-2 flex h-fit w-fit items-center justify-center rounded-full p-0'
           variant='subtle'
+          onClick={() => switchTeam({ teamId: 'personal' })}
         >
           <Avatar />
         </ActionIcon>

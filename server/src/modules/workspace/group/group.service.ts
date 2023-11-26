@@ -45,16 +45,21 @@ export class GroupService {
   }
 
   async getGroupsByUserId(userId: string) {
-    const members = await this.memberService._getByUserId({
+    const _members = await this.memberService._getByUserId({
       userId
     })
-
     const groups = await this.groupModel
       .find({
         _id: {
-          $in: members.map(e => e.targetId)
+          $in: _members.map(e => e.targetId.toString())
         },
         isAvailable: true
+      })
+      .lean()
+
+    const members = await this.memberService.memberModel
+      .find({
+        targetId: { $in: groups.map(team => team._id.toString()) }
       })
       .lean()
 

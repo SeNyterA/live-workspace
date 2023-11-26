@@ -53,6 +53,7 @@ export default function MessageGroup({
         </p>
         {messageGroup.messages.map(message => (
           <Tooltip
+            key={message._id}
             label={dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
             position='right'
             className='bg-white text-xs leading-3 text-gray-500'

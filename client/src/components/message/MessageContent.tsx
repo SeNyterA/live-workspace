@@ -130,7 +130,10 @@ export default function MessageContent({
           )}
 
           {groupedMessages.map(groupMessage => (
-            <MessageGroup messageGroup={groupMessage} />
+            <MessageGroup
+              key={groupMessage.messages[0]._id}
+              messageGroup={groupMessage}
+            />
           ))}
 
           <div className='relative'>
