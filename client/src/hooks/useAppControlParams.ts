@@ -4,7 +4,7 @@ import useAppParams from './useAppParams'
 export default function useAppControlParams() {
   const navigate = useNavigate()
 
-  const { teamId } = useAppParams()
+  const { teamId, directId } = useAppParams()
 
   return {
     switchTo: ({
@@ -15,7 +15,11 @@ export default function useAppControlParams() {
       target: 'board' | 'channel' | 'group' | 'direct-message'
     }) => navigate(`/team/${teamId || 'personal'}/${target}/${targetId}`),
     switchTeam: ({ teamId }: { teamId: string }) => {
-      navigate(`/team/${teamId || 'personal'}`)
+      navigate(
+        `/team/${teamId || 'personal'}${
+          directId ? `/direct-message/${directId}` : ''
+        }`
+      )
     }
   }
 }

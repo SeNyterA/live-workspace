@@ -1,17 +1,16 @@
 import { useMutation } from '@tanstack/react-query'
+import { TChannelDto, TGroupDto, TTeamDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
 import {
   EMemberRole,
-  TChannelPayload,
   TMember,
   TMessage,
-  TWorkspace,
-  TWorkspacePlayload
+  TWorkspace
 } from '../../types/workspace.type'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
-type ApiMutationType = {
+export type ApiMutationType = {
   login: {
     url: {
       baseUrl: '/auth/login'
@@ -42,14 +41,6 @@ type ApiMutationType = {
     }
   }
 
-  createTeam: {
-    url: {
-      baseUrl: '/workspace/teams'
-    }
-    method: 'post'
-    payload: TWorkspacePlayload
-    response: TWorkspace
-  }
   editTeamMemberRole: {
     url: {
       baseUrl: '/workspace/teams/:teamId/members/:memberId'
@@ -66,18 +57,6 @@ type ApiMutationType = {
           data: TMember
         }
       | { success: false; error: string }
-  }
-
-  createChannel: {
-    url: {
-      baseUrl: '/workspace/teams/:teamId/channels'
-      urlParams: {
-        teamId: string
-      }
-    }
-    method: 'post'
-    payload: TChannelPayload
-    response: TWorkspace
   }
 
   createChannelMessage: {
@@ -102,6 +81,48 @@ type ApiMutationType = {
     method: 'post'
     payload: { content: string }
     response: TMessage
+  }
+
+  createGroupMessage: {
+    url: {
+      baseUrl: '/workspace/groups/:groupId/messages'
+      urlParams: {
+        groupId: string
+      }
+    }
+    method: 'post'
+    payload: { content: string }
+    response: TMessage
+  }
+
+  createGroup: {
+    url: {
+      baseUrl: '/workspace/groups'
+    }
+    method: 'post'
+    payload: TGroupDto
+    response: TMessage
+  }
+
+  createTeam: {
+    url: {
+      baseUrl: '/workspace/teams'
+    }
+    method: 'post'
+    payload: TTeamDto
+    response: TWorkspace
+  }
+
+  createChannel: {
+    url: {
+      baseUrl: '/workspace/teams/:teamId/channels'
+      urlParams: {
+        teamId: string
+      }
+    }
+    method: 'post'
+    payload: TChannelDto
+    response: TWorkspace
   }
 }
 

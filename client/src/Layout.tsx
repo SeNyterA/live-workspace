@@ -1,16 +1,17 @@
-import { Divider } from '@mantine/core'
+import { Divider, LoadingOverlay } from '@mantine/core'
 import { ReactNode, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
-import Sidebar from './components/layouts/Sidebar'
-import TeamList from './components/layouts/TeamList'
-import { workspaceActions } from './redux/slices/workspace.slice'
+import Sidebar from './components/sidebar/Sidebar'
+import TeamList from './components/sidebar/TeamList'
+import { TMembers, workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
-import { TChannel, TDirect, TGroup, TTeam } from './types/workspace.type'
+import { useAppOnSocket } from './services/socket/useAppOnSocket'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
-  const { data: workspaceData } = useAppQuery({
+
+  const { data: workspaceData, isPending } = useAppQuery({
     key: 'workspace',
     url: {
       baseUrl: '/workspace'
@@ -19,40 +20,125 @@ export default function Layout({ children }: { children: ReactNode }) {
       queryKey: ['/workspace']
     }
   })
-
   useEffect(() => {
-    console.log({
-      workspaceData
-    })
-    dispatch(
-      workspaceActions.init({
-        channels:
-          workspaceData?.channels.reduce(
+    if (workspaceData) {
+      const members = [
+        ...(workspaceData?.channels.members || []),
+        ...(workspaceData?.teams.members || []),
+        ...(workspaceData?.groups.members || [])
+      ].reduce((pre, next) => ({ ...pre, [next._id]: next }), {} as TMembers)
+
+      dispatch(
+        workspaceActions.updateData({
+          teams: workspaceData?.teams.teams.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [channelId: string]: TChannel }
-          ) || {},
-        groups:
-          workspaceData?.groups.reduce(
+            {}
+          ),
+          channels: workspaceData?.channels.channels.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [groupId: string]: TGroup }
-          ) || {},
-        teams:
-          workspaceData?.teams.reduce(
+            {}
+          ),
+          directs: workspaceData?.directs.directs.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [teamId: string]: TTeam }
-          ) || {},
-        directs:
-          workspaceData?.directs.reduce(
+            {}
+          ),
+          groups: workspaceData?.groups.groups.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
-            {} as { [teamId: string]: TDirect }
-          ) || {}
-      })
-    )
+            {}
+          ),
+
+          users: workspaceData?.users.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          ),
+          members
+        })
+      )
+    }
   }, [dispatch, workspaceData])
+
+  const { data: unReadCountData } = useAppQuery({
+    key: 'getUnreadCounts',
+    url: {
+      baseUrl: 'workspace/getUnreadCounts'
+    }
+  })
+  useEffect(() => {
+    if (unReadCountData) {
+      console.log(unReadCountData)
+      dispatch(workspaceActions.setUnreadCounts(unReadCountData))
+    }
+  }, [dispatch, unReadCountData])
+
+  useAppOnSocket({
+    key: 'workspaces',
+    resFunc: ({ workspaces }) => {
+      const teams = workspaces.filter(e => e.type === 'team')
+      const channels = workspaces.filter(e => e.type === 'channel')
+      const directs = workspaces.filter(e => e.type === 'direct')
+      const groups = workspaces.filter(e => e.type === 'group')
+      const members = workspaces.filter(e => e.type === 'member')
+      const users = workspaces.filter(e => e.type === 'user')
+
+      dispatch(
+        workspaceActions.updateData({
+          teams: teams.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          ),
+          channels: channels.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          ),
+          groups: groups.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          ),
+          directs: directs.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          ),
+          members: members.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          ),
+          users: users.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          )
+        })
+      )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'unReadCount',
+    resFunc: ({ count, targetId }) => {
+      dispatch(workspaceActions.setUnreadCounts({ [targetId]: count }))
+    }
+  })
+
+  useAppOnSocket({
+    key: 'users',
+    resFunc: ({ users }) => {
+      dispatch(
+        workspaceActions.addUsers(
+          users.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          )
+        )
+      )
+    }
+  })
 
   return (
     <>
-      <div className='flex h-screen w-screen flex-col text-sm'>
+      <div className='relative flex h-screen w-screen flex-col text-sm'>
+        <LoadingOverlay
+          visible={isPending}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+        />
         <AppHeader />
         <Divider variant='dashed' />
         <div className='flex flex-1'>

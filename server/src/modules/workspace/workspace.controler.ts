@@ -30,4 +30,17 @@ export class WorkpaceController {
       includeUsers: includeUsersFlag
     })
   }
+
+  @Get('/usersReadedMessage/:targetId')
+  usersReadedByTargetId(
+    @HttpUser() user: TJwtUser,
+    @Param('targetId') targetId: string
+  ) {
+    return this.workspaceService.getReadMessagesForTarget(targetId)
+  }
+
+  @Get('/getUnreadCounts')
+  getUnreadCounts(@HttpUser() user: TJwtUser) {
+    return this.workspaceService.getAllUnreadData(user.sub)
+  }
 }

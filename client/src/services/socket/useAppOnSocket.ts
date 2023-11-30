@@ -1,6 +1,30 @@
 import { useEffect } from 'react'
-import { TMessage } from '../../types/workspace.type'
+import { TUser } from '../../types/user.type'
+import {
+  TChannel,
+  TDirect,
+  TGroup,
+  TMember,
+  TMessage,
+  TTeam
+} from '../../types/workspace.type'
 import { useSocketContext } from './SocketProvider'
+
+export type TWorkspaceSocket = {
+  action?: 'create' | 'update' | 'delete'
+} & (
+  | { data: TChannel; type: 'channel' }
+  | { data: TTeam; type: 'board' }
+  | { data: TTeam; type: 'team' }
+  | { data: TDirect; type: 'direct' }
+  | { data: TGroup; type: 'group' }
+  | { data: TMember; type: 'member' }
+  | { data: TUser; type: 'user' }
+)
+export type TUserSocket = {
+  data: TUser
+  type: 'get' | 'update'
+}
 
 export type ApiSocketType = {
   message: {
@@ -15,6 +39,29 @@ export type ApiSocketType = {
       targetId: string
       userId: string
       type: 1 | 0
+    }
+  }
+
+  userReadedMessage: {
+    response: string
+  }
+
+  workspaces: {
+    response: {
+      workspaces: TWorkspaceSocket[]
+    }
+  }
+
+  users: {
+    response: {
+      users: TUserSocket[]
+    }
+  }
+
+  unReadCount: {
+    response: {
+      count: number
+      targetId: string
     }
   }
 }

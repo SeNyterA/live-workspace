@@ -1,12 +1,14 @@
+import { Inject, forwardRef } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import {
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
-  WebSocketGateway
+  WebSocketGateway,
+  WebSocketServer
 } from '@nestjs/websockets'
-import { Socket } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { WsClient, WsUser } from './../../decorators/users.decorator'
 import { WorkspaceService } from './workspace.service'
@@ -30,7 +32,10 @@ export interface CustomSocket extends Socket {
 export class WorkspaceGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
+  @WebSocketServer()
+  server: Server
   constructor(
+    @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService
@@ -43,6 +48,8 @@ export class WorkspaceGateway
         { secret: process.env.JWT_SECRET }
       )) as TJwtUser
       client.user = user
+
+      this.workspaceService.subscribeAllRooms(user.sub, client)
 
       const _log = await this.redisService.redisClient.get(
         `presence:${user.sub}`
@@ -195,7 +202,15 @@ export class WorkspaceGateway
   }
 
   @SubscribeMessage('disconnect')
-  async disconnect(@WsUser() user: TJwtUser, @WsClient() client: Socket) {
-    console.log('disconnect:', 11111)
+  async disconnect(@WsUser() user: TJwtUser, @WsClient() client: Socket) {}
+
+  @SubscribeMessage('makeReadMessage')
+  async makeReadMessage(
+    @WsUser() user: TJwtUser,
+    @MessageBody()
+    { targetId, messageId }: { targetId: string; messageId: string }
+  ) {
+    this.workspaceService.markMessageAsRead(user.sub, targetId, messageId)
+    this.workspaceService._markAsRead(user.sub, targetId)
   }
 }

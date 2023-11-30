@@ -1,15 +1,7 @@
-import {
-  Avatar,
-  Button,
-  Input,
-  LoadingOverlay,
-  Modal,
-  ScrollArea
-} from '@mantine/core'
+import { Button, Drawer, Select } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { IconSearch, IconSend } from '@tabler/icons-react'
+import { IconSearch } from '@tabler/icons-react'
 import { useState } from 'react'
-import useAppControlParams from '../../hooks/useAppControlParams'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 
 export default function CreateDirect({
@@ -21,7 +13,6 @@ export default function CreateDirect({
 }) {
   const [searchValue, setSearchValue] = useState('')
   const [keyword] = useDebouncedValue(searchValue, 200)
-  const { switchTo } = useAppControlParams()
   const { data, isLoading } = useAppQuery({
     key: 'findUsersByKeyword',
     url: {
@@ -29,51 +20,47 @@ export default function CreateDirect({
       queryParams: {
         keyword
       }
+    },
+    options: {
+      queryKey: [keyword],
+      enabled: !!keyword
     }
   })
 
   return (
-    <Modal
+    <Drawer
       onClose={onClose}
       opened={isOpen}
-      title={<p className='text-lg font-semibold'>Create direct channel</p>}
+      title={<p className='text-lg font-semibold'>Send direct</p>}
+      overlayProps={{
+        color: '#000',
+        backgroundOpacity: 0.2,
+        blur: 0.5
+      }}
+      classNames={{
+        content: 'rounded-lg flex flex-col',
+        inner: 'p-3',
+        body: 'flex flex-col flex-1'
+      }}
     >
-      <Input
-        placeholder='username, email, nickname ...'
+      <Select
+        label='Group member'
+        description='Description for the direct'
+        placeholder='Username, email, nickname...'
         leftSection={<IconSearch size={16} />}
-        value={searchValue}
-        onChange={e => setSearchValue(e.target.value)}
+        limit={10}
+        searchable
+        searchValue={searchValue}
+        onSearchChange={value => setSearchValue(value)}
+        className='mt-2'
       />
-      <div className='relative mt-3 h-80'>
-        <LoadingOverlay
-          visible={isLoading}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
-        <ScrollArea className='absolute inset-0' scrollbarSize={8}>
-          {data?.users.map(user => (
-            <div className='mt-3 flex flex-1 gap-2 first:mt-0' key={user._id}>
-              <Avatar src={user.avatar} />
-              <div className='flex flex-1 flex-col justify-center'>
-                <p className='font-medium leading-5'>{user.userName}</p>
-                <p className='text-xs leading-3 text-gray-500'>{user.email}</p>
-              </div>
-              <Button
-                variant='light'
-                size='compact-sm'
-                onClick={() => {
-                  switchTo({
-                    target: 'direct-message',
-                    targetId: user.userName
-                  })
-                  onClose()
-                }}
-              >
-                <IconSend />
-              </Button>
-            </div>
-          ))}
-        </ScrollArea>
+
+      <div className='mt-2 flex items-center justify-end gap-3'>
+        <Button variant='default' color='red'>
+          Close
+        </Button>
+        <Button>Create</Button>
       </div>
-    </Modal>
+    </Drawer>
   )
 }

@@ -10,16 +10,18 @@ import { InjectModel } from '@nestjs/mongoose'
 import { isEmpty } from 'lodash'
 import { Model } from 'mongoose'
 import { getChannelPermission } from 'src/libs/checkPermistion'
+import { Errors } from 'src/libs/errors'
 import { User } from 'src/modules/users/user.schema'
+import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../../member/member.schema'
 import { MemberService } from '../../member/member.service'
 import { EMessageFor } from '../../message/message.schema'
 import { MessageService } from '../../message/message.service'
-import { EStatusType } from '../../workspace.schema'
+import { MembersDto } from '../../workspace.dto'
 import { WorkspaceService } from '../../workspace.service'
 import { Team } from '../team.schema'
 import { TeamService } from '../team.service'
-import { CreateChannelDto, UpdateChannelDto } from './channel.dto'
+import { ChannelDto, UpdateChannelDto } from './channel.dto'
 import { Channel } from './channel.schema'
 
 @Injectable()
@@ -36,7 +38,9 @@ export class ChannelService {
     @Inject(forwardRef(() => WorkspaceService))
     readonly workspaceService: WorkspaceService,
     @Inject(forwardRef(() => TeamService))
-    readonly teamService: TeamService
+    readonly teamService: TeamService,
+    @Inject(forwardRef(() => UsersService))
+    readonly usersService: UsersService
   ) {}
 
   async _checkExisting({ channelId }: { channelId: string }): Promise<boolean> {
@@ -67,35 +71,44 @@ export class ChannelService {
       isAvailable: true
     })
 
-    const [member, target] = await Promise.all([_member, _target])
+    const [member, channel] = await Promise.all([_member, _target])
 
-    if (member && target) {
+    if (member && channel) {
       return {
         permissions: getChannelPermission(member.role),
         member,
-        target
+        channel
       }
     }
     return {
       member,
-      target
+      channel
     }
   }
 
-  //#region public service
   async getChannelsByUserId(userId: string) {
-    const members = await this.memberService._getByUserId({
+    const _members = await this.memberService._getByUserId({
       userId
     })
     const channels = await this.channelModel
       .find({
         _id: {
-          $in: members.map(e => e.targetId)
+          $in: _members.map(e => e.targetId.toString())
         },
         isAvailable: true
       })
       .lean()
-    return channels
+
+    const members = await this.memberService.memberModel
+      .find({
+        targetId: { $in: channels.map(team => team._id.toString()) }
+      })
+      .lean()
+
+    return {
+      channels,
+      members
+    }
   }
 
   async getChannelById({
@@ -116,56 +129,6 @@ export class ChannelService {
     }
 
     return channel.toJSON()
-  }
-
-  async create({
-    channel,
-    userId,
-    teamId
-  }: {
-    channel: CreateChannelDto
-    userId: string
-    teamId: string
-  }) {
-    const { permissions } = await this.teamService.getPermisstion({
-      targetId: teamId,
-      userId
-    })
-
-    if (permissions?.createChannel) {
-      const createdChannel = await this.channelModel.create({
-        ...channel,
-        teamId,
-        createdById: userId,
-        modifiedById: userId
-      })
-
-      const owner = await this.memberModel.create({
-        userId,
-        targetId: createdChannel._id.toString(),
-        path: createdChannel._id.toString(),
-        type: EMemberType.Channel,
-        role: EMemberRole.Owner,
-        createdById: userId,
-        modifiedById: userId
-      })
-
-      if (createdChannel.channelType === EStatusType.Public) {
-      }
-
-      const message = await this.messageService._createSystemMessage({
-        targetId: createdChannel._id.toString(),
-        userId: userId,
-        messagePayload: `Channel has been created by \$\{${userId}\}`,
-        messageFor: EMessageFor.Channel
-      })
-
-      return {
-        channel: createdChannel,
-        members: [owner],
-        messages: [message]
-      }
-    }
   }
 
   async update({
@@ -241,7 +204,6 @@ export class ChannelService {
     }
     return true
   }
-  //#endregion
 
   async addMember({
     targetId,
@@ -269,7 +231,7 @@ export class ChannelService {
       if (newMember) {
         return {
           success: false,
-          error: 'Member already exists in the group'
+          error: 'Member already exists in the channel'
         }
       }
 
@@ -302,12 +264,9 @@ export class ChannelService {
         messageFor: EMessageFor.Channel
       })
 
-      this.workspaceService.member({
-        data: {
-          action: 'create',
-          member: _member
-        },
-        rooms: [targetId, member.userId]
+      this.workspaceService.workspaces({
+        rooms: [targetId, member.userId],
+        workspaces: [{ action: 'create', data: _member, type: 'member' }]
       })
 
       this.workspaceService.message({
@@ -326,5 +285,265 @@ export class ChannelService {
       success: false,
       error: 'No permission to add the user to the team'
     }
+  }
+
+  async _create({
+    channelDto: { members: memberDto, ...createData },
+    userId,
+    teamId
+  }: {
+    channelDto: ChannelDto
+    userId: string
+    teamId: string
+  }) {
+    const { permissions: teamPermissions, member: teamMember } =
+      await this.teamService.getPermisstion({
+        targetId: teamId,
+        userId
+      })
+
+    if (!teamPermissions?.createChannel)
+      return {
+        error: {
+          code: Errors['User dont has permission to create channel'],
+          userId,
+          teamId
+        }
+      }
+
+    const newChannel = await this.channelModel.create({
+      ...createData,
+      teamId,
+      createdById: userId,
+      modifiedById: userId
+    })
+
+    // const _membersDto: MemberDto[] = [
+    //   { role: EMemberRole.Owner, userId },
+    //   ...(memberDto?.filter(e => e.userId !== userId) || [])
+    // ]
+
+    // const memberCreations = _membersDto?.map(async memberDto => {
+    //   const user = await this.usersService.userModel.findOne({
+    //     isAvailable: true,
+    //     _id: memberDto.userId
+    //   })
+    //   if (!user) {
+    //     return {
+    //       error: {
+    //         code: Errors['User not found or disabled'],
+    //         userId: memberDto.userId
+    //       }
+    //     }
+    //   }
+
+    //   const teamMember = await this.memberService._checkExisting({
+    //     targetId: teamId,
+    //     userId: memberDto.userId
+    //   })
+    //   if (!teamMember) {
+    //     console.log(Errors['User not found on team'])
+    //     return {
+    //       error: {
+    //         code: Errors['User not found on team'],
+    //         userId: memberDto.userId,
+    //         teamId
+    //       }
+    //     }
+    //   }
+
+    //   const newMember = await this.memberModel.create({
+    //     ...memberDto,
+    //     targetId: newChannel._id.toString(),
+    //     path: `${teamId.toString()}/${newChannel._id.toString()}`,
+    //     type: EMemberType.Channel,
+    //     createdById: userId,
+    //     modifiedById: userId
+    //   })
+
+    //   return {
+    //     member: newMember.toJSON(),
+    //     user: user.toJSON()
+    //   }
+    // })
+
+    // const createdMembers = await Promise.all(memberCreations)
+
+    console.log([
+      { role: EMemberRole.Owner, userId },
+      ...(memberDto?.filter(e => e.userId !== userId) || [])
+    ])
+
+    const members = await this._addMembers({
+      channelId: newChannel._id.toString(),
+      userId,
+      payload: {
+        members: [
+          { role: EMemberRole.Owner, userId },
+          ...(memberDto?.filter(e => e.userId !== userId) || [])
+        ]
+      }
+    })
+
+    // const resMemnbers = createdMembers
+    //   .filter(entry => !!entry.member)
+    //   .map(entry => entry.member)
+
+    // const usersId = createdMembers
+    //   .filter(entry => !!entry.user)
+    //   .map(entry => entry.user._id.toString())
+
+    // const response: TWorkspaceSocket[] = [
+    //   {
+    //     type: 'channel',
+    //     action: 'create',
+    //     data: newChannel
+    //   },
+    //   ...resMemnbers.map(
+    //     member =>
+    //       ({
+    //         type: 'member',
+    //         action: 'create',
+    //         data: member
+    //       } as TWorkspaceSocket)
+    //   )
+    // ]
+
+    // this.workspaceService.workspaces({
+    //   rooms: usersId,
+    //   workspaces: response
+    // })
+
+    // return {
+    //   channel: newChannel,
+    //   members: createdMembers
+    // }
+  }
+
+  async _addMembers({
+    channelId,
+    payload: { members: membersDto },
+    userId,
+    option: {
+      checkExistingMember = true,
+      checkExistingTeamMember = true,
+      checkExistingUser = true,
+      checkPermisstion = true,
+      checkRolePermission = true,
+      emitSocket = true
+    },
+    teamId
+  }: {
+    payload: MembersDto
+    userId: string
+    channelId: string
+    teamId?: string
+    channel?: Channel
+    option?: {
+      checkPermisstion?: boolean
+      checkRolePermission?: boolean
+      checkExistingUser?: boolean
+      checkExistingTeamMember?: boolean
+      checkExistingMember?: boolean
+      emitSocket?: boolean
+    }
+  }) {
+    const { permissions } = await this.getPermisstion({
+      targetId: channelId,
+      userId
+    })
+
+    if (!permissions && checkPermisstion) {
+      return {
+        error: { code: Errors['User not found on channel'], userId, channelId }
+      }
+    }
+
+    const _members = membersDto.map(async memberDto => {
+      if (
+        !permissions?.memberAction?.add?.includes(memberDto.role) &&
+        checkRolePermission
+      ) {
+        return {
+          error: {
+            code: Errors['User dont has permission to add member to channel'],
+            userId,
+            channelId,
+            targetUserId: memberDto.role
+          }
+        }
+      }
+
+      const user = await this.usersService.userModel.findOne({
+        isAvailable: true,
+        _id: memberDto.userId
+      })
+      if (!user && checkExistingUser) {
+        return {
+          error: {
+            code: Errors['User not found or disabled'],
+            userId: memberDto.userId
+          }
+        }
+      }
+
+      const teamMember = await this.memberService._checkExisting({
+        targetId: channelId,
+        userId: memberDto.userId
+      })
+      if (!teamMember && checkExistingTeamMember) {
+        return {
+          error: {
+            code: Errors['User not found on team'],
+            userId: memberDto.userId,
+            teamId
+          }
+        }
+      }
+
+      const existingMember = await this.memberService.memberModel.findOne({
+        targetId: channelId,
+        userId: memberDto.userId
+      })
+      if (!existingMember && checkExistingMember) {
+        return {
+          error: {
+            code: Errors['Channel member has existing'],
+            userId: memberDto.userId,
+            channelId: channelId
+          }
+        }
+      }
+
+      const newMember = await this.memberModel.create({
+        ...memberDto,
+        targetId: channelId,
+        path: `${teamMember.targetId.toString()}/${channelId}`,
+        type: EMemberType.Channel,
+        createdById: userId,
+        modifiedById: userId
+      })
+
+      return {
+        member: newMember,
+        user: user.toJSON()
+      }
+    })
+
+    const members = await Promise.all(_members)
+
+    if (emitSocket) {
+      const socketMembers = members.filter(e => !!e.member).map(e => e.member)
+      this.workspaceService.workspaces({
+        rooms: [channelId, ...socketMembers.map(e => e._id.toString())],
+        workspaces: socketMembers.map(member => ({
+          action: 'create',
+          type: 'member',
+          data: member
+        }))
+      })
+    }
+
+    return members
   }
 }

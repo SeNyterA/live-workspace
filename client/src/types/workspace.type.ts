@@ -1,9 +1,3 @@
-export enum EStatusType {
-  Private = 'private',
-  Public = 'public',
-  System = 'system'
-}
-
 export enum EMemberRole {
   Owner = 'Owner',
   Admin = 'Admin',
@@ -25,9 +19,7 @@ export type TWorkspacePlayload = {
   avatar?: string
 }
 
-export type TChannelPayload = TWorkspacePlayload & {
-  channelType: EStatusType
-}
+export type TChannelPayload = TWorkspacePlayload
 
 export type TWorkspace = {
   _id: string
@@ -44,7 +36,6 @@ export type TWorkspace = {
 export type TTeam = TWorkspace
 export type TChannel = {
   teamId: string
-  channelType: EStatusType
   path: string
 } & TWorkspace
 export type TGroup = TWorkspace

@@ -12,8 +12,8 @@ import { DirectMessage } from './direct-message.schema'
 export class DirectMessageService {
   constructor(
     @InjectModel(DirectMessage.name)
-    private readonly directMessageModel: Model<DirectMessage>,
-    private readonly usersService: UsersService
+    public readonly directMessageModel: Model<DirectMessage>,
+    public readonly usersService: UsersService
   ) {}
 
   async _checkExisting({
@@ -25,6 +25,7 @@ export class DirectMessageService {
   }): Promise<DirectMessage> {
     const existingDirectMessage = await this.directMessageModel.findOne({
       userIds: { $all: [userId.toString(), targetId.toString()] },
+      // userIds: { $in: [userId.toString()] },
       isAvailable: true
     })
 
@@ -41,7 +42,7 @@ export class DirectMessageService {
   }: {
     userId: string
     targetId: string
-  }): Promise<DirectMessage> {
+  }) {
     const userTarget = await this.usersService._findById(targetId)
     const existingDirectMessage = await this.directMessageModel.findOne({
       userIds: { $all: [userId, userTarget._id.toString()] },
@@ -49,14 +50,20 @@ export class DirectMessageService {
     })
 
     if (existingDirectMessage) {
-      return existingDirectMessage.toJSON()
+      return {
+        direct: existingDirectMessage.toJSON(),
+        isNew: false
+      }
     }
 
     const newDirectMessage = await this.directMessageModel.create({
       userIds: [targetId, userId]
     })
 
-    return newDirectMessage.toJSON()
+    return {
+      direct: newDirectMessage.toJSON(),
+      isNew: true
+    }
   }
 
   async findAll(): Promise<DirectMessage[]> {
@@ -102,7 +109,11 @@ export class DirectMessageService {
       })
       .lean()
 
-    return directs
+    const directUserId = directs.reduce((pre, next) => {
+      return [...pre, ...next.userIds.map(e => e.toString())]
+    }, [] as string[])
+
+    return { directs, directUserId }
   }
 
   async getDirectMessInfo({
@@ -123,7 +134,6 @@ export class DirectMessageService {
       if (targetId) {
         _targetId = targetId
       } else if (targetEmail || targetUserName) {
-        console.log(targetEmail, targetUserName)
         const target = await this.usersService.userModel.findOne({
           isAvailable: true,
           $or: [
@@ -168,7 +178,6 @@ export class DirectMessageService {
         users
       }
     } catch (error) {
-      console.log(error)
       throw new NotFoundException()
     }
   }

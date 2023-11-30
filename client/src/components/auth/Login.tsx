@@ -10,6 +10,7 @@ import {
   Text,
   TextInput
 } from '@mantine/core'
+import { randomId } from '@mantine/hooks'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
@@ -35,7 +36,6 @@ export default function Authentication() {
         terms: false
       }
     })
-  console.log({ formState })
 
   return (
     <div className='flex h-screen w-screen items-center justify-center'>
@@ -57,8 +57,6 @@ export default function Authentication() {
 
         <form
           onSubmit={handleSubmit(data => {
-            console.log(`${type === 'register' ? 'Register' : 'Login'}:`, data)
-
             if (type === 'login') {
               login(
                 {
@@ -80,24 +78,26 @@ export default function Authentication() {
             }
 
             if (type === 'register') {
-              register(
-                {
-                  method: 'post',
-                  url: {
-                    baseUrl: '/auth/register'
-                  },
-                  payload: {
-                    email: data.email,
-                    password: data.password,
-                    userName: data.userName
-                  }
-                },
-                {
-                  onSuccess(data) {
-                    console.log(data)
-                  }
-                }
-              )
+              Array(1000)
+                .fill(1)
+                .forEach((_, index) => {
+                  register(
+                    {
+                      method: 'post',
+                      url: {
+                        baseUrl: '/auth/register'
+                      },
+                      payload: {
+                        email: `${index}_${data.email}`,
+                        password: data.password,
+                        userName: `${index}_${data.userName}`
+                      }
+                    },
+                    {
+                      onSuccess(data) {}
+                    }
+                  )
+                })
             }
 
             reset()

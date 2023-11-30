@@ -11,7 +11,7 @@ import { HttpUser } from 'src/decorators/users.decorator'
 
 import { EMemberRole } from '../member/member.schema'
 import { TJwtUser } from '../workspace.gateway'
-import { TCreateTeamPayload, TUpdateTeamPayload } from './team.dto'
+import { TUpdateTeamPayload, TeamDto } from './team.dto'
 import { TeamService } from './team.service'
 
 @Controller('/workspace/teams')
@@ -19,9 +19,9 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post()
-  create(@HttpUser() user: TJwtUser, @Body() team: TCreateTeamPayload) {
-    return this.teamService.create({
-      team: team,
+  create(@HttpUser() user: TJwtUser, @Body() teamDto: TeamDto) {
+    return this.teamService._create({
+      teamDto,
       userId: user.sub
     })
   }
@@ -66,11 +66,11 @@ export class TeamController {
     @Param('id') id: string,
     @Body() member: { userId: string; role: EMemberRole }
   ) {
-    return this.teamService.addMember({
-      userId: user.sub,
-      teamId: id,
-      member
-    })
+    // return this.teamService.addMember({
+    //   userId: user.sub,
+    //   teamId: id,
+    //   member
+    // })
   }
 
   @Patch(':teamId/members/:memberId')
@@ -80,11 +80,11 @@ export class TeamController {
     @Param('memberId') memberId: string,
     @Body() payload: { role: EMemberRole }
   ) {
-    return this.teamService.editMember({
-      userId: user.sub,
-      teamId,
-      memberId,
-      role: payload.role
-    })
+    // return this.teamService.editMember({
+    //   userId: user.sub,
+    //   teamId,
+    //   memberId,
+    //   role: payload.role
+    // })
   }
 }

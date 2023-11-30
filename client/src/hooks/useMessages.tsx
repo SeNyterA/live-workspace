@@ -31,6 +31,9 @@ export default function useMessages() {
       baseUrl: '/workspace/direct-messages/:directId/messages',
       urlParams: {
         directId: directId!
+      },
+      queryParams: {
+        pageSize: 3
       }
     },
     options: {

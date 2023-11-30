@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 
 import { User } from 'src/modules/users/user.schema'
-import { EMemberRole, EMemberType, Member } from './member.schema'
+import { EMemberRole, Member } from './member.schema'
 
 @Injectable()
 export class MemberService {
@@ -16,12 +16,14 @@ export class MemberService {
     targetId,
     userId,
     inRoles = [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-    isAvailable = true
+    isAvailable = true,
+    throwErr
   }: {
     userId: string
     targetId: string
     inRoles?: EMemberRole[]
     isAvailable?: boolean
+    throwErr?: boolean
   }) {
     const existingMember = await this.memberModel.findOne({
       isAvailable,
@@ -32,11 +34,11 @@ export class MemberService {
       }
     })
 
-    if (!existingMember) {
+    if (!existingMember && throwErr) {
       throw new ForbiddenException('Your dont have permission')
     }
 
-    return !!existingMember
+    return existingMember
   }
 
   async _getByTargetId({ targetId }: { targetId: string }) {

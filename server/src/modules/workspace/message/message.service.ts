@@ -20,6 +20,22 @@ export class MessageService {
     private readonly workspaceService: WorkspaceService
   ) {}
 
+  async _makeUnreadCount(targetId: string) {
+    const members = await this.memberService.memberModel
+      .find({
+        targetId,
+        isAvailable: true
+      })
+      .lean()
+
+    await members.map(member => {
+      this.workspaceService._incrementUnread(
+        member.userId.toString(),
+        member.targetId.toString()
+      )
+    })
+  }
+
   async _createForDirect({
     targetId,
     userId,
@@ -27,9 +43,9 @@ export class MessageService {
   }: {
     userId: string
     targetId: string
-    messagePayload: any
+    messagePayload: { content: string }
   }) {
-    const directMessage =
+    const { direct: directMessage, isNew } =
       await this.directMessageService._getOrCreateDirectMessage({
         targetId,
         userId
@@ -39,18 +55,34 @@ export class MessageService {
       messageReferenceId: directMessage._id.toString(),
       createdById: userId,
       modifiedById: userId,
-      content: 'content',
+      content: messagePayload.content,
       messageFor: EMessageFor.Direct,
       messageType: EMessageType.Normal
     })
 
+    if (isNew) {
+      this.workspaceService.workspaces({
+        rooms: [
+          ...directMessage.userIds.map(e => e.toString()),
+          directMessage._id.toString()
+        ],
+        workspaces: [{ action: 'create', type: 'direct', data: directMessage }]
+      })
+    }
+
     this.workspaceService.message({
-      rooms: [targetId, userId],
+      rooms: [targetId, userId, directMessage._id.toString()],
       data: {
         action: 'create',
         message: newMess
       }
     })
+    directMessage.userIds.map(userId =>
+      this.workspaceService._incrementUnread(
+        userId.toString(),
+        directMessage._id.toString()
+      )
+    )
 
     return newMess.toJSON()
   }
@@ -85,6 +117,7 @@ export class MessageService {
         message: newMess
       }
     })
+    this._makeUnreadCount(channelId)
 
     return newMess.toJSON()
   }
@@ -96,7 +129,7 @@ export class MessageService {
   }: {
     userId: string
     groupId: string
-    messagePayload: any
+    messagePayload: { content: string }
   }) {
     await this.memberService._checkExisting({
       userId,
@@ -107,7 +140,7 @@ export class MessageService {
       messageReferenceId: groupId,
       createdById: userId,
       modifiedById: userId,
-      content: 'content',
+      content: messagePayload.content,
       messageFor: EMessageFor.Group,
       messageType: EMessageType.Normal
     })
@@ -120,6 +153,7 @@ export class MessageService {
       }
     })
 
+    this._makeUnreadCount(groupId)
     return newMess.toJSON()
   }
 
@@ -162,13 +196,18 @@ export class MessageService {
   async _getMessages({
     messageReferenceId,
     userId,
-    messgaeFor
+    messgaeFor,
+    pageSize = 100,
+    fromId
   }: {
     userId: string
     messageReferenceId: string
     messgaeFor: EMessageFor
+    fromId?: string
+    pageSize?: number
   }) {
     let _messageReferenceId = messageReferenceId
+
     switch (messgaeFor) {
       case EMessageFor.Channel:
       case EMessageFor.Group: {
@@ -176,7 +215,6 @@ export class MessageService {
           targetId: messageReferenceId,
           userId
         })
-
         break
       }
       case EMessageFor.Direct: {
@@ -184,7 +222,6 @@ export class MessageService {
           targetId: messageReferenceId,
           userId
         })
-
         _messageReferenceId = directMess._id.toString()
         break
       }
@@ -193,13 +230,23 @@ export class MessageService {
     const messages = await this.messageModel
       .find({
         messageReferenceId: _messageReferenceId,
-        isAvailable: true
+        isAvailable: true,
+        ...(fromId && { _id: { $lt: fromId } })
       })
-      .lean()
+      .sort({ createdAt: -1 })
+      .limit(pageSize)
+
+    const remainingCount = await this.messageModel
+      .find({
+        messageReferenceId: _messageReferenceId,
+        isAvailable: true,
+        ...(fromId && { _id: { $lt: fromId } })
+      })
+      .countDocuments()
 
     return {
       messages,
-      total: messages.length
+      remainingCount: remainingCount - messages.length
     }
   }
 

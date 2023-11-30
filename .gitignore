@@ -2,3 +2,4 @@ yarn.lock
 node_modules/
 package-lock.json
 server/.env
+server/yarn.lock

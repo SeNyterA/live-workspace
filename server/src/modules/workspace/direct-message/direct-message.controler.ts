@@ -62,6 +62,7 @@ export class DirectMessageController {
   sendMesage(
     @Param('targetId') targetId: string,
     @HttpUser() user: TJwtUser,
+    @Body()
     messagePayload: {
       content: string
     }
@@ -74,11 +75,18 @@ export class DirectMessageController {
   }
 
   @Get(':targetId/messages')
-  messages(@Param('targetId') targetId: string, @HttpUser() user: TJwtUser) {
+  messages(
+    @Param('targetId') targetId: string,
+    @HttpUser() user: TJwtUser,
+    @Query('formId') fromId?: string,
+    @Query('pageSize') pageSize = 100
+  ) {
     return this.messageService._getMessages({
       messageReferenceId: targetId,
       userId: user.sub,
-      messgaeFor: EMessageFor.Direct
+      messgaeFor: EMessageFor.Direct,
+      pageSize,
+      fromId
     })
   }
 }

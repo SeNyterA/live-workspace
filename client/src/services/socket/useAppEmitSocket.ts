@@ -3,6 +3,7 @@ import { useSocketContext } from './SocketProvider'
 type ApiEmitocketType = {
   startTyping: { targetId: string }
   stopTyping: { targetId: string }
+  makeReadMessage: { targetId: string; messageId: string }
 }
 
 export const useAppEmitSocket = () => {
@@ -12,7 +13,6 @@ export const useAppEmitSocket = () => {
     key,
     ...value
   }: { key: T } & ApiEmitocketType[T]) => {
-    console.log({ value })
     socket?.emit(key, value)
   }
 

@@ -1,11 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Prop, Schema } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
-
-export enum EStatusType {
-  Private = 'private',
-  Public = 'public',
-  System = 'system'
-}
 
 @Schema()
 export class Workspace {
