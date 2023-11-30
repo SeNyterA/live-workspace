@@ -10,6 +10,7 @@ import { useAppOnSocket } from './services/socket/useAppOnSocket'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
+
   const { data: workspaceData, isPending } = useAppQuery({
     key: 'workspace',
     url: {
@@ -19,14 +20,6 @@ export default function Layout({ children }: { children: ReactNode }) {
       queryKey: ['/workspace']
     }
   })
-
-  const {} = useAppQuery({
-    key: 'getUnreadCounts',
-    url: {
-      baseUrl: 'workspace/getUnreadCounts'
-    }
-  })
-
   useEffect(() => {
     if (workspaceData) {
       const members = [
@@ -63,6 +56,19 @@ export default function Layout({ children }: { children: ReactNode }) {
       )
     }
   }, [dispatch, workspaceData])
+
+  const { data: unReadCountData } = useAppQuery({
+    key: 'getUnreadCounts',
+    url: {
+      baseUrl: 'workspace/getUnreadCounts'
+    }
+  })
+  useEffect(() => {
+    if (unReadCountData) {
+      console.log(unReadCountData)
+      dispatch(workspaceActions.setUnreadCounts(unReadCountData))
+    }
+  }, [dispatch, unReadCountData])
 
   useAppOnSocket({
     key: 'workspaces',
@@ -107,8 +113,8 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   useAppOnSocket({
     key: 'unReadCount',
-    resFunc: ({ unReadCount, targetId }) => {
-      console.log(unReadCount, targetId)
+    resFunc: ({ count, targetId }) => {
+      dispatch(workspaceActions.setUnreadCounts({ [targetId]: count }))
     }
   })
 

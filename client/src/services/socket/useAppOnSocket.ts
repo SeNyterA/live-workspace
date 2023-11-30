@@ -60,7 +60,7 @@ export type ApiSocketType = {
 
   unReadCount: {
     response: {
-      unReadCount: number
+      count: number
       targetId: string
     }
   }

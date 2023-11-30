@@ -55,7 +55,7 @@ export default function MessageGroup({
           <Tooltip
             key={message._id}
             label={dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-            position='right'
+            position={isOwner ? 'left' : 'right'}
             className='bg-white text-xs leading-3 text-gray-500'
           >
             <div

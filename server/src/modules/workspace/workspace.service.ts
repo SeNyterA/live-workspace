@@ -140,23 +140,27 @@ export class WorkspaceService {
       `unread:${userId}:${targetId}`
     )
 
-    console.log({ unreadCount })
     await this.redisService.redisClient.set(
       `unread:${userId}:${targetId}`,
       Number(unreadCount) + 1
     )
 
     await this.socketService.server.to([userId]).emit('unReadCount', {
-      unReadCount: Number(unreadCount) + 1,
+      count: Number(unreadCount) + 1,
       targetId
     })
   }
 
   async _markAsRead(userId: string, targetId: string) {
-    this.redisService.redisClient.del(`unread:${userId}:${targetId}`)
-    this.socketService.server
-      .to([userId])
-      .emit('unReadCount', { targetId, count: 0 })
+    const unreadCount = await this.redisService.redisClient.get(
+      `unread:${userId}:${targetId}`
+    )
+    if (Number(unreadCount) > 0) {
+      this.redisService.redisClient.del(`unread:${userId}:${targetId}`)
+      this.socketService.server
+        .to([userId])
+        .emit('unReadCount', { targetId, count: 0 })
+    }
   }
 
   async getAllUnreadData(
@@ -175,7 +179,7 @@ export class WorkspaceService {
     )
 
     keys.forEach((key, index) => {
-      const [, targetId] = key.split(':')
+      const [, , targetId] = key.split(':')
       unreadData[targetId] = Number(values[index])
     })
 
@@ -190,7 +194,6 @@ export class WorkspaceService {
     const _messageId = await this.redisService.redisClient.get(key)
 
     if (_messageId !== messageId) {
-      console.log({ _messageId })
       this.redisService.redisClient.set(key, messageId)
 
       this.socketService.server
