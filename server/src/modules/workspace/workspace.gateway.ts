@@ -210,6 +210,7 @@ export class WorkspaceGateway
     @MessageBody()
     { targetId, messageId }: { targetId: string; messageId: string }
   ) {
-    await this.workspaceService.markMessageAsRead(user.sub, targetId, messageId)
+    this.workspaceService.markMessageAsRead(user.sub, targetId, messageId)
+    this.workspaceService._markAsRead(user.sub, targetId)
   }
 }

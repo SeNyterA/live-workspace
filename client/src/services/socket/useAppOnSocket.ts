@@ -57,6 +57,13 @@ export type ApiSocketType = {
       users: TUserSocket[]
     }
   }
+
+  unReadCount: {
+    response: {
+      unReadCount: number
+      targetId: string
+    }
+  }
 }
 
 export const useAppOnSocket = <T extends keyof ApiSocketType>({

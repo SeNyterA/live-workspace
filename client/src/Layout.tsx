@@ -20,6 +20,13 @@ export default function Layout({ children }: { children: ReactNode }) {
     }
   })
 
+  const {} = useAppQuery({
+    key: 'getUnreadCounts',
+    url: {
+      baseUrl: 'workspace/getUnreadCounts'
+    }
+  })
+
   useEffect(() => {
     if (workspaceData) {
       const members = [
@@ -95,6 +102,13 @@ export default function Layout({ children }: { children: ReactNode }) {
           )
         })
       )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'unReadCount',
+    resFunc: ({ unReadCount, targetId }) => {
+      console.log(unReadCount, targetId)
     }
   })
 

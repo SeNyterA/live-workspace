@@ -4,7 +4,6 @@ import useAppParams from '../../hooks/useAppParams'
 import useDirect from '../../hooks/useDirect'
 import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppQuery } from '../../services/apis/useAppQuery'
-import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
 import MessageContent from './MessageContent'
 import MessageContentProvider from './MessageContentProvider'
@@ -14,19 +13,11 @@ export default function DirectMessage() {
   const directInfo = useDirect(directId)
   const dispatch = useDispatch()
   const [formId, setFormId] = useState<string>()
-  const emitSocket = useAppEmitSocket()
 
   useAppOnSocket({
     key: 'message',
     resFunc: ({ message }) => {
       dispatch(workspaceActions.addMessages({ [message._id]: message }))
-
-      if (directInfo)
-        emitSocket({
-          key: 'makeReadMessage',
-          messageId: message._id,
-          targetId: directInfo.direct._id
-        })
     }
   })
   const { data: targetUser } = useAppQuery({

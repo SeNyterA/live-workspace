@@ -171,6 +171,12 @@ type ApiQueryType = {
     }
     response: any
   }
+  getUnreadCounts: {
+    url: {
+      baseUrl: 'workspace/getUnreadCounts'
+    }
+    response: { [targetId: string]: number }
+  }
 }
 
 export const useAppQuery = <T extends keyof ApiQueryType>({

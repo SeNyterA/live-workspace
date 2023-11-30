@@ -20,6 +20,22 @@ export class MessageService {
     private readonly workspaceService: WorkspaceService
   ) {}
 
+  async _makeUnreadCount(targetId: string) {
+    const members = await this.memberService.memberModel
+      .find({
+        targetId,
+        isAvailable: true
+      })
+      .lean()
+
+    await members.map(member => {
+      this.workspaceService._incrementUnread(
+        member.userId.toString(),
+        member.targetId.toString()
+      )
+    })
+  }
+
   async _createForDirect({
     targetId,
     userId,
@@ -61,6 +77,12 @@ export class MessageService {
         message: newMess
       }
     })
+    directMessage.userIds.map(userId =>
+      this.workspaceService._incrementUnread(
+        userId.toString(),
+        directMessage._id.toString()
+      )
+    )
 
     return newMess.toJSON()
   }
@@ -95,6 +117,7 @@ export class MessageService {
         message: newMess
       }
     })
+    this._makeUnreadCount(channelId)
 
     return newMess.toJSON()
   }
@@ -130,6 +153,7 @@ export class MessageService {
       }
     })
 
+    this._makeUnreadCount(groupId)
     return newMess.toJSON()
   }
 

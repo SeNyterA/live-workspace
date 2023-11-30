@@ -38,4 +38,9 @@ export class WorkpaceController {
   ) {
     return this.workspaceService.getReadMessagesForTarget(targetId)
   }
+
+  @Get('/getUnreadCounts')
+  getUnreadCounts(@HttpUser() user: TJwtUser) {
+    return this.workspaceService.getAllUnreadData(user.sub)
+  }
 }
