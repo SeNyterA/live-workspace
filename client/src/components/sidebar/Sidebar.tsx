@@ -21,6 +21,7 @@ import ChannelItem from './channel/ChannelItem'
 import CreateChannel from './channel/CreateChannel'
 import CreateGroup from './CreateGroup'
 import GroupItem from './group/GroupItem'
+import BoardItem from './board/BoardItem'
 
 export type TSideBarToggle =
   | 'createBoard'
@@ -79,12 +80,28 @@ export default function Sidebar() {
               active={path.pathname.includes('board')}
               defaultOpened={!!boardId}
             >
+              <Watching
+                watchingFn={state =>
+                  Object.values(state.workspace.boards).filter(
+                    e => e.teamId === teamId
+                  )
+                }
+              >
+                {boards => (
+                  <>
+                    {boards?.map(item => (
+                      <BoardItem board={item} key={item._id} />
+                    ))}
+                  </>
+                )}
+              </Watching>
+
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'
                 label={`Create channel`}
                 rightSection={<IconPlus size={14} />}
                 onClick={() => {
-                  setToggle('createBoard')
+                  setToggle('createChannel')
                 }}
               />
             </NavLink>

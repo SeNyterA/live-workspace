@@ -12,6 +12,7 @@ import { Member } from './member/member.schema'
 import { MemberService } from './member/member.service'
 import { Message } from './message/message.schema'
 import { Board } from './team/board/board.schema'
+import { BoardService } from './team/board/board.service'
 import { Channel } from './team/channel/channel.schema'
 import { ChannelService } from './team/channel/channel.service'
 import { Team } from './team/team.schema'
@@ -37,6 +38,8 @@ export class WorkspaceService {
     private readonly teamService: TeamService,
     @Inject(forwardRef(() => ChannelService))
     private readonly channelSerivce: ChannelService,
+    @Inject(forwardRef(() => BoardService))
+    private readonly boardService: BoardService,
     @Inject(forwardRef(() => GroupService))
     private readonly groupService: GroupService,
     @Inject(forwardRef(() => DirectMessageService))
@@ -312,12 +315,14 @@ export class WorkspaceService {
     const _channels = this.channelSerivce.getChannelsByUserId(userId)
     const _groups = this.groupService.getGroupsByUserId(userId)
     const _directs = this.directService.getDirectsByUserId(userId)
+    const _boards = this.boardService.getBoardsByUserId(userId)
 
-    const [teams, channels, groups, directs] = await Promise.all([
+    const [teams, channels, groups, directs, boards] = await Promise.all([
       _teams,
       _channels,
       _groups,
-      _directs
+      _directs,
+      _boards
     ])
 
     const userIds = Array.from(
@@ -325,6 +330,7 @@ export class WorkspaceService {
         ...teams.members.map(e => e.userId.toString()),
         ...channels.members.map(e => e.userId.toString()),
         ...groups.members.map(e => e.userId.toString()),
+        ...boards.members.map(e => e.userId.toString()),
         ...directs.directUserId
       ])
     )
@@ -341,6 +347,7 @@ export class WorkspaceService {
       groups,
       directs,
       userIds,
+      boards,
       users
     }
   }

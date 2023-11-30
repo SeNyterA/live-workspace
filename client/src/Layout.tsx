@@ -25,7 +25,8 @@ export default function Layout({ children }: { children: ReactNode }) {
       const members = [
         ...(workspaceData?.channels.members || []),
         ...(workspaceData?.teams.members || []),
-        ...(workspaceData?.groups.members || [])
+        ...(workspaceData?.groups.members || []),
+        ...(workspaceData?.boards.members || [])
       ].reduce((pre, next) => ({ ...pre, [next._id]: next }), {} as TMembers)
 
       dispatch(
@@ -35,6 +36,10 @@ export default function Layout({ children }: { children: ReactNode }) {
             {}
           ),
           channels: workspaceData?.channels.channels.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          ),
+          boards: workspaceData?.boards.boards.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {}
           ),
@@ -75,6 +80,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     resFunc: ({ workspaces }) => {
       const teams = workspaces.filter(e => e.type === 'team')
       const channels = workspaces.filter(e => e.type === 'channel')
+      const boards = workspaces.filter(e => e.type === 'board')
       const directs = workspaces.filter(e => e.type === 'direct')
       const groups = workspaces.filter(e => e.type === 'group')
       const members = workspaces.filter(e => e.type === 'member')
@@ -87,6 +93,10 @@ export default function Layout({ children }: { children: ReactNode }) {
             {}
           ),
           channels: channels.reduce(
+            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+            {}
+          ),
+          boards: boards.reduce(
             (pre, next) => ({ ...pre, [next.data._id]: next.data }),
             {}
           ),

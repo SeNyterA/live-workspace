@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assign } from 'lodash'
 import { TUser } from '../../types/user.type'
 import {
+  TBoard,
   TChannel,
   TDirect,
   TGroup,
@@ -13,6 +14,7 @@ import {
 export type TUsers = { [userId: string]: TUser }
 export type TMembers = { [membersId: string]: TMember }
 export type TChannels = { [channelId: string]: TChannel }
+export type TBoards = { [boardId: string]: TBoard }
 export type TGroups = { [groupId: string]: TGroup }
 export type TTeams = { [teamId: string]: TTeam }
 export type TDirects = { [directId: string]: TDirect }
@@ -31,6 +33,7 @@ type TWorkpsaceStore = {
   groups: TGroups
   directs: TDirects
   members: TMembers
+  boards: TBoards
   users: TUsers
   messages: TMessages
   userReadedMessages: TUserReadedMessages
@@ -41,6 +44,7 @@ const initialState: TWorkpsaceStore = {
   channels: {},
   groups: {},
   teams: {},
+  boards: {},
   members: {},
   messages: {},
   users: {},
@@ -57,10 +61,18 @@ const workspaceSlice = createSlice({
     },
 
     updateData: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
-      const { channels, directs, groups, members, messages, teams, users } =
-        action.payload
-
+      const {
+        channels,
+        directs,
+        groups,
+        members,
+        messages,
+        teams,
+        users,
+        boards
+      } = action.payload
       if (channels) assign(state.channels, channels)
+      if (boards) assign(state.boards, boards)
       if (directs) assign(state.directs, directs)
       if (groups) assign(state.groups, groups)
       if (members) assign(state.members, members)
@@ -75,9 +87,11 @@ const workspaceSlice = createSlice({
     addMembers: (state, action: PayloadAction<TMembers>) => {
       assign(state.members, action.payload)
     },
-
     addTeams: (state, action: PayloadAction<TTeams>) => {
       assign(state.teams, action.payload)
+    },
+    addBoards: (state, action: PayloadAction<TBoards>) => {
+      assign(state.boards, action.payload)
     },
     addChannels: (state, action: PayloadAction<TChannels>) => {
       assign(state.channels, action.payload)

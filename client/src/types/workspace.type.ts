@@ -34,10 +34,15 @@ export type TWorkspace = {
 }
 
 export type TTeam = TWorkspace
+
+export type TBoard = {
+  teamId: string
+} & TWorkspace
+
 export type TChannel = {
   teamId: string
-  path: string
 } & TWorkspace
+
 export type TGroup = TWorkspace
 export type TDirect = {
   userIds: string[]

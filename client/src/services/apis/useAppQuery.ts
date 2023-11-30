@@ -1,6 +1,7 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { TUser } from '../../types/user.type'
 import {
+  TBoard,
   TChannel,
   TDirect,
   TGroup,
@@ -47,6 +48,10 @@ type ApiQueryType = {
       }
       channels: {
         channels: TChannel[]
+        members: TMember[]
+      }
+      boards: {
+        boards: TBoard[]
         members: TMember[]
       }
       groups: {

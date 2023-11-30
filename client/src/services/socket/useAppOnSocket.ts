@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { TUser } from '../../types/user.type'
 import {
+  TBoard,
   TChannel,
   TDirect,
   TGroup,
@@ -14,7 +15,7 @@ export type TWorkspaceSocket = {
   action?: 'create' | 'update' | 'delete'
 } & (
   | { data: TChannel; type: 'channel' }
-  | { data: TTeam; type: 'board' }
+  | { data: TBoard; type: 'board' }
   | { data: TTeam; type: 'team' }
   | { data: TDirect; type: 'direct' }
   | { data: TGroup; type: 'group' }
