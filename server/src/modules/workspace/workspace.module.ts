@@ -14,6 +14,8 @@ import { MemberService } from './member/member.service'
 import { Message } from './message/message.schema'
 import { MessageService } from './message/message.service'
 import { BoardController } from './team/board/board.controler'
+import { Board } from './team/board/board.schema'
+import { BoardService } from './team/board/board.service'
 import { ChannelController } from './team/channel/channel.controler'
 import { Channel } from './team/channel/channel.schema'
 import { ChannelService } from './team/channel/channel.service'
@@ -30,6 +32,7 @@ import { WorkspaceService } from './workspace.service'
     MongooseModule.forFeature([
       { name: Team.name, schema: SchemaFactory.createForClass(Team) },
       { name: Channel.name, schema: SchemaFactory.createForClass(Channel) },
+      { name: Board.name, schema: SchemaFactory.createForClass(Board) },
       {
         name: DirectMessage.name,
         schema: SchemaFactory.createForClass(DirectMessage)
@@ -59,7 +62,8 @@ import { WorkspaceService } from './workspace.service'
     MessageService,
     WorkspaceGateway,
     WorkspaceService,
-    MemberService
+    MemberService,
+    BoardService
   ]
 })
 export class WorkspaceModule {}

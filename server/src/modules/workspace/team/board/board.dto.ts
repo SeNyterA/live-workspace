@@ -7,11 +7,7 @@ import {
   IsString,
   ValidateNested
 } from 'class-validator'
-import {
-  CreateWorkspaceDto,
-  MembersDto,
-  UpdateWorkspaceDto
-} from '../../workspace.dto'
+import { CreateWorkspaceDto, MembersDto } from '../../workspace.dto'
 import { EFieldType } from './board.schema'
 
 export class CreateBoardMembersDto extends MembersDto {}
@@ -44,12 +40,10 @@ export class BoardPropertyDto {
   fieldOption?: OptionDto[]
 }
 
-export class CreateBoardDto extends CreateWorkspaceDto {
+export class BoardDto extends CreateWorkspaceDto {
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => BoardPropertyDto)
   properties?: BoardPropertyDto[]
 }
-
-export class UpdateBoardDto extends UpdateWorkspaceDto {}

@@ -207,42 +207,42 @@ export class TeamService {
       users: validUsers.map(e => ({ type: 'get', data: e }))
     })
 
-    const channels =
-      channelTitles?.map(async channelTitle => {
-        const newChannel = await this.channelService.channelModel.create({
-          title: channelTitle,
-          teamId: newTeam._id.toString(),
-          createdById: userId,
-          modifiedById: userId
-        })
-        const _channelMembers = validMembers.map(
-          async teamMember =>
-            await this.memberModel.create({
-              userId: teamMember.userId.toString(),
-              targetId: newChannel._id.toString(),
-              role: teamMember.role,
-              path: `${teamMember.targetId.toString()}/${newChannel._id.toString()}`,
-              type: EMemberType.Channel,
-              createdById: userId,
-              modifiedById: userId
-            })
-        )
-        const channelMembers = await Promise.all(_channelMembers)
-        this.workspaceService.workspaces({
-          rooms: channelMembers.map(({ userId }) => userId.toString()),
-          workspaces: [
-            { type: 'channel', action: 'create', data: newChannel.toJSON() },
-            ...channelMembers.map(
-              channelMember =>
-                ({
-                  type: 'member',
-                  action: 'create',
-                  data: channelMember
-                } as TWorkspaceSocket)
-            )
-          ]
-        })
-      }) || []
+    //createChannel
+    channelTitles?.map(async channelTitle => {
+      const newChannel = await this.channelService.channelModel.create({
+        title: channelTitle,
+        teamId: newTeam._id.toString(),
+        createdById: userId,
+        modifiedById: userId
+      })
+      const _channelMembers = validMembers.map(
+        async teamMember =>
+          await this.memberModel.create({
+            userId: teamMember.userId.toString(),
+            targetId: newChannel._id.toString(),
+            role: teamMember.role,
+            path: `${teamMember.targetId.toString()}/${newChannel._id.toString()}`,
+            type: EMemberType.Channel,
+            createdById: userId,
+            modifiedById: userId
+          })
+      )
+      const channelMembers = await Promise.all(_channelMembers)
+      this.workspaceService.workspaces({
+        rooms: channelMembers.map(({ userId }) => userId.toString()),
+        workspaces: [
+          { type: 'channel', action: 'create', data: newChannel.toJSON() },
+          ...channelMembers.map(
+            channelMember =>
+              ({
+                type: 'member',
+                action: 'create',
+                data: channelMember
+              } as TWorkspaceSocket)
+          )
+        ]
+      })
+    }) || []
 
     return response
   }

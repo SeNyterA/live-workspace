@@ -7,6 +7,9 @@ import { TGroup } from '../../../types/workspace.type'
 export default function GroupItem({ group }: { group: TGroup }) {
   const { groupId } = useAppParams()
   const { switchTo } = useAppControlParams()
+  const unreadCount = useAppSelector(
+    state => state.workspace.unreadCount[group._id]
+  )
   const groupMembers = useAppSelector(state => {
     const groupMembers = Object.values(state.workspace.members).filter(
       e => e.targetId === group._id
@@ -31,9 +34,11 @@ export default function GroupItem({ group }: { group: TGroup }) {
               groupMembers?.groupUsers.map(e => e.userName).join(', ') ||
               group._id}
           </span>
-          <span className='h-4 w-4 rounded-full bg-gray-300 text-center leading-4 text-white'>
-            {groupMembers?.groupMembers.length}
-          </span>
+          {unreadCount && (
+            <span className='h-4 w-4 rounded-full bg-gray-300 text-center leading-4 text-white'>
+              {unreadCount}
+            </span>
+          )}
         </div>
       }
       active={groupId === group._id}

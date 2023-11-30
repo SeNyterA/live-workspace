@@ -1,7 +1,7 @@
 import { EMemberRole } from 'src/modules/workspace/member/member.schema'
 
 type TPermissionsBase = {
-  type: 'channel' | 'group' | 'team'
+  type: 'channel' | 'group' | 'team' | 'board'
   update: boolean
   delete: boolean
   leave: boolean
@@ -25,6 +25,15 @@ type TChannelPermissions = TPermissionsBase & {
 
 type TGroupPermissions = TPermissionsBase & {
   type: 'group'
+}
+
+type TBoardPermissions = TPermissionsBase & {
+  type: 'board'
+  cardAction: {
+    createCard: EMemberRole[]
+    editCard: EMemberRole[]
+    deleteCard: EMemberRole[]
+  }
 }
 
 export const getTeamPermission = (role: EMemberRole): TTeamPermissions => {
@@ -155,6 +164,87 @@ export const getGroupPermission = (role: EMemberRole): TGroupPermissions => {
         update: false,
         leave: true,
         delete: false,
+        memberAction: {
+          add: [],
+          delete: [],
+          toggleRole: []
+        }
+      }
+  }
+}
+
+export const getBoardPermission = (role: EMemberRole): TBoardPermissions => {
+  switch (role) {
+    case EMemberRole.Owner:
+      return {
+        type: 'board',
+        delete: true,
+        update: true,
+        leave: true,
+        cardAction: {
+          createCard: [
+            EMemberRole.Admin,
+            EMemberRole.Member,
+            EMemberRole.Owner
+          ],
+          deleteCard: [
+            EMemberRole.Admin,
+            EMemberRole.Member,
+            EMemberRole.Owner
+          ],
+          editCard: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+        },
+        memberAction: {
+          add: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          toggleRole: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+        }
+      }
+    case EMemberRole.Admin:
+      return {
+        type: 'board',
+        delete: true,
+        update: true,
+        leave: true,
+        cardAction: {
+          createCard: [
+            EMemberRole.Admin,
+            EMemberRole.Member,
+            EMemberRole.Owner
+          ],
+          deleteCard: [
+            EMemberRole.Admin,
+            EMemberRole.Member,
+            EMemberRole.Owner
+          ],
+          editCard: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+        },
+        memberAction: {
+          add: [EMemberRole.Admin, EMemberRole.Member],
+          delete: [EMemberRole.Admin, EMemberRole.Member],
+          toggleRole: [EMemberRole.Admin, EMemberRole.Member]
+        }
+      }
+
+    default:
+      return {
+        type: 'board',
+        delete: false,
+        update: false,
+        leave: true,
+        cardAction: {
+          createCard: [
+            EMemberRole.Admin,
+            EMemberRole.Member,
+            EMemberRole.Owner
+          ],
+          deleteCard: [
+            EMemberRole.Admin,
+            EMemberRole.Member,
+            EMemberRole.Owner
+          ],
+          editCard: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+        },
         memberAction: {
           add: [],
           delete: [],

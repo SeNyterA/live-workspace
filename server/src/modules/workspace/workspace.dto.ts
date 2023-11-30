@@ -41,10 +41,11 @@ export class CreateWorkspaceDto {
   @IsOptional()
   avatar?: string
 
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => MemberDto)
-  members: MemberDto[]
+  members?: MemberDto[]
 }
 
 export class UpdateWorkspaceDto {

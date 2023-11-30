@@ -1,63 +1,22 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post
-} from '@nestjs/common'
+import { Body, Controller, Param, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from '../../workspace.gateway'
-import {
-  CreateBoardDto,
-  CreateBoardMembersDto,
-  UpdateBoardDto
-} from './board.dto'
+import { BoardDto } from './board.dto'
+import { BoardService } from './board.service'
 
 @Controller('workspace')
 export class BoardController {
-  constructor() {}
-
-  @Get('boards/:id')
-  findOne(@HttpUser() user: TJwtUser, @Param('id') id: string) {
-    return 'findOne'
-  }
-
-  @Get('boards')
-  findAll(@HttpUser() user: TJwtUser) {
-    return 'findAll'
-  }
-
+  constructor(private readonly boardService: BoardService) {}
   @Post('teams/:teamId/boards')
   create(
     @HttpUser() user: TJwtUser,
-    @Body() boardPayload: CreateBoardDto,
+    @Body() boardDto: BoardDto,
     @Param('teamId') teamId: string
   ) {
-    return 'create'
-  }
-
-  @Patch('boards/:id')
-  update(
-    @Param('id') id: string,
-    @HttpUser() user: TJwtUser,
-    @Body() boardPayload: UpdateBoardDto
-  ) {
-    return 'update'
-  }
-
-  @Delete('boards/:id')
-  delete(@Param('id') id: string, @HttpUser() user: TJwtUser) {
-    return 'delete'
-  }
-
-  @Post('boards/:id/members')
-  eidtMembers(
-    @Param('id') id: string,
-    @HttpUser() user: TJwtUser,
-    @Body() membersPayload: CreateBoardMembersDto
-  ) {
-    return 'eidtMembers'
+    return this.boardService._create({
+      boardDto,
+      userId: user.sub,
+      teamId
+    })
   }
 }
