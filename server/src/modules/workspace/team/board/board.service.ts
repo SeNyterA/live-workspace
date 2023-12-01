@@ -70,16 +70,10 @@ export class BoardService {
 
     const [member, board] = await Promise.all([_member, _target])
 
-    if (member && board) {
-      return {
-        permissions: getBoardPermission(member.role),
-        member,
-        board
-      }
-    }
     return {
       member,
-      board
+      board,
+      permissions: getBoardPermission(member.role)
     }
   }
 

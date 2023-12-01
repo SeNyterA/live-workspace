@@ -1,11 +1,18 @@
 import { Avatar, AvatarGroup, ScrollArea } from '@mantine/core'
+import { useState } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-import kanbanData from './data.test'
+import useRenderCount from '../../hooks/useRenderCount'
+import kbData from './data.test'
 
 export default function CardsContent() {
+  useRenderCount('CardsContent')
+  const [kanbanData, _] = useState(kbData)
   return (
     <div className='relative flex-1'>
-      <ScrollArea className='absolute inset-0' scrollbarSize={8}>
+      <ScrollArea
+        className='absolute inset-0 top-2 cursor-pointer'
+        scrollbarSize={8}
+      >
         <DragDropContext onDragEnd={e => console.log(e)}>
           <Droppable
             droppableId='all-droppables'
@@ -31,7 +38,7 @@ export default function CardsContent() {
                         ref={provided.innerRef}
                       >
                         <div
-                          className='px-2 py-1'
+                          className='bg-fuchsia-300 px-2 py-1'
                           {...provided.dragHandleProps}
                         >
                           {column.title}

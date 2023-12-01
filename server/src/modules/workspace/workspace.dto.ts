@@ -22,7 +22,6 @@ export class MemberDto {
 
 export class MembersDto {
   @IsArray()
-  // @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => MemberDto)
   members: MemberDto[]

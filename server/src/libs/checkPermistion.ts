@@ -30,9 +30,14 @@ type TGroupPermissions = TPermissionsBase & {
 type TBoardPermissions = TPermissionsBase & {
   type: 'board'
   cardAction: {
-    createCard: EMemberRole[]
-    editCard: EMemberRole[]
-    deleteCard: EMemberRole[]
+    create: EMemberRole[]
+    edit: EMemberRole[]
+    delete: EMemberRole[]
+  }
+  fieldAction: {
+    create: EMemberRole[]
+    edit: EMemberRole[]
+    delete: EMemberRole[]
   }
 }
 
@@ -173,7 +178,7 @@ export const getGroupPermission = (role: EMemberRole): TGroupPermissions => {
   }
 }
 
-export const getBoardPermission = (role: EMemberRole): TBoardPermissions => {
+export const getBoardPermission = (role?: EMemberRole): TBoardPermissions => {
   switch (role) {
     case EMemberRole.Owner:
       return {
@@ -182,17 +187,14 @@ export const getBoardPermission = (role: EMemberRole): TBoardPermissions => {
         update: true,
         leave: true,
         cardAction: {
-          createCard: [
-            EMemberRole.Admin,
-            EMemberRole.Member,
-            EMemberRole.Owner
-          ],
-          deleteCard: [
-            EMemberRole.Admin,
-            EMemberRole.Member,
-            EMemberRole.Owner
-          ],
-          editCard: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+          create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+        },
+        fieldAction: {
+          create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
         },
         memberAction: {
           add: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
@@ -207,22 +209,41 @@ export const getBoardPermission = (role: EMemberRole): TBoardPermissions => {
         update: true,
         leave: true,
         cardAction: {
-          createCard: [
-            EMemberRole.Admin,
-            EMemberRole.Member,
-            EMemberRole.Owner
-          ],
-          deleteCard: [
-            EMemberRole.Admin,
-            EMemberRole.Member,
-            EMemberRole.Owner
-          ],
-          editCard: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+          create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+        },
+        fieldAction: {
+          create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
         },
         memberAction: {
           add: [EMemberRole.Admin, EMemberRole.Member],
           delete: [EMemberRole.Admin, EMemberRole.Member],
           toggleRole: [EMemberRole.Admin, EMemberRole.Member]
+        }
+      }
+    case EMemberRole.Member:
+      return {
+        type: 'board',
+        delete: false,
+        update: false,
+        leave: true,
+        cardAction: {
+          create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+        },
+        fieldAction: {
+          create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
+          edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+        },
+        memberAction: {
+          add: [],
+          delete: [],
+          toggleRole: []
         }
       }
 
@@ -231,19 +252,16 @@ export const getBoardPermission = (role: EMemberRole): TBoardPermissions => {
         type: 'board',
         delete: false,
         update: false,
-        leave: true,
+        leave: false,
         cardAction: {
-          createCard: [
-            EMemberRole.Admin,
-            EMemberRole.Member,
-            EMemberRole.Owner
-          ],
-          deleteCard: [
-            EMemberRole.Admin,
-            EMemberRole.Member,
-            EMemberRole.Owner
-          ],
-          editCard: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+          create: [],
+          delete: [],
+          edit: []
+        },
+        fieldAction: {
+          create: [],
+          delete: [],
+          edit: []
         },
         memberAction: {
           add: [],

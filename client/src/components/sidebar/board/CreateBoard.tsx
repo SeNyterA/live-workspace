@@ -10,9 +10,9 @@ import { EMemberRole } from '../../../types/workspace.type'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
 
-type TForm = ApiMutationType['createChannel']['payload']
+type TForm = ApiMutationType['createBoard']['payload']
 
-export default function CreateChannel({
+export default function CreateBoard({
   onClose,
   isOpen,
   refetchKey
@@ -23,8 +23,7 @@ export default function CreateChannel({
 }) {
   const { teamId } = useAppParams()
   const { control, handleSubmit, reset } = useForm<TForm>({})
-  const { mutateAsync: createChannel, isPending } =
-    useAppMutation('createChannel')
+  const { mutateAsync: createBoard, isPending } = useAppMutation('createBoard')
 
   useEffect(() => {
     reset()
@@ -34,7 +33,7 @@ export default function CreateChannel({
     <Drawer
       onClose={onClose}
       opened={isOpen}
-      title={<p className='text-lg font-semibold'>Create Channel</p>}
+      title={<p className='text-lg font-semibold'>Create board</p>}
       overlayProps={{
         color: '#000',
         backgroundOpacity: 0.2,
@@ -52,8 +51,8 @@ export default function CreateChannel({
         render={({ field: { value, onChange } }) => (
           <TextInput
             data-autofocus
-            label='Channel Name'
-            placeholder='Enter the channel name'
+            label='Board Name'
+            placeholder='Enter the board name'
             description='Leave it blank to use the default name...'
             size='sm'
             value={value}
@@ -67,9 +66,9 @@ export default function CreateChannel({
         name='description'
         render={({ field: { value, onChange } }) => (
           <Textarea
-            label='Channel Description'
-            description='Description for the channel'
-            placeholder='Enter a description for the channel...'
+            label='Board Description'
+            description='Description for the board'
+            placeholder='Enter a description for the board...'
             className='mt-2'
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -100,7 +99,7 @@ export default function CreateChannel({
               }}
               textInputProps={{
                 label: 'Add Members',
-                description: 'Type to search and add members to the channel',
+                description: 'Type to search and add members to the board',
                 placeholder: 'Search and select members...',
                 className: 'mt-2'
               }}
@@ -141,7 +140,7 @@ export default function CreateChannel({
           disabled={isPending}
           onClick={handleSubmit(data => {
             if (data && teamId)
-              createChannel({
+              createBoard({
                 url: {
                   baseUrl: '/workspace/teams/:teamId/channels',
                   urlParams: {

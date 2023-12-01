@@ -1,8 +1,8 @@
 import { ActionIcon, Avatar, Divider, ScrollArea } from '@mantine/core'
 import { useState } from 'react'
-import useAppControlParams from '../../hooks/useAppControlParams'
-import useAppParams from '../../hooks/useAppParams'
-import { useAppSelector } from '../../redux/store'
+import useAppControlParams from '../../../hooks/useAppControlParams'
+import useAppParams from '../../../hooks/useAppParams'
+import { useAppSelector } from '../../../redux/store'
 import CreateTeam from './CreateTeam'
 
 export default function TeamList() {

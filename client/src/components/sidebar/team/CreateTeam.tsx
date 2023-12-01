@@ -16,11 +16,11 @@ import {
   useFieldArray,
   useForm
 } from 'react-hook-form'
-import { useAppMutation } from '../../services/apis/useAppMutation'
-import { TTeamDto } from '../../types/dto.type'
-import { EMemberRole } from '../../types/workspace.type'
-import MemberControl from './MemberControl'
-import UserCombobox from './UserCombobox'
+import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { TTeamDto } from '../../../types/dto.type'
+import { EMemberRole } from '../../../types/workspace.type'
+import MemberControl from '../MemberControl'
+import UserCombobox from '../UserCombobox'
 
 type TForm = TTeamDto & { channels?: { title: string }[] }
 

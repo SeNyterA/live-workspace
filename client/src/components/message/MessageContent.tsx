@@ -5,6 +5,7 @@ import { useInView } from 'react-intersection-observer'
 import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { useMessageContent } from './MessageContentProvider'
 import MessageGroup from './MessageGroup'
+import useRenderCount from '../../hooks/useRenderCount'
 
 export default function MessageContent({
   loadMore,
@@ -15,6 +16,7 @@ export default function MessageContent({
   isLoading?: boolean
   remainingCount?: number
 }) {
+  useRenderCount('MessageContent')
   const { messages, groupedMessages, targetId } = useMessageContent()
   const lastMessageIdRef = useRef<string>()
   const loadMoreMessageIdRef = useRef<string>()

@@ -2,18 +2,15 @@ import {
   Avatar,
   CheckIcon,
   Combobox,
-  Loader,
   ScrollArea,
   TextInput,
   TextInputProps,
   useCombobox
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { workspaceActions } from '../../../redux/slices/workspace.slice'
+import { useState } from 'react'
+import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
-import { useAppQuery } from '../../../services/apis/useAppQuery'
 import './userCombobox.module.css'
 
 export default function UserCombobox({
@@ -26,40 +23,30 @@ export default function UserCombobox({
   textInputProps?: TextInputProps
   targetId: string
 }) {
-  const userId = useAppSelector(state => state.auth.userInfo?._id)
   const combobox = useCombobox({
-    onDropdownClose: () => {
-      // setSearchValue('')
-    }
+    onDropdownClose: () => {}
   })
-  const dispatch = useDispatch()
+  const userId = useAppSelector(state => state.auth.userInfo?._id)
   const [searchValue, setSearchValue] = useState('')
   const [keyword] = useDebouncedValue(searchValue, 200)
-  const { data: userData, isLoading } = useAppQuery({
-    key: 'findUsersByKeyword',
-    url: {
-      baseUrl: '/users/by-keyword',
-      queryParams: {
-        keyword
-      }
-    },
-    options: {
-      queryKey: [keyword],
-      enabled: !!keyword
-    }
-  })
+  const { teamId } = useAppParams()
 
-  useEffect(() => {
-    if (userData)
-      dispatch(
-        workspaceActions.addUsers(
-          userData.users.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          )
+  const users = useAppSelector(state => {
+    const _userId = Object.values(state.workspace.members)
+      .filter(e => e.targetId === teamId)
+      .map(e => e.userId)
+    console.log({
+      _userId
+    })
+
+    return Object.values(state.workspace.users).filter(
+      user =>
+        _userId.includes(user._id) &&
+        [user.email, user.nickname, user.userName].some(
+          key => key?.includes(keyword)
         )
-      )
-  }, [userData])
+    )
+  })
 
   return (
     <Combobox
@@ -81,17 +68,16 @@ export default function UserCombobox({
           onClick={() => combobox.openDropdown()}
           onFocus={() => combobox.openDropdown()}
           onBlur={() => combobox.closeDropdown()}
-          rightSection={isLoading && <Loader size='xs' />}
         />
       </Combobox.Target>
 
       <Combobox.Dropdown>
         <Combobox.Options style={{ overflowY: 'auto' }}>
           <ScrollArea.Autosize scrollbarSize={8} mah={230}>
-            {!userData || userData?.users.length === 0 ? (
+            {!users || users.length === 0 ? (
               <Combobox.Empty>Nothing found</Combobox.Empty>
             ) : (
-              userData?.users
+              users
                 .filter(e => userId !== e._id)
                 .map(item => (
                   <Combobox.Option value={item._id} key={item._id}>
