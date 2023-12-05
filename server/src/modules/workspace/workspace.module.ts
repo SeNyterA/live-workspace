@@ -16,6 +16,12 @@ import { MessageService } from './message/message.service'
 import { BoardController } from './team/board/board.controler'
 import { Board } from './team/board/board.schema'
 import { BoardService } from './team/board/board.service'
+import { CardController } from './team/board/card/card.controler'
+import { Card } from './team/board/card/card.schema'
+import { CardService } from './team/board/card/card.service'
+import { PropertyController } from './team/board/property/property.controler'
+import { Property } from './team/board/property/property.schema'
+import { PropertyService } from './team/board/property/property.service'
 import { ChannelController } from './team/channel/channel.controler'
 import { Channel } from './team/channel/channel.schema'
 import { ChannelService } from './team/channel/channel.service'
@@ -41,7 +47,9 @@ import { WorkspaceService } from './workspace.service'
       { name: Message.name, schema: SchemaFactory.createForClass(Message) },
       { name: Member.name, schema: SchemaFactory.createForClass(Member) },
       { name: Workspace.name, schema: SchemaFactory.createForClass(Workspace) },
-      { name: User.name, schema: SchemaFactory.createForClass(User) }
+      { name: User.name, schema: SchemaFactory.createForClass(User) },
+      { name: Card.name, schema: SchemaFactory.createForClass(Card) },
+      { name: Property.name, schema: SchemaFactory.createForClass(Property) }
     ]),
     UsersModule,
     RedisModule
@@ -52,7 +60,9 @@ import { WorkspaceService } from './workspace.service'
     DirectMessageController,
     GroupController,
     BoardController,
-    WorkpaceController
+    WorkpaceController,
+    CardController,
+    PropertyController
   ],
   providers: [
     ChannelService,
@@ -63,7 +73,9 @@ import { WorkspaceService } from './workspace.service'
     WorkspaceGateway,
     WorkspaceService,
     MemberService,
-    BoardService
+    BoardService,
+    CardService,
+    PropertyService
   ]
 })
 export class WorkspaceModule {}

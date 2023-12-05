@@ -13,6 +13,8 @@ import { MemberService } from './member/member.service'
 import { Message } from './message/message.schema'
 import { Board } from './team/board/board.schema'
 import { BoardService } from './team/board/board.service'
+import { Card } from './team/board/card/card.schema'
+import { Property } from './team/board/property/property.schema'
 import { Channel } from './team/channel/channel.schema'
 import { ChannelService } from './team/channel/channel.service'
 import { Team } from './team/team.schema'
@@ -28,7 +30,12 @@ export type TWorkspaceSocket = {
   | { data: DirectMessage; type: 'direct' }
   | { data: Group; type: 'group' }
   | { data: Member; type: 'member' }
+  | { data: Property; type: 'property' }
 )
+
+export type TBoardEmit = {
+  action: 'create' | 'update' | 'delete'
+} & ({ data: Property; type: 'property' } | { data: Card; type: 'card' })
 
 @Injectable()
 export class WorkspaceService {
@@ -292,6 +299,18 @@ export class WorkspaceService {
 
     await this.socketService.server.to(rooms).emit('workspaces', {
       workspaces
+    })
+  }
+
+  async boardEmit({
+    rooms,
+    boardData
+  }: {
+    rooms: string[]
+    boardData: TBoardEmit[]
+  }) {
+    await this.socketService.server.to(rooms).emit('boardData', {
+      boardData
     })
   }
 

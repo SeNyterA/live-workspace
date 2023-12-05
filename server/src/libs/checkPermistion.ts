@@ -2,6 +2,7 @@ import { EMemberRole } from 'src/modules/workspace/member/member.schema'
 
 type TPermissionsBase = {
   type: 'channel' | 'group' | 'team' | 'board'
+  view: boolean
   update: boolean
   delete: boolean
   leave: boolean
@@ -41,11 +42,12 @@ type TBoardPermissions = TPermissionsBase & {
   }
 }
 
-export const getTeamPermission = (role: EMemberRole): TTeamPermissions => {
+export const getTeamPermission = (role?: EMemberRole): TTeamPermissions => {
   switch (role) {
     case EMemberRole.Owner:
       return {
         type: 'team',
+        view: true,
         delete: true,
         update: true,
         leave: true,
@@ -60,6 +62,7 @@ export const getTeamPermission = (role: EMemberRole): TTeamPermissions => {
     case EMemberRole.Admin:
       return {
         type: 'team',
+        view: true,
         delete: false,
         update: true,
         leave: true,
@@ -75,6 +78,7 @@ export const getTeamPermission = (role: EMemberRole): TTeamPermissions => {
     default:
       return {
         type: 'team',
+        view: true,
         delete: false,
         update: false,
         leave: true,
@@ -90,13 +94,14 @@ export const getTeamPermission = (role: EMemberRole): TTeamPermissions => {
 }
 
 export const getChannelPermission = (
-  role: EMemberRole
+  role?: EMemberRole
 ): TChannelPermissions => {
   switch (role) {
     case EMemberRole.Owner:
       return {
         type: 'channel',
         delete: true,
+        view: true,
         update: true,
         leave: true,
         switchChannelType: true,
@@ -109,6 +114,7 @@ export const getChannelPermission = (
     case EMemberRole.Admin:
       return {
         type: 'channel',
+        view: true,
         delete: true,
         update: true,
         leave: true,
@@ -120,10 +126,26 @@ export const getChannelPermission = (
         }
       }
 
+    case EMemberRole.Member:
+      return {
+        type: 'channel',
+        delete: false,
+        view: true,
+        update: false,
+        leave: true,
+        switchChannelType: false,
+        memberAction: {
+          add: [],
+          delete: [],
+          toggleRole: []
+        }
+      }
+
     default:
       return {
         type: 'channel',
         delete: false,
+        view: true,
         update: false,
         leave: true,
         switchChannelType: false,
@@ -136,11 +158,12 @@ export const getChannelPermission = (
   }
 }
 
-export const getGroupPermission = (role: EMemberRole): TGroupPermissions => {
+export const getGroupPermission = (role?: EMemberRole): TGroupPermissions => {
   switch (role) {
     case EMemberRole.Owner:
       return {
         type: 'group',
+        view: true,
         delete: true,
         update: true,
         leave: true,
@@ -153,6 +176,7 @@ export const getGroupPermission = (role: EMemberRole): TGroupPermissions => {
     case EMemberRole.Admin:
       return {
         type: 'group',
+        view: true,
         update: true,
         leave: true,
         delete: false,
@@ -162,12 +186,26 @@ export const getGroupPermission = (role: EMemberRole): TGroupPermissions => {
           toggleRole: [EMemberRole.Admin, EMemberRole.Member]
         }
       }
+    case EMemberRole.Member:
+      return {
+        type: 'group',
+        view: true,
+        update: false,
+        leave: true,
+        delete: false,
+        memberAction: {
+          add: [],
+          delete: [],
+          toggleRole: []
+        }
+      }
 
     default:
       return {
         type: 'group',
+        view: false,
         update: false,
-        leave: true,
+        leave: false,
         delete: false,
         memberAction: {
           add: [],
@@ -183,6 +221,7 @@ export const getBoardPermission = (role?: EMemberRole): TBoardPermissions => {
     case EMemberRole.Owner:
       return {
         type: 'board',
+        view: true,
         delete: true,
         update: true,
         leave: true,
@@ -205,6 +244,7 @@ export const getBoardPermission = (role?: EMemberRole): TBoardPermissions => {
     case EMemberRole.Admin:
       return {
         type: 'board',
+        view: true,
         delete: true,
         update: true,
         leave: true,
@@ -227,6 +267,7 @@ export const getBoardPermission = (role?: EMemberRole): TBoardPermissions => {
     case EMemberRole.Member:
       return {
         type: 'board',
+        view: true,
         delete: false,
         update: false,
         leave: true,
@@ -250,6 +291,7 @@ export const getBoardPermission = (role?: EMemberRole): TBoardPermissions => {
     default:
       return {
         type: 'board',
+        view: false,
         delete: false,
         update: false,
         leave: false,

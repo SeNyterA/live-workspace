@@ -9,6 +9,7 @@ import {
   TMessage,
   TTeam
 } from '../../types/workspace.type'
+import { TBoardQueryApi } from './board/board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
@@ -182,7 +183,7 @@ type ApiQueryType = {
     }
     response: { [targetId: string]: number }
   }
-}
+} & TBoardQueryApi
 
 export const useAppQuery = <T extends keyof ApiQueryType>({
   url,

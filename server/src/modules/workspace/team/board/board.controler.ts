@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from '../../workspace.gateway'
 import { BoardDto } from './board.dto'
@@ -18,5 +18,10 @@ export class BoardController {
       userId: user.sub,
       teamId
     })
+  }
+
+  @Get('boards/:boardId')
+  boardData(@Param('boardId') boardId: string, @HttpUser() user: TJwtUser) {
+    return this.boardService.getDetalById({ boardId, userId: user.sub })
   }
 }

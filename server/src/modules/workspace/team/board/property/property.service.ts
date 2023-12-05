@@ -42,7 +42,7 @@ export class PropertyService {
       permissions: {
         fieldAction: { create: createPermission }
       }
-    } = await this.boardService.getPermisstion({
+    } = await this.boardService.__getPermisstion({
       targetId: boardId,
       userId
     })
@@ -65,6 +65,17 @@ export class PropertyService {
       modifiedById: userId
     })
 
-    return newProperty
+    console.log(newProperty)
+
+    this.workspaceService.boardEmit({
+      rooms: [boardId],
+      boardData: [
+        { type: 'property', action: 'create', data: newProperty.toJSON() }
+      ]
+    })
+
+    return {
+      data: newProperty
+    }
   }
 }

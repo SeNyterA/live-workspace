@@ -19,3 +19,7 @@ export type TTeamDto = TWorkspaceDto & {
 }
 
 export type TChannelDto = TWorkspaceDto
+export type TcardDto = {
+  title: string
+  data: { [key: string]: string | string[] | undefined }
+}

@@ -7,6 +7,7 @@ import {
   TMessage,
   TWorkspace
 } from '../../types/workspace.type'
+import { TBoardMutionApi } from './board/board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
@@ -135,7 +136,7 @@ export type ApiMutationType = {
     payload: TChannelDto
     response: TWorkspace
   }
-}
+} & TBoardMutionApi
 
 export const useAppMutation = <T extends keyof ApiMutationType>(_key: T) => {
   const mutation = useMutation({

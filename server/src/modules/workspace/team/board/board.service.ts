@@ -2,7 +2,6 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
-  NotFoundException,
   forwardRef
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
@@ -20,6 +19,8 @@ import { Team } from '../team.schema'
 import { TeamService } from '../team.service'
 import { BoardDto } from './board.dto'
 import { Board } from './board.schema'
+import { CardService } from './card/card.service'
+import { PropertyService } from './property/property.service'
 
 @Injectable()
 export class BoardService {
@@ -37,7 +38,12 @@ export class BoardService {
     @Inject(forwardRef(() => TeamService))
     readonly teamService: TeamService,
     @Inject(forwardRef(() => UsersService))
-    readonly usersService: UsersService
+    readonly usersService: UsersService,
+
+    @Inject(forwardRef(() => CardService))
+    readonly cardService: CardService,
+    @Inject(forwardRef(() => PropertyService))
+    readonly propertyService: PropertyService
   ) {}
 
   async _checkExisting({ boardId }: { boardId: string }): Promise<boolean> {
@@ -51,7 +57,7 @@ export class BoardService {
     return !!existingBoard
   }
 
-  async getPermisstion({
+  async __getPermisstion({
     targetId,
     userId
   }: {
@@ -73,7 +79,9 @@ export class BoardService {
     return {
       member,
       board,
-      permissions: getBoardPermission(member.role)
+      permissions: getBoardPermission(
+        !!(_member && _target) ? member.role : undefined
+      )
     }
   }
 
@@ -102,24 +110,40 @@ export class BoardService {
     }
   }
 
-  async getBoardById({
-    id,
-    userId
-  }: {
-    id: string
-    userId: string
-  }): Promise<Board> {
-    const board = await this.boardModel.findOne({
-      _id: id,
-      isAvailable: true,
-      'members.userId': userId
+  async getDetalById({ boardId, userId }: { userId: string; boardId: string }) {
+    console.log({
+      boardId,
+      userId
     })
-
-    if (!board) {
-      throw new NotFoundException('Board not found')
+    const { permissions, board } = await this.__getPermisstion({
+      targetId: boardId,
+      userId
+    })
+    if (!permissions.view) {
+      return {
+        code: Errors['User dont has permission to create board'],
+        userId,
+        boardId
+      }
     }
 
-    return board.toJSON()
+    const cards = await this.cardService.cardModel
+      .find({
+        boardId
+      })
+      .lean()
+
+    const properties = await this.propertyService.propertyModel
+      .find({
+        boardId
+      })
+      .lean()
+
+    return {
+      board: board.toObject(),
+      cards,
+      properties
+    }
   }
 
   async _create({
@@ -246,7 +270,7 @@ export class BoardService {
     userId: string
     boardId: string
   }) {
-    const { permissions, board } = await this.getPermisstion({
+    const { permissions, board } = await this.__getPermisstion({
       targetId: boardId,
       userId
     })

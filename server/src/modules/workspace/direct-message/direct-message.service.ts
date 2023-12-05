@@ -93,7 +93,7 @@ export class DirectMessageService {
 
   async remove(id: string): Promise<DirectMessage> {
     const deletedDirectMessage = await this.directMessageModel
-      .findByIdAndRemove(id)
+      .findByIdAndRemove(id, { lean: true })
       .exec()
     if (!deletedDirectMessage) {
       throw new NotFoundException('Direct message not found')
