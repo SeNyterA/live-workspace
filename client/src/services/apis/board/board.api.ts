@@ -1,3 +1,5 @@
+import { TBoard, TCard, TProperty } from '../../../types/workspace.type'
+
 export type TcardDto = {
   title: string
   data: { [key: string]: string | string[] | undefined }
@@ -78,6 +80,10 @@ export type TBoardQueryApi = {
         boardId: string
       }
     }
-    response: any
+    response: {
+      board: TBoard
+      cards: TCard[]
+      properties: TProperty[]
+    }
   }
 }

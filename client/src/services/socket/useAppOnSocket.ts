@@ -2,11 +2,13 @@ import { useEffect } from 'react'
 import { TUser } from '../../types/user.type'
 import {
   TBoard,
+  TCard,
   TChannel,
   TDirect,
   TGroup,
   TMember,
   TMessage,
+  TProperty,
   TTeam
 } from '../../types/workspace.type'
 import { useSocketContext } from './SocketProvider'
@@ -22,6 +24,11 @@ export type TWorkspaceSocket = {
   | { data: TMember; type: 'member' }
   | { data: TUser; type: 'user' }
 )
+
+export type TDetailBoard = {
+  action: 'create' | 'update' | 'delete'
+} & ({ data: TProperty; type: 'property' } | { data: TCard; type: 'card' })
+
 export type TUserSocket = {
   data: TUser
   type: 'get' | 'update'
@@ -50,6 +57,12 @@ export type ApiSocketType = {
   workspaces: {
     response: {
       workspaces: TWorkspaceSocket[]
+    }
+  }
+
+  boardData: {
+    response: {
+      boardData: TDetailBoard[]
     }
   }
 

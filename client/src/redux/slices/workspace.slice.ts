@@ -3,11 +3,13 @@ import { assign } from 'lodash'
 import { TUser } from '../../types/user.type'
 import {
   TBoard,
+  TCard,
   TChannel,
   TDirect,
   TGroup,
   TMember,
   TMessage,
+  TProperty,
   TTeam
 } from '../../types/workspace.type'
 
@@ -22,10 +24,11 @@ export type TMessages = {
   [messageId: string]: TMessage
 }
 export type TUnreadCounts = { [targetId: string]: number }
-
 export type TUserReadedMessages = {
   [key: string]: string //targetId:userId:messageId
 }
+export type TCards = { [cardId: string]: TCard }
+export type TProperties = { [propertyId: string]: TProperty }
 
 type TWorkpsaceStore = {
   teams: TTeams
@@ -33,24 +36,30 @@ type TWorkpsaceStore = {
   groups: TGroups
   directs: TDirects
   members: TMembers
-  boards: TBoards
   users: TUsers
   messages: TMessages
   userReadedMessages: TUserReadedMessages
   unreadCount: TUnreadCounts
+
+  boards: TBoards
+  cards: TCards
+  properties: TProperties
 }
 
 const initialState: TWorkpsaceStore = {
   channels: {},
   groups: {},
   teams: {},
-  boards: {},
   members: {},
   messages: {},
   users: {},
   directs: {},
   userReadedMessages: {},
-  unreadCount: {}
+  unreadCount: {},
+
+  boards: {},
+  cards: {},
+  properties: {}
 }
 const workspaceSlice = createSlice({
   name: 'workspace',
@@ -69,16 +78,21 @@ const workspaceSlice = createSlice({
         messages,
         teams,
         users,
-        boards
+        boards,
+        cards,
+        properties
       } = action.payload
       if (channels) assign(state.channels, channels)
-      if (boards) assign(state.boards, boards)
       if (directs) assign(state.directs, directs)
       if (groups) assign(state.groups, groups)
       if (members) assign(state.members, members)
       if (messages) assign(state.messages, messages)
       if (teams) assign(state.teams, teams)
       if (users) assign(state.users, users)
+
+      if (boards) assign(state.boards, boards)
+      if (cards) assign(state.cards, cards)
+      if (properties) assign(state.properties, properties)
     },
 
     addUsers: (state, action: PayloadAction<TUsers>) => {
@@ -90,9 +104,6 @@ const workspaceSlice = createSlice({
     addTeams: (state, action: PayloadAction<TTeams>) => {
       assign(state.teams, action.payload)
     },
-    addBoards: (state, action: PayloadAction<TBoards>) => {
-      assign(state.boards, action.payload)
-    },
     addChannels: (state, action: PayloadAction<TChannels>) => {
       assign(state.channels, action.payload)
     },
@@ -102,10 +113,21 @@ const workspaceSlice = createSlice({
     addDirects: (state, action: PayloadAction<TDirects>) => {
       assign(state.directs, action.payload)
     },
-
     addMessages: (state, action: PayloadAction<TMessages>) => {
       assign(state.messages, action.payload)
     },
+
+    //Board
+    addBoards: (state, action: PayloadAction<TBoards>) => {
+      assign(state.boards, action.payload)
+    },
+    addCards: (state, action: PayloadAction<TCards>) => {
+      assign(state.cards, action.payload)
+    },
+    addProperties: (state, action: PayloadAction<TProperties>) => {
+      assign(state.properties, action.payload)
+    },
+
     toogleUserReadedMessage: (
       state,
       action: PayloadAction<{

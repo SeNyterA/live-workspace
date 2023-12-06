@@ -1,3 +1,5 @@
+import { EFieldType } from '../services/apis/board/board.api'
+
 export enum EMemberRole {
   Owner = 'Owner',
   Admin = 'Admin',
@@ -80,4 +82,22 @@ export type TMessage = TWorkspace & {
   messageType: EMessageType
   attachments?: string[]
   replyToMessageId?: string
+}
+
+export type TOption = {
+  _id: string
+  title: string
+  color: string
+}
+export type TProperty = TWorkspace & {
+  boardId: string
+  fieldType: EFieldType
+  fieldOption?: TOption[]
+}
+
+export type TCard = TWorkspace & {
+  boardId: string
+  data: {
+    [propertyId: string]: string | string[] | undefined
+  }
 }
