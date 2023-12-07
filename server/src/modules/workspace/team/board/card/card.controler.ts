@@ -14,7 +14,7 @@ export class CardController {
     @Body() payload: CardDto,
     @Param('boardId') boardId: string
   ) {
-    await this.cardService._create({
+    return this.cardService._create({
       boardId,
       payload,
       userId: user.sub
@@ -28,7 +28,7 @@ export class CardController {
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string
   ) {
-    await this.cardService._update({
+    return this.cardService._update({
       boardId,
       payload,
       userId: user.sub,
@@ -57,7 +57,7 @@ export class CardController {
       numericIndex = -1 // Đặt giá trị là -1 nếu không có index
     }
 
-    await this.cardService._createBlock({
+    return this.cardService._createBlock({
       boardId,
       payload,
       index: numericIndex,

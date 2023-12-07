@@ -14,7 +14,7 @@ export class Block {
   _id: string
 
   @Prop({ enum: EBlockType })
-  fieldType: EBlockType
+  blockType: EBlockType
 
   @Prop()
   content?: string

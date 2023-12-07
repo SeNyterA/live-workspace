@@ -10,7 +10,7 @@ import { EBlockType } from './card.schema'
 
 export class CardDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   title?: string
 
   @IsOptional()

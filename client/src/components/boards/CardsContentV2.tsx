@@ -11,7 +11,9 @@ import DetailCard from './DetailCard'
 
 export default function CardsContentV2() {
   useRenderCount('CardsContent')
-  const [cardOpenId, setCardOpenId] = useState<string>()
+  const [cardOpenId, setCardOpenId] = useState<string | undefined>(
+    '65704be9f2317247c62579c6'
+  )
   const { mutateAsync: createCard } = useAppMutation('createCard')
   const { boardId } = useAppParams()
   const propertyRoot = useAppSelector(state =>
@@ -56,6 +58,11 @@ export default function CardsContentV2() {
                           data: {
                             [propertyRoot._id]: option._id
                           }
+                        }
+                      }).then(data => {
+                        console.log(data)
+                        if (data.data?._id) {
+                          setCardOpenId(data.data._id)
                         }
                       })
                     }}
@@ -102,7 +109,10 @@ export default function CardsContentV2() {
           </div>
         </ScrollArea>
       </div>
-      <DetailCard cardId={cardOpenId} />
+      <DetailCard
+        cardId={cardOpenId}
+        onclose={() => setCardOpenId(undefined)}
+      />
     </>
   )
 }

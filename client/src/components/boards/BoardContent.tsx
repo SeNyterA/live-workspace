@@ -33,7 +33,6 @@ export default function BoardContent() {
       const cards = boardData.filter(e => e.type === 'card')
       const properties = boardData.filter(e => e.type === 'property')
 
-      console.log({ boardData })
       dispatch(
         workspaceActions.updateData({
           cards: cards.reduce(

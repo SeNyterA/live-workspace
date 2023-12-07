@@ -70,7 +70,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   })
   useEffect(() => {
     if (unReadCountData) {
-      console.log(unReadCountData)
       dispatch(workspaceActions.setUnreadCounts(unReadCountData))
     }
   }, [dispatch, unReadCountData])

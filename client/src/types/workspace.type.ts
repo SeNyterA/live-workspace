@@ -95,9 +95,24 @@ export type TProperty = TWorkspace & {
   fieldOption?: TOption[]
 }
 
+export enum EBlockType {
+  Divider = 'Divider',
+  Text = 'Text',
+  Checkbox = 'Checkbox',
+  Image = 'Image'
+}
+
+export type TBlock = {
+  _id: string
+  blockType: EBlockType
+  content?: string
+  isCheck?: boolean
+}
+
 export type TCard = TWorkspace & {
   boardId: string
   data: {
     [propertyId: string]: string | string[] | undefined
   }
+  blocks: TBlock[]
 }

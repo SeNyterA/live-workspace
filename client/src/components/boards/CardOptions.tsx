@@ -1,5 +1,6 @@
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
+import CardItem from './card/CardItem'
 
 export default function CardOptions({
   optionId,
@@ -17,16 +18,5 @@ export default function CardOptions({
     )
   )
 
-  return (
-    <>
-      {cards?.map(card => (
-        <div
-          key={card._id}
-          className='mt-2 flex h-20 items-center justify-center bg-gray-100'
-        >
-          {card.title}
-        </div>
-      ))}
-    </>
-  )
+  return <>{cards?.map(card => <CardItem key={card._id} card={card} />)}</>
 }

@@ -111,10 +111,6 @@ export class BoardService {
   }
 
   async getDetalById({ boardId, userId }: { userId: string; boardId: string }) {
-    console.log({
-      boardId,
-      userId
-    })
     const { permissions, board } = await this.__getPermisstion({
       targetId: boardId,
       userId

@@ -1,8 +1,19 @@
-import { TBoard, TCard, TProperty } from '../../../types/workspace.type'
+import {
+  EBlockType,
+  TBoard,
+  TCard,
+  TProperty
+} from '../../../types/workspace.type'
 
 export type TcardDto = {
-  title: string
-  data: { [key: string]: string | string[] | undefined }
+  title?: string
+  data?: { [key: string]: string | string[] | undefined | null }
+}
+
+export type TBlockDto = {
+  blockType?: EBlockType
+  content?: string
+  isCheck?: boolean
 }
 
 export enum EFieldType {
@@ -40,7 +51,61 @@ export type TBoardMutionApi = {
     }
     method: 'post'
     payload: TcardDto
-    response: any
+    response: {
+      error?: {
+        code: number
+        err: string
+        userId: string
+        boardId: string
+        cardId: string
+      }
+      data?: TCard
+    }
+  }
+
+  updateCard: {
+    url: {
+      baseUrl: '/workspace/boards/:boardId/cards/:cardId'
+      urlParams: {
+        boardId: string
+        cardId: string
+      }
+    }
+    method: 'patch'
+    payload: TcardDto
+    response: {
+      error?: {
+        code: number
+        err: string
+        userId: string
+        boardId: string
+        cardId: string
+      }
+      data?: TCard
+    }
+  }
+
+  createBlock: {
+    url: {
+      baseUrl: '/workspace/boards/:boardId/cards/:cardId/blocks'
+      urlParams: {
+        boardId: string
+        cardId: string
+      }
+      queryParams?: { index: number }
+    }
+    method: 'post'
+    payload: TBlockDto
+    response: {
+      error?: {
+        code: number
+        err: string
+        userId: string
+        boardId: string
+        cardId: string
+      }
+      data?: TCard
+    }
   }
 
   createProperty: {

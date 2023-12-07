@@ -183,8 +183,8 @@ export class CardService {
       }
     }
 
-    const newBlock = {
-      fieldType: payload.blockType || EBlockType.Text,
+    const newBlock: any = {
+      blockType: payload.blockType || EBlockType.Text,
       content: payload.content || '',
       isCheck: payload.isCheck || false
     }
