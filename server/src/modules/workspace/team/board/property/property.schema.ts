@@ -34,7 +34,7 @@ export class Property extends Workspace {
   @Prop({ type: Types.ObjectId, ref: 'Board' })
   boardId: string
 
-  @Prop()
+  @Prop({ enum: EFieldType })
   fieldType: EFieldType
 
   @Prop({ type: [SchemaFactory.createForClass(Option)] })

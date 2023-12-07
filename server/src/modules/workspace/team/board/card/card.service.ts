@@ -8,8 +8,8 @@ import { MessageService } from 'src/modules/workspace/message/message.service'
 import { WorkspaceService } from 'src/modules/workspace/workspace.service'
 import { TeamService } from '../../team.service'
 import { BoardService } from '../board.service'
-import { CardDto } from './card.dto'
-import { Card } from './card.schema'
+import { BlockDto, CardDto } from './card.dto'
+import { Card, EBlockType } from './card.schema'
 
 @Injectable()
 export class CardService {
@@ -115,6 +115,96 @@ export class CardService {
         ...payload,
         modifiedById: userId,
         updatedAt: new Date()
+      },
+      {
+        new: true,
+        upsert: true,
+        lean: true
+      }
+    )
+
+    this.workspaceService.boardEmit({
+      rooms: [boardId],
+      boardData: [{ type: 'card', action: 'update', data: updatedCard }]
+    })
+
+    return {
+      data: updatedCard
+    }
+  }
+
+  async _createBlock({
+    userId,
+    boardId,
+    cardId,
+    index,
+    payload
+  }: {
+    userId: string
+    boardId: string
+    cardId: string
+    index: number
+    payload: BlockDto
+  }) {
+    const {
+      permissions: {
+        fieldAction: { edit: editPermission }
+      }
+    } = await this.boardService.__getPermisstion({
+      targetId: boardId,
+      userId
+    })
+
+    if (!editPermission) {
+      return {
+        error: {
+          code: Errors['User dont has permission to edit card'],
+          err: 'User dont has permission to edit card',
+          userId,
+          boardId
+        }
+      }
+    }
+
+    const existingCard = await this.cardModel.findOne({
+      boardId,
+      _id: cardId
+    })
+
+    if (!existingCard) {
+      return {
+        error: {
+          code: Errors['Card not found'],
+          err: 'Card not found',
+          userId,
+          boardId,
+          cardId
+        }
+      }
+    }
+
+    const newBlock = {
+      fieldType: payload.blockType || EBlockType.Text,
+      content: payload.content || '',
+      isCheck: payload.isCheck || false
+    }
+
+    const updatedBlocks = [...existingCard.blocks]
+    if (index >= 0 && index <= existingCard.blocks.length) {
+      updatedBlocks.splice(index, 0, newBlock as unknown as any)
+    } else {
+      updatedBlocks.push(newBlock as unknown as any)
+    }
+
+    const updatedCard = await this.cardModel.findOneAndUpdate(
+      {
+        boardId,
+        _id: cardId
+      },
+      {
+        modifiedById: userId,
+        updatedAt: new Date(),
+        blocks: updatedBlocks
       },
       {
         new: true,

@@ -19,6 +19,7 @@ export const paths = {
 
   team: 'team/:teamId',
   board: 'team/:teamId/board/:boardId',
+  card:'team/:teamId/board/:boardId/:cardId',
   channel: 'team/:teamId/channel/:channelId',
   group: 'team/:teamId/group/:groupId',
   direct: 'team/:teamId/direct-message/:directId'
