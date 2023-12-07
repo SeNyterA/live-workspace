@@ -6,6 +6,7 @@ export type TParams = {
   groupId?: string
   directId?: string
   teamId?: string
+  cardId: string
 }
 
 export default function useAppParams() {

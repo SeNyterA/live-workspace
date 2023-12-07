@@ -4,7 +4,7 @@ import useAppParams from './useAppParams'
 export default function useAppControlParams() {
   const navigate = useNavigate()
 
-  const { teamId, directId } = useAppParams()
+  const { teamId, directId, boardId } = useAppParams()
 
   return {
     switchTo: ({
@@ -20,6 +20,22 @@ export default function useAppControlParams() {
           directId ? `/direct-message/${directId}` : ''
         }`
       )
+    },
+    toogleCard: ({
+      teamId: _teamId,
+      boardId: _boardId,
+      cardId
+    }: {
+      teamId?: string
+      boardId?: string
+      cardId?: string
+    }) => {
+      const __teamId = _teamId || teamId
+      const __boardId = _boardId || boardId
+
+      if (__teamId && __boardId)
+        if (cardId) navigate(`/team/${teamId}/board/${boardId}/${cardId}`)
+        else navigate(`/team/${teamId}/board/${boardId}`)
     }
   }
 }

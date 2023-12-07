@@ -49,12 +49,11 @@ export class CardController {
 
     if (index !== undefined) {
       numericIndex = parseInt(index, 10)
-      // Kiểm tra xem có thể chuyển đổi thành số không
       if (isNaN(numericIndex)) {
-        numericIndex = -1 // Đặt giá trị là -1 nếu không thể chuyển đổi thành số
+        numericIndex = -1
       }
     } else {
-      numericIndex = -1 // Đặt giá trị là -1 nếu không có index
+      numericIndex = -1
     }
 
     return this.cardService._createBlock({
@@ -63,6 +62,23 @@ export class CardController {
       index: numericIndex,
       userId: user.sub,
       cardId
+    })
+  }
+
+  @Patch('/cards/:cardId/blocks/:blockId')
+  async updateBlock(
+    @HttpUser() user: TJwtUser,
+    @Body() payload: BlockDto,
+    @Param('boardId') boardId: string,
+    @Param('cardId') cardId: string,
+    @Param('blockId') blockId: string
+  ) {
+    return this.cardService._updateBlock({
+      boardId,
+      payload,
+      userId: user.sub,
+      cardId,
+      blockId
     })
   }
 }

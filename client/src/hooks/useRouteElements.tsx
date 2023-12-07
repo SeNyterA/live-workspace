@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
+import { ErrorBoundary } from 'react-error-boundary'
 import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Login from '../components/auth/Login'
 import BoardContent from '../components/boards/BoardContent'
+import DetailCard from '../components/boards/DetailCard'
 import ChannelMessage from '../components/message/ChannelMessage'
 import DirectMessage from '../components/message/DirectMessage'
 import GroupMessage from '../components/message/GroupMessage'
@@ -12,18 +14,6 @@ import { useAppSelector } from '../redux/store'
 import { useAppQuery } from '../services/apis/useAppQuery'
 import SocketProvider from '../services/socket/SocketProvider'
 import { lsActions } from '../utils/auth'
-
-export const paths = {
-  login: 'auth/login',
-  register: 'auth/register',
-
-  team: 'team/:teamId',
-  board: 'team/:teamId/board/:boardId',
-  card:'team/:teamId/board/:boardId/:cardId',
-  channel: 'team/:teamId/channel/:channelId',
-  group: 'team/:teamId/group/:groupId',
-  direct: 'team/:teamId/direct-message/:directId'
-}
 
 function PrivateRoute() {
   const dispatch = useDispatch()
@@ -75,11 +65,11 @@ export default function useRouteElements() {
           )
         },
         {
-          path: paths.login,
+          path: 'auth/login',
           element: <Login />
         },
         {
-          path: paths.register,
+          path: 'auth/register',
           element: (
             <div className='flex h-screen w-screen items-center justify-center'>
               Register
@@ -93,44 +83,59 @@ export default function useRouteElements() {
       element: <PrivateRoute />,
       children: [
         {
-          path: paths.team,
+          path: 'team/:teamId',
           element: (
-            <Layout>
-              <></>
-            </Layout>
-          )
-        },
-        {
-          path: paths.board,
-          element: (
-            <Layout>
-              <BoardContent />
-            </Layout>
-          )
-        },
-        {
-          path: paths.channel,
-          element: (
-            <Layout>
-              <ChannelMessage />
-            </Layout>
-          )
-        },
-        {
-          path: paths.group,
-          element: (
-            <Layout>
-              <GroupMessage />
-            </Layout>
-          )
-        },
-        {
-          path: paths.direct,
-          element: (
-            <Layout>
-              <DirectMessage />
-            </Layout>
-          )
+            <ErrorBoundary fallback={<></>}>
+              <Layout>
+                <Outlet />
+              </Layout>
+            </ErrorBoundary>
+          ),
+          children: [
+            {
+              path: 'board/:boardId',
+              element: (
+                <ErrorBoundary fallback={<></>}>
+                  <BoardContent />
+                  <Outlet />
+                </ErrorBoundary>
+              ),
+              children: [
+                {
+                  path: ':cardId',
+                  element: (
+                    <ErrorBoundary fallback={<></>}>
+                      <DetailCard />
+                    </ErrorBoundary>
+                  )
+                }
+              ]
+            },
+            {
+              path: 'channel/:channelId',
+              element: (
+                <ErrorBoundary fallback={<></>}>
+                  <ChannelMessage />
+                </ErrorBoundary>
+              )
+            },
+            {
+              path: 'group/:groupId',
+              element: (
+                <ErrorBoundary fallback={<></>}>
+                  <GroupMessage />
+                </ErrorBoundary>
+              )
+            },
+            {
+              path: 'direct-message/:directId',
+              element: (
+                <ErrorBoundary fallback={<></>}>
+                  <DirectMessage />
+                </ErrorBoundary>
+              )
+            }
+          ]
         }
       ]
     },

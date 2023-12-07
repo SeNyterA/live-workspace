@@ -1,5 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
+import { assign } from 'lodash'
 import { Model } from 'mongoose'
 import { Errors } from 'src/libs/errors'
 import { UsersService } from 'src/modules/users/users.service'
@@ -205,6 +206,101 @@ export class CardService {
         modifiedById: userId,
         updatedAt: new Date(),
         blocks: updatedBlocks
+      },
+      {
+        new: true,
+        upsert: true,
+        lean: true
+      }
+    )
+
+    this.workspaceService.boardEmit({
+      rooms: [boardId],
+      boardData: [{ type: 'card', action: 'update', data: updatedCard }]
+    })
+
+    return {
+      data: updatedCard
+    }
+  }
+
+  async _updateBlock({
+    userId,
+    boardId,
+    cardId,
+    blockId,
+    payload
+  }: {
+    userId: string
+    boardId: string
+    cardId: string
+    blockId: string
+    payload: BlockDto
+  }) {
+    const {
+      permissions: {
+        fieldAction: { edit: editPermission }
+      }
+    } = await this.boardService.__getPermisstion({
+      targetId: boardId,
+      userId
+    })
+
+    if (!editPermission) {
+      return {
+        error: {
+          code: Errors['User dont has permission to edit card'],
+          err: 'User dont has permission to edit card',
+          userId,
+          boardId
+        }
+      }
+    }
+
+    const existingCard = await this.cardModel.findOne({
+      boardId,
+      _id: cardId
+    })
+
+    if (!existingCard) {
+      return {
+        error: {
+          code: Errors['Card not found'],
+          err: 'Card not found',
+          userId,
+          boardId,
+          cardId
+        }
+      }
+    }
+
+    const blockIndex = existingCard.blocks.findIndex(
+      block => block._id === blockId
+    )
+
+    if (blockIndex === -1) {
+      return {
+        error: {
+          code: Errors['Block not found'],
+          err: 'Block not found',
+          userId,
+          boardId,
+          cardId,
+          blockId
+        }
+      }
+    }
+
+    assign(existingCard.blocks[blockIndex], payload)
+    const updatedCard = await this.cardModel.findOneAndUpdate(
+      {
+        boardId,
+        _id: cardId
+      },
+      {
+        modifiedById: userId,
+        updatedAt: new Date(),
+        blocks: existingCard.blocks
       },
       {
         new: true,

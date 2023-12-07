@@ -1,19 +1,14 @@
 import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
-import { useState } from 'react'
 import useAppParams from '../../hooks/useAppParams'
 import useRenderCount from '../../hooks/useRenderCount'
 import { useAppSelector } from '../../redux/store'
 import { EFieldType } from '../../services/apis/board/board.api'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import CardOptions from './CardOptions'
-import DetailCard from './DetailCard'
 
 export default function CardsContentV2() {
   useRenderCount('CardsContent')
-  const [cardOpenId, setCardOpenId] = useState<string | undefined>(
-    '65704be9f2317247c62579c6'
-  )
   const { mutateAsync: createCard } = useAppMutation('createCard')
   const { boardId } = useAppParams()
   const propertyRoot = useAppSelector(state =>
@@ -62,7 +57,7 @@ export default function CardsContentV2() {
                       }).then(data => {
                         console.log(data)
                         if (data.data?._id) {
-                          setCardOpenId(data.data._id)
+                          // setCardOpenId(data.data._id)
                         }
                       })
                     }}
@@ -109,10 +104,6 @@ export default function CardsContentV2() {
           </div>
         </ScrollArea>
       </div>
-      <DetailCard
-        cardId={cardOpenId}
-        onclose={() => setCardOpenId(undefined)}
-      />
     </>
   )
 }
