@@ -7,7 +7,9 @@ export class RedisService {
   readonly subRedis: Redis
 
   constructor() {
-    this.redisClient = new Redis(process.env.REDIS_URL)
+    this.redisClient = new Redis(process.env.REDIS_URL, {
+      password: process.env.REDIS_PASSWORD
+    })
     this.subRedis = this.redisClient.duplicate()
   }
 

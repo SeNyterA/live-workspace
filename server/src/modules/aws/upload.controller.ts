@@ -1,14 +1,9 @@
-import {
-  Controller,
-  Post,
-  Request,
-  UploadedFile,
-  UseInterceptors
-} from '@nestjs/common'
+import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { ManagedUpload } from 'aws-sdk/clients/s3'
 import { MulterFile } from 'multer'
 import slugify from 'slugify'
+import { HttpUser } from 'src/decorators/users.decorator'
+import { TJwtUser } from '../workspace/workspace.gateway'
 import { AWSConfigService } from './aws.config'
 
 @Controller('upload')
@@ -19,22 +14,25 @@ export class UploadController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile() file: MulterFile,
-    @Request() request: any
-  ): Promise<ManagedUpload.SendData> {
+    @HttpUser() user: TJwtUser
+  ) {
     const { originalname, buffer, mimetype } = file
     const timestamp = new Date().getTime()
-    const fileName = `${timestamp}_${request?.user?.userId || ''}_${slugify(
-      originalname,
-      { lower: true, remove: /[*+~()'"!:@]/g }
-    ).replace(/-/g, '_')}`
+    const fileName = `${timestamp}_${user.sub}_${slugify(originalname, {
+      lower: true,
+      remove: /[*+~()'"!:@]/g
+    }).replace(/-/g, '_')}`
 
     const s3 = this.awsConfigService.getS3Instance()
+
     const uploadResult = await s3
       .upload({
         Bucket: this.awsConfigService.getBucketName(),
         Key: fileName,
         Body: buffer,
-        ContentType: mimetype
+        ACL: 'public-read',
+        ContentType: mimetype,
+        ContentDisposition: 'inline'
       })
       .promise()
 

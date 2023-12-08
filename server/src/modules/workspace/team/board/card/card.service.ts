@@ -237,6 +237,11 @@ export class CardService {
     blockId: string
     payload: BlockDto
   }) {
+    console.log({
+      boardId,
+      cardId,
+      blockId
+    })
     const {
       permissions: {
         fieldAction: { edit: editPermission }
@@ -275,7 +280,7 @@ export class CardService {
     }
 
     const blockIndex = existingCard.blocks.findIndex(
-      block => block._id === blockId
+      block => block._id.toString() === blockId
     )
 
     if (blockIndex === -1) {

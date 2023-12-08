@@ -14,6 +14,7 @@ export class AWSConfigService {
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       region: process.env.AWS_REGION
     }
+
     this.s3 = new S3(awsConfig)
   }
 

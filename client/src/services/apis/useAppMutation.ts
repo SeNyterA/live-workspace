@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
+import { AxiosRequestConfig } from 'axios'
 import { TChannelDto, TGroupDto, TTeamDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
 import {
@@ -10,6 +11,7 @@ import {
 import { TBoardMutionApi } from './board/board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
+import { TUploadMutionApi } from './upload/upload.api'
 
 export type ApiMutationType = {
   login: {
@@ -136,9 +138,13 @@ export type ApiMutationType = {
     payload: TChannelDto
     response: TWorkspace
   }
-} & TBoardMutionApi
+} & TBoardMutionApi &
+  TUploadMutionApi
 
-export const useAppMutation = <T extends keyof ApiMutationType>(_key: T) => {
+export const useAppMutation = <T extends keyof ApiMutationType>(
+  _key: T,
+  config?: AxiosRequestConfig<ApiMutationType[T]['payload']>
+) => {
   const mutation = useMutation({
     mutationFn: async ({
       payload,
@@ -151,7 +157,7 @@ export const useAppMutation = <T extends keyof ApiMutationType>(_key: T) => {
         url.baseUrl,
         (url as any)?.urlParams || {}
       )
-      const response = await http[method](_url, payload)
+      const response = await http[method](_url, payload, config)
 
       return response.data
     }

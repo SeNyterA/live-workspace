@@ -4,7 +4,7 @@ import { AppModule } from './app.module'
 import { RedisIoAdapter } from './modules/adapters/redis-io.adapter'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, { snapshot: true })
 
   app.enableCors({
     origin: true,

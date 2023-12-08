@@ -1,5 +1,6 @@
 import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
+import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import useRenderCount from '../../hooks/useRenderCount'
 import { useAppSelector } from '../../redux/store'
@@ -9,6 +10,7 @@ import CardOptions from './CardOptions'
 
 export default function CardsContentV2() {
   useRenderCount('CardsContent')
+  const { toogleCard } = useAppControlParams()
   const { mutateAsync: createCard } = useAppMutation('createCard')
   const { boardId } = useAppParams()
   const propertyRoot = useAppSelector(state =>
@@ -57,7 +59,9 @@ export default function CardsContentV2() {
                       }).then(data => {
                         console.log(data)
                         if (data.data?._id) {
-                          // setCardOpenId(data.data._id)
+                          toogleCard({
+                            cardId: data.data._id
+                          })
                         }
                       })
                     }}
