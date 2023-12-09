@@ -30,7 +30,6 @@ import { Team } from './team/team.schema'
 import { TeamService } from './team/team.service'
 import { WorkpaceController } from './workspace.controler'
 import { WorkspaceGateway } from './workspace.gateway'
-import { Workspace } from './workspace.schema'
 import { WorkspaceService } from './workspace.service'
 
 @Module({
@@ -46,7 +45,6 @@ import { WorkspaceService } from './workspace.service'
       { name: Group.name, schema: SchemaFactory.createForClass(Group) },
       { name: Message.name, schema: SchemaFactory.createForClass(Message) },
       { name: Member.name, schema: SchemaFactory.createForClass(Member) },
-      { name: Workspace.name, schema: SchemaFactory.createForClass(Workspace) },
       { name: User.name, schema: SchemaFactory.createForClass(User) },
       { name: Card.name, schema: SchemaFactory.createForClass(Card) },
       { name: Property.name, schema: SchemaFactory.createForClass(Property) }

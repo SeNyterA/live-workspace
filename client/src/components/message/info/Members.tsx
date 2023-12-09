@@ -1,4 +1,4 @@
-import { Avatar, Badge, Indicator, NavLink, ScrollArea } from '@mantine/core'
+import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
 import { useAppSelector } from '../../../redux/store'
 import { EMemberRole } from '../../../types/workspace.type'
 import UserDetailProvider from '../../user/UserDetailProvider'

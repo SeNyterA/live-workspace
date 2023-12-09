@@ -3,7 +3,8 @@ import { IconMessage } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
-import MemberSetting from './MemberSetting'
+
+// import MemberSetting from './MemberSetting'
 
 export default function TeamSetting({
   isOpen,
@@ -55,7 +56,7 @@ export default function TeamSetting({
           />
         </div>
         <Divider orientation='vertical' variant='dashed' />
-        {mode === 'members' && <MemberSetting />}
+        {/* {mode === 'members' && <MemberSetting />} */}
       </div>
     </Modal>
   )

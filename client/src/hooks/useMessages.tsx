@@ -8,7 +8,7 @@ import { TMessage } from '../types/workspace.type'
 import useAppParams from './useAppParams'
 
 export default function useMessages() {
-  const { channelId, directId } = useAppParams()
+  const { channelId } = useAppParams()
   const dispatch = useDispatch()
 
   const { data: channelMessages } = useAppQuery({
@@ -25,22 +25,22 @@ export default function useMessages() {
     }
   })
 
-  const { data: directMessages } = useAppQuery({
-    key: 'directMessages',
-    url: {
-      baseUrl: '/workspace/direct-messages/:directId/messages',
-      urlParams: {
-        directId: directId!
-      },
-      queryParams: {
-        pageSize: 3
-      }
-    },
-    options: {
-      queryKey: [directId],
-      enabled: !!directId
-    }
-  })
+  // const { data: directMessages } = useAppQuery({
+  //   key: 'directMessages',
+  //   url: {
+  //     baseUrl: '/workspace/direct-messages/:directId/messages',
+  //     urlParams: {
+  //       directId: directId!
+  //     },
+  //     queryParams: {
+  //       pageSize: 3
+  //     }
+  //   },
+  //   options: {
+  //     queryKey: [directId],
+  //     enabled: !!directId
+  //   }
+  // })
 
   const messages =
     useAppSelector(state =>

@@ -15,7 +15,7 @@ import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import DirectNavLink from '../layouts/DirectNavLink'
-import CreateDirect from '../new-message/CreateDirect'
+// import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
 import BoardItem from './board/BoardItem'
 import CreateBoard from './board/CreateBoard'
@@ -266,10 +266,10 @@ export default function Sidebar() {
         onClose={() => setToggle(undefined)}
       />
 
-      <CreateDirect
+      {/* <CreateDirect
         isOpen={toggle === 'createDirect'}
         onClose={() => setToggle(undefined)}
-      />
+      /> */}
 
       <CreateGroup
         isOpen={toggle === 'createGroup'}

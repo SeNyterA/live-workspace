@@ -10,7 +10,6 @@ import {
   Text,
   TextInput
 } from '@mantine/core'
-import { randomId } from '@mantine/hooks'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
@@ -30,12 +29,11 @@ export default function Authentication() {
 
   const dispatch = useDispatch()
 
-  const { control, handleSubmit, formState, reset, clearErrors } =
-    useForm<TAuthForm>({
-      defaultValues: {
-        terms: false
-      }
-    })
+  const { control, handleSubmit, reset, clearErrors } = useForm<TAuthForm>({
+    defaultValues: {
+      terms: false
+    }
+  })
 
   return (
     <div className='flex h-screen w-screen items-center justify-center'>
@@ -93,9 +91,7 @@ export default function Authentication() {
                         userName: `${index}_${data.userName}`
                       }
                     },
-                    {
-                      onSuccess(data) {}
-                    }
+                    {}
                   )
                 })
             }
