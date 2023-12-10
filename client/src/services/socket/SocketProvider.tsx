@@ -19,10 +19,10 @@ export const useSocketContext = () => useContext(socketContext)
 export default function SocketProvider({ children }: SocketProviderProps) {
   const [socket, setSocket] = useState<Socket<any, any>>()
   const token = useAppSelector(state => state.auth.token)
-
+  console.log(import.meta.env.VITE_API)
   useEffect(() => {
     if (token) {
-      const newSocket = io('http://localhost:8420', {
+      const newSocket = io(import.meta.env.VITE_API!, {
         auth: {
           token
         }

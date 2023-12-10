@@ -6,7 +6,7 @@ class Http {
 
   constructor() {
     this.instance = axios.create({
-      baseURL: 'http://localhost:8420',
+      baseURL: import.meta.env.VITE_API,
       headers: {
         'Content-Type': 'application/json'
       }
