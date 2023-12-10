@@ -68,21 +68,31 @@ export class WorkspaceGateway
   }
 
   async handleDisconnect(client: CustomSocket) {
-    const time = Date.now().toString()
+    try {
+      const userId = client?.user?.sub
+      if (userId) {
+        const time = Date.now().toString()
 
-    const _log = await this.redisService.redisClient.get(
-      `presence:${client.user.sub}`
-    )
+        const _log = await this.redisService.redisClient.get(
+          `presence:${client.user.sub}`
+        )
 
-    const _status = parseInt(_log) || 0
+        const _status = parseInt(_log) || 0
 
-    if (_status > 0) {
-      this.redisService.redisClient.set(
-        `presence:${client.user.sub}`,
-        _status - 1
-      )
-    } else {
-      this.redisService.redisClient.set(`presence:${client.user.sub}`, -time)
+        if (_status > 0) {
+          this.redisService.redisClient.set(
+            `presence:${client.user.sub}`,
+            _status - 1
+          )
+        } else {
+          this.redisService.redisClient.set(
+            `presence:${client.user.sub}`,
+            -time
+          )
+        }
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
