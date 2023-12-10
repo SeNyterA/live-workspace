@@ -14,6 +14,7 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { authActions } from '../../redux/slices/auth.slice'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { TUser } from '../../types/user.type'
@@ -26,7 +27,7 @@ export default function Authentication() {
   const [type, setType] = useState<'register' | 'login'>('login')
   const { mutateAsync: login } = useAppMutation('login')
   const { mutateAsync: register } = useAppMutation('register')
-
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const { control, handleSubmit, reset, clearErrors } = useForm<TAuthForm>({

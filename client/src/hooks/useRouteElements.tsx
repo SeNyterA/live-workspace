@@ -18,7 +18,6 @@ import { lsActions } from '../utils/auth'
 function PrivateRoute() {
   const dispatch = useDispatch()
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
-
   const { data: user } = useAppQuery({
     key: 'login',
     url: {
@@ -27,13 +26,14 @@ function PrivateRoute() {
   })
 
   useEffect(() => {
-    if (user)
+    if (user) {
       dispatch(
         authActions.loginSuccess({
           token: lsActions.getToken(),
           user: user
         })
       )
+    }
   }, [user, dispatch])
 
   return isAuthenticated ? (
@@ -47,7 +47,7 @@ function PrivateRoute() {
 
 function PublicOnlyRoute() {
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
-  return !isAuthenticated ? <Outlet /> : <Navigate to='/' />
+  return !isAuthenticated ? <Outlet /> : <Navigate to='/team/personal' />
 }
 
 export default function useRouteElements() {
