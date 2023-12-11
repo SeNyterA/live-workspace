@@ -6,7 +6,8 @@ export enum EBlockType {
   Divider = 'Divider',
   Text = 'Text',
   Checkbox = 'Checkbox',
-  Image = 'Image'
+  Image = 'Image',
+  Files = 'Files'
 }
 
 @Schema()
@@ -21,6 +22,9 @@ export class Block {
 
   @Prop({ type: Boolean })
   isCheck?: boolean
+
+  @Prop({ type: [String], default: [] })
+  files?: string[]
 }
 
 @Schema()

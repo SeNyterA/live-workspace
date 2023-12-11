@@ -14,7 +14,14 @@ import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
 import { MemberService } from '../member/member.service'
 import { MemberDto } from '../workspace.dto'
-import { TWorkspaceSocket, WorkspaceService } from '../workspace.service'
+import {
+  TBoardEmit,
+  TWorkspaceSocket,
+  WorkspaceService
+} from '../workspace.service'
+import { BoardService } from './board/board.service'
+import { EFieldType } from './board/property/property.schema'
+import { PropertyService } from './board/property/property.service'
 import { ChannelService } from './channel/channel.service'
 import { TTeam, TUpdateTeamPayload, TeamDto } from './team.dto'
 import { Team } from './team.schema'
@@ -29,6 +36,11 @@ export class TeamService {
 
     @Inject(forwardRef(() => ChannelService))
     readonly channelService: ChannelService,
+
+    @Inject(forwardRef(() => BoardService))
+    readonly boardService: BoardService,
+    @Inject(forwardRef(() => PropertyService))
+    readonly propertyService: PropertyService,
 
     @Inject(forwardRef(() => WorkspaceService))
     readonly workspaceService: WorkspaceService,
@@ -239,6 +251,119 @@ export class TeamService {
                 action: 'create',
                 data: channelMember
               } as TWorkspaceSocket)
+          )
+        ]
+      })
+    }) || []
+    ;['Daily tasks'].map(async boardTitle => {
+      const newBoard = await this.boardService.boardModel.create({
+        title: boardTitle,
+        teamId: newTeam._id.toString(),
+        createdById: userId,
+        modifiedById: userId
+      })
+
+      // properties
+      const _properties = [
+        {
+          title: 'Status',
+          fieldType: EFieldType.Select,
+          fieldOption: [
+            {
+              title: 'Pending',
+              color: '#333'
+            },
+            {
+              title: 'In progress',
+              color: '#333'
+            },
+            {
+              title: 'Todo',
+              color: '#333'
+            },
+            {
+              title: 'Merge request',
+              color: '#333'
+            },
+            {
+              title: 'Tesing',
+              color: '#333'
+            },
+            {
+              title: 'Bug',
+              color: '#333'
+            },
+            {
+              title: 'Fixed',
+              color: '#333'
+            },
+            {
+              title: 'Done',
+              color: '#333'
+            }
+          ]
+        },
+        {
+          title: 'Assignees',
+          fieldType: EFieldType.Assignees
+        },
+        {
+          title: 'Progress',
+          fieldType: EFieldType.String
+        }
+      ].map(
+        async propertyData =>
+          await this.propertyService.propertyModel.create({
+            ...propertyData,
+            boardId: newBoard._id.toString(),
+            createdById: userId,
+            modifiedById: userId
+          })
+      )
+      const properties = await Promise.all(_properties)
+
+      // members
+      const _boardMembers = validMembers.map(
+        async teamMember =>
+          await this.memberModel.create({
+            userId: teamMember.userId.toString(),
+            targetId: newBoard._id.toString(),
+            role: teamMember.role,
+            path: `${teamMember.targetId.toString()}/${newBoard._id.toString()}`,
+            type: EMemberType.Board,
+            createdById: userId,
+            modifiedById: userId
+          })
+      )
+      const boardMembers = await Promise.all(_boardMembers)
+
+      // workspaces emit
+      this.workspaceService.workspaces({
+        rooms: boardMembers.map(({ userId }) => userId.toString()),
+        workspaces: [
+          { type: 'board', action: 'create', data: newBoard.toJSON() },
+          ...boardMembers.map(
+            boardMember =>
+              ({
+                type: 'member',
+                action: 'create',
+                data: boardMember
+              } as TWorkspaceSocket)
+          )
+        ]
+      })
+
+      // board data emit
+      this.workspaceService.boardEmit({
+        rooms: boardMembers.map(({ userId }) => userId.toString()),
+        boardData: [
+          ...properties.map(
+            property =>
+              ({
+                type: 'property',
+                action: 'create',
+                data: property
+              } as TBoardEmit)
           )
         ]
       })

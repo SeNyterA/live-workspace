@@ -127,17 +127,6 @@ export type ApiMutationType = {
     payload: TChannelDto
     response: TWorkspace
   }
-  createBoard: {
-    url: {
-      baseUrl: '/workspace/teams/:teamId/channels'
-      urlParams: {
-        teamId: string
-      }
-    }
-    method: 'post'
-    payload: TChannelDto
-    response: TWorkspace
-  }
 } & TBoardMutionApi &
   TUploadMutionApi
 

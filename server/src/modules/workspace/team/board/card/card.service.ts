@@ -187,7 +187,8 @@ export class CardService {
     const newBlock: any = {
       blockType: payload.blockType || EBlockType.Text,
       content: payload.content || '',
-      isCheck: payload.isCheck || false
+      isCheck: payload.isCheck || false,
+      files: payload.files || []
     }
 
     const updatedBlocks = [...existingCard.blocks]

@@ -194,26 +194,54 @@ export default function DetailCard() {
                       id='uploadImage_cardDetail'
                       type='file'
                       value=''
-                      onChange={e => {
-                        const selectedFile = e.target.files?.[0]
+                      multiple
+                      onChange={async e => {
+                        const files = e.target.files
 
-                        if (selectedFile) {
-                          const formData = new FormData()
-                          formData.append('file', selectedFile)
+                        if (files) {
+                          const urls: string[] = []
+                          const uploadPromises = Array.from(files).map(file => {
+                            const formData = new FormData()
+                            formData.append('file', file)
 
-                          uploadFile({
+                            return uploadFile({
+                              method: 'post',
+                              url: {
+                                baseUrl: '/upload'
+                              },
+                              payload: formData
+                            })
+                              .then(data => {
+                                console.log(data)
+                                urls.push(data.url)
+                              })
+                              .catch(error => {
+                                console.error('File upload failed', error)
+                              })
+                          })
+
+                          await Promise.all(uploadPromises)
+
+                          console.log('All uploads completed', urls)
+
+                          createBlock({
                             method: 'post',
                             url: {
-                              baseUrl: '/upload'
+                              baseUrl:
+                                '/workspace/boards/:boardId/cards/:cardId/blocks',
+                              urlParams: {
+                                boardId: boardId!,
+                                cardId: cardId!
+                              },
+                              queryParams: {
+                                index: -1
+                              }
                             },
-                            payload: formData
+                            payload: {
+                              blockType: EBlockType.Files,
+                              files: urls
+                            }
                           })
-                            .then(data => {
-                              console.log(data)
-                            })
-                            .catch(error => {
-                              console.error('File upload failed', error)
-                            })
                         }
                       }}
                     />

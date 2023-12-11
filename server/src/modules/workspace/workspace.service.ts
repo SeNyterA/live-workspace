@@ -30,7 +30,6 @@ export type TWorkspaceSocket = {
   | { data: DirectMessage; type: 'direct' }
   | { data: Group; type: 'group' }
   | { data: Member; type: 'member' }
-  | { data: Property; type: 'property' }
 )
 
 export type TBoardEmit = {

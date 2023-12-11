@@ -1,11 +1,14 @@
-import { Checkbox, Divider, Image, Input } from '@mantine/core'
+import { Checkbox, Divider, Image, Input, Textarea } from '@mantine/core'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppMutation } from '../../../services/apis/useAppMutation'
 import { EBlockType, TBlock } from '../../../types/workspace.type'
+import FileContent from './File'
+import FilesContent from './FilesContent'
 
 export default function Block({ block }: { block: TBlock }) {
   const { mutateAsync: updateBlock } = useAppMutation('updateBlock')
   const { boardId, cardId } = useAppParams()
+  console.log(block)
   return (
     <>
       {block.blockType === EBlockType.Checkbox && (
@@ -72,16 +75,17 @@ export default function Block({ block }: { block: TBlock }) {
       )}
 
       {block.blockType === EBlockType.Text && (
-        <Input
+        <Textarea
+          autosize
           className='my-2'
           unstyled
           classNames={{
             input:
-              'border border-transparent outline-none w-full focus:border-b-blue-400 hover:border-b-blue-400 border-dashed'
+              'border border-transparent outline-none w-full focus:border-b-blue-400 hover:border-b-blue-400 border-dashed resize-none'
           }}
           key={block.content}
           defaultValue={block.content}
-          placeholder='Checkbox placeholder'
+          placeholder='Text placeholder'
           onBlur={e => {
             if (e.target.value !== block.content)
               updateBlock({
@@ -101,6 +105,10 @@ export default function Block({ block }: { block: TBlock }) {
               })
           }}
         />
+      )}
+
+      {block.blockType === EBlockType.Files && (
+        <FilesContent urls={block.files} />
       )}
 
       {block.blockType === EBlockType.Image && (

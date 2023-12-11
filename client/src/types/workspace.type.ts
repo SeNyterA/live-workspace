@@ -99,7 +99,8 @@ export enum EBlockType {
   Divider = 'Divider',
   Text = 'Text',
   Checkbox = 'Checkbox',
-  Image = 'Image'
+  Image = 'Image',
+  Files = 'Files'
 }
 
 export type TBlock = {
@@ -107,6 +108,7 @@ export type TBlock = {
   blockType: EBlockType
   content?: string
   isCheck?: boolean
+  files?: string[]
 }
 
 export type TCard = TWorkspace & {

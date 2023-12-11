@@ -8,6 +8,19 @@ export type TUploadMutionApi = {
     // const formData = new FormData();
     // formData.append('file', file);
     payload: FormData
+    response: { url: string }
+  }
+
+  uploadFiles: {
+    url: {
+      baseUrl: '/uploads'
+    }
+    method: 'post'
+    // const formData = new FormData();
+    // files.forEach((file, index) => {
+    //   formData.append(`files[${index}]`, file);
+    // });
+    payload: FormData
     response: any
   }
 }

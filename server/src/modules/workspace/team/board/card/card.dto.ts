@@ -1,10 +1,12 @@
 import {
+  IsArray,
   IsBoolean,
   IsNotEmpty,
   IsObject,
   IsOptional,
   IsString,
-  Validate
+  Validate,
+  ValidateNested
 } from 'class-validator'
 import { EBlockType } from './card.schema'
 
@@ -38,4 +40,8 @@ export class BlockDto {
   @IsBoolean()
   @IsOptional()
   isCheck?: boolean
+
+  @IsArray()
+  @IsOptional()
+  files?: string[]
 }

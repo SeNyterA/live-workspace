@@ -1,3 +1,4 @@
+import { TWorkspaceDto } from '../../../types/dto.type'
 import {
   EBlockType,
   TBoard,
@@ -10,10 +11,13 @@ export type TcardDto = {
   data?: { [key: string]: string | string[] | undefined | null }
 }
 
+export type TBoardDto = TWorkspaceDto & { properties?: TPropertyDto[] }
+
 export type TBlockDto = {
   blockType?: EBlockType
   content?: string
   isCheck?: boolean
+  files?: string[]
 }
 
 export enum EFieldType {
@@ -42,6 +46,18 @@ export type TPropertyDto = {
 }
 
 export type TBoardMutionApi = {
+  createBoard: {
+    url: {
+      baseUrl: '/workspace/teams/:teamId/boards'
+      urlParams: {
+        teamId: string
+      }
+    }
+    method: 'post'
+    payload: TBoardDto
+    response: any
+  }
+
   createCard: {
     url: {
       baseUrl: '/workspace/boards/:boardId/cards'
