@@ -7,7 +7,7 @@ import { useMessageInfo } from './InfoProvier'
 export default function Members() {
   const {
     type,
-    targetId: { channelId, directId, groupId }
+    targetId: { channelId, directId, boardId, groupId }
   } = useMessageInfo()
 
   const members = useAppSelector(state => {
@@ -15,27 +15,26 @@ export default function Members() {
     const _users = Object.values(state.workspace.users)
     switch (type) {
       case 'channel':
-        return _members
-          .filter(members => members.targetId === channelId)
-          .map(members => ({
-            member: members,
-            user: _users.find(user => user._id === members.userId)
-          }))
+      case 'board':
       case 'group':
         return _members
-          .filter(members => members.targetId === groupId)
+          .filter(members =>
+            [channelId, boardId, groupId].includes(members.targetId)
+          )
           .map(members => ({
             member: members,
             user: _users.find(user => user._id === members.userId)
           }))
 
       case 'direct':
-        const usersId =
-          Object.values(state.workspace.directs).find(
-            direct => direct._id === directId
-          )?.userIds || []
         return _users
-          .filter(user => usersId.includes(user._id))
+          .filter(user =>
+            (
+              Object.values(state.workspace.directs).find(
+                direct => direct._id === directId
+              )?.userIds || []
+            ).includes(user._id)
+          )
           .map(user => ({ user, member: undefined }))
       default:
         return []

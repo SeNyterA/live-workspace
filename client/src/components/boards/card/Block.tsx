@@ -2,7 +2,6 @@ import { Checkbox, Divider, Image, Input, Textarea } from '@mantine/core'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppMutation } from '../../../services/apis/useAppMutation'
 import { EBlockType, TBlock } from '../../../types/workspace.type'
-import FileContent from './File'
 import FilesContent from './FilesContent'
 
 export default function Block({ block }: { block: TBlock }) {
@@ -25,7 +24,7 @@ export default function Block({ block }: { block: TBlock }) {
               unstyled
               classNames={{
                 input:
-                  'border border-transparent outline-none w-full focus:border-b-blue-400 hover:border-b-blue-400 border-dashed'
+                  'border border-transparent px-0 outline-none w-full focus:border-b-blue-400 hover:border-b-blue-400 border-dashed'
               }}
               key={block.content}
               placeholder='Checkbox placeholder'
@@ -78,10 +77,9 @@ export default function Block({ block }: { block: TBlock }) {
         <Textarea
           autosize
           className='my-2'
-          unstyled
           classNames={{
             input:
-              'border border-transparent outline-none w-full focus:border-b-blue-400 hover:border-b-blue-400 border-dashed resize-none'
+              'border border-transparent px-0 outline-none w-full focus:border-b-blue-400 hover:border-b-blue-400 border-dashed resize-none'
           }}
           key={block.content}
           defaultValue={block.content}
@@ -117,6 +115,8 @@ export default function Block({ block }: { block: TBlock }) {
           radius='md'
           src='https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-9.png'
           fit='contain'
+          mah={1000}
+          maw={1000}
         />
       )}
     </>

@@ -2,10 +2,10 @@ import { Loader, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
+import useRenderCount from '../../hooks/useRenderCount'
 import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { useMessageContent } from './MessageContentProvider'
 import MessageGroup from './MessageGroup'
-import useRenderCount from '../../hooks/useRenderCount'
 
 export default function MessageContent({
   loadMore,

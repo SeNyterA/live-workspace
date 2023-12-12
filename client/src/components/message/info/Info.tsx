@@ -6,7 +6,7 @@ import Members from './Members'
 export default function Info() {
   const {
     title,
-    targetId: { channelId, directId, groupId }
+    targetId: { channelId, directId, groupId, boardId }
   } = useMessageInfo()
 
   return (
@@ -15,7 +15,7 @@ export default function Info() {
         <div>
           <p className='text-base'>{title}</p>
           <p className='text-xs text-gray-500'>
-            id: {channelId || directId || groupId}
+            id: {channelId || directId || groupId || boardId}
           </p>
         </div>
         <ActionIcon size={30} variant='light' color='gray'>

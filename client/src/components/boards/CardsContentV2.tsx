@@ -33,8 +33,8 @@ export default function CardsContentV2() {
         >
           <div className='flex gap-3 p-3'>
             {propertyRoot?.fieldOption?.map(option => (
-              <div className='w-72' key={option._id}>
-                <div className='flex items-center justify-between bg-fuchsia-300 px-2 py-1'>
+              <div className='w-64' key={option._id}>
+                <div className='flex h-9 items-center justify-between rounded bg-gray-100 px-2'>
                   <span>{option.title}</span>
                   <ActionIcon
                     variant='transparent'
@@ -76,7 +76,7 @@ export default function CardsContentV2() {
               </div>
             ))}
 
-            <div className='w-72'>
+            <div className='w-64'>
               <div className='flex items-center justify-between bg-fuchsia-300 px-2 py-1'>
                 <span>Orther</span>
                 <ActionIcon

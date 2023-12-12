@@ -6,7 +6,7 @@ import kbData from './data.test'
 
 export default function CardsContent() {
   useRenderCount('CardsContent')
-  const [kanbanData, _] = useState(kbData)
+  const [kanbanData] = useState(kbData)
   return (
     <div className='relative flex-1'>
       <ScrollArea

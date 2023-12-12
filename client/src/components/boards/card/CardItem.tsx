@@ -9,7 +9,7 @@ export default function CardItem({ card }: { card: TCard }) {
 
   return (
     <div
-      className='mt-2 flex h-20 flex-col items-center justify-center bg-gray-100'
+      className='mt-2 flex h-20 flex-col rounded bg-gray-100 px-2 py-1'
       id={card._id}
       onClick={() => {
         toogleCard({
@@ -17,7 +17,7 @@ export default function CardItem({ card }: { card: TCard }) {
         })
       }}
     >
-      {card.title}
+      <p>{card.title}</p>
       <span className='text-gray-600'>{`${
         checkboxes.filter(e => e.isCheck).length
       }`}</span>

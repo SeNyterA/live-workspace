@@ -1,18 +1,25 @@
 import { ActionIcon, Divider, Input } from '@mantine/core'
-import { IconFilter, IconPlus, IconSearch } from '@tabler/icons-react'
-import { useEffect } from 'react'
+import {
+  IconChevronRight,
+  IconFilter,
+  IconPlus,
+  IconSearch
+} from '@tabler/icons-react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
+import Info from '../message/info/Info'
+import InfoProvier from '../message/info/InfoProvier'
 import CardsContentV2 from './CardsContentV2'
 
 export default function BoardContent() {
   const { boardId } = useAppParams()
   const dispatch = useDispatch()
-
+  const [openInfo, setOpenInfo] = useState(false)
   const { data: detailBoardData } = useAppQuery({
     key: 'boardData',
     url: {
@@ -70,7 +77,7 @@ export default function BoardContent() {
   }, [detailBoardData])
 
   return (
-    <>
+    <div className='flex flex-1'>
       <div className='flex flex-1 flex-col'>
         <div className='flex h-12 w-full items-center justify-end gap-2 px-3'>
           <p className='flex-1 text-base font-medium'>{board?.title}</p>
@@ -100,11 +107,37 @@ export default function BoardContent() {
           >
             <IconFilter size={16} stroke={1.5} />
           </ActionIcon>
+
+          <ActionIcon
+            variant='light'
+            className='h-[30px] w-[30px] bg-gray-100'
+            onClick={() => setOpenInfo(e => !e)}
+          >
+            <IconChevronRight
+              className={`h-4 w-4 transition-transform ${
+                openInfo || 'rotate-180'
+              }`}
+            />
+          </ActionIcon>
         </div>
         <Divider variant='dashed' />
         {/* <CardsContent /> */}
         <CardsContentV2 />
       </div>
-    </>
+      {openInfo && (
+        <>
+          <Divider orientation='vertical' variant='dashed' />
+          <InfoProvier
+            value={{
+              title: board?.title || '',
+              targetId: { boardId },
+              type: 'board'
+            }}
+          >
+            <Info />
+          </InfoProvier>
+        </>
+      )}
+    </div>
   )
 }

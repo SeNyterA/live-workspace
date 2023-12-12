@@ -1,75 +1,20 @@
-import { Button, Divider, Modal, ScrollArea, Select } from '@mantine/core'
+import { Modal, Tabs } from '@mantine/core'
+import { IconMessageCircle, IconPhoto } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
-import { EBlockType, TCard, TProperty } from '../../../types/workspace.type'
-import Block from './Block'
-
-const SelectField = ({
-  property,
-  card
-}: {
-  property: TProperty
-  card?: TCard
-}) => {
-  const { boardId } = useAppParams()
-  const { mutateAsync: updateCard, isPending } = useAppMutation('updateCard')
-  const [tmpValue, setTmpValue] = useState<string | undefined | null>()
-
-  return (
-    <Select
-      className='first:!mt-0'
-      key={property._id}
-      label={property.title}
-      description={property.description}
-      placeholder='Pick value'
-      data={property.fieldOption?.map(option => ({
-        value: option._id,
-        label: option.title
-      }))}
-      mt='md'
-      disabled={isPending}
-      value={isPending ? tmpValue : card?.data[property._id]?.toString()}
-      onChange={value => {
-        setTmpValue(value)
-        updateCard({
-          url: {
-            baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-            urlParams: {
-              boardId: boardId!,
-              cardId: card?._id!
-            }
-          },
-          method: 'patch',
-          payload: {
-            data: {
-              ...card?.data,
-              [property._id]: value
-            }
-          }
-        })
-      }}
-    />
-  )
-}
+import CardTitle from './CardTitle'
+import Descriptions from './Descriptions'
+import Properties from './Properties'
 
 export default function DetailCard() {
   const { toogleCard } = useAppControlParams()
-  const { boardId, cardId } = useAppParams()
+  const { cardId } = useAppParams()
   const card = useAppSelector(state =>
     Object.values(state.workspace.cards).find(e => e._id === cardId)
   )
-  const properties = useAppSelector(state =>
-    Object.values(state.workspace.properties).filter(e => e.boardId === boardId)
-  )
-  const { mutateAsync: createBlock } = useAppMutation('createBlock')
-  const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
-    headers: {
-      'Content-Type': undefined
-    }
-  })
+  const [tab, setTabs] = useState<'description' | 'comment'>('description')
 
   return (
     <>
@@ -79,11 +24,13 @@ export default function DetailCard() {
             toogleCard({})
           }}
           opened={true}
-          title={<p className='text-lg font-semibold'>{card.title}</p>}
+          title={<CardTitle />}
           size='100%'
           classNames={{
-            content: 'h-full flex flex-col',
-            body: 'flex-1'
+            content: 'h-full flex flex-col bg-gray-100',
+            body: 'flex-1',
+            header: 'flex bg-transparent py-3',
+            title: 'flex-1'
           }}
           overlayProps={{
             color: '#000',
@@ -93,161 +40,31 @@ export default function DetailCard() {
         >
           <div className='flex h-full gap-4'>
             <div className='relative w-80'>
-              <ScrollArea className='absolute inset-0' scrollbarSize={8}>
-                {properties?.map(property => (
-                  <SelectField
-                    key={property._id}
-                    card={card}
-                    property={property}
-                  />
-                ))}
-              </ScrollArea>
+              <Properties />
             </div>
-            <Divider orientation='vertical' />
-            <div className='flex flex-1 flex-col'>
-              <span className='text-base'>description</span>
+
+            <div className='flex flex-1 flex-col rounded-lg bg-white px-3 py-2'>
+              <Tabs value={tab} onChange={tab => setTabs(tab as any)}>
+                <Tabs.List>
+                  <Tabs.Tab
+                    value='description'
+                    className='font-semibold'
+                    leftSection={<IconPhoto size={20} />}
+                  >
+                    Description
+                  </Tabs.Tab>
+                  <Tabs.Tab
+                    value='comment'
+                    className='font-semibold'
+                    leftSection={<IconMessageCircle size={20} />}
+                  >
+                    Messages
+                  </Tabs.Tab>
+                </Tabs.List>
+              </Tabs>
 
               <div className='relative flex-1 text-sm'>
-                <ScrollArea className='absolute inset-0' scrollbarSize={8}>
-                  {card.blocks.map(block => (
-                    <Block block={block} key={block._id} />
-                  ))}
-                  <div>
-                    <Button
-                      onClick={() => {
-                        createBlock({
-                          method: 'post',
-                          url: {
-                            baseUrl:
-                              '/workspace/boards/:boardId/cards/:cardId/blocks',
-                            urlParams: {
-                              boardId: boardId!,
-                              cardId: cardId!
-                            },
-                            queryParams: {
-                              index: -1
-                            }
-                          },
-                          payload: {
-                            blockType: EBlockType.Text,
-                            content: 'anything ahahhahaha',
-                            isCheck: false
-                          }
-                        })
-                      }}
-                    >
-                      Text
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        createBlock({
-                          method: 'post',
-                          url: {
-                            baseUrl:
-                              '/workspace/boards/:boardId/cards/:cardId/blocks',
-                            urlParams: {
-                              boardId: boardId!,
-                              cardId: cardId!
-                            },
-                            queryParams: {
-                              index: -1
-                            }
-                          },
-                          payload: {
-                            blockType: EBlockType.Checkbox,
-                            content: 'anything ahahhahaha',
-                            isCheck: false
-                          }
-                        })
-                      }}
-                    >
-                      Checkbox
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        createBlock({
-                          method: 'post',
-                          url: {
-                            baseUrl:
-                              '/workspace/boards/:boardId/cards/:cardId/blocks',
-                            urlParams: {
-                              boardId: boardId!,
-                              cardId: cardId!
-                            },
-                            queryParams: {
-                              index: -1
-                            }
-                          },
-
-                          payload: {
-                            blockType: EBlockType.Divider,
-                            content: 'anything ahahhahaha',
-                            isCheck: false
-                          }
-                        })
-                      }}
-                    >
-                      Divider
-                    </Button>
-
-                    <input
-                      id='uploadImage_cardDetail'
-                      type='file'
-                      value=''
-                      multiple
-                      onChange={async e => {
-                        const files = e.target.files
-
-                        if (files) {
-                          const urls: string[] = []
-                          const uploadPromises = Array.from(files).map(file => {
-                            const formData = new FormData()
-                            formData.append('file', file)
-
-                            return uploadFile({
-                              method: 'post',
-                              url: {
-                                baseUrl: '/upload'
-                              },
-                              payload: formData
-                            })
-                              .then(data => {
-                                console.log(data)
-                                urls.push(data.url)
-                              })
-                              .catch(error => {
-                                console.error('File upload failed', error)
-                              })
-                          })
-
-                          await Promise.all(uploadPromises)
-
-                          console.log('All uploads completed', urls)
-
-                          createBlock({
-                            method: 'post',
-                            url: {
-                              baseUrl:
-                                '/workspace/boards/:boardId/cards/:cardId/blocks',
-                              urlParams: {
-                                boardId: boardId!,
-                                cardId: cardId!
-                              },
-                              queryParams: {
-                                index: -1
-                              }
-                            },
-                            payload: {
-                              blockType: EBlockType.Files,
-                              files: urls
-                            }
-                          })
-                        }
-                      }}
-                    />
-                    <label htmlFor='uploadImage_cardDetail'>Image</label>
-                  </div>
-                </ScrollArea>
+                {tab === 'description' && <Descriptions card={card} />}
               </div>
             </div>
           </div>

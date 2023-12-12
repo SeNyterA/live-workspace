@@ -6,9 +6,10 @@ import {
   TProperty
 } from '../../../types/workspace.type'
 
+export type TCardData = { [key: string]: string | string[] | undefined | null }
 export type TcardDto = {
   title?: string
-  data?: { [key: string]: string | string[] | undefined | null }
+  data?: TCardData
 }
 
 export type TBoardDto = TWorkspaceDto & { properties?: TPropertyDto[] }

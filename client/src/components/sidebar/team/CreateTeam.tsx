@@ -22,7 +22,9 @@ import { EMemberRole } from '../../../types/workspace.type'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
 
-type TForm = TTeamDto & { channels?: { title: string }[] }
+type TForm = Omit<TTeamDto, 'channelTitles'> & {
+  channels?: { title: string }[]
+}
 
 const Channels = ({ control }: { control: Control<TForm, any> }) => {
   const { append, fields, remove } = useFieldArray({
@@ -224,7 +226,7 @@ export default function CreateTeam({
         <Button
           loading={isPending}
           disabled={isPending}
-          onClick={handleSubmit(({ channels, channelTitles, ...data }) => {
+          onClick={handleSubmit(({ channels, ...data }) => {
             createTeam({
               url: {
                 baseUrl: '/workspace/teams'
