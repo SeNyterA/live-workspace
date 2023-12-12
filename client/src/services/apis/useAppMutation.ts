@@ -13,6 +13,43 @@ import { replaceDynamicValues } from './common'
 import http from './http'
 import { TUploadMutionApi } from './upload/upload.api'
 
+const objectToFormData = (obj: any): FormData => {
+  const formData = new FormData()
+
+  for (const key in obj) {
+    if (obj?.hasOwnProperty(key)) {
+      const value = obj[key]
+
+      if (value instanceof File) {
+        formData?.append(key, value)
+      } else if (Array?.isArray(value)) {
+        value?.forEach((item, index) => {
+          if (item instanceof File) {
+            formData?.append(`${key}[${index}]`, item)
+          } else {
+            formData?.append(`${key}[${index}]`, item?.toString())
+          }
+        })
+      } else if (typeof value === 'object' && value !== null) {
+        for (const nestedKey in value) {
+          if (value?.hasOwnProperty(nestedKey)) {
+            const nestedValue = value[nestedKey]
+            if (nestedValue instanceof File) {
+              formData?.append(`${key}[${nestedKey}]`, nestedValue)
+            } else {
+              formData?.append(`${key}[${nestedKey}]`, nestedValue?.toString())
+            }
+          }
+        }
+      } else {
+        formData?.append(key, value?.toString())
+      }
+    }
+  }
+
+  return formData
+}
+
 export type ApiMutationType = {
   login: {
     url: {
@@ -138,15 +175,20 @@ export const useAppMutation = <T extends keyof ApiMutationType>(
     mutationFn: async ({
       payload,
       method,
-      url
-    }: Omit<ApiMutationType[T], 'response'>): Promise<
-      ApiMutationType[T]['response']
-    > => {
+      url,
+      isFormData
+    }: Omit<ApiMutationType[T], 'response'> & {
+      isFormData?: boolean
+    }): Promise<ApiMutationType[T]['response']> => {
       const _url = replaceDynamicValues(
         url.baseUrl,
         (url as any)?.urlParams || {}
       )
-      const response = await http[method](_url, payload, config)
+      const response = await http[method](
+        _url,
+        isFormData ? objectToFormData(payload) : payload,
+        config
+      )
 
       return response.data
     }

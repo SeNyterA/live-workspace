@@ -4,23 +4,8 @@ export type TUploadMutionApi = {
       baseUrl: '/upload'
     }
     method: 'post'
-    // A FormData instance with the file attached.
-    // const formData = new FormData();
-    // formData.append('file', file);
-    payload: FormData
+    payload: { file: File }
+    isFormData: true
     response: { url: string }
-  }
-
-  uploadFiles: {
-    url: {
-      baseUrl: '/uploads'
-    }
-    method: 'post'
-    // const formData = new FormData();
-    // files.forEach((file, index) => {
-    //   formData.append(`files[${index}]`, file);
-    // });
-    payload: FormData
-    response: any
   }
 }

@@ -89,10 +89,11 @@ export default function BlockActions() {
 
                 return uploadFile({
                   method: 'post',
+                  isFormData: true,
                   url: {
                     baseUrl: '/upload'
                   },
-                  payload: formData
+                  payload: { file }
                 })
                   .then(data => {
                     console.log(data)
