@@ -6,15 +6,15 @@ export default function CardOptions({
   optionId,
   propertyId
 }: {
-  propertyId?: string
+  propertyId: string
   optionId?: string
 }) {
   const { boardId } = useAppParams()
+
+  console.log(boardId)
   const cards = useAppSelector(state =>
     Object.values(state.workspace.cards).filter(
-      card =>
-        card.boardId === boardId &&
-        (!!optionId && !!propertyId ? card.data[propertyId] === optionId : true)
+      card => card.boardId === boardId && card.data?.[propertyId] === optionId
     )
   )
 

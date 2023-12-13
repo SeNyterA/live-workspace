@@ -29,6 +29,7 @@ export type TUserReadedMessages = {
 }
 export type TCards = { [cardId: string]: TCard }
 export type TProperties = { [propertyId: string]: TProperty }
+export type TpropertiesTracking = { [boardId: string]: string }
 
 type TWorkpsaceStore = {
   teams: TTeams
@@ -44,6 +45,7 @@ type TWorkpsaceStore = {
   boards: TBoards
   cards: TCards
   properties: TProperties
+  propertiesTracking: TpropertiesTracking
 }
 
 const initialState: TWorkpsaceStore = {
@@ -59,7 +61,8 @@ const initialState: TWorkpsaceStore = {
 
   boards: {},
   cards: {},
-  properties: {}
+  properties: {},
+  propertiesTracking: {}
 }
 const workspaceSlice = createSlice({
   name: 'workspace',
@@ -141,6 +144,12 @@ const workspaceSlice = createSlice({
     },
     setUnreadCounts: (state, action: PayloadAction<TUnreadCounts>) => {
       assign(state.unreadCount, action.payload)
+    },
+    setPropertiesTracking: (
+      state,
+      action: PayloadAction<TpropertiesTracking>
+    ) => {
+      assign(state.propertiesTracking, action.payload)
     }
   }
 })

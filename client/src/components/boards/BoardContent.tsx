@@ -1,10 +1,5 @@
-import { ActionIcon, Divider, Input } from '@mantine/core'
-import {
-  IconChevronRight,
-  IconFilter,
-  IconPlus,
-  IconSearch
-} from '@tabler/icons-react'
+import { ActionIcon, Divider } from '@mantine/core'
+import { IconChevronRight } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
@@ -14,10 +9,17 @@ import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
 import Info from '../message/info/Info'
 import InfoProvier from '../message/info/InfoProvier'
+import BoardHeader from './BoardHeader'
+import BoardProvider from './BoardProvider'
 import CardsContentV2 from './CardsContentV2'
 
 export default function BoardContent() {
   const { boardId } = useAppParams()
+
+  const board = useAppSelector(state =>
+    Object.values(state.workspace.boards).find(e => e._id === boardId)
+  )
+
   const dispatch = useDispatch()
   const [openInfo, setOpenInfo] = useState(false)
   const { data: detailBoardData } = useAppQuery({
@@ -55,10 +57,6 @@ export default function BoardContent() {
     }
   })
 
-  const board = useAppSelector(state =>
-    Object.values(state.workspace.boards).find(e => e._id === boardId)
-  )
-
   useEffect(() => {
     if (detailBoardData)
       dispatch(
@@ -78,52 +76,27 @@ export default function BoardContent() {
 
   return (
     <div className='flex flex-1'>
-      <div className='flex flex-1 flex-col'>
-        <div className='flex h-12 w-full items-center justify-end gap-2 px-3'>
-          <p className='flex-1 text-base font-medium'>{board?.title}</p>
-
-          <ActionIcon
-            variant='transparent'
-            aria-label='Settings'
-            className='h-[30px] w-[30px] bg-gray-100 text-gray-600'
-          >
-            <IconPlus size={16} stroke={1.5} />
-          </ActionIcon>
-
-          <Input
-            className='flex h-[30px] items-center rounded bg-gray-100'
-            size='sm'
-            placeholder='Search card name'
-            leftSection={<IconSearch size={14} />}
-            classNames={{
-              input: 'bg-transparent border-none min-h-[20px] h-[20px]'
-            }}
-          />
-
-          <ActionIcon
-            variant='transparent'
-            aria-label='Settings'
-            className='h-[30px] w-[30px] bg-gray-100 text-gray-600'
-          >
-            <IconFilter size={16} stroke={1.5} />
-          </ActionIcon>
-
-          <ActionIcon
-            variant='light'
-            className='h-[30px] w-[30px] bg-gray-100'
-            onClick={() => setOpenInfo(e => !e)}
-          >
-            <IconChevronRight
-              className={`h-4 w-4 transition-transform ${
-                openInfo || 'rotate-180'
-              }`}
-            />
-          </ActionIcon>
+      <BoardProvider>
+        <div className='flex flex-1 flex-col'>
+          <div className='flex h-12 w-full items-center justify-end gap-2 px-3'>
+            <BoardHeader />
+            <ActionIcon
+              variant='light'
+              className='h-[30px] w-[30px] bg-gray-100'
+              onClick={() => setOpenInfo(e => !e)}
+            >
+              <IconChevronRight
+                className={`h-4 w-4 transition-transform ${
+                  openInfo || 'rotate-180'
+                }`}
+              />
+            </ActionIcon>
+          </div>
+          <Divider variant='dashed' />
+          <CardsContentV2 />
         </div>
-        <Divider variant='dashed' />
-        {/* <CardsContent /> */}
-        <CardsContentV2 />
-      </div>
+      </BoardProvider>
+
       {openInfo && (
         <>
           <Divider orientation='vertical' variant='dashed' />

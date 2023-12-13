@@ -1,27 +1,20 @@
 import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import useAppControlParams from '../../hooks/useAppControlParams'
-import useAppParams from '../../hooks/useAppParams'
 import useRenderCount from '../../hooks/useRenderCount'
 import { useAppSelector } from '../../redux/store'
-import { EFieldType } from '../../services/apis/board/board.api'
 import { useAppMutation } from '../../services/apis/useAppMutation'
+import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
 export default function CardsContentV2() {
   useRenderCount('CardsContent')
+  const { trackingId, boardId } = useBoard()
   const { toogleCard } = useAppControlParams()
   const { mutateAsync: createCard } = useAppMutation('createCard')
-  const { boardId } = useAppParams()
-  const propertyRoot = useAppSelector(state =>
-    Object.values(state.workspace.properties)
-      .filter(e => e.boardId === boardId)
-      .find(
-        ({ fieldType, fieldOption }) =>
-          fieldType === EFieldType.Select &&
-          fieldOption &&
-          fieldOption.length > 3
-      )
+
+  const propertyRoot = useAppSelector(
+    state => state.workspace.properties[trackingId!]
   )
 
   return (
@@ -69,6 +62,7 @@ export default function CardsContentV2() {
                     <IconPlus size={16} stroke={1.5} />
                   </ActionIcon>
                 </div>
+
                 <CardOptions
                   propertyId={propertyRoot._id}
                   optionId={option._id}
@@ -103,7 +97,7 @@ export default function CardsContentV2() {
                   <IconPlus size={16} stroke={1.5} />
                 </ActionIcon>
               </div>
-              <CardOptions />
+              {/* <CardOptions propertyId={propertyRoot._id} /> */}
             </div>
           </div>
         </ScrollArea>

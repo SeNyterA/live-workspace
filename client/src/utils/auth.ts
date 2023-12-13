@@ -30,5 +30,13 @@ export const lsActions = {
       const clearLSEvent = new Event('clearLS')
       LocalStorageEventTarget.dispatchEvent(clearLSEvent)
     }
-  }
+  },
+
+  getTrackingId: (key: string) => localStorage.getItem(key),
+  setTrackingId: (key: string, value: string) =>
+    localStorage.setItem(key, value),
+
+  getSortBy: (key: string) => localStorage.getItem(key + '_sortBy'),
+  setSortBy: (key: string, value: string) =>
+    localStorage.setItem(key + '_sortBy', value)
 }
