@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "docker-compose -f dev-compose.yml up",
+    "prod": "docker-compose -f prod-compose.yml up",
     "start:server": "docker-compose -f dev-compose.yml up server mongodb",
     "start:client": "docker-compose -f dev-compose.yml up client",
     "start:mongodb": "docker-compose -f dev-compose.yml up mongodb",

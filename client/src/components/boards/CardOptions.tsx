@@ -4,17 +4,20 @@ import CardItem from './card/CardItem'
 
 export default function CardOptions({
   optionId,
-  propertyId
+  propertyId,
+  optionsId
 }: {
   propertyId: string
   optionId?: string
+  optionsId?: string[]
 }) {
   const { boardId } = useAppParams()
 
-  console.log(boardId)
   const cards = useAppSelector(state =>
-    Object.values(state.workspace.cards).filter(
-      card => card.boardId === boardId && card.data?.[propertyId] === optionId
+    Object.values(state.workspace.cards).filter(card =>
+      card.boardId === boardId && !!optionsId
+        ? !optionsId.includes(card.data?.[propertyId] as any)
+        : card.data?.[propertyId] === optionId
     )
   )
 

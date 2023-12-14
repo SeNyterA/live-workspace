@@ -113,7 +113,7 @@ export type TBlock = {
 
 export type TCard = TWorkspace & {
   boardId: string
-  data: {
+  data?: {
     [propertyId: string]: string | string[] | undefined
   }
   blocks: TBlock[]

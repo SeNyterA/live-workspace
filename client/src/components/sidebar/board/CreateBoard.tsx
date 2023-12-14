@@ -142,7 +142,7 @@ export default function CreateBoard({
             if (data && teamId)
               createBoard({
                 url: {
-                  baseUrl: '/workspace/teams/:teamId/channels',
+                  baseUrl: '/workspace/teams/:teamId/boards',
                   urlParams: {
                     teamId
                   }
