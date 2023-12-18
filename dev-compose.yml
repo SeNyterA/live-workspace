@@ -21,12 +21,11 @@ services:
 
   server:
     container_name: server
-    # restart: always
     build:
       context: ./server
       dockerfile: Dockerfile.dev
     ports:
-      - "8420:8420"
+      - '8420:8420'
     environment:
       - PORT=8420
       - MONGO_URL=mongodb://mongodb:27017/live-workspace
@@ -40,8 +39,6 @@ services:
     depends_on:
       - mongodb
       - redis
-    env_file:
-      - .env
     command: yarn start:dev
 
 volumes:

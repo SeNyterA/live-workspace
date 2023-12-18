@@ -1,7 +1,7 @@
 # Stage 1: Builder
 FROM node:18 as builder
 WORKDIR /app
-COPY package.json yarn.lock ./
+COPY package.json ./
 # Install dependencies
 RUN yarn install
 # Copy source code
