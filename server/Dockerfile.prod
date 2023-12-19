@@ -15,7 +15,5 @@ FROM node:18-alpine
 WORKDIR /app
 # Copy everything from the builder stage
 COPY --from=builder /app .
-# Expose the port
-EXPOSE 3000
 # Command default to run the application
 CMD ["node", "dist/main"]

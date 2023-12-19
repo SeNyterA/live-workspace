@@ -267,7 +267,7 @@ export class WorkspaceService {
       e => e.type === 'member' && ['create', 'delele'].includes(e.action)
     )
     if (members) {
-      const sockets = await this.socketService.server.sockets.fetchSockets()
+      const sockets = await this.socketService.server.fetchSockets()
       members.forEach(member => {
         if (member.type === 'member' && member.action === 'create') {
           sockets
@@ -286,7 +286,7 @@ export class WorkspaceService {
       e => e.type === 'direct' && e.action === 'create'
     )
     if (directs) {
-      const sockets = await this.socketService.server.sockets.fetchSockets()
+      const sockets = await this.socketService.server.fetchSockets()
       directs.forEach(direct => {
         if (direct.type === 'direct' && direct.action === 'create') {
           sockets

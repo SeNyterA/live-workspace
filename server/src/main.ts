@@ -38,8 +38,7 @@ async function bootstrap() {
     AWS_REGION: process.env.AWS_REGION,
     AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
     AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE:
-      process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE,
-    TEST_ANY: process.env.TEST_ANY
+      process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE
   })
 }
 bootstrap()

@@ -23,7 +23,6 @@ export class AuthController {
     return this.authService.signUp(signUpDto)
   }
 
-  @UseGuards(AuthGuard)
   @Get('profile')
   getProfile(@HttpUser() user: TJwtUser) {
     return this.authService.getProfile(user.sub)
