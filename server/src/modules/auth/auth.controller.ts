@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TCreateUser } from 'src/modules/users/user.dto'
 
-import { TLoginPayload } from './auth.dto'
-import { AuthGuard, Public } from './auth.guard'
-import { AuthService } from './auth.service'
 import { TJwtUser } from '../workspace/workspace.gateway'
+import { TLoginPayload } from './auth.dto'
+import { Public } from './auth.guard'
+import { AuthService } from './auth.service'
 
 @Controller('auth')
 export class AuthController {

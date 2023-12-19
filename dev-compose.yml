@@ -31,6 +31,9 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - '8420:8420'
+    volumes:
+      - ./server:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
       - PORT=8420
