@@ -9,7 +9,7 @@ export default function CardItem({ card }: { card: TCard }) {
 
   return (
     <div
-      className='mt-2 flex min-h-[80px] flex-col rounded bg-gray-100 px-2 py-1'
+      className='flex min-h-[80px] flex-col rounded bg-gray-100 px-2 py-1'
       id={card._id}
       onClick={() => {
         toogleCard({

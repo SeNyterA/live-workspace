@@ -64,11 +64,11 @@ export default function CardsContentV2() {
                   direction='horizontal'
                   type='column'
                 >
-                  {provided => (
+                  {dropProvided => (
                     <div
                       className='flex'
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
+                      {...dropProvided.droppableProps}
+                      ref={dropProvided.innerRef}
                     >
                       {options.map((option, index) => (
                         <Draggable
@@ -76,14 +76,14 @@ export default function CardsContentV2() {
                           draggableId={option._id}
                           index={index}
                         >
-                          {provided => (
+                          {dragProvided => (
                             <div
                               className='mx-1 w-64'
-                              {...provided.draggableProps}
-                              ref={provided.innerRef}
+                              ref={dragProvided.innerRef}
+                              {...dragProvided.draggableProps}
                             >
                               <div
-                                {...provided.dragHandleProps}
+                                {...dragProvided.dragHandleProps}
                                 className='flex h-9 items-center justify-between rounded bg-gray-100 px-2'
                               >
                                 <span>{option.title}</span>
@@ -126,7 +126,7 @@ export default function CardsContentV2() {
                           )}
                         </Draggable>
                       ))}
-                      {provided.placeholder}
+                      {dropProvided.placeholder}
                     </div>
                   )}
                 </Droppable>
