@@ -24,9 +24,12 @@ services:
       - live-workspace-network
 
   server:
-    container_name: server
-    restart: always
-    image: senytera/live-workspace-server:latest
+    container_name: server-prod
+    # restart: always
+    # image: senytera/live-workspace-server:latest
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
     ports:
       - '8420:8420'
     environment:

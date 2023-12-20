@@ -1,29 +1,51 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import * as bcrypt from 'bcrypt'
+import { InjectModel } from '@nestjs/mongoose'
+import * as crypto from 'crypto-js'
+import { Model } from 'mongoose'
+import { removePassword } from 'src/libs/removePassword'
 import { TCreateUser, TUser } from 'src/modules/users/user.dto'
-import { UsersService } from '../users/users.service'
+import { User } from '../users/user.schema'
 import { TLoginPayload, TLoginResponse } from './auth.dto'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @InjectModel(User.name) public userModel: Model<User>
   ) {}
 
-  async _validateUser(email: string, password: string) {
-    const user = await await this.usersService._findByUserNameOrEmail(email)
-    if (user) {
-      if (await bcrypt.compare(password, user.password)) {
-        delete user.password
-        return user
+  private _comparePasswords(
+    plainPassword: string,
+    hashedPassword: string
+  ): boolean {
+    const hash = crypto.SHA256(plainPassword).toString()
+    return hash === hashedPassword
+  }
+  private async validateUser(userNameOrEmail: string, password: string) {
+    try {
+      const user = await this.userModel.findOne({
+        $or: [{ userName: userNameOrEmail }, { email: userNameOrEmail }]
+      })
+
+      if (!user) {
+        return null
       }
+
+      const isPasswordCorrect = this._comparePasswords(password, user.password)
+
+      if (!isPasswordCorrect) {
+        return null
+      }
+
+      return user
+    } catch (error) {
+      console.error('Error validating user:', error)
+      throw error
     }
-    return null
   }
 
-  async _generateUserCredentials(user: TUser) {
+  private async _generateUserCredentials(user: TUser) {
     const payload = {
       email: user.email,
       userName: user.userName,
@@ -36,23 +58,31 @@ export class AuthService {
     password,
     userNameOrEmail
   }: TLoginPayload): Promise<TLoginResponse> {
-    const user = await this._validateUser(userNameOrEmail, password)
+    const user = await this.validateUser(userNameOrEmail, password)
     if (!user) {
       throw new BadRequestException(`Email or password are invalid`)
-    } else {
-      const access_token = await this._generateUserCredentials(user)
-      return {
-        user: user,
-        token: access_token
-      }
+    }
+    const access_token = await this._generateUserCredentials(user)
+    return {
+      user: removePassword(user.toJSON()),
+      token: access_token
     }
   }
 
   async signUp(userDto: TCreateUser) {
-    return this.usersService.createUser(userDto)
+    const _password = userDto.password
+    const hashedPassword = crypto.SHA256(_password).toString()
+    userDto.password = hashedPassword
+    const user = await this.userModel.create(userDto)
+    const access_token = await this._generateUserCredentials(user)
+    return {
+      user: removePassword(user.toJSON()),
+      token: access_token
+    }
   }
 
   async getProfile(id: string) {
-    return await this.usersService.findById(id)
+    const user = await this.userModel.findById(id)
+    return removePassword(user.toJSON())
   }
 }

@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import * as bcrypt from 'bcrypt'
 import { Model } from 'mongoose'
+import { removePassword } from 'src/libs/removePassword'
 import { TCreateUser, TUser } from './user.dto'
 import { User } from './user.schema'
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) public userModel: Model<User>) {}
 
-  async _findByUserNameOrEmail(userNameOrEmail: string): Promise<User> {
+  async _findByUserNameOrEmail(userNameOrEmail: string) {
     const user = await this.userModel.findOne({
       $or: [{ userName: userNameOrEmail }, { email: userNameOrEmail }]
     })
@@ -17,7 +17,7 @@ export class UsersService {
       throw new NotFoundException('User not found')
     }
 
-    return user.toJSON()
+    return removePassword(user.toJSON())
   }
 
   async _findById(id: string): Promise<TUser> {
@@ -27,16 +27,6 @@ export class UsersService {
     }
 
     return user.toJSON()
-  }
-
-  async createUser(createUserDto: TCreateUser): Promise<TUser> {
-    const saltOrRounds = 10
-    const _password = createUserDto.password
-    createUserDto.password = await bcrypt.hash(_password, saltOrRounds)
-    const { password, ...user } = (
-      await this.userModel.create(createUserDto)
-    ).toJSON()
-    return user
   }
 
   async findById(id: string): Promise<TUser> {
@@ -88,21 +78,4 @@ export class UsersService {
       user
     }
   }
-
-  // async findOneByKeyword(key: string) {
-  //   const regex = new RegExp(key, 'i')
-
-  //   const user = await this.userModel.findOne({
-  //     $or: [
-  //       { nickname: { $regex: regex } },
-  //       { userName: { $regex: regex } },
-  //       { email: { $regex: regex } }
-  //     ],
-  //     isAvailable: true
-  //   })
-
-  //   return {
-  //     user
-  //   }
-  // }
 }
