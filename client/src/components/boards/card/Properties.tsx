@@ -71,7 +71,9 @@ export default function Properties() {
             />
           )}
 
-          {property.fieldType === EFieldType.People && (
+          {[EFieldType.People, EFieldType.Assignees].includes(
+            property.fieldType
+          ) && (
             <Watching
               watchingFn={state =>
                 Object.values(state.workspace.members)
@@ -113,40 +115,6 @@ export default function Properties() {
                   }}
                 />
               )}
-            />
-          )}
-
-          {property.fieldType === EFieldType.Select && (
-            <Select
-              className='first:!mt-0'
-              label={property.title}
-              description={property.description}
-              placeholder='Pick value'
-              data={property.fieldOption?.map(option => ({
-                value: option._id,
-                label: option.title
-              }))}
-              mt='md'
-              value={tmpValue[property._id]?.toString()}
-              onChange={value => {
-                setTmpValue(old => ({ ...old, [property._id]: value }))
-                updateCard({
-                  url: {
-                    baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                    urlParams: {
-                      boardId: boardId!,
-                      cardId: card?._id!
-                    }
-                  },
-                  method: 'patch',
-                  payload: {
-                    data: {
-                      ...card?.data,
-                      [property._id]: value
-                    }
-                  }
-                })
-              }}
             />
           )}
 

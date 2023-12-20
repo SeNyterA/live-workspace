@@ -69,10 +69,7 @@ export default function Members() {
       classNames={{ children: 'pl-0' }}
     >
       {members?.map(({ member, user }) => (
-        <div
-          className='mt-2 flex w-full flex-1 items-center gap-2'
-          key={user?._id}
-        >
+        <div className='mt-2 flex flex-1 items-center gap-2' key={user?._id}>
           <UserDetailProvider>
             <Indicator
               inline
@@ -87,8 +84,12 @@ export default function Members() {
           </UserDetailProvider>
 
           <div className='flex flex-1 flex-col justify-center'>
-            <p className='font-medium leading-4'>{user?.userName}</p>
-            <p className='leading-2 text-xs text-gray-500'>{user?.email}</p>
+            <p className='max-w-[150px] truncate font-medium leading-4'>
+              {user?.userName}
+            </p>
+            <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+              {user?.email}
+            </p>
           </div>
 
           {member && (

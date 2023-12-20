@@ -43,26 +43,20 @@ export class WorkspaceGateway
 
   async handleConnection(client: CustomSocket, ...args: any[]) {
     try {
-      const user = (await this.jwtService.verifyAsync(
+      if (!client?.handshake?.auth?.token) throw new Error('Missing token')
+
+      const user = await this.jwtService.verifyAsync(
         client.handshake.auth.token,
         { secret: process.env.JWT_SECRET }
-      )) as TJwtUser
-      client.user = user
-
-      this.workspaceService.subscribeAllRooms(user.sub, client)
-
-      const _log = await this.redisService.redisClient.get(
-        `presence:${user.sub}`
       )
 
-      const _status = parseInt(_log) || 0
+      if (!user?.sub) throw new Error('Invalid user')
+      client.user = user
 
-      if (_status > 0) {
-        this.redisService.redisClient.set(`presence:${user.sub}`, _status + 1)
-      } else {
-        this.redisService.redisClient.set(`presence:${user.sub}`, 1)
-      }
+      await this.workspaceService.subscribeAllRooms(user.sub, client)
+      await this.redisService.redisClient.set(`presence:${user.sub}`, 'online')
     } catch (error) {
+      client.disconnect()
       console.log(error)
     }
   }
@@ -70,27 +64,13 @@ export class WorkspaceGateway
   async handleDisconnect(client: CustomSocket) {
     try {
       const userId = client?.user?.sub
-      if (userId) {
-        const time = Date.now().toString()
+      if (!userId) return
 
-        const _log = await this.redisService.redisClient.get(
-          `presence:${client.user.sub}`
-        )
-
-        const _status = parseInt(_log) || 0
-
-        if (_status > 0) {
-          this.redisService.redisClient.set(
-            `presence:${client.user.sub}`,
-            _status - 1
-          )
-        } else {
-          this.redisService.redisClient.set(
-            `presence:${client.user.sub}`,
-            -time
-          )
-        }
-      }
+      const sockets = await this.server.fetchSockets()
+      const userSockets = sockets.filter(socket => socket.rooms.has(userId))
+      if (userSockets.length) return
+      const time = Date.now().toString()
+      await this.redisService.redisClient.set(`presence:${userId}`, time)
     } catch (error) {
       console.log(error)
     }
