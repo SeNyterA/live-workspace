@@ -111,10 +111,12 @@ export type TBlock = {
   files?: string[]
 }
 
+export type TCardData = {
+  [propertyId: string]: string | string[] | undefined
+}
+
 export type TCard = TWorkspace & {
   boardId: string
-  data?: {
-    [propertyId: string]: string | string[] | undefined
-  }
+  data?: TCardData
   blocks: TBlock[]
 }

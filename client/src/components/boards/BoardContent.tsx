@@ -11,7 +11,7 @@ import Info from '../message/info/Info'
 import InfoProvier from '../message/info/InfoProvier'
 import BoardHeader from './BoardHeader'
 import BoardProvider from './BoardProvider'
-import CardsContentV2 from './CardsContentV2'
+import CardsContent from './CardsContent'
 
 export default function BoardContent() {
   const { boardId } = useAppParams()
@@ -93,7 +93,7 @@ export default function BoardContent() {
             </ActionIcon>
           </div>
           <Divider variant='dashed' />
-          <CardsContentV2 />
+          <CardsContent />
         </div>
       </BoardProvider>
 

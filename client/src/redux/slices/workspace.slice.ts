@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assign } from 'lodash'
+import { TCardData } from '../../services/apis/board/board.api'
 import { TUser } from '../../types/user.type'
 import {
   TBoard,
@@ -129,6 +130,17 @@ const workspaceSlice = createSlice({
     },
     addProperties: (state, action: PayloadAction<TProperties>) => {
       assign(state.properties, action.payload)
+    },
+    updateCardData: (
+      state,
+      action: PayloadAction<{
+        cardId: string
+        data: TCardData
+      }>
+    ) => {
+      const card = state.cards[action.payload.cardId]
+      if (!card) return
+      assign(card.data, action.payload.data)
     },
 
     toogleUserReadedMessage: (
