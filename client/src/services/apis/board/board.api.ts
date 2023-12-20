@@ -160,6 +160,28 @@ export type TBoardMutionApi = {
     payload: TPropertyDto
     response: any
   }
+
+  updateProperty: {
+    url: {
+      baseUrl: '/workspace/boards/:boardId/properties/:propertyId'
+      urlParams: {
+        boardId: string
+        propertyId: string
+      }
+    }
+    method: 'patch'
+    payload: TPropertyDto
+    response: {
+      error?: {
+        code: number
+        err: string
+        userId: string
+        boardId: string
+        cardId: string
+      }
+      data?: TCard
+    }
+  }
 }
 
 export type TBoardQueryApi = {

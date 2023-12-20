@@ -8,7 +8,7 @@ import { MessageService } from 'src/modules/workspace/message/message.service'
 import { WorkspaceService } from 'src/modules/workspace/workspace.service'
 import { TeamService } from '../../team.service'
 import { BoardService } from '../board.service'
-import { PropertyDto } from './property.dto'
+import { PropertyDto, UPropertyDto } from './property.dto'
 import { Property } from './property.schema'
 
 @Injectable()
@@ -29,7 +29,7 @@ export class PropertyService {
     readonly boardService: BoardService
   ) {}
 
-  async _create({
+  async create({
     userId,
     boardId,
     payload
@@ -76,6 +76,67 @@ export class PropertyService {
 
     return {
       data: newProperty
+    }
+  }
+
+  async update({
+    userId,
+    boardId,
+    payload,
+    propertyId
+  }: {
+    userId: string
+    boardId: string
+    propertyId: string
+    payload: UPropertyDto
+  }) {
+    const {
+      permissions: {
+        fieldAction: { edit: editPermission }
+      }
+    } = await this.boardService.__getPermisstion({
+      targetId: boardId,
+      userId
+    })
+
+    if (!editPermission) {
+      return {
+        error: {
+          code: Errors['User dont has permission to edit property'],
+          err: 'User dont has permission to edit property',
+          userId,
+          boardId
+        }
+      }
+    }
+
+    const updatedProperty = await this.propertyModel.findOneAndUpdate(
+      { boardId, _id: propertyId },
+      {
+        ...payload,
+        modifiedById: userId,
+        updatedAt: new Date()
+      },
+      { new: true, lean: true }
+    )
+
+    if (!updatedProperty) {
+      return {
+        error: {
+          code: Errors['Property not found'],
+          err: 'Property not found',
+          propertyId
+        }
+      }
+    }
+
+    this.workspaceService.boardEmit({
+      rooms: [boardId],
+      boardData: [{ type: 'property', action: 'update', data: updatedProperty }]
+    })
+
+    return {
+      data: updatedProperty
     }
   }
 }

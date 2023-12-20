@@ -9,5 +9,6 @@ export const Errors = {
   'User dont has permission to create board': 10007,
   'User dont has permission to create property': 10008,
   'User dont has permission to create card': 10009,
-  'User dont has permission to edit card': 10010
+  'User dont has permission to edit card': 10010,
+  'User dont has permission to edit property': 10011
 }

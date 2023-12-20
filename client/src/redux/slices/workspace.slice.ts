@@ -10,6 +10,7 @@ import {
   TGroup,
   TMember,
   TMessage,
+  TOption,
   TProperty,
   TTeam
 } from '../../types/workspace.type'
@@ -128,9 +129,6 @@ const workspaceSlice = createSlice({
     addCards: (state, action: PayloadAction<TCards>) => {
       assign(state.cards, action.payload)
     },
-    addProperties: (state, action: PayloadAction<TProperties>) => {
-      assign(state.properties, action.payload)
-    },
     updateCardData: (
       state,
       action: PayloadAction<{
@@ -141,6 +139,20 @@ const workspaceSlice = createSlice({
       const card = state.cards[action.payload.cardId]
       if (!card) return
       assign(card.data, action.payload.data)
+    },
+    addProperties: (state, action: PayloadAction<TProperties>) => {
+      assign(state.properties, action.payload)
+    },
+    updatePropertyOptions: (
+      state,
+      action: PayloadAction<{
+        propertyId: string
+        fieldOption: TOption[]
+      }>
+    ) => {
+      const property = state.properties[action.payload.propertyId]
+      if (!property) return
+      property.fieldOption = action.payload.fieldOption
     },
 
     toogleUserReadedMessage: (

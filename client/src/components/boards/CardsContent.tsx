@@ -8,10 +8,27 @@ import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { EFieldType } from '../../services/apis/board/board.api'
 import { useAppMutation } from '../../services/apis/useAppMutation'
+import { TOption } from '../../types/workspace.type'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
-type TOption = { _id: string; title: string; color?: string }
+const updateOptionPosition = (
+  options: TOption[],
+  optionId: string,
+  moveToIndex: number
+): TOption[] => {
+  const updatedOptions = [...options]
+  const currentIndex = options.findIndex(option => option._id === optionId)
+
+  if (currentIndex === -1 || moveToIndex < 0 || moveToIndex >= options.length) {
+    return updatedOptions
+  }
+
+  const [removedOption] = updatedOptions.splice(currentIndex, 1)
+  updatedOptions.splice(moveToIndex, 0, removedOption)
+
+  return updatedOptions
+}
 
 export default function CardsContent() {
   useRenderCount('CardsContent')
@@ -19,29 +36,30 @@ export default function CardsContent() {
   const { toogleCard } = useAppControlParams()
   const { mutateAsync: createCard } = useAppMutation('createCard')
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
+  const { mutateAsync: updateProperty } = useAppMutation('updateProperty')
   const dispatch = useDispatch()
 
   const propertyRoot = useAppSelector(
     state => state.workspace.properties[trackingId!]
   )
 
-  const memberUsers = useAppSelector(state =>
-    Object.values(state.workspace.members)
-      .filter(e => e.targetId === boardId)
-      .map(member => ({
-        member,
-        user: state.workspace.users[member.userId]
-      }))
-  )
+  // const memberUsers = useAppSelector(state =>
+  //   Object.values(state.workspace.members)
+  //     .filter(e => e.targetId === boardId)
+  //     .map(member => ({
+  //       member,
+  //       user: state.workspace.users[member.userId]
+  //     }))
+  // )
 
   const getOptions = (): TOption[] | undefined => {
     switch (propertyRoot?.fieldType) {
       case EFieldType.Select:
         return propertyRoot?.fieldOption || []
-      case EFieldType.People:
-        return memberUsers
-          ?.filter(e => !!e.user)
-          .map(e => ({ _id: e.user._id, title: e.user.userName }))
+      // case EFieldType.People:
+      //   return memberUsers
+      //     ?.filter(e => !!e.user)
+      //     .map(e => ({ _id: e.user._id, title: e.user.userName }))
       default:
         return []
     }
@@ -61,9 +79,48 @@ export default function CardsContent() {
               <DragDropContext
                 onDragEnd={result => {
                   console.log(result)
+
+                  if (result.type === 'column') {
+                    if (result.destination?.index === undefined) return
+
+                    const newFieldOption = updateOptionPosition(
+                      propertyRoot.fieldOption || [],
+                      result.draggableId,
+                      result.destination.index
+                    )
+
+                    dispatch(
+                      workspaceActions.updatePropertyOptions({
+                        propertyId: propertyRoot._id,
+                        fieldOption: newFieldOption
+                      })
+                    )
+
+                    updateProperty({
+                      method: 'patch',
+                      url: {
+                        baseUrl:
+                          '/workspace/boards/:boardId/properties/:propertyId',
+                        urlParams: {
+                          boardId: boardId!,
+                          propertyId: propertyRoot._id
+                        }
+                      },
+                      payload: {
+                        fieldOption: newFieldOption
+                      }
+                    }).catch(() => {
+                      dispatch(
+                        workspaceActions.updatePropertyOptions({
+                          propertyId: propertyRoot._id,
+                          fieldOption: propertyRoot.fieldOption || []
+                        })
+                      )
+                    })
+                  }
+
                   if (result.type === 'card') {
                     if (!result.destination?.droppableId) return
-                    if (!result.draggableId) return
 
                     dispatch(
                       workspaceActions.updateCardData({

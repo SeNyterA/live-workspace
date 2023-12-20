@@ -19,14 +19,18 @@ export default function CardOptions({
   )
 
   return (
-    <Droppable droppableId={optionId} type='card'>
+    <Droppable droppableId={optionId} type='card' >
       {dropProvided => (
-        <div className='mt-1' {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
+        <div
+          className='mt-1'
+          {...dropProvided.droppableProps}
+          ref={dropProvided.innerRef}
+        >
           {cards?.map((card, index) => (
             <Draggable key={card._id} draggableId={card._id} index={index}>
               {dragProvided => (
                 <div
-                className='py-1'
+                  className='py-1'
                   {...dragProvided.dragHandleProps}
                   {...dragProvided.draggableProps}
                   ref={dragProvided.innerRef}

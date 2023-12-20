@@ -8,7 +8,7 @@ import {
   ValidateNested
 } from 'class-validator'
 import { CreateWorkspaceDto, MembersDto } from '../../workspace.dto'
-import { EFieldType } from './board.schema'
+import { EFieldType } from './property/property.schema'
 
 export class CreateBoardMembersDto extends MembersDto {}
 
