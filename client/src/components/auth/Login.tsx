@@ -75,7 +75,7 @@ export default function Authentication() {
             }
 
             if (type === 'register') {
-              Array(10)
+              Array(1000)
                 .fill(1)
                 .forEach((_, index) => {
                   register(

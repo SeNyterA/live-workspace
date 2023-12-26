@@ -1,4 +1,5 @@
 import { ActionIcon, Avatar, Divider, ScrollArea } from '@mantine/core'
+import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
@@ -57,7 +58,9 @@ export default function TeamList() {
             toggleDrawer(true)
           }}
         >
-          <Avatar />
+          <Avatar>
+            <IconPlus />
+          </Avatar>
         </ActionIcon>
       </div>
 

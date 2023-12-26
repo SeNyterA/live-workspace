@@ -24,16 +24,11 @@ services:
       - live-workspace-network
 
   server:
-    container_name: server-test
+    container_name: server
     restart: always
-    build:
-      context: ./server
-      dockerfile: Dockerfile.dev
+    image: senytera/live-workspace-server:latest
     ports:
       - '8420:8420'
-    volumes:
-      - ./server:/app
-      - /app/node_modules
     environment:
       - NODE_ENV=development
       - PORT=8420
@@ -48,7 +43,21 @@ services:
     depends_on:
       - mongodb
       - redis
-    command: yarn start:dev
+    command: node dist/main
+    networks:
+      - live-workspace-network
+
+  nginx:
+    container_name: nginx
+    image: senytera/live-workspace-client:latest
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/ec2.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - server
     networks:
       - live-workspace-network
 

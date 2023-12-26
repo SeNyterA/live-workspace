@@ -163,7 +163,7 @@ export default function Properties() {
               className='mt-4 first:!mt-0'
               label={property.title}
               description={property.description}
-              placeholder='Pick value'
+              {...{ placeholder: 'Pick value' }}
               mt='md'
               value={
                 card?.data?.[property._id]?.toString()

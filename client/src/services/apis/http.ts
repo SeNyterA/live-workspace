@@ -1,12 +1,13 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
 import { lsActions } from '../../utils/auth'
+import { baseURL } from '../config'
 
 class Http {
   instance: AxiosInstance
 
   constructor() {
     this.instance = axios.create({
-      baseURL: import.meta.env.VITE_API,
+      baseURL: baseURL,
       headers: {
         'Content-Type': 'application/json'
       }

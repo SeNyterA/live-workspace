@@ -7,11 +7,11 @@ import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
+import Editor from '../new-message/Editor'
 import Info from './info/Info'
 import InfoProvier from './info/InfoProvier'
 import MessageContent from './MessageContent'
 import MessageContentProvider from './MessageContentProvider'
-import SendMessage from './SendMessage'
 
 export default function ChannelMessage() {
   const [openInfo, setOpenInfo] = useState(false)
@@ -99,11 +99,12 @@ export default function ChannelMessage() {
           />
         </MessageContentProvider>
         <Divider variant='dashed' />
-        <SendMessage
+        {/* <SendMessage
           targetId={{
             channelId
           }}
-        />
+        /> */}
+        <Editor />
       </div>
       {openInfo && (
         <>

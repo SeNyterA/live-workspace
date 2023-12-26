@@ -24,15 +24,18 @@ services:
       - live-workspace-network
 
   server:
-    container_name: server-prod
-    # restart: always
-    # image: senytera/live-workspace-server:latest
+    container_name: server
+    restart: always
     build:
       context: ./server
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
     ports:
       - '8420:8420'
+    volumes:
+      - ./server:/app
+      - /app/node_modules
     environment:
+      - NODE_ENV=development
       - PORT=8420
       - MONGO_URL=mongodb://mongodb:27017/live-workspace
       - REDIS_URL=redis://redis:6379
@@ -45,7 +48,7 @@ services:
     depends_on:
       - mongodb
       - redis
-    command: node dist/main
+    command: yarn start:dev
     networks:
       - live-workspace-network
 

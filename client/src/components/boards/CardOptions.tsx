@@ -19,7 +19,7 @@ export default function CardOptions({
   )
 
   return (
-    <Droppable droppableId={optionId} type='card' >
+    <Droppable droppableId={optionId} type='card'>
       {dropProvided => (
         <div
           className='mt-1'
