@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useTyping from '../../hooks/useTyping'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
+import '@mantine/tiptap/styles.css'
 import {
   ApiMutationType,
   useAppMutation
@@ -11,7 +12,8 @@ import {
   ApiSocketType,
   useAppOnSocket
 } from '../../services/socket/useAppOnSocket'
-import Editor from '../new-message/NewMessage'
+import Editor from '../new-message/Editor'
+// import Editor from '../new-message/Editor'
 import {
   TMessageContentValue,
   TTargetMessageId
@@ -164,13 +166,24 @@ export default function SendMessage({
 
   return (
     <>
-      {userTypings?.find(e => e.targetId === messRefId && e.type === 1)?.userId}
       <Editor
         onChange={() => {
           messRefId && typing(messRefId)
         }}
         onSubmit={_createMessage}
       />
+      <p className='flex justify-between px-4 pb-1 text-xs text-gray-500'>
+        <span>
+          {
+            userTypings?.find(e => e.targetId === messRefId && e.type === 1)
+              ?.userId
+          }
+        </span>
+
+        <span>
+          Press <kbd>⌘Enter</kbd> or <kbd>Alt Enter</kbd> to quickly send
+        </span>
+      </p>
     </>
   )
 }

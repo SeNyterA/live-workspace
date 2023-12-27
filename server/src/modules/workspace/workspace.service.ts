@@ -124,6 +124,7 @@ export class WorkspaceService {
 
   async stopTyping(userId: string, targetId: string) {
     await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
+    this.toggleTyping({ targetId, userId, type: 0 })
   }
 
   async toggleTyping({
