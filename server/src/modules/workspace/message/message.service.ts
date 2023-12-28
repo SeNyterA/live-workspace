@@ -94,7 +94,7 @@ export class MessageService {
   }: {
     userId: string
     channelId: string
-    messagePayload: { content: string }
+    messagePayload: { content: string; attachments?: string[] }
   }) {
     await this.memberService._checkExisting({
       userId,
@@ -105,9 +105,9 @@ export class MessageService {
       messageReferenceId: channelId,
       createdById: userId,
       modifiedById: userId,
-      content: messagePayload.content,
       messageFor: EMessageFor.Channel,
-      messageType: EMessageType.Normal
+      messageType: EMessageType.Normal,
+      ...messagePayload
     })
 
     this.workspaceService.message({

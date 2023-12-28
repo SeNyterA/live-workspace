@@ -3,9 +3,9 @@ import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useAppSelector } from '../../redux/store'
 import { EMessageType } from '../../types/workspace.type'
+import { MessageStyle } from '../new-message/style'
 import UserDetailProvider from '../user/UserDetailProvider'
 import { TGroupedMessage } from './MessageContentProvider'
-import { MessageStyle } from '../new-message/style'
 
 export default function MessageGroup({
   messageGroup
@@ -36,7 +36,9 @@ export default function MessageGroup({
         </UserDetailProvider>
       )}
 
-      <MessageStyle className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
+      <MessageStyle
+        className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}
+      >
         {!isOwner && (
           <p className='font-medium'>
             {messageGroup.type === EMessageType.System
@@ -56,8 +58,9 @@ export default function MessageGroup({
           <Tooltip
             key={message._id}
             label={dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-            position={isOwner ? 'left' : 'right'}
-            className='bg-white text-xs leading-3 text-gray-500'
+            position={isOwner ? 'bottom-end' : 'bottom-start'}
+            offset={4}
+            className='bg-gray-400 text-xs leading-3 text-white'
           >
             <div
               key={message._id}

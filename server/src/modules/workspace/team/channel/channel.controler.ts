@@ -77,6 +77,7 @@ export class ChannelController {
     @Body()
     messagePayload: {
       content: string
+      attachments?: string[]
     }
   ) {
     return this.messageService._createForChannel({
