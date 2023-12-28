@@ -1,4 +1,4 @@
-import { Avatar, Image, Tooltip } from '@mantine/core'
+import { Avatar, Image } from '@mantine/core'
 import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useAppSelector } from '../../redux/store'
@@ -56,7 +56,7 @@ export default function MessageGroup({
           {/* {`@${createdByUser?.userName}`} */}
         </p>
         {messageGroup.messages.map(message => {
-          const { files, images } = groupByFileType(message.attachments || [])
+          const { images } = groupByFileType(message.attachments || [])
           return (
             // <Tooltip
             //   key={message._id}
