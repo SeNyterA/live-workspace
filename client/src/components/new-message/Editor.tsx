@@ -63,15 +63,17 @@ export default function Editor({ onChange, onSubmit }: Props) {
       //     }
       //   }
       // })
-    ],
-    content: '<p>Select some text to see bubble menu</p>'
+    ]
   })
 
   return (
-    <div className='flex'>
-      <RichTextEditor editor={editor} className='w-full flex-1 border-none'>
+    <div className='flex items-end'>
+      <RichTextEditor editor={editor} className='flex-1 border-none'>
         {editor && (
-          <BubbleMenu editor={editor}>
+          <BubbleMenu
+            editor={editor}
+            tippyOptions={{ arrow: true, placement: 'top-start' }}
+          >
             <RichTextEditor.ControlsGroup>
               <RichTextEditor.Bold />
               <RichTextEditor.Italic />
@@ -82,17 +84,19 @@ export default function Editor({ onChange, onSubmit }: Props) {
               <RichTextEditor.BulletList />
               <RichTextEditor.OrderedList />
               <RichTextEditor.Code />
-              <RichTextEditor.AlignLeft />
+              {/* <RichTextEditor.AlignLeft />
               <RichTextEditor.AlignCenter />
               <RichTextEditor.AlignJustify />
-              <RichTextEditor.AlignRight />
+              <RichTextEditor.AlignRight /> */}
             </RichTextEditor.ControlsGroup>
           </BubbleMenu>
         )}
         <RichTextEditor.Content
           style={{
-            overflowY: 'auto'
+            overflowY: 'auto',
+            maxHeight: 300
           }}
+          className='customscroll'
           onKeyDown={e => {
             if (
               e.key === 'Enter' &&

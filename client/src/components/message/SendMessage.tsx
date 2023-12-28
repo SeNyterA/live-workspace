@@ -1,23 +1,19 @@
-import { useState } from 'react'
+import '@mantine/tiptap/styles.css'
 import { useDispatch } from 'react-redux'
 import useTyping from '../../hooks/useTyping'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
-import '@mantine/tiptap/styles.css'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../services/apis/useAppMutation'
 import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
-import {
-  ApiSocketType,
-  useAppOnSocket
-} from '../../services/socket/useAppOnSocket'
 import Editor from '../new-message/Editor'
 // import Editor from '../new-message/Editor'
 import {
   TMessageContentValue,
   TTargetMessageId
 } from './MessageContentProvider'
+import Typing from './Typing'
 
 const getApiInfo = (
   targetId: TTargetMessageId
@@ -65,14 +61,7 @@ export default function SendMessage({
 }: Pick<TMessageContentValue, 'userTargetId' | 'targetId'>) {
   const dispatch = useDispatch()
   const { keyApi, messRefId, typeApi } = getApiInfo(targetId)
-  const [userTypings, setUserTypings] =
-    useState<ApiSocketType['typing']['response'][]>()
-  useAppOnSocket({
-    key: 'typing',
-    resFunc: ({ targetId, userId, type }) => {
-      setUserTypings([...(userTypings || []), { targetId, userId, type }])
-    }
-  })
+
   const socketEmit = useAppEmitSocket()
   const typing = useTyping()
 
@@ -165,25 +154,24 @@ export default function SendMessage({
   }
 
   return (
-    <>
-      <Editor
-        onChange={() => {
-          messRefId && typing(messRefId)
-        }}
-        onSubmit={_createMessage}
-      />
-      <p className='flex justify-between px-4 pb-1 text-xs text-gray-500'>
-        <span>
-          {
-            userTypings?.find(e => e.targetId === messRefId && e.type === 1)
-              ?.userId
-          }
-        </span>
+    <div className='relative h-20'>
+      <div className='absolute bottom-2 left-2 right-2 z-10 rounded-md border border-dashed border-gray-300 bg-white'>
+        {/* <Divider variant='dashed' /> */}
+        <Editor
+          onChange={() => {
+            messRefId && typing(messRefId)
+          }}
+          onSubmit={_createMessage}
+        />
+        <p className='flex justify-between pb-1 pl-4 pr-3 text-xs text-gray-500'>
+          <Typing messRefId={messRefId} />
 
-        <span>
-          Press <kbd>⌘Enter</kbd> or <kbd>Alt Enter</kbd> to quickly send
-        </span>
-      </p>
-    </>
+          <span>
+            Press <kbd className='bg-gray-100'>⌘Enter</kbd> or{' '}
+            <kbd className='bg-gray-100'>Alt Enter</kbd> to quickly send
+          </span>
+        </p>
+      </div>
+    </div>
   )
 }

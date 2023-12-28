@@ -98,7 +98,6 @@ export default function ChannelMessage() {
             })}
           />
         </MessageContentProvider>
-        <Divider variant='dashed' />
         <SendMessage
           targetId={{
             channelId

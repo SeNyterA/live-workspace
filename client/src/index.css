@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 blockquote,
 dl,
 dd,
@@ -17,4 +16,29 @@ figure,
 p,
 pre {
   margin: 0;
+}
+
+/* Thanh cuộn cho phần tử có class "customscroll" */
+.customscroll {
+  overflow-y: scroll; /* Cho phép thanh cuộn dọc khi nội dung vượt quá kích thước của div */
+  scrollbar-width: thin; /* Kích thước của thanh cuộn - thin, auto, hoặc none */
+}
+
+/* Tùy chỉnh thanh cuộn */
+.customscroll::-webkit-scrollbar {
+  width: 0px; /* Độ rộng của thanh cuộn */
+}
+
+.customscroll::-webkit-scrollbar-thumb {
+  background-color: #9ca3af; /* Màu sắc của nút trượt */
+  border-radius: 5px; /* Bo tròn các góc của nút trượt */
+}
+
+.customscroll::-webkit-scrollbar-track {
+  background-color: #f9fafb; /* Màu sắc của dải thanh cuộn */
+}
+
+/* Tùy chọn: Xử lý thanh cuộn khi di chuột qua */
+.customscroll::-webkit-scrollbar-thumb:hover {
+  background-color: #2980b9; /* Màu sắc của nút trượt khi di chuột qua */
 }
