@@ -28,7 +28,7 @@ export default function Authentication() {
   const { mutateAsync: register } = useAppMutation('register')
   const dispatch = useDispatch()
 
-  const { control, handleSubmit, reset, clearErrors } = useForm<TAuthForm>({
+  const { control, handleSubmit } = useForm<TAuthForm>({
     defaultValues: {
       terms: false
     }
@@ -75,28 +75,23 @@ export default function Authentication() {
             }
 
             if (type === 'register') {
-              Array(1000)
-                .fill(1)
-                .forEach((_, index) => {
-                  register(
-                    {
-                      method: 'post',
-                      url: {
-                        baseUrl: '/auth/register'
-                      },
-                      payload: {
-                        email: `${index}_${data.email}`,
-                        password: data.password,
-                        userName: `${index}_${data.userName}`
-                      }
-                    },
-                    {}
-                  )
-                })
+              register(
+                {
+                  method: 'post',
+                  url: {
+                    baseUrl: '/auth/register'
+                  },
+                  payload: {
+                    ...data
+                  }
+                },
+                {
+                  onSuccess(data) {
+                    dispatch(authActions.loginSuccess(data))
+                  }
+                }
+              )
             }
-
-            reset()
-            clearErrors()
           })}
         >
           <Stack>

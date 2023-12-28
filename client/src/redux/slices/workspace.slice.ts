@@ -70,6 +70,7 @@ const workspaceSlice = createSlice({
   name: 'workspace',
   initialState,
   reducers: {
+    reset: () => initialState,
     init: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
       return assign(state, action.payload)
     },

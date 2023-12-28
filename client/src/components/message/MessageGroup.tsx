@@ -1,8 +1,9 @@
-import { Avatar, Tooltip } from '@mantine/core'
+import { Avatar, Image, Tooltip } from '@mantine/core'
 import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useAppSelector } from '../../redux/store'
 import { EMessageType } from '../../types/workspace.type'
+import { groupByFileType } from '../new-message/helper'
 import { MessageStyle } from '../new-message/style'
 import UserDetailProvider from '../user/UserDetailProvider'
 import { TGroupedMessage } from './MessageContentProvider'
@@ -54,23 +55,29 @@ export default function MessageGroup({
 
           {/* {`@${createdByUser?.userName}`} */}
         </p>
-        {messageGroup.messages.map(message => (
-          <Tooltip
-            key={message._id}
-            label={dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-            position={isOwner ? 'bottom-end' : 'bottom-start'}
-            offset={4}
-            className='bg-gray-400 text-xs leading-3 text-white'
-          >
-            <div
-              key={message._id}
-              className='mt-1 w-fit rounded bg-gray-50 p-1'
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(message.content)
-              }}
-            />
-          </Tooltip>
-        ))}
+        {messageGroup.messages.map(message => {
+          const { files, images } = groupByFileType(message.attachments || [])
+          return (
+            // <Tooltip
+            //   key={message._id}
+            //   label={dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+            //   position={isOwner ? 'bottom-end' : 'bottom-start'}
+            //   offset={2}
+            //   className='bg-gray-400 text-xs leading-3 text-white'
+            // >
+            <div className='mt-1 w-fit max-w-3xl rounded bg-gray-50 p-1'>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(message.content)
+                }}
+              />
+              {images.map(img => (
+                <Image key={img.url} className='rounded' src={img.url} />
+              ))}
+            </div>
+            // </Tooltip>
+          )
+        })}
 
         {/* <p className='text-xs leading-3 text-gray-500'>
           {dayjs(

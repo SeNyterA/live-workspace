@@ -18,3 +18,51 @@ export const formatFileName = (
 
   return `${firstChars}...${lastChars}`
 }
+
+
+type FileInfo = {
+  type?: string
+  url: string
+}
+
+const detectFileType = (url: string): FileInfo => {
+  const match = url.match(/\.([a-zA-Z0-9]+)$/)
+
+  if (match && match[1]) {
+    const extension = match[1].toLowerCase()
+    return { type: extension, url }
+  } else
+    return {
+      url
+    }
+}
+
+type GroupedData = {
+  images: FileInfo[]
+  files: FileInfo[]
+}
+
+export const groupByFileType = (urls: string[]): GroupedData => {
+  const result: GroupedData = {
+    images: [],
+    files: []
+  }
+
+  urls.forEach(url => {
+    const fileInfo = detectFileType(url)
+
+    switch (fileInfo?.type) {
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        result.images.push(fileInfo)
+        break
+
+      default:
+        result.files.push(fileInfo)
+        break
+    }
+  })
+
+  return result
+}

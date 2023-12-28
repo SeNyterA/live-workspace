@@ -119,7 +119,7 @@ export type ApiMutationType = {
       }
     }
     method: 'post'
-    payload: { content: string }
+    payload: { content?: string; attachments?: string[] }
     response: TMessage
   }
 
@@ -131,7 +131,7 @@ export type ApiMutationType = {
       }
     }
     method: 'post'
-    payload: { content: string }
+    payload: { content?: string; attachments?: string[] }
     response: TMessage
   }
 

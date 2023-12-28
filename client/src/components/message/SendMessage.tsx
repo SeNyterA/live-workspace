@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, Divider, FileButton } from '@mantine/core'
+import { Badge, Button, Divider, FileButton } from '@mantine/core'
 import { Link, RichTextEditor } from '@mantine/tiptap'
 import '@mantine/tiptap/styles.css'
 import { IconPaperclip, IconSend, IconX } from '@tabler/icons-react'
@@ -78,7 +78,7 @@ export default function SendMessage({
 
   const { mutateAsync: createMessMutation } = useAppMutation(keyApi)
   const _createMessage = (value?: string) => {
-    if (!(value || files.length > 0)) return
+    if (!(!!value || files.length > 0)) return
 
     if (typeApi === 'channel' && messRefId)
       createMessMutation(
@@ -118,7 +118,8 @@ export default function SendMessage({
           },
           method: 'post',
           payload: {
-            content: value
+            content: value,
+            attachments: files
           }
         },
         {
@@ -144,7 +145,8 @@ export default function SendMessage({
           },
           method: 'post',
           payload: {
-            content: value
+            content: value,
+            attachments: files
           }
         },
         {
@@ -162,6 +164,8 @@ export default function SendMessage({
           }
         }
       )
+
+    setFiles([])
   }
 
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
