@@ -1,5 +1,11 @@
 import { Divider, LoadingOverlay } from '@mantine/core'
-import { ReactNode, useEffect } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState
+} from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
 import Sidebar from './components/sidebar/Sidebar'
@@ -7,9 +13,32 @@ import TeamList from './components/sidebar/team/TeamList'
 import { TMembers, workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
 import { useAppOnSocket } from './services/socket/useAppOnSocket'
+import { EMessageFor } from './types/workspace.type'
+
+export type TThread = {
+  threadId: string
+  targetId: string
+  targetType: EMessageFor
+}
+
+type TLayoutContext = {
+  thread?: TThread
+  updateThread: (thread?: TThread) => void
+
+  openInfo?: boolean
+  toggleInfo: (info: boolean) => void
+}
+
+const layoutContext = createContext<TLayoutContext>({
+  updateThread() {},
+  toggleInfo() {}
+})
+export const useLayout = () => useContext(layoutContext)
 
 export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
+  const [thread, setThread] = useState<TThread>()
+  const [openInfo, toggleInfo] = useState(false)
 
   const { data: workspaceData, isPending } = useAppQuery({
     key: 'workspace',
@@ -157,7 +186,17 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div className='flex flex-1'>
             <Sidebar />
             <Divider variant='dashed' orientation='vertical' />
-            {children}
+            <layoutContext.Provider
+              value={{
+                thread,
+                updateThread: thread => setThread(thread),
+
+                openInfo,
+                toggleInfo: info => toggleInfo(info)
+              }}
+            >
+              {children}
+            </layoutContext.Provider>
           </div>
         </div>
       </div>

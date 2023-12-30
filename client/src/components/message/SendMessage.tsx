@@ -3,8 +3,8 @@ import { Link, RichTextEditor } from '@mantine/tiptap'
 import '@mantine/tiptap/styles.css'
 import { IconPaperclip, IconSend, IconX } from '@tabler/icons-react'
 import Highlight from '@tiptap/extension-highlight'
+import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
-import Superscript from '@tiptap/extension-superscript'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { BubbleMenu, useEditor } from '@tiptap/react'
@@ -12,108 +12,88 @@ import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useTyping from '../../hooks/useTyping'
+import { TThread } from '../../Layout'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
-import {
-  ApiMutationType,
-  useAppMutation
-} from '../../services/apis/useAppMutation'
+import { useAppMutation } from '../../services/apis/useAppMutation'
 import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
+import { EMessageFor } from '../../types/workspace.type'
 import { formatFileName, removeHtmlTags } from '../new-message/helper'
-import {
-  TMessageContentValue,
-  TTargetMessageId
-} from './MessageContentProvider'
+import suggestion from './suggestion.js'
 import Typing from './Typing'
 
-const getApiInfo = (
-  targetId: TTargetMessageId
-): {
-  typeApi: 'channel' | 'direct' | 'group'
-  keyApi: keyof Pick<
-    ApiMutationType,
-    'createChannelMessage' | 'createDirectMessage' | 'createGroupMessage'
-  >
-  messRefId?: string
-} => {
-  if (targetId.channelId) {
-    return {
-      keyApi: 'createChannelMessage',
-      messRefId: targetId.channelId,
-      typeApi: 'channel'
-    }
-  }
-  if (targetId.directId) {
-    return {
-      keyApi: 'createDirectMessage',
-      messRefId: targetId.directId,
-      typeApi: 'direct'
-    }
-  }
-
-  if (targetId.groupId) {
-    return {
-      keyApi: 'createGroupMessage',
-      messRefId: targetId.groupId,
-      typeApi: 'group'
-    }
-  }
-
-  return {
-    keyApi: 'createDirectMessage',
-    messRefId: '',
-    typeApi: 'direct'
+const getApiInfo = (targetType: EMessageFor) => {
+  switch (targetType) {
+    case EMessageFor.Direct:
+      return 'createDirectMessage'
+    case EMessageFor.Group:
+      return 'createGroupMessage'
+    default:
+      return 'createChannelMessage'
   }
 }
 
 export default function SendMessage({
   targetId,
-  userTargetId
-}: Pick<TMessageContentValue, 'userTargetId' | 'targetId'>) {
+  targetType,
+  thread
+}: {
+  targetId: string
+  targetType: EMessageFor
+  thread?: TThread
+}) {
   const dispatch = useDispatch()
-  const { keyApi, messRefId, typeApi } = getApiInfo(targetId)
+  const keyApi = getApiInfo(targetType)
   const [files, setFiles] = useState<string[]>([])
 
   const socketEmit = useAppEmitSocket()
   const typing = useTyping()
 
   const { mutateAsync: createMessMutation } = useAppMutation(keyApi)
-  const _createMessage = (value?: string) => {
-    if (!(!!value || files.length > 0)) return
+  const _createMessage = () => {
+    if (
+      removeHtmlTags(editor?.getHTML() || '').trim() === '' &&
+      files.length === 0
+    )
+      return
+    const value = editor?.getHTML()
 
-    if (typeApi === 'channel' && messRefId)
+    if (keyApi === 'createChannelMessage')
       createMessMutation(
         {
           url: {
             baseUrl: '/workspace/channels/:channelId/messages',
             urlParams: {
-              channelId: messRefId
+              channelId: targetId
             }
           },
           method: 'post',
           payload: {
             content: value,
-            attachments: files
+            attachments: files,
+            ...(thread && {
+              replyRootId: thread?.threadId,
+              replyToMessageId: thread?.threadId
+            })
           }
         },
         {
           onSuccess(message) {
             dispatch(workspaceActions.addMessages({ [message._id]: message }))
-
             socketEmit({
               key: 'stopTyping',
-              targetId: messRefId
+              targetId: targetId
             })
           }
         }
       )
 
-    if (typeApi === 'group' && messRefId)
+    if (keyApi === 'createGroupMessage')
       createMessMutation(
         {
           url: {
             baseUrl: '/workspace/groups/:groupId/messages',
             urlParams: {
-              groupId: messRefId
+              groupId: targetId
             }
           },
           method: 'post',
@@ -125,22 +105,21 @@ export default function SendMessage({
         {
           onSuccess(message) {
             dispatch(workspaceActions.addMessages({ [message._id]: message }))
-
             socketEmit({
               key: 'stopTyping',
-              targetId: messRefId
+              targetId: targetId
             })
           }
         }
       )
 
-    if (typeApi === 'direct' && userTargetId)
+    if (keyApi === 'createDirectMessage')
       createMessMutation(
         {
           url: {
             baseUrl: '/workspace/direct-messages/:targetId/messages',
             urlParams: {
-              targetId: userTargetId
+              targetId: targetId
             }
           },
           method: 'post',
@@ -159,13 +138,15 @@ export default function SendMessage({
 
             socketEmit({
               key: 'stopTyping',
-              targetId: userTargetId
+              targetId: targetId
             })
           }
         }
       )
 
     setFiles([])
+    editor?.commands.clearContent(true)
+    editor?.commands.focus()
   }
 
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
@@ -176,17 +157,23 @@ export default function SendMessage({
 
   const editor = useEditor({
     onUpdate({}) {
-      messRefId && typing(messRefId)
+      typing(targetId)
     },
 
     extensions: [
       StarterKit,
       Underline,
       Link,
-      Superscript,
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Placeholder.configure({ placeholder: 'This is placeholder' })
+      Placeholder.configure({ placeholder: 'This is placeholder' }),
+
+      Mention.configure({
+        HTMLAttributes: {
+          class: 'mention'
+        },
+        suggestion
+      })
     ]
   })
 
@@ -208,7 +195,7 @@ export default function SendMessage({
                 <RichTextEditor.Link />
                 <RichTextEditor.BulletList />
                 <RichTextEditor.OrderedList />
-                <RichTextEditor.Code />
+                {/* <RichTextEditor.Code /> */}
               </RichTextEditor.ControlsGroup>
             </BubbleMenu>
           )}
@@ -219,14 +206,8 @@ export default function SendMessage({
             }}
             className='customscroll'
             onKeyDown={e => {
-              if (
-                e.key === 'Enter' &&
-                (e.altKey || e.metaKey) &&
-                removeHtmlTags(editor?.getHTML() || '').trim() !== ''
-              ) {
-                _createMessage(editor?.getHTML())
-
-                editor?.commands.clearContent(true)
+              if (e.key === 'Enter' && (e.altKey || e.metaKey)) {
+                _createMessage()
               }
             }}
           />
@@ -235,6 +216,7 @@ export default function SendMessage({
         <div className='flex items-center justify-end gap-1 px-2 pb-2'>
           {files.map(file => (
             <Badge
+              key={file}
               variant='transparent'
               className='h-[26px] rounded bg-gray-100'
               rightSection={
@@ -289,12 +271,7 @@ export default function SendMessage({
             variant='light'
             size='compact-sm'
             onClick={() => {
-              if (removeHtmlTags(editor?.getHTML() || '').trim() !== '') {
-                _createMessage(editor?.getHTML())
-
-                editor?.commands.clearContent(true)
-                editor?.commands.focus()
-              }
+              _createMessage()
             }}
           >
             <IconSend size={16} />
@@ -303,7 +280,7 @@ export default function SendMessage({
       </div>
 
       <p className='absolute bottom-1 left-4 right-3 flex justify-between text-xs text-gray-500'>
-        <Typing messRefId={messRefId} />
+        <Typing messRefId={targetId} />
         <span>
           Press <kbd className='bg-gray-100'>⌘Enter</kbd> or{' '}
           <kbd className='bg-gray-100'>Alt Enter</kbd> to quickly send

@@ -3,20 +3,24 @@ import { IconChevronRight, IconSearch } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
+import { useLayout } from '../../Layout'
 import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
+import { EMessageFor } from '../../types/workspace.type'
 import Info from './info/Info'
 import InfoProvier from './info/InfoProvier'
 import MessageContent from './MessageContent'
 import MessageContentProvider from './MessageContentProvider'
 import SendMessage from './SendMessage'
+import Thread from './thread/Thread'
 
 export default function ChannelMessage() {
   const [openInfo, setOpenInfo] = useState(false)
   const dispatch = useDispatch()
   const { channelId } = useAppParams()
+  const { thread } = useLayout()
 
   useAppOnSocket({
     key: 'message',
@@ -99,11 +103,17 @@ export default function ChannelMessage() {
           />
         </MessageContentProvider>
         <SendMessage
-          targetId={{
-            channelId
-          }}
+          targetId={channelId || ''}
+          targetType={EMessageFor.Channel}
         />
       </div>
+      {thread && (
+        <>
+          <Divider orientation='vertical' variant='dashed' />
+          <Thread />
+        </>
+      )}
+
       {openInfo && (
         <>
           <Divider orientation='vertical' variant='dashed' />

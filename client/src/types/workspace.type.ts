@@ -81,6 +81,7 @@ export type TMessage = TWorkspace & {
   messageFor: EMessageFor
   messageType: EMessageType
   attachments?: string[]
+  replyRootId?: string
   replyToMessageId?: string
 }
 

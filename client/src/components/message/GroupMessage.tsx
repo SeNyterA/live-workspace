@@ -7,6 +7,7 @@ import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
+import { EMessageFor } from '../../types/workspace.type'
 import Info from './info/Info'
 import InfoProvier from './info/InfoProvier'
 import MessageContent from './MessageContent'
@@ -99,11 +100,7 @@ export default function GroupMessage() {
           />
         </MessageContentProvider>
         <Divider variant='dashed' />
-        <SendMessage
-          targetId={{
-            groupId
-          }}
-        />
+        <SendMessage targetId={groupId || ''} targetType={EMessageFor.Group} />
       </div>
       {openInfo && (
         <>

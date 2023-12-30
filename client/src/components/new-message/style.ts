@@ -4,6 +4,10 @@ export const MessageStyle = styled.div`
   font-size: 14px;
   /* background-color: #aaa; */
 
+  & pre {
+    white-space: pre-wrap;
+  }
+
   & h1 {
     font-size: 22px;
     margin-bottom: 8px;

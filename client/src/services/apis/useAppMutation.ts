@@ -107,7 +107,12 @@ export type ApiMutationType = {
       }
     }
     method: 'post'
-    payload: { content: string; attachments?: string[] }
+    payload: {
+      content?: string
+      attachments?: string[]
+      replyToMessageId?: string
+      replyRootId?: string
+    }
     response: TMessage
   }
 
