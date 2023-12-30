@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useRenderCount from '../../hooks/useRenderCount'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
-import { useAppSelector } from '../../redux/store'
+import { getAppValue, useAppSelector } from '../../redux/store'
 import { EFieldType } from '../../services/apis/board/board.api'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { TOption } from '../../types/workspace.type'
@@ -121,11 +121,16 @@ export default function CardsContent() {
 
                   if (result.type === 'card') {
                     if (!result.destination?.droppableId) return
+                    const oldCard = getAppValue(
+                      state => state.workspace.cards[result.draggableId]
+                    )
+                    if (!oldCard) return
 
                     dispatch(
-                      workspaceActions.updateCardData({
+                      workspaceActions.updateCardProperties({
                         cardId: result.draggableId,
                         data: {
+                          ...oldCard.properties,
                           [propertyRoot._id]: result.destination.droppableId
                         }
                       })
@@ -141,16 +146,17 @@ export default function CardsContent() {
                         }
                       },
                       payload: {
-                        data: {
+                        properties: {
+                          ...oldCard.properties,
                           [propertyRoot._id]: result.destination?.droppableId
                         }
                       }
                     }).catch(() => {
                       dispatch(
-                        workspaceActions.updateCardData({
+                        workspaceActions.updateCardProperties({
                           cardId: result.draggableId,
                           data: {
-                            [propertyRoot._id]: result.source.droppableId
+                            ...oldCard.properties
                           }
                         })
                       )
@@ -202,7 +208,7 @@ export default function CardsContent() {
                                       method: 'post',
                                       payload: {
                                         title: 'anything bro' + timeStamp,
-                                        data: {
+                                        properties: {
                                           [propertyRoot._id]: option._id
                                         }
                                       }

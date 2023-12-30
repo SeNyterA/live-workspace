@@ -1,11 +1,10 @@
-import { Modal, Tabs } from '@mantine/core'
-import { IconMessageCircle, IconPhoto } from '@tabler/icons-react'
+import { Modal, ScrollArea } from '@mantine/core'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
+import Editor from '../description/Editor'
 import CardTitle from './CardTitle'
-import Descriptions from './Descriptions'
 import Properties from './Properties'
 
 export default function DetailCard() {
@@ -43,8 +42,8 @@ export default function DetailCard() {
               <Properties />
             </div>
 
-            <div className='flex flex-1 flex-col rounded-lg bg-white px-3 py-2'>
-              <Tabs value={tab} onChange={tab => setTabs(tab as any)}>
+            <div className='flex flex-1 flex-col rounded-lg bg-white'>
+              {/* <Tabs value={tab} onChange={tab => setTabs(tab as any)}>
                 <Tabs.List>
                   <Tabs.Tab
                     value='description'
@@ -61,10 +60,12 @@ export default function DetailCard() {
                     Messages
                   </Tabs.Tab>
                 </Tabs.List>
-              </Tabs>
+              </Tabs> */}
 
               <div className='relative flex-1 text-sm'>
-                {tab === 'description' && <Descriptions card={card} />}
+                <ScrollArea className='absolute inset-0'>
+                  {tab === 'description' && <Editor />}
+                </ScrollArea>
               </div>
             </div>
           </div>

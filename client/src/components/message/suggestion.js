@@ -1,6 +1,5 @@
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
-
 import MentionList from './MentionList.jsx'
 
 export default {
@@ -30,7 +29,7 @@ export default {
       'John Cusack',
       'Matthew Broderick',
       'Justine Bateman',
-      'Lisa Bonet',
+      'Lisa Bonet'
     ]
       .filter(item => item.toLowerCase().startsWith(query.toLowerCase()))
       .slice(0, 5)
@@ -44,7 +43,7 @@ export default {
       onStart: props => {
         component = new ReactRenderer(MentionList, {
           props,
-          editor: props.editor,
+          editor: props.editor
         })
 
         if (!props.clientRect) {
@@ -58,7 +57,7 @@ export default {
           showOnCreate: true,
           interactive: true,
           trigger: 'manual',
-          placement: 'bottom-start',
+          placement: 'bottom-start'
         })
       },
 
@@ -70,7 +69,7 @@ export default {
         }
 
         popup[0].setProps({
-          getReferenceClientRect: props.clientRect,
+          getReferenceClientRect: props.clientRect
         })
       },
 
@@ -87,7 +86,7 @@ export default {
       onExit() {
         popup[0].destroy()
         component.destroy()
-      },
+      }
     }
-  },
+  }
 }

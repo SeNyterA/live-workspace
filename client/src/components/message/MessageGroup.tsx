@@ -122,7 +122,7 @@ export default function MessageGroup({
                   </div>
                 </div>
               </HoverCard.Target>
-              <HoverCard.Dropdown className='p-1 h-10'>
+              <HoverCard.Dropdown className='h-10 p-1'>
                 <ActionIcon />
               </HoverCard.Dropdown>
             </HoverCard>

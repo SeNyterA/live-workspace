@@ -1,10 +1,10 @@
+import { ScrollArea } from '@mantine/core'
 import { Fragment } from 'react'
 import { useLayout } from '../../../Layout'
 import { useAppSelector } from '../../../redux/store'
 import { groupMessages } from '../MessageContentProvider'
 import MessageGroup from '../MessageGroup'
 import SendMessage from '../SendMessage'
-import { ScrollArea } from '@mantine/core'
 
 export default function Thread() {
   const { thread } = useLayout()
@@ -18,14 +18,14 @@ export default function Thread() {
 
   return (
     <div className='flex w-full max-w-96 flex-col pt-3'>
-      <div className='flex-1 relative'>
+      <div className='relative flex-1'>
         <ScrollArea className='absolute inset-0'>
-        {groupMessages(threadMessages || []).map(groupMessage => (
-          <MessageGroup
-            key={groupMessage.messages[0]._id}
-            messageGroup={groupMessage}
-          />
-        ))}
+          {groupMessages(threadMessages || []).map(groupMessage => (
+            <MessageGroup
+              key={groupMessage.messages[0]._id}
+              messageGroup={groupMessage}
+            />
+          ))}
         </ScrollArea>
       </div>
       <SendMessage

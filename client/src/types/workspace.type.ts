@@ -112,12 +112,26 @@ export type TBlock = {
   files?: string[]
 }
 
-export type TCardData = {
+export type TCardProperties = {
   [propertyId: string]: string | string[] | undefined
+}
+
+export declare type JSONContent = {
+  type?: string
+  attrs?: Record<string, any>
+  content?: JSONContent[]
+  marks?: {
+    type: string
+    attrs?: Record<string, any>
+    [key: string]: any
+  }[]
+  text?: string
+  [key: string]: any
 }
 
 export type TCard = TWorkspace & {
   boardId: string
-  data?: TCardData
+  data?: JSONContent
   blocks: TBlock[]
+  properties?: TCardProperties
 }

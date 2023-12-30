@@ -9,7 +9,8 @@ export default function BoardHeader() {
     useBoard()
 
   console.log({
-    trackingId, sortBy
+    trackingId,
+    sortBy
   })
 
   const propertiesChecking = useAppSelector(state =>

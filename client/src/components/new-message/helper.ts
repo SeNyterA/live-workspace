@@ -19,7 +19,6 @@ export const formatFileName = (
   return `${firstChars}...${lastChars}`
 }
 
-
 type FileInfo = {
   type?: string
   url: string

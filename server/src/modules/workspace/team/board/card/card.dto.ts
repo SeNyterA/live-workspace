@@ -17,6 +17,12 @@ export class CardDto {
 
   @IsOptional()
   @IsObject()
+  properties?: {
+    [key: string]: string | string[] | undefined
+  }
+
+  @IsOptional()
+  @IsObject()
   data?: {
     [key: string]: string | string[] | undefined
   }

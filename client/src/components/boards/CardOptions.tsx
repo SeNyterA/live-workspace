@@ -14,7 +14,8 @@ export default function CardOptions({
 
   const cards = useAppSelector(state =>
     Object.values(state.workspace.cards).filter(
-      card => card.boardId === boardId && card.data?.[propertyId] === optionId
+      card =>
+        card.boardId === boardId && card.properties?.[propertyId] === optionId
     )
   )
 

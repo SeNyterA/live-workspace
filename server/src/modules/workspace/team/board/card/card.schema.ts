@@ -33,6 +33,11 @@ export class Card extends Workspace {
   boardId: string
 
   @Prop({ type: Object, default: {} })
+  properties: {
+    [key: string]: string | string[] | undefined
+  }
+
+  @Prop({ type: Object, default: {} })
   data: {
     [key: string]: string | string[] | undefined
   }

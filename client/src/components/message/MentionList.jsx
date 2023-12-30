@@ -1,8 +1,9 @@
 import './MentionList.scss'
-
 import React, {
-  forwardRef, useEffect, useImperativeHandle,
-  useState,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState
 } from 'react'
 
 export default forwardRef((props, ref) => {
@@ -17,7 +18,9 @@ export default forwardRef((props, ref) => {
   }
 
   const upHandler = () => {
-    setSelectedIndex((selectedIndex + props.items.length - 1) % props.items.length)
+    setSelectedIndex(
+      (selectedIndex + props.items.length - 1) % props.items.length
+    )
   }
 
   const downHandler = () => {
@@ -48,13 +51,13 @@ export default forwardRef((props, ref) => {
       }
 
       return false
-    },
+    }
   }))
 
   return (
-    <div className="items">
-      {props.items.length
-        ? props.items.map((item, index) => (
+    <div className='items'>
+      {props.items.length ? (
+        props.items.map((item, index) => (
           <button
             className={`item ${index === selectedIndex ? 'is-selected' : ''}`}
             key={index}
@@ -63,8 +66,9 @@ export default forwardRef((props, ref) => {
             {item}
           </button>
         ))
-        : <div className="item">No result</div>
-      }
+      ) : (
+        <div className='item'>No result</div>
+      )}
     </div>
   )
 })

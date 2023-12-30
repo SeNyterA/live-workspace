@@ -1,15 +1,19 @@
 import { TWorkspaceDto } from '../../../types/dto.type'
 import {
   EBlockType,
+  JSONContent,
   TBoard,
   TCard,
   TProperty
 } from '../../../types/workspace.type'
 
-export type TCardData = { [key: string]: string | string[] | undefined | null }
+export type TCardProperties = {
+  [key: string]: string | string[] | undefined | null
+}
 export type TcardDto = {
   title?: string
-  data?: TCardData
+  data?: JSONContent
+  properties?: TCardProperties
 }
 
 export type TBoardDto = TWorkspaceDto & { properties?: TPropertyDto[] }

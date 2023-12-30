@@ -7,7 +7,10 @@ import { Fragment, useEffect, useState } from 'react'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
-import { EFieldType, TCardData } from '../../../services/apis/board/board.api'
+import {
+  EFieldType,
+  TCardProperties
+} from '../../../services/apis/board/board.api'
 import { useAppMutation } from '../../../services/apis/useAppMutation'
 
 dayjs.extend(customParseFormat)
@@ -21,14 +24,13 @@ export default function Properties() {
     Object.values(state.workspace.properties).filter(e => e.boardId === boardId)
   )
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
-  const [tmpValue, setTmpValue] = useState<TCardData>({})
+  const [tmpValue, setTmpValue] = useState<TCardProperties>({})
 
   useEffect(() => {
-    console.log('card data', card?.data)
-    if (card?.data) {
-      setTmpValue(card.data)
+    if (card?.properties) {
+      setTmpValue(card.properties)
     }
-  }, [card?.data])
+  }, [card?.properties])
 
   return (
     <ScrollArea
@@ -61,8 +63,8 @@ export default function Properties() {
                   },
                   method: 'patch',
                   payload: {
-                    data: {
-                      ...card?.data,
+                    properties: {
+                      ...card?.properties,
                       [property._id]: value
                     }
                   }
@@ -106,8 +108,8 @@ export default function Properties() {
                       },
                       method: 'patch',
                       payload: {
-                        data: {
-                          ...card?.data,
+                        properties: {
+                          ...card?.properties,
                           [property._id]: value
                         }
                       }
@@ -142,8 +144,8 @@ export default function Properties() {
                   },
                   method: 'patch',
                   payload: {
-                    data: {
-                      ...card?.data,
+                    properties: {
+                      ...card?.properties,
                       [property._id]: value.target.value
                     }
                   }
@@ -166,8 +168,8 @@ export default function Properties() {
               {...{ placeholder: 'Pick value' }}
               mt='md'
               value={
-                card?.data?.[property._id]?.toString()
-                  ? new Date(card?.data[property._id]?.toString()!)
+                card?.properties?.[property._id]?.toString()
+                  ? new Date(card?.properties[property._id]?.toString()!)
                   : undefined
               }
               onChange={value => {
@@ -186,8 +188,8 @@ export default function Properties() {
                   },
                   method: 'patch',
                   payload: {
-                    data: {
-                      ...card?.data,
+                    properties: {
+                      ...card?.properties,
                       [property._id]: value?.toString()
                     }
                   }
