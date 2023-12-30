@@ -1,6 +1,6 @@
 import { Badge, Button, Divider, FileButton } from '@mantine/core'
 import { Link, RichTextEditor } from '@mantine/tiptap'
-import '@mantine/tiptap/styles.css'
+// import '@mantine/tiptap/styles.css'
 import { IconPaperclip, IconSend, IconX } from '@tabler/icons-react'
 import Highlight from '@tiptap/extension-highlight'
 import Mention from '@tiptap/extension-mention'

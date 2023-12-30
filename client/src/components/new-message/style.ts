@@ -43,6 +43,6 @@ export const MessageStyle = styled.div`
   }
 
   & [data-type='mention'] {
-    background: #aaa;
+    /* background: #aaa; */
   }
 `

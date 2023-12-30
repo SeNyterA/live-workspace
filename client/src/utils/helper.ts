@@ -1,3 +1,5 @@
+import { JSONContent } from '@tiptap/react'
+
 export const cleanObj = <T extends Record<string, any>>(
   params: T
 ): Record<string, string> =>
@@ -15,4 +17,27 @@ export const cleanObj = <T extends Record<string, any>>(
 
 export const generateId = () => {
   return Math.random().toString(36).substring(7)
+}
+
+export const getItemsWithMatchingKey = (
+  data: JSONContent,
+  key: string
+): JSONContent[] => {
+  const result: JSONContent[] = []
+
+  const traverse = (node: JSONContent) => {
+    if (node.type === key) {
+      result.push(node)
+    }
+
+    if (node.content) {
+      for (const child of node.content) {
+        traverse(child)
+      }
+    }
+  }
+
+  traverse(data)
+
+  return result
 }

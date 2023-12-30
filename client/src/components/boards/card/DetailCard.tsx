@@ -1,4 +1,5 @@
-import { Modal, ScrollArea } from '@mantine/core'
+import { Modal, ScrollArea, Tabs } from '@mantine/core'
+import { IconMessageCircle, IconPhoto } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
@@ -26,15 +27,15 @@ export default function DetailCard() {
           title={<CardTitle />}
           size='100%'
           classNames={{
-            content: 'h-full flex flex-col bg-gray-100',
+            content: 'h-full flex flex-col bg-gray-100 rounded-lg',
             body: 'flex-1',
             header: 'flex bg-transparent py-3',
             title: 'flex-1'
           }}
           overlayProps={{
             color: '#000',
-            backgroundOpacity: 0.35,
-            blur: 15
+            backgroundOpacity: 0.1,
+            blur: 1
           }}
         >
           <div className='flex h-full gap-4'>
@@ -43,7 +44,7 @@ export default function DetailCard() {
             </div>
 
             <div className='flex flex-1 flex-col rounded-lg bg-white'>
-              {/* <Tabs value={tab} onChange={tab => setTabs(tab as any)}>
+              <Tabs value={tab} onChange={tab => setTabs(tab as any)}>
                 <Tabs.List>
                   <Tabs.Tab
                     value='description'
@@ -60,7 +61,7 @@ export default function DetailCard() {
                     Messages
                   </Tabs.Tab>
                 </Tabs.List>
-              </Tabs> */}
+              </Tabs>
 
               <div className='relative flex-1 text-sm'>
                 <ScrollArea className='absolute inset-0'>

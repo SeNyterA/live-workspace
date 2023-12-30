@@ -1,4 +1,4 @@
-import { ActionIcon, Avatar, HoverCard, Image, Text } from '@mantine/core'
+import { ActionIcon, Avatar, HoverCard, Image } from '@mantine/core'
 import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useLayout } from '../../Layout'
@@ -82,7 +82,7 @@ export default function MessageGroup({
                     >
                       {data => (
                         <div
-                          className='line-clamp-1 h-4 max-w-96 cursor-pointer overflow-hidden truncate text-xs text-blue-400 hover:underline'
+                          className='line-clamp-1 h-4 max-w-96 cursor-pointer overflow-hidden truncate text-xs !text-blue-400 !bg-transparent hover:underline'
                           dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(
                               data?.replyMessage?.content || ''
