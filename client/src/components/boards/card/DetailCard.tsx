@@ -1,5 +1,4 @@
-import { Modal, ScrollArea, Tabs } from '@mantine/core'
-import { IconMessageCircle, IconPhoto } from '@tabler/icons-react'
+import { Modal, ScrollArea } from '@mantine/core'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
