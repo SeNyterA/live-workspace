@@ -76,7 +76,7 @@ export enum EMessageType {
 }
 
 export type TMessage = TWorkspace & {
-  content: string
+  content: JSONContent
   messageReferenceId: string
   messageFor: EMessageFor
   messageType: EMessageType

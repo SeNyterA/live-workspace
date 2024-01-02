@@ -136,7 +136,7 @@ export default function MessageContent({
     <div className='relative flex-1'>
       {messages.length > 0 && (
         <ScrollArea
-          className='absolute inset-0 overflow-auto'
+          className='absolute inset-0'
           viewportRef={scrollableRef}
           scrollbarSize={6}
           onCompositionStart={e => console.log(e)}

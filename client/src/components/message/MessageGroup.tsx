@@ -1,12 +1,19 @@
 import { ActionIcon, Avatar, HoverCard, Image } from '@mantine/core'
+import { Link } from '@mantine/tiptap'
+import Highlight from '@tiptap/extension-highlight'
+import Mention from '@tiptap/extension-mention'
+import TextAlign from '@tiptap/extension-text-align'
+import Underline from '@tiptap/extension-underline'
+import { generateHTML } from '@tiptap/html'
+import StarterKit from '@tiptap/starter-kit'
 import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useLayout } from '../../Layout'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { EMessageType } from '../../types/workspace.type'
+import { updateLabelMention } from '../../utils/helper'
 import { groupByFileType } from '../new-message/helper'
-import { MessageStyle } from '../new-message/style'
 import UserDetailProvider from '../user/UserDetailProvider'
 import { TGroupedMessage } from './MessageContentProvider'
 
@@ -40,9 +47,7 @@ export default function MessageGroup({
         </UserDetailProvider>
       )}
 
-      <MessageStyle
-        className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}
-      >
+      <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
         {!isOwner && (
           <p className='font-medium'>
             {messageGroup.type === EMessageType.System
@@ -58,17 +63,29 @@ export default function MessageGroup({
         </p>
         {messageGroup.messages.map(message => {
           const { images } = groupByFileType(message.attachments || [])
+
+          console.log(
+            generateHTML(message.content, [
+              StarterKit,
+              Underline,
+              Link,
+              Highlight,
+              TextAlign,
+              Mention
+            ])
+          )
+
           return (
             <HoverCard
               width={280}
-              shadow='md'
-              position={isOwner ? 'bottom-end' : 'bottom-start'}
-              // withArrow
+              position={isOwner ? 'top-end' : 'top-start'}
               offset={4}
+              openDelay={150}
+              key={message._id}
             >
               <HoverCard.Target>
                 <div
-                  className={`mt-1 flex max-w-2xl flex-col first:mt-0 ${
+                  className={`mt-1 flex max-w-[300px] flex-col first:mt-0 ${
                     isOwner && 'items-end'
                   }`}
                 >
@@ -82,10 +99,22 @@ export default function MessageGroup({
                     >
                       {data => (
                         <div
-                          className='line-clamp-1 h-4 max-w-96 cursor-pointer overflow-hidden truncate text-xs !text-blue-400 !bg-transparent hover:underline'
+                          className='line-clamp-1 h-4 max-w-96 cursor-pointer truncate !bg-transparent text-xs !text-blue-400 hover:underline'
                           dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(
-                              data?.replyMessage?.content || ''
+                              generateHTML(
+                                updateLabelMention(
+                                  data?.replyMessage?.content || {}
+                                ),
+                                [
+                                  StarterKit,
+                                  Underline,
+                                  Link,
+                                  Highlight,
+                                  TextAlign,
+                                  Mention
+                                ]
+                              )
                             )
                           }}
                         />
@@ -107,7 +136,16 @@ export default function MessageGroup({
                     <div
                       className='text-sm'
                       dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(message.content)
+                        __html: DOMPurify.sanitize(
+                          generateHTML(updateLabelMention(message.content), [
+                            StarterKit,
+                            Underline,
+                            Link,
+                            Highlight,
+                            TextAlign,
+                            Mention
+                          ])
+                        )
                       }}
                     />
                     {images.map(img => (
@@ -134,7 +172,7 @@ export default function MessageGroup({
             messageGroup.messages[messageGroup.messages.length - 1].createdAt
           ).format('YYYY-MM-DD HH:mm:ss')}
         </p> */}
-      </MessageStyle>
+      </div>
     </div>
   )
 }

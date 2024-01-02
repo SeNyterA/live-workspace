@@ -73,12 +73,14 @@ export class AuthService {
     const _password = userDto.password
     const hashedPassword = crypto.SHA256(_password).toString()
     userDto.password = hashedPassword
-    const user = await this.userModel.create(userDto)
-    const access_token = await this._generateUserCredentials(user)
-    return {
-      user: removePassword(user.toJSON()),
-      token: access_token
-    }
+    await this.userModel.create({ ...userDto, isAvailable: false })
+    // const access_token = await this._generateUserCredentials(user)
+    // return {
+    //   user: removePassword(user.toJSON()),
+    //   token: access_token
+    // }
+
+    return true
   }
 
   async getProfile(id: string) {

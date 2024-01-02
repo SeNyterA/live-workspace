@@ -171,35 +171,33 @@ export default function Layout({ children }: { children: ReactNode }) {
   })
 
   return (
-    <>
-      <div className='relative flex h-screen w-screen flex-col text-sm'>
-        <LoadingOverlay
-          visible={isPending}
-          overlayProps={{ radius: 'sm', blur: 2 }}
-        />
-        <AppHeader />
-        <Divider variant='dashed' />
+    <div className='relative flex h-screen w-screen flex-col text-sm'>
+      <LoadingOverlay
+        visible={isPending}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
+      <AppHeader />
+      <Divider variant='dashed' />
+      <div className='flex flex-1'>
+        <TeamList />
+
+        <Divider variant='dashed' orientation='vertical' />
         <div className='flex flex-1'>
-          <TeamList />
-
+          <Sidebar />
           <Divider variant='dashed' orientation='vertical' />
-          <div className='flex flex-1'>
-            <Sidebar />
-            <Divider variant='dashed' orientation='vertical' />
-            <layoutContext.Provider
-              value={{
-                thread,
-                updateThread: thread => setThread(thread),
+          <layoutContext.Provider
+            value={{
+              thread,
+              updateThread: thread => setThread(thread),
 
-                openInfo,
-                toggleInfo: info => toggleInfo(info)
-              }}
-            >
-              {children}
-            </layoutContext.Provider>
-          </div>
+              openInfo,
+              toggleInfo: info => toggleInfo(info)
+            }}
+          >
+            {children}
+          </layoutContext.Provider>
         </div>
       </div>
-    </>
+    </div>
   )
 }

@@ -1,19 +1,24 @@
-import './MentionList.scss'
 import React, {
   forwardRef,
   useEffect,
   useImperativeHandle,
   useState
 } from 'react'
+import './MentionList.scss'
 
 export default forwardRef((props, ref) => {
+  console.log({
+    props,
+    ref
+  })
+
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const selectItem = index => {
     const item = props.items[index]
 
     if (item) {
-      props.command({ id: item })
+      props.command({ id: item._id, label: item.userName })
     }
   }
 
@@ -55,15 +60,17 @@ export default forwardRef((props, ref) => {
   }))
 
   return (
-    <div className='items'>
+    <div className='items bg-red-50'>
       {props.items.length ? (
         props.items.map((item, index) => (
           <button
-            className={`item ${index === selectedIndex ? 'is-selected' : ''}`}
+            className={`item cursor-pointer ${
+              index === selectedIndex ? 'is-selected' : ''
+            }`}
             key={index}
             onClick={() => selectItem(index)}
           >
-            {item}
+            {item.userName}
           </button>
         ))
       ) : (

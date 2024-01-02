@@ -7,18 +7,20 @@ import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
-import { BubbleMenu, useEditor } from '@tiptap/react'
+import { BubbleMenu, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import useTyping from '../../hooks/useTyping'
+import tippy from 'tippy.js'
 import { TThread } from '../../Layout'
+import useTyping from '../../hooks/useTyping'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
+import { getAppValue } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { EMessageFor } from '../../types/workspace.type'
-import { formatFileName, removeHtmlTags } from '../new-message/helper'
-import suggestion from './suggestion.js'
+import MentionList from '../message/MentionList'
+import { formatFileName } from '../new-message/helper'
 import Typing from './Typing'
 
 const getApiInfo = (targetType: EMessageFor) => {
@@ -50,12 +52,8 @@ export default function SendMessage({
 
   const { mutateAsync: createMessMutation } = useAppMutation(keyApi)
   const _createMessage = () => {
-    if (
-      removeHtmlTags(editor?.getHTML() || '').trim() === '' &&
-      files.length === 0
-    )
-      return
-    const value = editor?.getHTML()
+    if (!editor?.getText().trim() && files.length === 0) return
+    const value = editor?.getJSON()
 
     if (keyApi === 'createChannelMessage')
       createMessMutation(
@@ -172,7 +170,82 @@ export default function SendMessage({
         HTMLAttributes: {
           class: 'mention'
         },
-        suggestion
+
+        suggestion: {
+          items: ({ query }) => {
+            const members = getAppValue(state =>
+              Object.values(state.workspace.members)
+            )
+            const usersId = members?.map(e => e.userId)
+
+            return (
+              getAppValue(state =>
+                Object.values(state.workspace.users).filter(
+                  u => usersId?.includes(u._id)
+                )
+              ) || []
+            )
+              ?.filter(item =>
+                item.userName.toLowerCase().startsWith(query.toLowerCase())
+              )
+              .slice(0, 100)
+          },
+
+          render: () => {
+            let component: any
+            let popup: any
+
+            return {
+              onStart: props => {
+                component = new ReactRenderer(MentionList, {
+                  props,
+                  editor: props.editor
+                })
+
+                if (!props.clientRect) {
+                  return
+                }
+
+                popup = tippy('body', {
+                  getReferenceClientRect: props.clientRect as any,
+                  appendTo: () => document.body,
+                  content: component.element,
+                  showOnCreate: true,
+                  interactive: true,
+                  trigger: 'manual',
+                  placement: 'bottom-start'
+                })
+              },
+
+              onUpdate(props) {
+                component.updateProps(props)
+
+                if (!props.clientRect) {
+                  return
+                }
+
+                popup[0].setProps({
+                  getReferenceClientRect: props.clientRect
+                })
+              },
+
+              onKeyDown(props) {
+                if (props.event.key === 'Escape') {
+                  popup[0].hide()
+
+                  return true
+                }
+
+                return component.ref?.onKeyDown(props)
+              },
+
+              onExit() {
+                popup[0].destroy()
+                component.destroy()
+              }
+            }
+          }
+        }
       })
     ]
   })
@@ -204,7 +277,6 @@ export default function SendMessage({
               overflowY: 'auto',
               maxHeight: 300
             }}
-            className='customscroll'
             onKeyDown={e => {
               if (e.key === 'Enter' && (e.altKey || e.metaKey)) {
                 _createMessage()
@@ -248,7 +320,6 @@ export default function SendMessage({
                   payload: { file }
                 })
                   .then(data => {
-                    console.log(data)
                     setFiles(files => [...files, data.url])
                   })
                   .catch(error => {

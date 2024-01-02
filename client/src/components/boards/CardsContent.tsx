@@ -78,8 +78,6 @@ export default function CardsContent() {
             <div className='flex gap-3 px-2 py-3'>
               <DragDropContext
                 onDragEnd={result => {
-                  console.log(result)
-
                   if (result.type === 'column') {
                     if (result.destination?.index === undefined) return
 
@@ -213,7 +211,6 @@ export default function CardsContent() {
                                         }
                                       }
                                     }).then(data => {
-                                      console.log(data)
                                       if (data.data?._id) {
                                         toogleCard({ cardId: data.data._id })
                                       }

@@ -1,4 +1,5 @@
 import { JSONContent } from '@tiptap/react'
+import { getAppValue } from '../redux/store'
 
 export const cleanObj = <T extends Record<string, any>>(
   params: T
@@ -40,4 +41,28 @@ export const getItemsWithMatchingKey = (
   traverse(data)
 
   return result
+}
+
+export const updateLabelMention = (json: JSONContent): JSONContent => {
+  const updatedJson = { ...json }
+
+  const traverseAndUpdate = (node: JSONContent): JSONContent => {
+    return {
+      ...node,
+      attrs:
+        node.attrs && node.attrs.id && node.type === 'mention'
+          ? {
+              ...node.attrs,
+              label:
+                getAppValue(
+                  state => state.workspace.users[node.attrs!.id!]?.email
+                ) || node.attrs.id
+            }
+          : undefined,
+
+      content: node?.content?.map(traverseAndUpdate)
+    }
+  }
+
+  return traverseAndUpdate(updatedJson)
 }

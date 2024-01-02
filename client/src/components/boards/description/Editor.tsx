@@ -51,7 +51,7 @@ export default function Editor() {
           class: 'my-custom-class'
         }
       }),
-      Placeholder.configure({ placeholder: 'This is placeholder' }),
+      Placeholder.configure({ placeholder: 'Desciption for card' }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Mention.configure({
         HTMLAttributes: {
@@ -103,7 +103,7 @@ export default function Editor() {
         //   editor={editor}
         //   tippyOptions={{ arrow: true, placement: 'bottom-start' }}
         // >
-        <RichTextEditor.Toolbar sticky className='border-none gap-2'>
+        <RichTextEditor.Toolbar sticky className='gap-2 border-none'>
           <RichTextEditor.ControlsGroup>
             <RichTextEditor.Bold />
             <RichTextEditor.Italic />

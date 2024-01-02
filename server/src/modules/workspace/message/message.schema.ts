@@ -15,8 +15,10 @@ export enum EMessageType {
 
 @Schema()
 export class Message extends Workspace {
-  @Prop({ default: '' })
-  content: string
+  @Prop({ type: Object, default: {} })
+  content: {
+    [key: string]: string | string[] | undefined
+  }
 
   @Prop({ type: Types.ObjectId, required: true })
   messageReferenceId: string

@@ -4,6 +4,7 @@ import { TChannelDto, TGroupDto, TTeamDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
 import {
   EMemberRole,
+  JSONContent,
   TMember,
   TMessage,
   TWorkspace
@@ -108,7 +109,7 @@ export type ApiMutationType = {
     }
     method: 'post'
     payload: {
-      content?: string
+      content?: JSONContent
       attachments?: string[]
       replyToMessageId?: string
       replyRootId?: string
@@ -124,7 +125,7 @@ export type ApiMutationType = {
       }
     }
     method: 'post'
-    payload: { content?: string; attachments?: string[] }
+    payload: { content?: JSONContent; attachments?: string[] }
     response: TMessage
   }
 
@@ -136,7 +137,7 @@ export type ApiMutationType = {
       }
     }
     method: 'post'
-    payload: { content?: string; attachments?: string[] }
+    payload: { content?: JSONContent; attachments?: string[] }
     response: TMessage
   }
 

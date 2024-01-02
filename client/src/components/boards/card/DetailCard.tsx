@@ -44,7 +44,7 @@ export default function DetailCard() {
             </div>
 
             <div className='flex flex-1 flex-col rounded-lg bg-white'>
-              <Tabs value={tab} onChange={tab => setTabs(tab as any)}>
+              {/* <Tabs value={tab} onChange={tab => setTabs(tab as any)} className='mx-4'>
                 <Tabs.List>
                   <Tabs.Tab
                     value='description'
@@ -61,10 +61,10 @@ export default function DetailCard() {
                     Messages
                   </Tabs.Tab>
                 </Tabs.List>
-              </Tabs>
+              </Tabs> */}
 
               <div className='relative flex-1 text-sm'>
-                <ScrollArea className='absolute inset-0'>
+                <ScrollArea className='absolute inset-0' scrollbarSize={6}>
                   {tab === 'description' && <Editor />}
                 </ScrollArea>
               </div>
