@@ -18,6 +18,12 @@ export class AuthController {
   }
 
   @Public()
+  @Post('loginWithSocial')
+  signInWithSocial(@Body() payload: { token: string }) {
+    return this.authService.signInWithSocial(payload)
+  }
+
+  @Public()
   @Post('register')
   signUp(@Body() signUpDto: TCreateUser) {
     return this.authService.signUp(signUpDto)

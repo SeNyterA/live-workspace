@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException
+} from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { InjectModel } from '@nestjs/mongoose'
 import * as crypto from 'crypto-js'
@@ -7,6 +11,27 @@ import { removePassword } from 'src/libs/removePassword'
 import { TCreateUser, TUser } from 'src/modules/users/user.dto'
 import { User } from '../users/user.schema'
 import { TLoginPayload, TLoginResponse } from './auth.dto'
+
+export type FirebaseUserTokenData = {
+  name: string
+  picture: string
+  iss: string
+  aud: string
+  auth_time: number
+  user_id: string
+  sub: string
+  iat: number
+  exp: number
+  email: string
+  email_verified: boolean
+  firebase: {
+    identities: {
+      'google.com': string[]
+      email: string[]
+    }
+    sign_in_provider: string
+  }
+}
 
 @Injectable()
 export class AuthService {
@@ -66,6 +91,39 @@ export class AuthService {
     return {
       user: removePassword(user.toJSON()),
       token: access_token
+    }
+  }
+
+  async signInWithSocial({ token }: { token: string }) {
+    try {
+      const payload: FirebaseUserTokenData = this.jwtService.decode(token)
+      const user = await this.userModel.findOne({ firebaseId: payload.user_id })
+
+      if (!user) {
+        const newUser = await this.userModel.create({
+          userName: payload.email.split('@')[0],
+          email: payload.email,
+          firebaseId: payload.user_id,
+          avatar: payload.picture,
+          nickname: payload.name
+        })
+
+        const access_token = await this._generateUserCredentials(newUser)
+
+        return {
+          user: removePassword(newUser.toJSON()),
+          token: access_token
+        }
+      } else {
+        const access_token = await this._generateUserCredentials(user)
+
+        return {
+          user: removePassword(user.toJSON()),
+          token: access_token
+        }
+      }
+    } catch {
+      throw new UnauthorizedException()
     }
   }
 

@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Anchor,
   Button,
   Checkbox,
@@ -10,10 +11,12 @@ import {
   Text,
   TextInput
 } from '@mantine/core'
+import { signInWithPopup } from 'firebase/auth'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
+import { auth, googleProvider } from '../../firebase/firebase'
 import { authActions } from '../../redux/slices/auth.slice'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { TUser } from '../../types/user.type'
@@ -25,6 +28,7 @@ type TAuthForm = Pick<TUser, 'email' | 'password' | 'userName'> & {
 export default function Authentication() {
   const [type, setType] = useState<'register' | 'login'>('login')
   const { mutateAsync: login } = useAppMutation('login')
+  const { mutateAsync: loginWithSocial } = useAppMutation('loginWithSocial')
   const { mutateAsync: register } = useAppMutation('register')
   const dispatch = useDispatch()
 
@@ -42,7 +46,34 @@ export default function Authentication() {
         </Text>
 
         <Group grow mb='md' mt='md'>
-          <BsGoogle radius='xl'>Google</BsGoogle>
+          <ActionIcon
+            variant='transparent'
+            onClick={() => {
+              signInWithPopup(auth, googleProvider)
+                .then(async result => {
+                  const token = await result.user.getIdToken()
+                  loginWithSocial(
+                    {
+                      url: { baseUrl: '/auth/loginWithSocial' },
+                      method: 'post',
+                      payload: { token }
+                    },
+                    {
+                      onSuccess(data) {
+                        dispatch(authActions.loginSuccess(data))
+                      }
+                    }
+                  )
+                })
+                .catch(error => {
+                  console.log({
+                    error
+                  })
+                })
+            }}
+          >
+            <BsGoogle radius='xl'>Google</BsGoogle>
+          </ActionIcon>
           <BsGithub radius='xl'>Github</BsGithub>
         </Group>
 

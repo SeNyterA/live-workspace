@@ -66,6 +66,19 @@ export type ApiMutationType = {
       token: string
     }
   }
+  loginWithSocial: {
+    url: {
+      baseUrl: '/auth/loginWithSocial'
+    }
+    method: 'post'
+    payload: {
+      token: string
+    }
+    response: {
+      user: TUser
+      token: string
+    }
+  }
   register: {
     url: {
       baseUrl: '/auth/register'

@@ -5,3 +5,5 @@ dist/
 .vercel/
 .env
 .DS_Store
+client/.env.prod
+server/yarn.lock

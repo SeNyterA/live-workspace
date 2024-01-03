@@ -7,9 +7,11 @@ import {
   IconSettings,
   IconTrash
 } from '@tabler/icons-react'
+import { useAppSelector } from '../../redux/store'
 import { lsActions } from '../../utils/auth'
 
 export default function AppHeader() {
+  const user = useAppSelector(state => state.auth.userInfo)
   return (
     <div className='flex h-12 items-center gap-3 px-3'>
       <p className='text-xl font-semibold'>Live workspace - Senytera</p>
@@ -20,7 +22,7 @@ export default function AppHeader() {
       <Menu shadow='md' width={200} position='bottom-end' withArrow>
         <Menu.Target>
           <ActionIcon className='rounded-full p-0' variant='light'>
-            <Avatar />
+            <Avatar src={user?.avatar} />
           </ActionIcon>
         </Menu.Target>
 

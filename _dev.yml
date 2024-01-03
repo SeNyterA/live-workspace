@@ -23,6 +23,15 @@ services:
     networks:
       - live-workspace-network
 
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:latest
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - live-workspace-network
+
   server:
     container_name: server
     restart: always
@@ -48,6 +57,7 @@ services:
     depends_on:
       - mongodb
       - redis
+      - rabbitmq
     command: yarn start:dev
     networks:
       - live-workspace-network
