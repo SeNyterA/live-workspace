@@ -4,7 +4,7 @@ import { Prop, Schema } from '@nestjs/mongoose'
 export class User {
   _id: string
 
-  @Prop({ unique: true })
+  @Prop()
   firebaseId?: string
 
   @Prop({ unique: true, required: true })

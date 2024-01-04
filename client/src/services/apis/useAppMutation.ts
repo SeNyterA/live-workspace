@@ -52,6 +52,20 @@ const objectToFormData = (obj: any): FormData => {
 }
 
 export type ApiMutationType = {
+  verify: {
+    url: {
+      baseUrl: '/auth/verify'
+    }
+    method: 'post'
+    payload: {
+      token: string
+    }
+    response: {
+      user: TUser
+      token: string
+    }
+  }
+
   login: {
     url: {
       baseUrl: '/auth/login'

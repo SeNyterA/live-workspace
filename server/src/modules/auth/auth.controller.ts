@@ -33,4 +33,10 @@ export class AuthController {
   getProfile(@HttpUser() user: TJwtUser) {
     return this.authService.getProfile(user.sub)
   }
+
+  @Public()
+  @Post('verify')
+  verifyAccount(@Body() payload: { token: string }) {
+    return this.authService.verifyAccount(payload.token)
+  }
 }

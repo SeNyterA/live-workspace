@@ -4,6 +4,8 @@ import { MongooseModule, SchemaFactory } from '@nestjs/mongoose'
 import { User } from '../users/user.schema'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { MailService } from '../mail/mail.service'
+import { MailModule } from '../mail/mail.module'
 
 @Module({
   imports: [
@@ -14,7 +16,8 @@ import { AuthService } from './auth.service'
       global: true,
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '99999999999999s' }
-    })
+    }),
+    MailModule
   ],
   providers: [AuthService],
   controllers: [AuthController],

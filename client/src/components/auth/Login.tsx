@@ -118,7 +118,7 @@ export default function Authentication() {
                 },
                 {
                   onSuccess(data) {
-                    dispatch(authActions.loginSuccess(data))
+                    // dispatch(authActions.loginSuccess(data))
                   }
                 }
               )

@@ -3,6 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Login from '../components/auth/Login'
+import Verify from '../components/auth/Verify'
 import BoardContent from '../components/boards/BoardContent'
 import DetailCard from '../components/boards/card/DetailCard'
 import ChannelMessage from '../components/message/ChannelMessage'
@@ -75,6 +76,11 @@ export default function useRouteElements() {
               Register
             </div>
           )
+        },
+
+        {
+          path: 'auth/verify',
+          element: <Verify />
         }
       ]
     },

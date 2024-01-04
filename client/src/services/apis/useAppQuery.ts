@@ -37,6 +37,16 @@ type ApiQueryType = {
     response: TUser
   }
 
+  verify: {
+    url: {
+      baseUrl: '/auth/verify'
+      queryParams: {
+        token: string
+      }
+    }
+    response: TUser
+  }
+
   //workspace
   workspace: {
     url: {

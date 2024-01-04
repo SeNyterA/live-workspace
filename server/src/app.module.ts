@@ -8,6 +8,8 @@ import { AWSModule } from './modules/aws/aws.module'
 import { RedisModule } from './modules/redis/redis.module'
 import { UsersModule } from './modules/users/users.module'
 import { WorkspaceModule } from './modules/workspace/workspace.module'
+import { MailService } from './modules/mail/mail.service'
+import { MailModule } from './modules/mail/mail.module'
 
 @Module({
   imports: [
@@ -17,7 +19,8 @@ import { WorkspaceModule } from './modules/workspace/workspace.module'
     UsersModule,
     WorkspaceModule,
     AWSModule,
-    RedisModule
+    RedisModule,
+    MailModule
   ],
   providers: [
     {
