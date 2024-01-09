@@ -11,7 +11,7 @@ import { removePassword } from 'src/libs/removePassword'
 import { TCreateUser, TUser } from 'src/modules/users/user.dto'
 import { MailService } from '../mail/mail.service'
 import { User } from '../users/user.schema'
-import { TLoginPayload, TLoginResponse } from './auth.dto'
+import { TLoginPayload } from './auth.dto'
 
 export type FirebaseUserTokenData = {
   name: string
@@ -81,13 +81,27 @@ export class AuthService {
     return this.jwtService.sign(payload, { secret: process.env.JWT_SECRET })
   }
 
-  async signIn({
-    password,
-    userNameOrEmail
-  }: TLoginPayload): Promise<TLoginResponse> {
+  async signIn({ password, userNameOrEmail }: TLoginPayload) {
     const user = await this.validateUser(userNameOrEmail, password)
     if (!user) {
       throw new BadRequestException(`Email or password are invalid`)
+    }
+
+    if (!user.isAvailable) {
+      const tokenVerify = this.jwtService.sign(
+        { sub: user._id.toString() },
+        {
+          secret: process.env.JWT_SECRET,
+          expiresIn: '1h'
+        }
+      )
+      const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
+      this.mailService.sendEmail({
+        to: user.email,
+        subject: 'Verify Your Account',
+        text: `Hello ${user.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
+      })
+      return { error: { message: '', code: 100111 } }
     }
     const access_token = await this._generateUserCredentials(user)
     return {

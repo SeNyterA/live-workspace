@@ -3,7 +3,6 @@ import { IconChevronRight, IconSearch } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
-import { useLayout } from '../../Layout'
 import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
@@ -20,7 +19,6 @@ export default function ChannelMessage() {
   const [openInfo, setOpenInfo] = useState(false)
   const dispatch = useDispatch()
   const { channelId } = useAppParams()
-  const { thread } = useLayout()
 
   useAppOnSocket({
     key: 'message',
@@ -107,12 +105,8 @@ export default function ChannelMessage() {
           targetType={EMessageFor.Channel}
         />
       </div>
-      {thread && (
-        <>
-          <Divider orientation='vertical' variant='dashed' />
-          <Thread />
-        </>
-      )}
+
+      <Thread />
 
       {openInfo && (
         <>

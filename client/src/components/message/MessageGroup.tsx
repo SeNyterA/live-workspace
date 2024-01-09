@@ -18,9 +18,11 @@ import UserDetailProvider from '../user/UserDetailProvider'
 import { TGroupedMessage } from './MessageContentProvider'
 
 export default function MessageGroup({
-  messageGroup
+  messageGroup,
+  classNames
 }: {
   messageGroup: TGroupedMessage
+  classNames?: { wrapper?: string }
 }) {
   const { updateThread } = useLayout()
   const createdByUser = useAppSelector(state =>
@@ -39,7 +41,7 @@ export default function MessageGroup({
     <div
       className={`my-3 flex gap-2 px-4 ${
         isOwner ? 'justify-end' : 'justify-start'
-      }`}
+      } ${classNames?.wrapper}`}
     >
       {!isOwner && (
         <UserDetailProvider user={createdByUser}>
@@ -123,7 +125,7 @@ export default function MessageGroup({
                   )}
 
                   <div
-                    className='w-fit rounded bg-gray-100 p-1'
+                    className='w-fit rounded bg-gray-100 p-1 cursor-pointer'
                     key={message._id}
                     onClick={() => {
                       updateThread({
@@ -160,9 +162,9 @@ export default function MessageGroup({
                   </div>
                 </div>
               </HoverCard.Target>
-              <HoverCard.Dropdown className='h-10 p-1'>
+              {/* <HoverCard.Dropdown className='h-10 p-1'>
                 <ActionIcon />
-              </HoverCard.Dropdown>
+              </HoverCard.Dropdown> */}
             </HoverCard>
           )
         })}

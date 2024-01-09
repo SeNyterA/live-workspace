@@ -22,7 +22,7 @@ export default function AppHeader() {
       <Menu shadow='md' width={200} position='bottom-end' withArrow>
         <Menu.Target>
           <ActionIcon className='rounded-full p-0' variant='light'>
-            <Avatar src={user?.avatar} />
+            <Avatar src={user?.avatar} size={32}/>
           </ActionIcon>
         </Menu.Target>
 

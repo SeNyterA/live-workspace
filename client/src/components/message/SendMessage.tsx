@@ -1,6 +1,6 @@
 import { Badge, Button, Divider, FileButton } from '@mantine/core'
 import { Link, RichTextEditor } from '@mantine/tiptap'
-// import '@mantine/tiptap/styles.css'
+import '@mantine/tiptap/styles.css'
 import { IconPaperclip, IconSend, IconX } from '@tabler/icons-react'
 import Highlight from '@tiptap/extension-highlight'
 import Mention from '@tiptap/extension-mention'
@@ -12,8 +12,8 @@ import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import tippy from 'tippy.js'
-import { TThread } from '../../Layout'
 import useTyping from '../../hooks/useTyping'
+import { TThread } from '../../Layout'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { getAppValue } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/useAppMutation'
@@ -37,11 +37,16 @@ const getApiInfo = (targetType: EMessageFor) => {
 export default function SendMessage({
   targetId,
   targetType,
-  thread
+  thread,
+  classNames
 }: {
   targetId: string
   targetType: EMessageFor
   thread?: TThread
+  classNames?: {
+    editorWrapper?: string
+    infoWrapper?: string
+  }
 }) {
   const dispatch = useDispatch()
   const keyApi = getApiInfo(targetType)
@@ -252,8 +257,10 @@ export default function SendMessage({
 
   return (
     <div className='relative h-28'>
-      <div className='absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-300 bg-white'>
-        <RichTextEditor editor={editor} className='border-none'>
+      <div
+        className={`editorWapper absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-300 bg-white ${classNames?.editorWrapper}`}
+      >
+        <RichTextEditor editor={editor} className='border-none text-sm'>
           {editor && (
             <BubbleMenu
               editor={editor}
@@ -350,7 +357,9 @@ export default function SendMessage({
         </div>
       </div>
 
-      <p className='absolute bottom-1 left-4 right-3 flex justify-between text-xs text-gray-500'>
+      <p
+        className={`info-wrapper absolute bottom-1 left-4 right-3 flex justify-between text-xs text-gray-500 ${classNames?.infoWrapper}`}
+      >
         <Typing messRefId={targetId} />
         <span>
           Press <kbd className='bg-gray-100'>⌘Enter</kbd> or{' '}
