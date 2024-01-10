@@ -9,7 +9,7 @@ export default function CardItem({ card }: { card: TCard }) {
 
   return (
     <div
-      className='flex min-h-[80px] flex-col rounded bg-gray-100 px-2 py-1'
+      className='flex flex-col rounded bg-gray-100 px-2 py-1'
       id={card._id}
       onClick={() => {
         toogleCard({
@@ -17,12 +17,20 @@ export default function CardItem({ card }: { card: TCard }) {
         })
       }}
     >
-      <p className='line-clamp-3 flex-1'>{card.title}</p>
+      <p className='line-clamp-2 flex-1 rounded'>
+        {card.title}On the other hand, we denounce with righteous indignation
+        and dislike men who are so
+      </p>
+
       <div className='flex items-center text-gray-600'>
-        {`${checkboxes.filter(e => e.attrs && e.attrs['checked']).length}/${
-          checkboxes.length
-        }`}{' '}
-        <IconCheckbox size={16} />
+        {!!checkboxes.length && (
+          <div className='flex items-center'>
+            {`${checkboxes.filter(e => e.attrs && e.attrs['checked']).length}/${
+              checkboxes.length
+            }`}{' '}
+            <IconCheckbox size={16} />
+          </div>
+        )}
       </div>
     </div>
   )

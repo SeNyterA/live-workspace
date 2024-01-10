@@ -158,6 +158,30 @@ export default function SendMessage({
     }
   })
 
+  const uploadFiles = async (files: File[]) => {
+    const _filesUploaded = files.map(file => {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      return uploadFile({
+        method: 'post',
+        isFormData: true,
+        url: {
+          baseUrl: '/upload'
+        },
+        payload: { file }
+      })
+        .then(data => {
+          setFiles(files => [...files, data.url])
+        })
+        .catch(error => {
+          console.error('File upload failed', error)
+        })
+    })
+
+    await Promise.all(_filesUploaded)
+  }
+
   const editor = useEditor({
     onUpdate({}) {
       typing(targetId)
@@ -252,7 +276,21 @@ export default function SendMessage({
           }
         }
       })
-    ]
+    ],
+
+    editorProps: {
+      handlePaste(view, event, slice) {},
+      handleDrop: (view, event, slice, moved) => {
+        event.preventDefault()
+        event.stopPropagation()
+
+        if (!moved && event.dataTransfer && event.dataTransfer.files) {
+          const files = Object.values(event.dataTransfer.files)
+          uploadFiles(files)
+        }
+        return false
+      }
+    }
   })
 
   return (
@@ -275,7 +313,6 @@ export default function SendMessage({
                 <RichTextEditor.Link />
                 <RichTextEditor.BulletList />
                 <RichTextEditor.OrderedList />
-                {/* <RichTextEditor.Code /> */}
               </RichTextEditor.ControlsGroup>
             </BubbleMenu>
           )}
@@ -313,28 +350,8 @@ export default function SendMessage({
           ))}
           <FileButton
             multiple
-            onChange={async files => {
-              const _filesUploaded = files.map(file => {
-                const formData = new FormData()
-                formData.append('file', file)
-
-                return uploadFile({
-                  method: 'post',
-                  isFormData: true,
-                  url: {
-                    baseUrl: '/upload'
-                  },
-                  payload: { file }
-                })
-                  .then(data => {
-                    setFiles(files => [...files, data.url])
-                  })
-                  .catch(error => {
-                    console.error('File upload failed', error)
-                  })
-              })
-
-              await Promise.all(_filesUploaded)
+            onChange={files => {
+              uploadFiles(files)
             }}
             accept='image/png,image/jpeg'
           >
