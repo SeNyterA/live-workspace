@@ -1,5 +1,6 @@
-import { ActionIcon, Avatar, HoverCard, Image } from '@mantine/core'
+import { ActionIcon, Avatar, Image } from '@mantine/core'
 import { Link } from '@mantine/tiptap'
+import { IconMessageReply, IconTrash } from '@tabler/icons-react'
 import Highlight from '@tiptap/extension-highlight'
 import Mention from '@tiptap/extension-mention'
 import TextAlign from '@tiptap/extension-text-align'
@@ -39,7 +40,7 @@ export default function MessageGroup({
 
   return (
     <div
-      className={`my-3 flex gap-2 px-4 ${
+      className={`my-3 flex gap-2 px-4 first:mt-8 ${
         isOwner ? 'justify-end' : 'justify-start'
       } ${classNames?.wrapper}`}
     >
@@ -66,67 +67,61 @@ export default function MessageGroup({
         {messageGroup.messages.map(message => {
           const { images } = groupByFileType(message.attachments || [])
 
-          console.log(
-            generateHTML(message.content, [
-              StarterKit,
-              Underline,
-              Link,
-              Highlight,
-              TextAlign,
-              Mention
-            ])
-          )
-
           return (
-            <HoverCard
-              width={280}
-              position={isOwner ? 'top-end' : 'top-start'}
-              offset={4}
-              openDelay={150}
-              key={message._id}
+            <div
+              className={`mt-1 flex max-w-[300px] flex-col first:mt-0 ${
+                isOwner && 'items-end'
+              }`}
             >
-              <HoverCard.Target>
+              {!!message.replyToMessageId && (
+                <Watching
+                  watchingFn={state => ({
+                    replyMessage:
+                      state.workspace.messages[message.replyToMessageId!],
+                    user: state.workspace.users[message.createdById!]
+                  })}
+                >
+                  {data => (
+                    <div
+                      className='line-clamp-1 h-4 max-w-96 cursor-pointer truncate !bg-transparent text-xs !text-blue-400 hover:underline'
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(
+                          generateHTML(
+                            updateLabelMention(
+                              data?.replyMessage?.content || {}
+                            ),
+                            [
+                              StarterKit,
+                              Underline,
+                              Link,
+                              Highlight,
+                              TextAlign,
+                              Mention
+                            ]
+                          )
+                        )
+                      }}
+                    />
+                  )}
+                </Watching>
+              )}
+
+              <div
+                className='group relative w-fit cursor-pointer rounded bg-gray-100 p-1'
+                key={message._id}
+              >
                 <div
-                  className={`mt-1 flex max-w-[300px] flex-col first:mt-0 ${
-                    isOwner && 'items-end'
+                  className={`absolute top-0 z-10 hidden h-10 translate-y-[-100%] items-center justify-center gap-1 rounded bg-white px-2 shadow-custom group-hover:flex ${
+                    isOwner ? 'right-0' : 'left-0'
                   }`}
                 >
-                  {!!message.replyToMessageId && (
-                    <Watching
-                      watchingFn={state => ({
-                        replyMessage:
-                          state.workspace.messages[message.replyToMessageId!],
-                        user: state.workspace.users[message.createdById!]
-                      })}
-                    >
-                      {data => (
-                        <div
-                          className='line-clamp-1 h-4 max-w-96 cursor-pointer truncate !bg-transparent text-xs !text-blue-400 hover:underline'
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(
-                              generateHTML(
-                                updateLabelMention(
-                                  data?.replyMessage?.content || {}
-                                ),
-                                [
-                                  StarterKit,
-                                  Underline,
-                                  Link,
-                                  Highlight,
-                                  TextAlign,
-                                  Mention
-                                ]
-                              )
-                            )
-                          }}
-                        />
-                      )}
-                    </Watching>
-                  )}
+                  <ActionIcon variant='light' color='gray' />
+                  <ActionIcon variant='light' color='gray' />
+                  <ActionIcon variant='light' color='gray' />
 
-                  <div
-                    className='w-fit rounded bg-gray-100 p-1 cursor-pointer'
-                    key={message._id}
+                  <ActionIcon
+                    variant='light'
+                    color='gray'
                     onClick={() => {
                       updateThread({
                         targetId: message.messageReferenceId,
@@ -135,45 +130,40 @@ export default function MessageGroup({
                       })
                     }}
                   >
-                    <div
-                      className='text-sm'
-                      dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(
-                          generateHTML(updateLabelMention(message.content), [
-                            StarterKit,
-                            Underline,
-                            Link,
-                            Highlight,
-                            TextAlign,
-                            Mention
-                          ])
-                        )
-                      }}
-                    />
-                    {images.map(img => (
-                      <Image
-                        mah={400}
-                        maw={400}
-                        key={img.url}
-                        className='rounded'
-                        src={img.url}
-                      />
-                    ))}
-                  </div>
+                    <IconMessageReply size={18} />
+                  </ActionIcon>
+                  <ActionIcon variant='light' color='gray'>
+                    <IconTrash size={18} />
+                  </ActionIcon>
                 </div>
-              </HoverCard.Target>
-              {/* <HoverCard.Dropdown className='h-10 p-1'>
-                <ActionIcon />
-              </HoverCard.Dropdown> */}
-            </HoverCard>
+                <div
+                  className='text-sm'
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      generateHTML(updateLabelMention(message.content), [
+                        StarterKit,
+                        Underline,
+                        Link,
+                        Highlight,
+                        TextAlign,
+                        Mention
+                      ])
+                    )
+                  }}
+                />
+                {images.map(img => (
+                  <Image
+                    mah={400}
+                    maw={400}
+                    key={img.url}
+                    className='rounded'
+                    src={img.url}
+                  />
+                ))}
+              </div>
+            </div>
           )
         })}
-
-        {/* <p className='text-xs leading-3 text-gray-500'>
-          {dayjs(
-            messageGroup.messages[messageGroup.messages.length - 1].createdAt
-          ).format('YYYY-MM-DD HH:mm:ss')}
-        </p> */}
       </div>
     </div>
   )

@@ -46,6 +46,7 @@ export default function SendMessage({
   classNames?: {
     editorWrapper?: string
     infoWrapper?: string
+    rootWrapper?: string
   }
 }) {
   const dispatch = useDispatch()
@@ -294,7 +295,7 @@ export default function SendMessage({
   })
 
   return (
-    <div className='relative h-28'>
+    <div className={`rootWrapper relative h-28 ${classNames?.rootWrapper}`}>
       <div
         className={`editorWapper absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-300 bg-white ${classNames?.editorWrapper}`}
       >

@@ -32,14 +32,14 @@ export default function Thread() {
       classNames={{
         content: 'rounded-lg flex flex-col',
         inner: 'p-3',
-        body: 'flex flex-col flex-1'
+        body: 'flex flex-col flex-1 px-0 pb-2'
       }}
     >
       <div className='relative flex-1'>
-        <ScrollArea className='absolute inset-0'>
+        <ScrollArea className='absolute inset-0'   scrollbarSize={8} >
           {groupMessages(threadMessages || []).map(groupMessage => (
             <MessageGroup
-              classNames={{ wrapper: '!px-0' }}
+              // classNames={{ wrapper: '!px-0' }}
               key={groupMessage.messages[0]._id}
               messageGroup={groupMessage}
             />
@@ -48,8 +48,8 @@ export default function Thread() {
       </div>
       <SendMessage
         classNames={{
-          editorWrapper: '!left-0 !right-0',
-          infoWrapper: '!left-0 !right-0'
+          editorWrapper: '!left-4 !right-4',
+          infoWrapper: '!left-4 !right-4'
         }}
         targetId={thread.targetId}
         targetType={thread.targetType}

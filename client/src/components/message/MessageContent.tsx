@@ -152,7 +152,7 @@ export default function MessageContent({
               </div>
               <div
                 ref={loadMoreObserverRef}
-                className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center'
+                className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-black'
               />
             </div>
           ) : (
