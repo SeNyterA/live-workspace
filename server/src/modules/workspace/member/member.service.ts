@@ -17,16 +17,19 @@ export class MemberService {
     userId,
     inRoles = [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
     isAvailable = true,
+    isAccepted = true,
     throwErr
   }: {
     userId: string
     targetId: string
     inRoles?: EMemberRole[]
     isAvailable?: boolean
+    isAccepted?: boolean
     throwErr?: boolean
   }) {
     const existingMember = await this.memberModel.findOne({
       isAvailable,
+      isAccepted,
       userId,
       targetId,
       role: {
@@ -41,18 +44,10 @@ export class MemberService {
     return existingMember
   }
 
-  async _getByTargetId({ targetId }: { targetId: string }) {
-    const members = await this.memberModel.find({
-      isAvailable: true,
-      targetId
-    })
-
-    return members
-  }
-
   async _getByUserId({ userId }: { userId: string }) {
     const members = await this.memberModel.find({
       isAvailable: true,
+      isAccepted: true,
       userId
     })
 
@@ -73,7 +68,9 @@ export class MemberService {
       userId
     })
 
-    const members = await this.memberModel.find({ targetId }).lean()
+    const members = await this.memberModel
+      .find({ targetId, isAccepted: true })
+      .lean()
 
     let users
     if (includeUsers) {

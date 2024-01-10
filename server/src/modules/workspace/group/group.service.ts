@@ -59,7 +59,8 @@ export class GroupService {
 
     const members = await this.memberService.memberModel
       .find({
-        targetId: { $in: groups.map(team => team._id.toString()) }
+        targetId: { $in: groups.map(team => team._id.toString()) },
+        isAccepted: true
       })
       .lean()
 
@@ -161,7 +162,7 @@ export class GroupService {
               type: 'member',
               action: 'create',
               data: member
-            } as TWorkspaceSocket)
+            }) as TWorkspaceSocket
         )
       ]
     })
@@ -312,7 +313,7 @@ export class GroupService {
             type: 'member',
             action: 'create',
             data: member
-          } as TWorkspaceSocket)
+          }) as TWorkspaceSocket
       )
     ]
 

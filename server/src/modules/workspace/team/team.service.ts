@@ -70,7 +70,8 @@ export class TeamService {
     const _member = this.memberService.memberModel.findOne({
       userId,
       targetId: targetId,
-      isAvailable: true
+      isAvailable: true,
+      isAccepted: true
     })
     const _target = this.teamModel.findOne({
       _id: targetId,
@@ -108,7 +109,8 @@ export class TeamService {
 
     const members = await this.memberService.memberModel
       .find({
-        targetId: { $in: teams.map(team => team._id.toString()) }
+        targetId: { $in: teams.map(team => team._id.toString()) },
+        isAccepted: true
       })
       .lean()
 
@@ -205,7 +207,7 @@ export class TeamService {
             type: 'member',
             action: 'create',
             data: member
-          } as TWorkspaceSocket)
+          }) as TWorkspaceSocket
       )
     ]
 
@@ -250,7 +252,7 @@ export class TeamService {
                 type: 'member',
                 action: 'create',
                 data: channelMember
-              } as TWorkspaceSocket)
+              }) as TWorkspaceSocket
           )
         ]
       })
@@ -348,7 +350,7 @@ export class TeamService {
                 type: 'member',
                 action: 'create',
                 data: boardMember
-              } as TWorkspaceSocket)
+              }) as TWorkspaceSocket
           )
         ]
       })
@@ -363,7 +365,7 @@ export class TeamService {
                 type: 'property',
                 action: 'create',
                 data: property
-              } as TBoardEmit)
+              }) as TBoardEmit
           )
         ]
       })

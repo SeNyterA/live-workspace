@@ -94,7 +94,8 @@ export class WorkspaceService {
     const members = await this.memberModel
       .find({
         userId,
-        isAvailable: true
+        isAvailable: true,
+        isAccepted: true
       })
       .lean()
     const directs = await this.directService.directMessageModel.find({

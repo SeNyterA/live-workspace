@@ -24,7 +24,8 @@ export class MessageService {
     const members = await this.memberService.memberModel
       .find({
         targetId,
-        isAvailable: true
+        isAvailable: true,
+        isAccepted: true
       })
       .lean()
 

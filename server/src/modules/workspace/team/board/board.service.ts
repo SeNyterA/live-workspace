@@ -67,7 +67,8 @@ export class BoardService {
     const _member = this.memberService.memberModel.findOne({
       userId,
       targetId: targetId,
-      isAvailable: true
+      isAvailable: true,
+      isAccepted: true
     })
     const _target = this.boardModel.findOne({
       _id: targetId,
@@ -100,7 +101,8 @@ export class BoardService {
 
     const members = await this.memberService.memberModel
       .find({
-        targetId: { $in: boards.map(team => team._id.toString()) }
+        targetId: { $in: boards.map(team => team._id.toString()) },
+        isAccepted: true
       })
       .lean()
 
@@ -240,7 +242,7 @@ export class BoardService {
             type: 'member',
             action: 'create',
             data: member
-          } as TWorkspaceSocket)
+          }) as TWorkspaceSocket
       )
     ]
 

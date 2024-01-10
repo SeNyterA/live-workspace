@@ -1,6 +1,12 @@
 import { ActionIcon, Avatar, Image } from '@mantine/core'
 import { Link } from '@mantine/tiptap'
-import { IconMessageReply, IconTrash } from '@tabler/icons-react'
+import {
+  IconEdit,
+  IconMessageReply,
+  IconMoodPlus,
+  IconPin,
+  IconTrash
+} from '@tabler/icons-react'
 import Highlight from '@tiptap/extension-highlight'
 import Mention from '@tiptap/extension-mention'
 import TextAlign from '@tiptap/extension-text-align'
@@ -9,6 +15,7 @@ import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
 import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
+import { useState } from 'react'
 import { useLayout } from '../../Layout'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
@@ -26,6 +33,7 @@ export default function MessageGroup({
   classNames?: { wrapper?: string }
 }) {
   const { updateThread } = useLayout()
+  const [emojiId, toogleImojiId] = useState<string>()
   const createdByUser = useAppSelector(state =>
     Object.values(state.workspace.users).find(
       e => e._id === messageGroup.userId
@@ -46,7 +54,7 @@ export default function MessageGroup({
     >
       {!isOwner && (
         <UserDetailProvider user={createdByUser}>
-          <Avatar />
+          <Avatar src={createdByUser?.avatar} />
         </UserDetailProvider>
       )}
 
@@ -115,13 +123,32 @@ export default function MessageGroup({
                     isOwner ? 'right-0' : 'left-0'
                   }`}
                 >
-                  <ActionIcon variant='light' color='gray' />
-                  <ActionIcon variant='light' color='gray' />
-                  <ActionIcon variant='light' color='gray' />
+                  {/* <Menu shadow='md'>
+                    <Menu.Target>
+                      <ActionIcon variant='subtle'>
+                        <IconMoodPlus size={18} />
+                      </ActionIcon>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                      <Picker data={data} onEmojiSelect={console.log} />
+                    </Menu.Dropdown>
+                  </Menu> */}
+
+                  <ActionIcon variant='subtle'>
+                    <IconMoodPlus size={18} />
+                  </ActionIcon>
+
+                  <ActionIcon variant='subtle'>
+                    <IconEdit size={18} />
+                  </ActionIcon>
+
+                  <ActionIcon variant='subtle'>
+                    <IconPin size={18} />
+                  </ActionIcon>
 
                   <ActionIcon
-                    variant='light'
-                    color='gray'
+                    variant='subtle'
                     onClick={() => {
                       updateThread({
                         targetId: message.messageReferenceId,
@@ -132,7 +159,20 @@ export default function MessageGroup({
                   >
                     <IconMessageReply size={18} />
                   </ActionIcon>
-                  <ActionIcon variant='light' color='gray'>
+
+                  <ActionIcon
+                    variant='subtle'
+                    onClick={() => {
+                      updateThread({
+                        targetId: message.messageReferenceId,
+                        targetType: message.messageFor,
+                        threadId: message.replyRootId || message._id
+                      })
+                    }}
+                  >
+                    <IconMessageReply size={18} />
+                  </ActionIcon>
+                  <ActionIcon variant='subtle'>
                     <IconTrash size={18} />
                   </ActionIcon>
                 </div>
