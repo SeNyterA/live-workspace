@@ -59,8 +59,7 @@ export class GroupService {
 
     const members = await this.memberService.memberModel
       .find({
-        targetId: { $in: groups.map(team => team._id.toString()) },
-        isAccepted: true
+        targetId: { $in: groups.map(team => team._id.toString()) }
       })
       .lean()
 

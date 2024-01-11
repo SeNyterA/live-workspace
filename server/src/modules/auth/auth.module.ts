@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { MongooseModule, SchemaFactory } from '@nestjs/mongoose'
+import { MailModule } from '../mail/mail.module'
 import { User } from '../users/user.schema'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { MailService } from '../mail/mail.service'
-import { MailModule } from '../mail/mail.module'
 
 @Module({
   imports: [

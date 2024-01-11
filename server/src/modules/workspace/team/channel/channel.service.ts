@@ -63,8 +63,7 @@ export class ChannelService {
     const _member = this.memberService.memberModel.findOne({
       userId,
       targetId: targetId,
-      isAvailable: true,
-      isAccepted: true
+      isAvailable: true
     })
     const _target = this.channelModel.findOne({
       _id: targetId,
@@ -101,8 +100,7 @@ export class ChannelService {
 
     const members = await this.memberService.memberModel
       .find({
-        targetId: { $in: channels.map(team => team._id.toString()) },
-        isAccepted: true
+        targetId: { $in: channels.map(team => team._id.toString()) }
       })
       .lean()
 

@@ -62,6 +62,7 @@ export type TMember = {
   createdAt: Date
   updatedAt: Date
   isAvailable: boolean
+  isAccepted: boolean
 }
 
 export enum EMessageFor {

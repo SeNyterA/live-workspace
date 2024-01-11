@@ -135,11 +135,7 @@ export default function useRouteElements() {
             },
             {
               path: 'direct-message/:directId',
-              element: (
-                <ErrorBoundary fallback={<></>}>
-                  <DirectMessage />
-                </ErrorBoundary>
-              )
+              element: <DirectMessage />
             }
           ]
         }
@@ -147,11 +143,7 @@ export default function useRouteElements() {
     },
     {
       path: '*',
-      element: (
-        <div className='flex h-screen w-screen items-center justify-center'>
-          Not found
-        </div>
-      )
+      element: <Navigate to='/team/personal' />
     }
   ])
 

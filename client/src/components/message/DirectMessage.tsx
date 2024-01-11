@@ -10,6 +10,7 @@ import MessageContentProvider from './MessageContentProvider'
 
 export default function DirectMessage() {
   const { directId } = useAppParams()
+
   const directInfo = useDirect(directId)
   const dispatch = useDispatch()
   const [formId, setFormId] = useState<string>()
@@ -72,24 +73,25 @@ export default function DirectMessage() {
   }, [directMessages])
 
   return (
-    <MessageContentProvider
-      value={{
-        title:
-          directInfo?.direct.title ||
-          directInfo?.targetUser?.userName ||
-          targetUser?.user.userName ||
-          '',
-        targetId: {
-          directId: directInfo?.direct?._id
-        },
-        userTargetId: directInfo?.targetUser?._id || targetUser?.user._id
-      }}
-    >
-      <MessageContent
-        loadMore={setFormId}
-        isLoading={isLoading}
-        remainingCount={directMessages?.remainingCount}
-      />
-    </MessageContentProvider>
+    <></>
+    // <MessageContentProvider
+    //   value={{
+    //     title:
+    //       directInfo?.direct.title ||
+    //       directInfo?.targetUser?.userName ||
+    //       targetUser?.user.userName ||
+    //       '',
+    //     targetId: {
+    //       directId: directInfo?.direct?._id
+    //     },
+    //     userTargetId: directInfo?.targetUser?._id || targetUser?.user._id
+    //   }}
+    // >
+    //   <MessageContent
+    //     loadMore={setFormId}
+    //     isLoading={isLoading}
+    //     remainingCount={directMessages?.remainingCount}
+    //   />
+    // </MessageContentProvider>
   )
 }

@@ -67,8 +67,7 @@ export class BoardService {
     const _member = this.memberService.memberModel.findOne({
       userId,
       targetId: targetId,
-      isAvailable: true,
-      isAccepted: true
+      isAvailable: true
     })
     const _target = this.boardModel.findOne({
       _id: targetId,
@@ -101,8 +100,7 @@ export class BoardService {
 
     const members = await this.memberService.memberModel
       .find({
-        targetId: { $in: boards.map(team => team._id.toString()) },
-        isAccepted: true
+        targetId: { $in: boards.map(team => team._id.toString()) }
       })
       .lean()
 

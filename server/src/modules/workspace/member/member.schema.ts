@@ -52,6 +52,6 @@ export class Member {
   @Prop()
   acceptedAt?: Date
 
-  @Prop({ default: false })
+  @Prop({ default: true })
   isAccepted: boolean
 }

@@ -31,6 +31,7 @@ import { TeamService } from './team/team.service'
 import { WorkpaceController } from './workspace.controler'
 import { WorkspaceGateway } from './workspace.gateway'
 import { WorkspaceService } from './workspace.service'
+import { MailModule } from '../mail/mail.module'
 
 @Module({
   imports: [
@@ -50,7 +51,8 @@ import { WorkspaceService } from './workspace.service'
       { name: Property.name, schema: SchemaFactory.createForClass(Property) }
     ]),
     UsersModule,
-    RedisModule
+    RedisModule,
+    MailModule
   ],
   controllers: [
     TeamController,

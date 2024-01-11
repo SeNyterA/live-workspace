@@ -1,7 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-
 import { User } from 'src/modules/users/user.schema'
 import { EMemberRole, Member } from './member.schema'
 
@@ -47,7 +46,6 @@ export class MemberService {
   async _getByUserId({ userId }: { userId: string }) {
     const members = await this.memberModel.find({
       isAvailable: true,
-      isAccepted: true,
       userId
     })
 
@@ -68,9 +66,7 @@ export class MemberService {
       userId
     })
 
-    const members = await this.memberModel
-      .find({ targetId, isAccepted: true })
-      .lean()
+    const members = await this.memberModel.find({ targetId }).lean()
 
     let users
     if (includeUsers) {

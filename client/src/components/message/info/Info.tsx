@@ -1,7 +1,8 @@
-import { ActionIcon, Divider, ScrollArea } from '@mantine/core'
+import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconSettings } from '@tabler/icons-react'
 import { useMessageInfo } from './InfoProvier'
 import Members from './Members'
+import PinedMesages from './PinedMesages'
 
 export default function Info() {
   const {
@@ -22,10 +23,11 @@ export default function Info() {
           <IconSettings size={16} />
         </ActionIcon>
       </div>
-      <Divider variant='dashed' className='mx-4 my-2' />
-      <div className='relative flex-1 px-4'>
-        <ScrollArea className='absolute inset-0 px-4' scrollbarSize={8}>
+      {/* <Divider variant='dashed' className='mx-4 my-2' /> */}
+      <div className='relative mt-2 flex-1 px-4'>
+        <ScrollArea className='absolute inset-0 px-4 space-y-6' scrollbarSize={8}>
           <Members />
+          <PinedMesages />
         </ScrollArea>
       </div>
     </div>

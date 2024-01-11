@@ -1,4 +1,4 @@
-import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
+import { Avatar, Badge, Divider, Indicator, NavLink } from '@mantine/core'
 import { useAppSelector } from '../../../redux/store'
 import { EMemberRole } from '../../../types/workspace.type'
 import UserDetailProvider from '../../user/UserDetailProvider'
@@ -52,6 +52,22 @@ export default function Members() {
     }
   }
 
+  const enableMembers = members?.filter(
+    ({ member, user }) =>
+      member?.isAccepted && user?.isAvailable && member.isAvailable
+  )
+
+  const invitedMembers = members?.filter(
+    ({ member, user }) =>
+      !member?.isAccepted && user?.isAvailable && member?.isAvailable
+  )
+
+  const disableMembers = members?.filter(
+    ({ member, user }) => !user?.isAvailable || !member?.isAvailable
+  )
+
+  console.log({ disableMembers })
+
   return (
     <NavLink
       className='p-1 pl-0'
@@ -66,44 +82,138 @@ export default function Members() {
         </div>
       }
       onClick={() => {}}
-      classNames={{ children: 'pl-0' }}
+      classNames={{ children: 'pl-0 pb-2' }}
     >
-      {members?.map(({ member, user }) => (
-        <div className='mt-2 flex flex-1 items-center gap-2' key={user?._id}>
-          <UserDetailProvider>
-            <Indicator
-              inline
-              size={16}
-              offset={3}
-              position='bottom-end'
-              color='yellow'
-              withBorder
-            >
-              <Avatar src={user?.avatar} size={36} />
-            </Indicator>
-          </UserDetailProvider>
+      {!!enableMembers?.length &&
+        enableMembers?.map(({ member, user }) => (
+          <div
+            className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
+            key={user?._id}
+          >
+            <UserDetailProvider user={user}>
+              <Indicator
+                inline
+                size={16}
+                offset={3}
+                position='bottom-end'
+                color='yellow'
+                withBorder
+              >
+                <Avatar src={user?.avatar} size={36} />
+              </Indicator>
+            </UserDetailProvider>
 
-          <div className='flex flex-1 flex-col justify-center'>
-            <p className='max-w-[150px] truncate font-medium leading-4'>
-              {user?.userName}
-            </p>
-            <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
-              {user?.email}
-            </p>
+            <div className='flex flex-1 flex-col justify-center'>
+              <p className='max-w-[150px] truncate font-medium leading-4'>
+                {user?.userName}
+              </p>
+              <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+                {user?.email}
+              </p>
+            </div>
+
+            {member && (
+              <Badge
+                variant='light'
+                color={getRoleColor(member.role)}
+                radius='xs'
+                className='w-20'
+              >
+                {member.role}
+              </Badge>
+            )}
           </div>
+        ))}
 
-          {member && (
-            <Badge
-              variant='light'
-              color={getRoleColor(member.role)}
-              radius='xs'
-              className='w-20'
+      {!!invitedMembers?.length && (
+        <>
+          {/* <Divider variant='dashed' className='mt-2' /> */}
+          {invitedMembers.map(({ member, user }) => (
+            <div
+              className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
+              key={user?._id}
             >
-              {member.role}
-            </Badge>
-          )}
-        </div>
-      ))}
+              <UserDetailProvider user={user}>
+                <Indicator
+                  inline
+                  size={16}
+                  offset={3}
+                  position='bottom-end'
+                  color='yellow'
+                  withBorder
+                >
+                  <Avatar src={user?.avatar} size={36} />
+                </Indicator>
+              </UserDetailProvider>
+
+              <div className='flex flex-1 flex-col justify-center'>
+                <p className='max-w-[150px] truncate font-medium leading-4'>
+                  {user?.userName}
+                </p>
+                <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+                  {user?.email}
+                </p>
+              </div>
+
+              {member && (
+                <Badge
+                  variant='light'
+                  color={'dark'}
+                  radius='xs'
+                  className='w-20'
+                >
+                  Invited
+                </Badge>
+              )}
+            </div>
+          ))}
+        </>
+      )}
+
+      {!!disableMembers?.length && (
+        <>
+          {/* <Divider variant='dashed' className='mt-2' /> */}
+          {disableMembers.map(({ member, user }) => (
+            <div
+              className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
+              key={user?._id}
+            >
+              <UserDetailProvider user={user}>
+                <Indicator
+                  inline
+                  size={16}
+                  offset={3}
+                  position='bottom-end'
+                  color='yellow'
+                  withBorder
+                >
+                  <Avatar src={user?.avatar} size={36} />
+                </Indicator>
+              </UserDetailProvider>
+
+              <div className='flex flex-1 flex-col justify-center'>
+                <p className='max-w-[150px] truncate font-medium leading-4'>
+                  {user?.userName}
+                </p>
+                <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+                  {user?.email}
+                </p>
+              </div>
+
+              {member && (
+                <Badge
+                  variant='light'
+                  color={'dark'}
+                  radius='xs'
+                  className='w-20'
+                >
+                  None
+                </Badge>
+              )}
+            </div>
+          ))}
+        </>
+      )}
     </NavLink>
   )
 }

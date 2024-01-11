@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { getTeamPermission } from 'src/libs/checkPermistion'
 import { Errors } from 'src/libs/errors'
+import { MailService } from 'src/modules/mail/mail.service'
 import { User } from 'src/modules/users/user.schema'
 import { UsersService } from 'src/modules/users/users.service'
 import { EMemberRole, EMemberType, Member } from '../member/member.schema'
@@ -33,6 +34,7 @@ export class TeamService {
     @InjectModel(Member.name) readonly memberModel: Model<Member>,
     @InjectModel(User.name) readonly userModel: Model<User>,
     readonly memberService: MemberService,
+    readonly mailService: MailService,
 
     @Inject(forwardRef(() => ChannelService))
     readonly channelService: ChannelService,
@@ -70,8 +72,7 @@ export class TeamService {
     const _member = this.memberService.memberModel.findOne({
       userId,
       targetId: targetId,
-      isAvailable: true,
-      isAccepted: true
+      isAvailable: true
     })
     const _target = this.teamModel.findOne({
       _id: targetId,
@@ -109,8 +110,7 @@ export class TeamService {
 
     const members = await this.memberService.memberModel
       .find({
-        targetId: { $in: teams.map(team => team._id.toString()) },
-        isAccepted: true
+        targetId: { $in: teams.map(team => team._id.toString()) }
       })
       .lean()
 
@@ -175,12 +175,16 @@ export class TeamService {
       } else {
         const newMember = await this.memberModel.create({
           ...memberDto,
+          isAccepted: memberDto.role === EMemberRole.Owner ? true : false,
           targetId: newTeam._id.toString(),
           path: newTeam._id.toString(),
           type: EMemberType.Team,
           createdById: userId,
           modifiedById: userId
         })
+
+        //send mail
+
         return {
           member: newMember.toJSON(),
           user: user.toJSON()
@@ -229,19 +233,20 @@ export class TeamService {
         createdById: userId,
         modifiedById: userId
       })
-      const _channelMembers = validMembers.map(
-        async teamMember =>
-          await this.memberModel.create({
-            userId: teamMember.userId.toString(),
-            targetId: newChannel._id.toString(),
-            role: teamMember.role,
-            path: `${teamMember.targetId.toString()}/${newChannel._id.toString()}`,
-            type: EMemberType.Channel,
-            createdById: userId,
-            modifiedById: userId
-          })
-      )
+      const _channelMembers = validMembers.map(async teamMember => {
+        return await this.memberModel.create({
+          userId: teamMember.userId.toString(),
+          targetId: newChannel._id.toString(),
+          role: teamMember.role,
+          isAccepted: teamMember.role === EMemberRole.Owner ? true : false,
+          path: `${teamMember.targetId.toString()}/${newChannel._id.toString()}`,
+          type: EMemberType.Channel,
+          createdById: userId,
+          modifiedById: userId
+        })
+      })
       const channelMembers = await Promise.all(_channelMembers)
+
       this.workspaceService.workspaces({
         rooms: channelMembers.map(({ userId }) => userId.toString()),
         workspaces: [
@@ -331,6 +336,7 @@ export class TeamService {
             userId: teamMember.userId.toString(),
             targetId: newBoard._id.toString(),
             role: teamMember.role,
+            isAccepted: teamMember.role === EMemberRole.Owner ? true : false,
             path: `${teamMember.targetId.toString()}/${newBoard._id.toString()}`,
             type: EMemberType.Board,
             createdById: userId,
