@@ -1,4 +1,6 @@
-import { ActionIcon, Avatar, Image } from '@mantine/core'
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
+import { ActionIcon, Avatar, Image, Menu } from '@mantine/core'
 import { Link } from '@mantine/tiptap'
 import {
   IconEdit,
@@ -77,7 +79,8 @@ export default function MessageGroup({
 
           return (
             <div
-              className={`mt-1 flex max-w-[300px] flex-col first:mt-0 ${
+              key={message._id}
+              className={`mt-1 flex max-w-[500px] flex-col first:mt-0 ${
                 isOwner && 'items-end'
               }`}
             >
@@ -114,6 +117,23 @@ export default function MessageGroup({
                 </Watching>
               )}
 
+              <Menu
+                onClose={() => {
+                  toogleImojiId(undefined)
+                }}
+                opened={emojiId === message._id}
+                position='bottom-end'
+                offset={0}
+              >
+                <Menu.Target>
+                  <div className='bg-black'></div>
+                </Menu.Target>
+
+                <Menu.Dropdown className='overflow-hidden rounded-lg p-0 shadow-none'>
+                  <Picker data={data} onEmojiSelect={console.log} />
+                </Menu.Dropdown>
+              </Menu>
+
               <div
                 className='group relative w-fit cursor-pointer rounded bg-gray-100 p-1'
                 key={message._id}
@@ -123,32 +143,33 @@ export default function MessageGroup({
                     isOwner ? 'right-0' : 'left-0'
                   }`}
                 >
-                  {/* <Menu shadow='md'>
-                    <Menu.Target>
-                      <ActionIcon variant='subtle'>
-                        <IconMoodPlus size={18} />
-                      </ActionIcon>
-                    </Menu.Target>
-
-                    <Menu.Dropdown>
-                      <Picker data={data} onEmojiSelect={console.log} />
-                    </Menu.Dropdown>
-                  </Menu> */}
-
-                  <ActionIcon variant='subtle'>
+                  <ActionIcon
+                    variant='light'
+                    className='text-gray-600 hover:text-gray-800'
+                    onClick={() => {
+                      toogleImojiId(message._id)
+                    }}
+                  >
                     <IconMoodPlus size={18} />
                   </ActionIcon>
 
-                  <ActionIcon variant='subtle'>
+                  <ActionIcon
+                    variant='light'
+                    className='text-gray-600 hover:text-gray-800'
+                  >
                     <IconEdit size={18} />
                   </ActionIcon>
 
-                  <ActionIcon variant='subtle'>
+                  <ActionIcon
+                    variant='light'
+                    className='text-gray-600 hover:text-gray-800'
+                  >
                     <IconPin size={18} />
                   </ActionIcon>
 
                   <ActionIcon
-                    variant='subtle'
+                    variant='light'
+                    className='text-gray-600 hover:text-gray-800'
                     onClick={() => {
                       updateThread({
                         targetId: message.messageReferenceId,
@@ -159,20 +180,10 @@ export default function MessageGroup({
                   >
                     <IconMessageReply size={18} />
                   </ActionIcon>
-
                   <ActionIcon
-                    variant='subtle'
-                    onClick={() => {
-                      updateThread({
-                        targetId: message.messageReferenceId,
-                        targetType: message.messageFor,
-                        threadId: message.replyRootId || message._id
-                      })
-                    }}
+                    variant='light'
+                    className='text-gray-600 hover:text-gray-800'
                   >
-                    <IconMessageReply size={18} />
-                  </ActionIcon>
-                  <ActionIcon variant='subtle'>
                     <IconTrash size={18} />
                   </ActionIcon>
                 </div>

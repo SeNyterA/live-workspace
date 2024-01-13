@@ -74,78 +74,82 @@ export default function Sidebar() {
 
         <div className='relative flex-1'>
           <ScrollArea scrollbarSize={6} className='absolute inset-0 px-4'>
-            <NavLink
-              className='mb-1 p-1'
-              label='Boards'
-              leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
-              active={path.pathname.includes('board')}
-              defaultOpened={!!boardId}
-            >
-              <Watching
-                watchingFn={state =>
-                  Object.values(state.workspace.boards).filter(
-                    e => e.teamId === teamId
-                  )
-                }
-              >
-                {boards => (
-                  <>
-                    {boards?.map(item => (
-                      <BoardItem board={item} key={item._id} />
-                    ))}
-                  </>
-                )}
-              </Watching>
+            {team && (
+              <>
+                <NavLink
+                  className='mb-1 p-1'
+                  label='Boards'
+                  leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
+                  active={path.pathname.includes('board')}
+                  defaultOpened={!!boardId}
+                >
+                  <Watching
+                    watchingFn={state =>
+                      Object.values(state.workspace.boards).filter(
+                        e => e.teamId === teamId
+                      )
+                    }
+                  >
+                    {boards => (
+                      <>
+                        {boards?.map(item => (
+                          <BoardItem board={item} key={item._id} />
+                        ))}
+                      </>
+                    )}
+                  </Watching>
 
-              <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
-                label={`Create board`}
-                rightSection={<IconPlus size={14} />}
-                onClick={() => {
-                  setToggle('createBoard')
-                }}
-              />
-            </NavLink>
+                  <NavLink
+                    className='mb-2 p-1 pl-3 opacity-70'
+                    label={`Create board`}
+                    rightSection={<IconPlus size={14} />}
+                    onClick={() => {
+                      setToggle('createBoard')
+                    }}
+                  />
+                </NavLink>
 
-            <NavLink
-              className='mb-1 p-1'
-              label='Channels'
-              leftSection={<IconHash size='1rem' stroke={1.5} />}
-              active={path.pathname.includes('channel')}
-              defaultOpened={!!channelId}
-            >
-              <Watching
-                watchingFn={state =>
-                  Object.values(state.workspace.channels).filter(
-                    e =>
-                      e.teamId === teamId &&
-                      [
-                        e.title.toLowerCase(),
-                        e.description?.toLowerCase()
-                      ].some(e => e?.includes(searchValue.toLowerCase()))
-                  )
-                }
-              >
-                {channels => (
-                  <>
-                    {channels?.map(item => (
-                      <ChannelItem channel={item} key={item._id} />
-                    ))}
-                  </>
-                )}
-              </Watching>
+                <NavLink
+                  className='mb-1 p-1'
+                  label='Channels'
+                  leftSection={<IconHash size='1rem' stroke={1.5} />}
+                  active={path.pathname.includes('channel')}
+                  defaultOpened={!!channelId}
+                >
+                  <Watching
+                    watchingFn={state =>
+                      Object.values(state.workspace.channels).filter(
+                        e =>
+                          e.teamId === teamId &&
+                          [
+                            e.title.toLowerCase(),
+                            e.description?.toLowerCase()
+                          ].some(e => e?.includes(searchValue.toLowerCase()))
+                      )
+                    }
+                  >
+                    {channels => (
+                      <>
+                        {channels?.map(item => (
+                          <ChannelItem channel={item} key={item._id} />
+                        ))}
+                      </>
+                    )}
+                  </Watching>
 
-              <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
-                label={`Create channel`}
-                rightSection={<IconPlus size={14} />}
-                onClick={() => {
-                  setToggle('createChannel')
-                }}
-              />
-            </NavLink>
+                  <NavLink
+                    className='mb-2 p-1 pl-3 opacity-70'
+                    label={`Create channel`}
+                    rightSection={<IconPlus size={14} />}
+                    onClick={() => {
+                      setToggle('createChannel')
+                    }}
+                  />
+                </NavLink>
 
-            <Divider variant='dashed' />
+                <Divider variant='dashed' />
+              </>
+            )}
 
             <NavLink
               className='my-1 p-1'

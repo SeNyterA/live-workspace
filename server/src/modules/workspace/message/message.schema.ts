@@ -37,4 +37,9 @@ export class Message extends Workspace {
 
   @Prop({ type: Types.ObjectId, ref: 'Message' })
   replyRootId?: string
+
+  @Prop({ type: Object, default: {} })
+  reactions: {
+    [userId: string]: string
+  }
 }
