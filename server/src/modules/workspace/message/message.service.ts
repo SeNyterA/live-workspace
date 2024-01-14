@@ -250,6 +250,62 @@ export class MessageService {
     }
   }
 
+  async reaction({
+    payload: { icon },
+    messageId,
+    userId
+  }: {
+    userId: string
+    messageId: string
+    payload: { icon: string }
+  }) {
+    const message = await this.messageModel.findOne({
+      _id: messageId,
+      isAvailable: true
+    })
+
+    if (!message) {
+      return {
+        error: {
+          code: 1000,
+          message: 'message not found'
+        }
+      }
+    }
+
+    const existingMember = await this.memberService._checkExisting({
+      targetId: message.messageReferenceId.toString(),
+      userId
+    })
+
+    if (!existingMember) {
+      return {
+        error: {
+          code: 1000,
+          message: 'user not permission'
+        }
+      }
+    }
+
+    if (message.reactions[userId] === icon) {
+      delete message.reactions[userId]
+    } else {
+      message.reactions[userId] = icon
+    }
+
+    await message.save()
+
+    this.workspaceService.message({
+      rooms: [message.messageReferenceId.toString()],
+      data: {
+        action: 'rection',
+        message: message
+      }
+    })
+
+    return { data: message.toJSON() }
+  }
+
   async _createSystemMessage({
     targetId,
     userId,

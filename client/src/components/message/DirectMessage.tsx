@@ -5,8 +5,6 @@ import useDirect from '../../hooks/useDirect'
 import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
-import MessageContent from './MessageContent'
-import MessageContentProvider from './MessageContentProvider'
 
 export default function DirectMessage() {
   const { directId } = useAppParams()

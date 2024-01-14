@@ -197,6 +197,18 @@ export type ApiMutationType = {
     payload: TChannelDto
     response: TWorkspace
   }
+
+  reaction: {
+    url: {
+      baseUrl: '/workspace/messages/:messageId/reaction'
+      urlParams: {
+        messageId: string
+      }
+    }
+    method: 'post'
+    payload: { icon: any }
+    response: any
+  }
 } & TBoardMutionApi &
   TUploadMutionApi
 

@@ -251,7 +251,7 @@ export class WorkspaceService {
     rooms: string[]
     data: {
       message: Message
-      action: 'create' | 'update' | 'delete'
+      action: 'create' | 'update' | 'delete' | 'rection'
     }
   }) {
     await this.socketService.server.to(rooms).emit('message', data)

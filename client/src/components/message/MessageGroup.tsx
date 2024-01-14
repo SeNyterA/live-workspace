@@ -19,8 +19,9 @@ import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useState } from 'react'
 import { useLayout } from '../../Layout'
-import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
+import { useAppSelector } from '../../redux/store'
+import { useAppMutation } from '../../services/apis/useAppMutation'
 import { EMessageType } from '../../types/workspace.type'
 import { updateLabelMention } from '../../utils/helper'
 import { groupByFileType } from '../new-message/helper'
@@ -42,6 +43,7 @@ export default function MessageGroup({
     )
   )
 
+  const { mutateAsync: reaction } = useAppMutation('reaction')
   const isOwner = useAppSelector(
     state =>
       state.auth.userInfo?._id === messageGroup.userId &&
@@ -130,7 +132,21 @@ export default function MessageGroup({
                 </Menu.Target>
 
                 <Menu.Dropdown className='overflow-hidden rounded-lg p-0 shadow-none'>
-                  <Picker data={data} onEmojiSelect={console.log} />
+                  <Picker
+                    data={data}
+                    onEmojiSelect={(data: any) => {
+                      reaction({
+                        url: {
+                          baseUrl: '/workspace/messages/:messageId/reaction',
+                          urlParams: { messageId: message._id }
+                        },
+                        method: 'post',
+                        payload: { icon: data.native }
+                      })
+
+                      toogleImojiId(undefined)
+                    }}
+                  />
                 </Menu.Dropdown>
               </Menu>
 
@@ -211,6 +227,65 @@ export default function MessageGroup({
                     src={img.url}
                   />
                 ))}
+
+                {!!Object.values(message.reactions || {}).length && (
+                  <div className='mt-1 flex gap-1'>
+                    {Object.values(message.reactions || {}).map(e => (
+                      <span
+                        className='cursor-pointer rounded bg-white p-[2px] text-sm hover:ring-1'
+                        onClick={() => {
+                          reaction({
+                            url: {
+                              baseUrl:
+                                '/workspace/messages/:messageId/reaction',
+                              urlParams: { messageId: message._id }
+                            },
+                            method: 'post',
+                            payload: { icon: e }
+                          })
+                        }}
+                      >
+                        {e} 1
+                      </span>
+                    ))}
+                    <Menu
+                      onClose={() => {
+                        toogleImojiId(undefined)
+                      }}
+                      position='bottom-end'
+                      offset={0}
+                    >
+                      <Menu.Target>
+                        <ActionIcon
+                          variant='light'
+                          className='bg-white text-gray-600 hover:text-gray-800 hover:ring-1'
+                          size={24}
+                        >
+                          <IconMoodPlus size={18} />
+                        </ActionIcon>
+                      </Menu.Target>
+
+                      <Menu.Dropdown className='overflow-hidden rounded-lg p-0 shadow-none'>
+                        <Picker
+                          data={data}
+                          onEmojiSelect={(data: any) => {
+                            reaction({
+                              url: {
+                                baseUrl:
+                                  '/workspace/messages/:messageId/reaction',
+                                urlParams: { messageId: message._id }
+                              },
+                              method: 'post',
+                              payload: { icon: data.native }
+                            })
+
+                            toogleImojiId(undefined)
+                          }}
+                        />
+                      </Menu.Dropdown>
+                    </Menu>
+                  </div>
+                )}
               </div>
             </div>
           )

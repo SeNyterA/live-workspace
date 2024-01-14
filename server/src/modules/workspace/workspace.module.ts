@@ -32,6 +32,7 @@ import { WorkpaceController } from './workspace.controler'
 import { WorkspaceGateway } from './workspace.gateway'
 import { WorkspaceService } from './workspace.service'
 import { MailModule } from '../mail/mail.module'
+import { MessageController } from './message/message.controler'
 
 @Module({
   imports: [
@@ -62,7 +63,8 @@ import { MailModule } from '../mail/mail.module'
     BoardController,
     WorkpaceController,
     CardController,
-    PropertyController
+    PropertyController,
+    MessageController
   ],
   providers: [
     ChannelService,

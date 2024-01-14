@@ -84,6 +84,7 @@ export type TMessage = TWorkspace & {
   attachments?: string[]
   replyRootId?: string
   replyToMessageId?: string
+  reactions: { [userId: string]: any }
 }
 
 export type TOption = {
