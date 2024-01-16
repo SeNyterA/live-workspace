@@ -234,7 +234,6 @@ export default function CreateTeam({
               method: 'post',
               payload: { ...data, channelTitles: channels?.map(e => e.title) }
             }).then(data => {
-              console.log(data)
               onClose()
             })
           })}

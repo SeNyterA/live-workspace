@@ -3,6 +3,7 @@ import Picker from '@emoji-mart/react'
 import { ActionIcon, Avatar, Image, Menu } from '@mantine/core'
 import { Link } from '@mantine/tiptap'
 import {
+  IconBrandThreads,
   IconEdit,
   IconMessageReply,
   IconMoodPlus,
@@ -17,10 +18,10 @@ import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
 import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLayout } from '../../Layout'
-import Watching from '../../redux/Watching'
 import { useAppSelector } from '../../redux/store'
+import Watching from '../../redux/Watching'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { EMessageType } from '../../types/workspace.type'
 import { updateLabelMention } from '../../utils/helper'
@@ -30,10 +31,12 @@ import { TGroupedMessage } from './MessageContentProvider'
 
 export default function MessageGroup({
   messageGroup,
-  classNames
+  classNames,
+  scrollableRef
 }: {
   messageGroup: TGroupedMessage
   classNames?: { wrapper?: string }
+  scrollableRef?: React.RefObject<HTMLDivElement>
 }) {
   const { updateThread } = useLayout()
   const [emojiId, toogleImojiId] = useState<string>()
@@ -49,6 +52,11 @@ export default function MessageGroup({
       state.auth.userInfo?._id === messageGroup.userId &&
       messageGroup.type === EMessageType.Normal
   )
+
+  useEffect(() => {
+    if (!scrollableRef?.current) return
+    scrollableRef.current.style.overflow = emojiId ? 'hidden' : 'auto'
+  }, [emojiId, scrollableRef])
 
   return (
     <div
@@ -151,7 +159,9 @@ export default function MessageGroup({
               </Menu>
 
               <div
-                className='group relative w-fit cursor-pointer rounded bg-gray-100 p-1'
+                className={`group relative w-fit rounded bg-gray-100 p-1 ${
+                  message.replyRootId && 'cursor-pointer'
+                }`}
                 key={message._id}
               >
                 <div
@@ -181,6 +191,20 @@ export default function MessageGroup({
                     className='text-gray-600 hover:text-gray-800'
                   >
                     <IconPin size={18} />
+                  </ActionIcon>
+
+                  <ActionIcon
+                    variant='light'
+                    className='text-gray-600 hover:text-gray-800'
+                    onClick={() => {
+                      updateThread({
+                        targetId: message.messageReferenceId,
+                        targetType: message.messageFor,
+                        threadId: message.replyRootId || message._id
+                      })
+                    }}
+                  >
+                    <IconBrandThreads size={18} />
                   </ActionIcon>
 
                   <ActionIcon
@@ -258,7 +282,7 @@ export default function MessageGroup({
                       <Menu.Target>
                         <ActionIcon
                           variant='light'
-                          className='bg-white text-gray-600 hover:text-gray-800 hover:ring-1'
+                          className='bg-white text-gray-600 opacity-0 hover:text-gray-800 hover:ring-1 group-hover:opacity-100'
                           size={24}
                         >
                           <IconMoodPlus size={18} />

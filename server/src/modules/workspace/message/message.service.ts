@@ -305,35 +305,4 @@ export class MessageService {
 
     return { data: message.toJSON() }
   }
-
-  async _createSystemMessage({
-    targetId,
-    userId,
-    messagePayload,
-    messageFor
-  }: {
-    userId: string
-    targetId: string
-    messagePayload: string
-    messageFor: EMessageFor
-  }) {
-    const newMess = await this.messageModel.create({
-      messageReferenceId: targetId,
-      createdById: userId,
-      modifiedById: userId,
-      content: messagePayload,
-      messageFor: messageFor,
-      messageType: EMessageType.System
-    })
-
-    this.workspaceService.message({
-      rooms: [targetId, userId],
-      data: {
-        action: 'create',
-        message: newMess
-      }
-    })
-
-    return newMess.toJSON()
-  }
 }

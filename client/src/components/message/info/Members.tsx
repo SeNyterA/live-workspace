@@ -66,8 +66,6 @@ export default function Members() {
     ({ member, user }) => !user?.isAvailable || !member?.isAvailable
   )
 
-  console.log({ disableMembers })
-
   return (
     <NavLink
       className='p-1 pl-0'

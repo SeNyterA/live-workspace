@@ -1,5 +1,5 @@
-import { Input, Select } from '@mantine/core'
-import { IconSearch } from '@tabler/icons-react'
+import { ActionIcon, Input, Select } from '@mantine/core'
+import { IconFilter, IconSearch } from '@tabler/icons-react'
 import { useAppSelector } from '../../redux/store'
 import { EFieldType } from '../../services/apis/board/board.api'
 import { useBoard } from './BoardProvider'
@@ -7,11 +7,6 @@ import { useBoard } from './BoardProvider'
 export default function BoardHeader() {
   const { trackingId, setTrackingId, sortBy, setSortBy, board, boardId } =
     useBoard()
-
-  console.log({
-    trackingId,
-    sortBy
-  })
 
   const propertiesChecking = useAppSelector(state =>
     Object.values(state.workspace.properties).filter(
@@ -76,13 +71,13 @@ export default function BoardHeader() {
         }}
       />
 
-      {/* <ActionIcon
+      <ActionIcon
         variant='transparent'
         aria-label='Settings'
         className='h-[30px] w-[30px] bg-gray-100 text-gray-600'
       >
         <IconFilter size={16} stroke={1.5} />
-      </ActionIcon> */}
+      </ActionIcon>
     </>
   )
 }

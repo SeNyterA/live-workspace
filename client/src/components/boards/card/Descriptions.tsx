@@ -123,7 +123,6 @@ export default function Descriptions({ card }: { card: TCard }) {
                   payload: { file }
                 })
                   .then(data => {
-                    console.log(data)
                     urls.push(data.url)
                   })
                   .catch(error => {
@@ -132,8 +131,6 @@ export default function Descriptions({ card }: { card: TCard }) {
               })
 
               await Promise.all(uploadPromises)
-
-              console.log('All uploads completed', urls)
 
               createBlock({
                 method: 'post',

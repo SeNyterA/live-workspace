@@ -42,7 +42,6 @@ export default function MessageContent({
   const scrollToBottom = () => {
     const scrollableDiv = scrollableRef.current
     if (scrollableDiv) {
-      console.log(scrollableDiv.scrollHeight)
       scrollableDiv.scrollTop = scrollableDiv.scrollHeight
     }
   }
@@ -136,7 +135,7 @@ export default function MessageContent({
     <div className='relative flex-1'>
       {messages.length > 0 && (
         <ScrollArea
-          className='absolute inset-0'
+          className='absolute inset-0 overflow-hidden'
           viewportRef={scrollableRef}
           scrollbarSize={6}
           onCompositionStart={e => console.log(e)}
@@ -163,6 +162,7 @@ export default function MessageContent({
             <MessageGroup
               key={groupMessage.messages[0]._id}
               messageGroup={groupMessage}
+              scrollableRef={scrollableRef}
             />
           ))}
 

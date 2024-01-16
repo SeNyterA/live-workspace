@@ -10,143 +10,45 @@ import Underline from '@tiptap/extension-underline'
 import { BubbleMenu, ReactRenderer, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
 import tippy from 'tippy.js'
 import useTyping from '../../hooks/useTyping'
-import { TThread } from '../../Layout'
-import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { getAppValue } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/useAppMutation'
-import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
-import { EMessageFor } from '../../types/workspace.type'
+import { JSONContent } from '../../types/workspace.type'
 import MentionList from '../message/MentionList'
 import { formatFileName } from '../new-message/helper'
 import Typing from './Typing'
 
-const getApiInfo = (targetType: EMessageFor) => {
-  switch (targetType) {
-    case EMessageFor.Direct:
-      return 'createDirectMessage'
-    case EMessageFor.Group:
-      return 'createGroupMessage'
-    default:
-      return 'createChannelMessage'
-  }
-}
-
-export default function SendMessage({
-  targetId,
-  targetType,
-  thread,
-  classNames
-}: {
+type TSendMessage = {
   targetId: string
-  targetType: EMessageFor
-  thread?: TThread
+  createMessage: ({
+    files,
+    value
+  }: {
+    value?: JSONContent
+    files: string[]
+  }) => void
   classNames?: {
     editorWrapper?: string
     infoWrapper?: string
     rootWrapper?: string
   }
-}) {
-  const dispatch = useDispatch()
-  const keyApi = getApiInfo(targetType)
+}
+
+export default function SendMessage({
+  targetId,
+  classNames,
+  createMessage
+}: TSendMessage) {
   const [files, setFiles] = useState<string[]>([])
 
-  const socketEmit = useAppEmitSocket()
   const typing = useTyping()
 
-  const { mutateAsync: createMessMutation } = useAppMutation(keyApi)
-  const _createMessage = () => {
+  const _createMessage = async () => {
     if (!editor?.getText().trim() && files.length === 0) return
     const value = editor?.getJSON()
 
-    if (keyApi === 'createChannelMessage')
-      createMessMutation(
-        {
-          url: {
-            baseUrl: '/workspace/channels/:channelId/messages',
-            urlParams: {
-              channelId: targetId
-            }
-          },
-          method: 'post',
-          payload: {
-            content: value,
-            attachments: files,
-            ...(thread && {
-              replyRootId: thread?.threadId,
-              replyToMessageId: thread?.threadId
-            })
-          }
-        },
-        {
-          onSuccess(message) {
-            dispatch(workspaceActions.addMessages({ [message._id]: message }))
-            socketEmit({
-              key: 'stopTyping',
-              targetId: targetId
-            })
-          }
-        }
-      )
-
-    if (keyApi === 'createGroupMessage')
-      createMessMutation(
-        {
-          url: {
-            baseUrl: '/workspace/groups/:groupId/messages',
-            urlParams: {
-              groupId: targetId
-            }
-          },
-          method: 'post',
-          payload: {
-            content: value,
-            attachments: files
-          }
-        },
-        {
-          onSuccess(message) {
-            dispatch(workspaceActions.addMessages({ [message._id]: message }))
-            socketEmit({
-              key: 'stopTyping',
-              targetId: targetId
-            })
-          }
-        }
-      )
-
-    if (keyApi === 'createDirectMessage')
-      createMessMutation(
-        {
-          url: {
-            baseUrl: '/workspace/direct-messages/:targetId/messages',
-            urlParams: {
-              targetId: targetId
-            }
-          },
-          method: 'post',
-          payload: {
-            content: value,
-            attachments: files
-          }
-        },
-        {
-          onSuccess(message) {
-            dispatch(
-              workspaceActions.addMessages({
-                [message._id]: message
-              })
-            )
-
-            socketEmit({
-              key: 'stopTyping',
-              targetId: targetId
-            })
-          }
-        }
-      )
+    createMessage({ files, value })
 
     setFiles([])
     editor?.commands.clearContent(true)

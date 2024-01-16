@@ -35,9 +35,6 @@ export default function UserCombobox({
     const _userId = Object.values(state.workspace.members)
       .filter(e => e.targetId === teamId)
       .map(e => e.userId)
-    console.log({
-      _userId
-    })
 
     return Object.values(state.workspace.users).filter(
       user =>

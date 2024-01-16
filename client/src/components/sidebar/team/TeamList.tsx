@@ -36,7 +36,6 @@ export default function TeamList() {
                 }`}
                 variant='subtle'
                 onClick={() => {
-                  console.log(team)
                   switchTeam({ teamId: team._id })
                 }}
               >

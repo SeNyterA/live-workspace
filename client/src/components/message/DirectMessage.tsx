@@ -35,9 +35,7 @@ export default function DirectMessage() {
 
   useAppOnSocket({
     key: 'userReadedMessage',
-    resFunc: data => {
-      console.log(data)
-    }
+    resFunc: data => {}
   })
 
   const { data: directMessages, isLoading } = useAppQuery({

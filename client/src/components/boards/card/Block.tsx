@@ -7,7 +7,7 @@ import FilesContent from './FilesContent'
 export default function Block({ block }: { block: TBlock }) {
   const { mutateAsync: updateBlock } = useAppMutation('updateBlock')
   const { boardId, cardId } = useAppParams()
-  console.log(block)
+
   return (
     <>
       {block.blockType === EBlockType.Checkbox && (

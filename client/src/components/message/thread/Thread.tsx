@@ -1,13 +1,25 @@
 import { Drawer, ScrollArea } from '@mantine/core'
+import { JSONContent } from '@tiptap/react'
 import { Fragment } from 'react'
-import { useLayout } from '../../../Layout'
+import { TThread, useLayout } from '../../../Layout'
 import { useAppSelector } from '../../../redux/store'
 import { groupMessages } from '../MessageContentProvider'
 import MessageGroup from '../MessageGroup'
 import SendMessage from '../SendMessage'
 
-export default function Thread() {
-  const { thread, updateThread } = useLayout()
+export default function Thread({
+  createMessage
+}: {
+  createMessage: ({
+    files,
+    value
+  }: {
+    value?: JSONContent | undefined
+    files: string[]
+    thread: TThread
+  }) => void
+}) {
+  const { updateThread, thread } = useLayout()
   const threadMessages = useAppSelector(state =>
     Object.values(state.workspace.messages).filter(
       m => m._id === thread?.threadId || m.replyRootId === thread?.threadId
@@ -36,10 +48,9 @@ export default function Thread() {
       }}
     >
       <div className='relative flex-1'>
-        <ScrollArea className='absolute inset-0'   scrollbarSize={8} >
+        <ScrollArea className='absolute inset-0' scrollbarSize={8}>
           {groupMessages(threadMessages || []).map(groupMessage => (
             <MessageGroup
-              // classNames={{ wrapper: '!px-0' }}
               key={groupMessage.messages[0]._id}
               messageGroup={groupMessage}
             />
@@ -52,8 +63,7 @@ export default function Thread() {
           infoWrapper: '!left-4 !right-4'
         }}
         targetId={thread.targetId}
-        targetType={thread.targetType}
-        thread={thread}
+        createMessage={data => createMessage({ ...data, thread })}
       />
     </Drawer>
   )

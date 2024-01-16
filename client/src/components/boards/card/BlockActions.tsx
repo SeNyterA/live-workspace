@@ -80,7 +80,6 @@ export default function BlockActions() {
             value: ''
           }}
           onChange={async files => {
-            console.log(files)
             if (files) {
               const urls: string[] = []
               const uploadPromises = Array.from(files).map(file => {
@@ -96,12 +95,9 @@ export default function BlockActions() {
                   payload: { file }
                 })
                   .then(data => {
-                    console.log(data)
                     urls.push(data.url)
                   })
-                  .catch(error => {
-                    console.error('File upload failed', error)
-                  })
+                  .catch(error => {})
               })
 
               await Promise.all(uploadPromises)

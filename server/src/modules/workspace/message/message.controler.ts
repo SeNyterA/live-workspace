@@ -8,7 +8,7 @@ export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
   @Post('messages/:messageId/reaction')
-  create(
+  reaction(
     @HttpUser() user: TJwtUser,
     @Body() payload: { icon: string },
     @Param('messageId') messageId: string

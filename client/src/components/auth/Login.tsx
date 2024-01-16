@@ -65,11 +65,7 @@ export default function Authentication() {
                     }
                   )
                 })
-                .catch(error => {
-                  console.log({
-                    error
-                  })
-                })
+                .catch(error => {})
             }}
           >
             <BsGoogle radius='xl'>Google</BsGoogle>

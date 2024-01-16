@@ -7,11 +7,6 @@ import React, {
 import './MentionList.scss'
 
 export default forwardRef((props, ref) => {
-  console.log({
-    props,
-    ref
-  })
-
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const selectItem = index => {

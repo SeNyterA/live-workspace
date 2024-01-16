@@ -5,20 +5,24 @@ import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
 import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
+import { useAppMutation } from '../../services/apis/useAppMutation'
 import { useAppQuery } from '../../services/apis/useAppQuery'
+import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
-import { EMessageFor } from '../../types/workspace.type'
 import Info from './info/Info'
 import InfoProvier from './info/InfoProvier'
 import MessageContent from './MessageContent'
 import MessageContentProvider from './MessageContentProvider'
 import SendMessage from './SendMessage'
+import Thread from './thread/Thread'
 
 export default function GroupMessage() {
   const [openInfo, setOpenInfo] = useState(false)
   const dispatch = useDispatch()
   const { groupId } = useAppParams()
-
+  const socketEmit = useAppEmitSocket()
+  const { mutateAsync: createGroupMessage } =
+    useAppMutation('createGroupMessage')
   useAppOnSocket({
     key: 'message',
     resFunc: ({ message }) => {
@@ -99,9 +103,69 @@ export default function GroupMessage() {
             })}
           />
         </MessageContentProvider>
-        <Divider variant='dashed' />
-        <SendMessage targetId={groupId || ''} targetType={EMessageFor.Group} />
+
+        <SendMessage
+          targetId={groupId || ''}
+          createMessage={async ({ files, value }) => {
+            if (!groupId) return
+            await createGroupMessage(
+              {
+                url: {
+                  baseUrl: '/workspace/groups/:groupId/messages',
+                  urlParams: { groupId }
+                },
+                method: 'post',
+                payload: {
+                  attachments: files,
+                  content: value
+                }
+              },
+              {
+                onSuccess(message) {
+                  dispatch(
+                    workspaceActions.addMessages({ [message._id]: message })
+                  )
+                  socketEmit({
+                    key: 'stopTyping',
+                    targetId: groupId
+                  })
+                }
+              }
+            )
+          }}
+        />
       </div>
+
+      <Thread
+        createMessage={async ({ files, value, thread }) => {
+          if (!groupId) return
+          await createGroupMessage(
+            {
+              url: {
+                baseUrl: '/workspace/groups/:groupId/messages',
+                urlParams: { groupId }
+              },
+              method: 'post',
+              payload: {
+                attachments: files,
+                content: value
+              }
+            },
+            {
+              onSuccess(message) {
+                dispatch(
+                  workspaceActions.addMessages({ [message._id]: message })
+                )
+                socketEmit({
+                  key: 'stopTyping',
+                  targetId: groupId
+                })
+              }
+            }
+          )
+        }}
+      />
+
       {openInfo && (
         <>
           <Divider orientation='vertical' variant='dashed' />

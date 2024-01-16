@@ -18,6 +18,7 @@ import { EMessageFor } from './types/workspace.type'
 export type TThread = {
   threadId: string
   targetId: string
+  replyId?: string
   targetType: EMessageFor
 }
 

@@ -5,9 +5,10 @@ import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
 import { TMessages, workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
+import { useAppMutation } from '../../services/apis/useAppMutation'
 import { useAppQuery } from '../../services/apis/useAppQuery'
+import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
-import { EMessageFor } from '../../types/workspace.type'
 import Info from './info/Info'
 import InfoProvier from './info/InfoProvier'
 import MessageContent from './MessageContent'
@@ -19,6 +20,10 @@ export default function ChannelMessage() {
   const [openInfo, setOpenInfo] = useState(false)
   const dispatch = useDispatch()
   const { channelId } = useAppParams()
+  const socketEmit = useAppEmitSocket()
+  const { mutateAsync: createChannelMessage } = useAppMutation(
+    'createChannelMessage'
+  )
 
   useAppOnSocket({
     key: 'message',
@@ -102,11 +107,67 @@ export default function ChannelMessage() {
         </MessageContentProvider>
         <SendMessage
           targetId={channelId || ''}
-          targetType={EMessageFor.Channel}
+          createMessage={async ({ files, value }) => {
+            if (!channelId) return
+            await createChannelMessage(
+              {
+                url: {
+                  baseUrl: '/workspace/channels/:channelId/messages',
+                  urlParams: { channelId }
+                },
+                method: 'post',
+                payload: {
+                  attachments: files,
+                  content: value
+                }
+              },
+              {
+                onSuccess(message) {
+                  dispatch(
+                    workspaceActions.addMessages({ [message._id]: message })
+                  )
+                  socketEmit({
+                    key: 'stopTyping',
+                    targetId: channelId
+                  })
+                }
+              }
+            )
+          }}
         />
       </div>
 
-      <Thread />
+      <Thread
+        createMessage={async ({ files, value, thread }) => {
+          if (!channelId) return
+          await createChannelMessage(
+            {
+              url: {
+                baseUrl: '/workspace/channels/:channelId/messages',
+                urlParams: { channelId }
+              },
+              method: 'post',
+              payload: {
+                attachments: files,
+                content: value,
+                replyRootId: thread.threadId,
+                replyToMessageId: thread.replyId
+              }
+            },
+            {
+              onSuccess(message) {
+                dispatch(
+                  workspaceActions.addMessages({ [message._id]: message })
+                )
+                socketEmit({
+                  key: 'stopTyping',
+                  targetId: channelId
+                })
+              }
+            }
+          )
+        }}
+      />
 
       {openInfo && (
         <>
