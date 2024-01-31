@@ -31,8 +31,10 @@ export default function Editor() {
   const { boardId, cardId } = useAppParams()
   const card = useAppSelector(state => state.workspace.cards[cardId!])
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
-    headers: {
-      'Content-Type': undefined
+    config: {
+      headers: {
+        'Content-Type': undefined
+      }
     }
   })
   const { mutateAsync: updateCard } = useAppMutation('updateCard')

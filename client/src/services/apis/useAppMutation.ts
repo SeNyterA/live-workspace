@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { MutationOptions, useMutation } from '@tanstack/react-query'
 import { AxiosRequestConfig } from 'axios'
 import { TChannelDto, TGroupDto, TTeamDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
@@ -214,7 +214,15 @@ export type ApiMutationType = {
 
 export const useAppMutation = <T extends keyof ApiMutationType>(
   _key: T,
-  config?: AxiosRequestConfig<ApiMutationType[T]['payload']>
+  options?: {
+    config?: AxiosRequestConfig<ApiMutationType[T]['payload']>
+    mutationOptions?: MutationOptions<
+      ApiMutationType[T]['response'],
+      unknown,
+      Omit<ApiMutationType[T], 'response'> & { isFormData?: boolean },
+      unknown
+    >
+  }
 ) => {
   const mutation = useMutation({
     mutationFn: async ({
@@ -232,11 +240,12 @@ export const useAppMutation = <T extends keyof ApiMutationType>(
       const response = await http[method](
         _url,
         isFormData ? objectToFormData(payload) : payload,
-        config
+        options?.config
       )
 
       return response.data
-    }
+    },
+    ...options?.mutationOptions
   })
 
   return mutation

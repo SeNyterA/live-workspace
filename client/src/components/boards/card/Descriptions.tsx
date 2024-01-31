@@ -9,8 +9,10 @@ export default function Descriptions({ card }: { card: TCard }) {
   const { boardId, cardId } = useAppParams()
   const { mutateAsync: createBlock } = useAppMutation('createBlock')
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
-    headers: {
-      'Content-Type': undefined
+    config: {
+      headers: {
+        'Content-Type': undefined
+      }
     }
   })
 

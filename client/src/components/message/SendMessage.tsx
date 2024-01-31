@@ -56,8 +56,10 @@ export default function SendMessage({
   }
 
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
-    headers: {
-      'Content-Type': undefined
+    config: {
+      headers: {
+        'Content-Type': undefined
+      }
     }
   })
 

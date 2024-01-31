@@ -14,6 +14,7 @@ import { MessageService } from '../../message/message.service'
 import { TJwtUser } from '../../workspace.gateway'
 import { ChannelDto, UpdateChannelDto } from './channel.dto'
 import { ChannelService } from './channel.service'
+import { JSONContent } from 'src/libs/helper'
 
 @Controller('workspace')
 export class ChannelController {
@@ -76,7 +77,7 @@ export class ChannelController {
     @HttpUser() user: TJwtUser,
     @Body()
     messagePayload: {
-      content: string
+      content: JSONContent
       attachments?: string[]
     }
   ) {

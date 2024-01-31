@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { JSONContent } from 'src/libs/helper'
 import { DirectMessageService } from '../direct-message/direct-message.service'
 import { MemberService } from '../member/member.service'
 import { WorkspaceService } from './../workspace.service'
@@ -20,7 +21,7 @@ export class MessageService {
     private readonly workspaceService: WorkspaceService
   ) {}
 
-  async _makeUnreadCount(targetId: string) {
+  async _makeUnreadCount(targetId: string, mentionIds?: string[]) {
     const members = await this.memberService.memberModel
       .find({
         targetId,
@@ -94,7 +95,7 @@ export class MessageService {
   }: {
     userId: string
     channelId: string
-    messagePayload: { content: string; attachments?: string[] }
+    messagePayload: { content: JSONContent; attachments?: string[] }
   }) {
     await this.memberService._checkExisting({
       userId,

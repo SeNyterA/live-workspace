@@ -22,7 +22,39 @@ export default function ChannelMessage() {
   const { channelId } = useAppParams()
   const socketEmit = useAppEmitSocket()
   const { mutateAsync: createChannelMessage } = useAppMutation(
-    'createChannelMessage'
+    'createChannelMessage',
+    {
+      mutationOptions: {
+        onError(error, variables, context) {
+          console.log('onError', {
+            error,
+            variables,
+            context
+          })
+        },
+        onMutate(variables) {
+          console.log('onMutate', {
+            variables
+          })
+        },
+        onSettled(data, error, variables, context) {
+          console.log('onSettled', {
+            data,
+            error,
+            variables,
+            context
+          })
+          
+        },
+        onSuccess(data, variables, context) {
+          console.log('onSuccess', {
+            data,
+            variables,
+            context
+          })
+        }
+      }
+    }
   )
 
   useAppOnSocket({

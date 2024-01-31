@@ -14,8 +14,10 @@ export default function BlockActions() {
   const { boardId, cardId } = useAppParams()
   const { mutateAsync: createBlock } = useAppMutation('createBlock')
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
-    headers: {
-      'Content-Type': undefined
+    config: {
+      headers: {
+        'Content-Type': undefined
+      }
     }
   })
   return (
