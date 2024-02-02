@@ -1,397 +1,76 @@
 import {
   ActionIcon,
   Avatar,
-  Group,
+  Divider,
+  Indicator,
+  Input,
   Menu,
   rem,
-  Table,
-  Text
+  ScrollArea,
+  Select,
+  Table
 } from '@mantine/core'
 import {
-  IconAt,
   IconDots,
   IconMessages,
-  IconNote,
-  IconPencil,
-  IconPhoneCall,
-  IconReportAnalytics,
+  IconSearch,
   IconTrash
 } from '@tabler/icons-react'
-
-const data = [
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    rate: 45
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    rate: 76
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    rate: 15
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    rate: 98
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
-    name: 'Robert Wolfkisser',
-    job: 'Engineer',
-    email: 'rob_wolf@gmail.com',
-    rate: 22
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    rate: 45
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    rate: 76
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    rate: 15
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    rate: 98
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
-    name: 'Robert Wolfkisser',
-    job: 'Engineer',
-    email: 'rob_wolf@gmail.com',
-    rate: 22
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    rate: 45
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    rate: 76
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    rate: 15
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    rate: 98
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
-    name: 'Robert Wolfkisser',
-    job: 'Engineer',
-    email: 'rob_wolf@gmail.com',
-    rate: 22
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    rate: 45
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    rate: 76
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    rate: 15
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    rate: 98
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
-    name: 'Robert Wolfkisser',
-    job: 'Engineer',
-    email: 'rob_wolf@gmail.com',
-    rate: 22
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    rate: 45
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    rate: 76
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    rate: 15
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    rate: 98
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
-    name: 'Robert Wolfkisser',
-    job: 'Engineer',
-    email: 'rob_wolf@gmail.com',
-    rate: 22
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    rate: 45
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    rate: 76
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    rate: 15
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    rate: 98
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
-    name: 'Robert Wolfkisser',
-    job: 'Engineer',
-    email: 'rob_wolf@gmail.com',
-    rate: 22
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    rate: 45
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    rate: 76
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    rate: 15
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    rate: 98
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png',
-    name: 'Robert Wolfkisser',
-    job: 'Engineer',
-    email: 'rob_wolf@gmail.com',
-    rate: 22
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-5.png',
-    name: 'Jill Jailbreaker',
-    job: 'Engineer',
-    email: 'jj@breaker.com',
-    rate: 45
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Henry Silkeater',
-    job: 'Designer',
-    email: 'henry@silkeater.io',
-    rate: 76
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png',
-    name: 'Bill Horsefighter',
-    job: 'Designer',
-    email: 'bhorsefighter@gmail.com',
-    rate: 15
-  },
-  {
-    avatar:
-      'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png',
-    name: 'Jeremy Footviewer',
-    job: 'Manager',
-    email: 'jeremy@foot.dev',
-    rate: 98
-  }
-]
+import dayjs from 'dayjs'
+import { useMemo } from 'react'
+import useAppParams from '../../hooks/useAppParams'
+import { useAppSelector } from '../../redux/store'
+import { EMemberRole } from '../../types/workspace.type'
 
 export function UsersStack() {
-  const rows = data.map(item => (
-    <Table.Tr key={item.name}>
-      <Table.Td>
-        <div>
-          <Group wrap='nowrap'>
-            <Avatar
-              src='https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png'
-              size={94}
-              radius='md'
-            />
-            <div>
-              <Text fz='xs' tt='uppercase' fw={700} c='dimmed'>
-                Software engineer
-              </Text>
+  const { teamId } = useAppParams()
 
-              <Text fz='lg' fw={500}>
-                Robert Glassbreaker
-              </Text>
+  const members =
+    useAppSelector(state =>
+      Object.values(state.workspace.members)
+        .filter(e => e.targetId === teamId)
+        .map(member => ({ member, user: state.workspace.users[member.userId] }))
+    ) || []
 
-              <Group wrap='nowrap' gap={10} mt={3}>
-                <IconAt stroke={1.5} size='1rem' />
-                <Text fz='xs' c='dimmed'>
-                  robert@glassbreaker.io
-                </Text>
-              </Group>
+  const rows = useMemo(() => {
+    return members.map(({ user, member }) => (
+      <Table.Tr key={member._id}>
+        <Table.Td>
+          <div
+            className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
+            key={user?._id}
+          >
+            <Indicator
+              inline
+              size={16}
+              offset={3}
+              position='bottom-end'
+              color='yellow'
+              withBorder
+            >
+              <Avatar src={user?.avatar} size={36} />
+            </Indicator>
 
-              <Group wrap='nowrap' gap={10} mt={5}>
-                <IconPhoneCall stroke={1.5} size='1rem' />
-                <Text fz='xs' c='dimmed'>
-                  +11 (876) 890 56 23
-                </Text>
-              </Group>
+            <div className='flex flex-1 flex-col justify-center'>
+              <p className='max-w-[150px] truncate font-medium leading-4'>
+                {user?.userName}
+              </p>
+              <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+                {user?.email}
+              </p>
             </div>
-          </Group>
-        </div>
-      </Table.Td>
-      <Table.Td>
-        {/* <Select
-          data={[EMemberRole.Owner, EMemberRole.Admin, EMemberRole.Member]}
-          value={EMemberRole.Member}
-          variant='unstyled'
-          allowDeselect={false}
-        /> */}
-      </Table.Td>
-      <Table.Td>
-        <Text fz='sm'>${item.rate.toFixed(1)} / hr</Text>
-        <Text fz='xs' c='dimmed'>
-          Rate
-        </Text>
-      </Table.Td>
-      <Table.Td>
-        <Group gap={0} justify='flex-end'>
-          <ActionIcon variant='subtle' color='gray'>
-            <IconPencil
-              style={{ width: rem(16), height: rem(16) }}
-              stroke={1.5}
-            />
-          </ActionIcon>
+          </div>
+        </Table.Td>
+        <Table.Td>
+          <Select
+            data={[EMemberRole.Owner, EMemberRole.Admin, EMemberRole.Member]}
+            value={member.role}
+            variant='unstyled'
+            allowDeselect={false}
+          />
+        </Table.Td>
+        <Table.Td>{dayjs(member.createdAt).format('DD/MM/YYYY')}</Table.Td>
+        <Table.Td>
           <Menu
             transitionProps={{ transition: 'pop' }}
             withArrow
@@ -419,26 +98,6 @@ export function UsersStack() {
               </Menu.Item>
               <Menu.Item
                 leftSection={
-                  <IconNote
-                    style={{ width: rem(16), height: rem(16) }}
-                    stroke={1.5}
-                  />
-                }
-              >
-                Add note
-              </Menu.Item>
-              <Menu.Item
-                leftSection={
-                  <IconReportAnalytics
-                    style={{ width: rem(16), height: rem(16) }}
-                    stroke={1.5}
-                  />
-                }
-              >
-                Analytics
-              </Menu.Item>
-              <Menu.Item
-                leftSection={
                   <IconTrash
                     style={{ width: rem(16), height: rem(16) }}
                     stroke={1.5}
@@ -446,27 +105,55 @@ export function UsersStack() {
                 }
                 color='red'
               >
-                Terminate contract
+                Remove
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
-        </Group>
-      </Table.Td>
-    </Table.Tr>
-  ))
+        </Table.Td>
+      </Table.Tr>
+    ))
+  }, [members])
 
   return (
-    <Table stickyHeader stickyHeaderOffset={0}>
-      <Table.Thead>
-        <Table.Tr className=''>
-          <Table.Th>Employee</Table.Th>
-          <Table.Th>Role</Table.Th>
-          <Table.Th>Last active</Table.Th>
-          <Table.Th>Status</Table.Th>
-        </Table.Tr>
-      </Table.Thead>
+    <div className='flex flex-1'>
+      <div className='relative flex-[3]'>
+        <ScrollArea className='absolute inset-0 inset-x-3'>
+          <Table
+            stickyHeader
+            stickyHeaderOffset={0}
+            striped
+            withRowBorders={false}
+          >
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Employee</Table.Th>
+                <Table.Th className='w-32'>Role</Table.Th>
+                <Table.Th className='w-32'>Joined At</Table.Th>
+                <Table.Th className='w-11'></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
 
-      <Table.Tbody>{rows}</Table.Tbody>
-    </Table>
+            <Table.Tbody>{rows}</Table.Tbody>
+          </Table>
+        </ScrollArea>
+      </div>
+
+      <Divider variant='dashed' orientation='vertical' />
+
+      <div className='flex flex-[2] flex-col p-3 items-end'>
+        <Input
+          className='flex h-[30px] w-48 items-center rounded bg-gray-100'
+          size='sm'
+          placeholder='Search user'
+          leftSection={<IconSearch size={14} />}
+          classNames={{
+            input: 'bg-transparent border-none min-h-[20px] h-[20px]'
+          }}
+        />
+        <div className='relative flex-1'>
+          <ScrollArea className='absolute inset-0'></ScrollArea>
+        </div>
+      </div>
+    </div>
   )
 }
