@@ -56,7 +56,7 @@ export default function TeamSetting({
         </div>
         <Divider orientation='vertical' variant='dashed' />
 
-        <div className='flex-1 bg-slate-500'>
+        <div className='flex-1'>
           <MembersManager />
         </div>
       </div>
