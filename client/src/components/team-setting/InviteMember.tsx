@@ -1,28 +1,18 @@
 import {
   ActionIcon,
   Avatar,
-  Divider,
   Indicator,
-  Input,
   Menu,
   rem,
   ScrollArea,
-  Select,
   Table
 } from '@mantine/core'
-import {
-  IconDots,
-  IconMessages,
-  IconSearch,
-  IconTrash
-} from '@tabler/icons-react'
-import dayjs from 'dayjs'
+import { IconDots, IconMessage, IconPlus } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
-import { EMemberRole } from '../../types/workspace.type'
 
-export function UsersStack() {
+export function InviteMember() {
   const { teamId } = useAppParams()
 
   const members =
@@ -61,15 +51,7 @@ export function UsersStack() {
             </div>
           </div>
         </Table.Td>
-        <Table.Td>
-          <Select
-            data={[EMemberRole.Owner, EMemberRole.Admin, EMemberRole.Member]}
-            value={member.role}
-            variant='unstyled'
-            allowDeselect={false}
-          />
-        </Table.Td>
-        <Table.Td>{dayjs(member.createdAt).format('DD/MM/YYYY')}</Table.Td>
+
         <Table.Td>
           <Menu
             transitionProps={{ transition: 'pop' }}
@@ -88,24 +70,23 @@ export function UsersStack() {
             <Menu.Dropdown>
               <Menu.Item
                 leftSection={
-                  <IconMessages
+                  <IconPlus
+                    style={{ width: rem(16), height: rem(16) }}
+                    stroke={1.5}
+                  />
+                }
+              >
+                Invite
+              </Menu.Item>
+              <Menu.Item
+                leftSection={
+                  <IconMessage
                     style={{ width: rem(16), height: rem(16) }}
                     stroke={1.5}
                   />
                 }
               >
                 Send message
-              </Menu.Item>
-              <Menu.Item
-                leftSection={
-                  <IconTrash
-                    style={{ width: rem(16), height: rem(16) }}
-                    stroke={1.5}
-                  />
-                }
-                color='red'
-              >
-                Remove
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>
@@ -125,9 +106,7 @@ export function UsersStack() {
         >
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>Employee</Table.Th>
-              <Table.Th className='w-32'>Role</Table.Th>
-              <Table.Th className='w-32'>Joined At</Table.Th>
+              <Table.Th>User</Table.Th>
               <Table.Th className='w-11'></Table.Th>
             </Table.Tr>
           </Table.Thead>

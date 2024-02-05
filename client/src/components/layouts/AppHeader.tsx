@@ -1,6 +1,7 @@
-import { ActionIcon, Avatar, Menu, rem, Text } from '@mantine/core'
+import { ActionIcon, Avatar, Input, Menu, rem, Text } from '@mantine/core'
 import {
   IconArrowsLeftRight,
+  IconBrandGithub,
   IconMessageCircle,
   IconPhoto,
   IconSearch,
@@ -15,14 +16,12 @@ export default function AppHeader() {
   return (
     <div className='flex h-12 items-center gap-3 px-3'>
       <p className='text-xl font-semibold'>Live workspace - Senytera</p>
-      <div className='flex flex-1 items-center justify-center'>
-        {/* <Input size='xs' placeholder='search any thing' className='w-96'/> */}
-      </div>
+      <div className='flex flex-1 items-center justify-center'></div>
 
       <Menu shadow='md' width={200} position='bottom-end' withArrow>
         <Menu.Target>
           <ActionIcon className='rounded-full p-0' variant='light'>
-            <Avatar src={user?.avatar} size={32}/>
+            <Avatar src={user?.avatar} size={32} />
           </ActionIcon>
         </Menu.Target>
 
