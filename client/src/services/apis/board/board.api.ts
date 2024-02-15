@@ -4,6 +4,7 @@ import {
   JSONContent,
   TBoard,
   TCard,
+  TMessage,
   TProperty
 } from '../../../types/workspace.type'
 
@@ -185,6 +186,24 @@ export type TBoardMutionApi = {
       }
       data?: TCard
     }
+  }
+
+  createCardMessage: {
+    url: {
+      baseUrl: '/workspace/boards/:boardId/cards/:cardId/messages'
+      urlParams: {
+        boardId: string
+        cardId: string
+      }
+    }
+    method: 'post'
+    payload: {
+      content?: JSONContent
+      attachments?: string[]
+      replyToMessageId?: string
+      replyRootId?: string
+    }
+    response: TMessage
   }
 }
 

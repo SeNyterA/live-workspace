@@ -45,7 +45,12 @@ export default function Info() {
         </div>
       </div>
 
-      <TeamSetting isOpen={openSeting} onClose={() => setOpenSetting(false)} />
+      {/* <TeamSetting
+        type='channel'
+        isOpen={openSeting}
+        onClose={() => setOpenSetting(false)}
+        targetId={channelId || directId || groupId || boardId || ''}
+      /> */}
     </>
   )
 }

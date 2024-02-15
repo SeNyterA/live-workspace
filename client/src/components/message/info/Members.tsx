@@ -97,7 +97,7 @@ export default function Members() {
                 color='yellow'
                 withBorder
               >
-                <Avatar src={user?.avatar} size={36}/>
+                <Avatar src={user?.avatar} size={36} />
               </Indicator>
             </UserDetailProvider>
 

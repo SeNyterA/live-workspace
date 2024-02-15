@@ -1,12 +1,16 @@
 import { Body, Controller, Param, Patch, Post, Query } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
+import { MessageService } from 'src/modules/workspace/message/message.service'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
 import { BlockDto, CardDto } from './card.dto'
 import { CardService } from './card.service'
 
 @Controller('workspace/boards/:boardId')
 export class CardController {
-  constructor(private readonly cardService: CardService) {}
+  constructor(
+    private readonly cardService: CardService,
+    private readonly messageService: MessageService
+  ) {}
 
   @Post('/cards')
   async create(
@@ -79,6 +83,22 @@ export class CardController {
       userId: user.sub,
       cardId,
       blockId
+    })
+  }
+
+  @Post('/cards/:cardId/messages')
+  async createMessage(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Param('cardId') cardId: string,
+    @Body()
+    messagePayload: any
+  ) {
+    return this.messageService._createForCard({
+      userId: user.sub,
+      boardId: boardId,
+      targetId: cardId,
+      messagePayload
     })
   }
 }

@@ -44,7 +44,6 @@ export default function ChannelMessage() {
             variables,
             context
           })
-          
         },
         onSuccess(data, variables, context) {
           console.log('onSuccess', {

@@ -5,7 +5,8 @@ import { Workspace } from '../workspace.schema'
 export enum EMessageFor {
   Channel = 'Channel',
   Group = 'Group',
-  Direct = 'Direct'
+  Direct = 'Direct',
+  Card = 'Card'
 }
 
 export enum EMessageType {

@@ -19,7 +19,7 @@ export default function BoardItem({ board }: { board: TBoard }) {
         <div className='flex items-center gap-2'>
           <span className='flex-1 truncate'>{board.title || board._id}</span>
           {unreadCount && (
-            <span className='h-4 w-4 rounded-full bg-gray-300 text-center leading-4 text-gray-800'>
+            <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center text-xs leading-4 text-gray-800'>
               {unreadCount}
             </span>
           )}

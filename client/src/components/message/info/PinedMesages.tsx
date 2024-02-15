@@ -9,7 +9,7 @@ export default function PinedMesages() {
 
   return (
     <NavLink
-      className='p-1 pl-0 mt-1'
+      className='mt-1 p-1 pl-0'
       label={
         <div className='flex items-center justify-between'>
           Pined messages

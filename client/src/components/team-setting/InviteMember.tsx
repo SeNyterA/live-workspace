@@ -1,30 +1,61 @@
 import {
   ActionIcon,
   Avatar,
+  Divider,
   Indicator,
+  Input,
   Menu,
   rem,
   ScrollArea,
   Table
 } from '@mantine/core'
-import { IconDots, IconMessage, IconPlus } from '@tabler/icons-react'
-import { useMemo } from 'react'
-import useAppParams from '../../hooks/useAppParams'
-import { useAppSelector } from '../../redux/store'
+import { useDebouncedValue } from '@mantine/hooks'
+import {
+  IconDots,
+  IconMessage,
+  IconPlus,
+  IconSearch,
+  IconX
+} from '@tabler/icons-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
+import { useAppQuery } from '../../services/apis/useAppQuery'
 
 export function InviteMember() {
-  const { teamId } = useAppParams()
+  const dispatch = useDispatch()
+  const [searchValue, setSearchValue] = useState('')
+  const [keyword] = useDebouncedValue(searchValue, 200)
 
-  const members =
-    useAppSelector(state =>
-      Object.values(state.workspace.members)
-        .filter(e => e.targetId === teamId)
-        .map(member => ({ member, user: state.workspace.users[member.userId] }))
-    ) || []
+  const { data: userData, isLoading } = useAppQuery({
+    key: 'findUsersByKeyword',
+    url: {
+      baseUrl: '/users/by-keyword',
+      queryParams: {
+        keyword
+      }
+    },
+    options: {
+      queryKey: [keyword],
+      enabled: !!keyword
+    }
+  })
+
+  useEffect(() => {
+    if (userData)
+      dispatch(
+        workspaceActions.addUsers(
+          userData.users.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          )
+        )
+      )
+  }, [userData])
 
   const rows = useMemo(() => {
-    return members.map(({ user, member }) => (
-      <Table.Tr key={member._id}>
+    return userData?.users.map(user => (
+      <Table.Tr key={user._id}>
         <Table.Td>
           <div
             className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
@@ -93,27 +124,54 @@ export function InviteMember() {
         </Table.Td>
       </Table.Tr>
     ))
-  }, [members])
+  }, [userData])
 
   return (
-    <div className='relative flex-1'>
-      <ScrollArea className='absolute inset-0'>
-        <Table
-          stickyHeader
-          stickyHeaderOffset={0}
-          striped
-          withRowBorders={false}
-        >
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>User</Table.Th>
-              <Table.Th className='w-11'></Table.Th>
-            </Table.Tr>
-          </Table.Thead>
+    <div className='flex w-[300px] flex-col'>
+      <div className='flex h-12 w-full items-center justify-end gap-2'>
+        <Input
+          value={searchValue}
+          onChange={e => setSearchValue(e.currentTarget.value)}
+          className='flex h-[30px] items-center rounded bg-gray-100'
+          size='sm'
+          placeholder='orther members'
+          leftSection={<IconSearch size={14} />}
+          classNames={{
+            input: 'bg-transparent border-none min-h-[20px] h-[20px]'
+          }}
+        />
 
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
-      </ScrollArea>
+        <ActionIcon variant='light' className='h-[30px] w-[30px] bg-gray-100'>
+          <IconX className={`h-4 w-4 transition-transform`} />
+        </ActionIcon>
+      </div>
+      {/* <Divider variant='dashed' /> */}
+
+      <div className='relative flex-1'>
+        <ScrollArea className='absolute inset-0'>
+          <Table
+            stickyHeader
+            stickyHeaderOffset={0}
+            striped
+            withRowBorders={false}
+          >
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>User</Table.Th>
+                <Table.Th className='w-11'></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+
+            {!!rows && <Table.Tbody>{rows}</Table.Tbody>}
+          </Table>
+
+          {!!rows || (
+            <div className='flex h-40 items-center justify-center rounded-md bg-gray-50 text-gray-600'>
+              {isLoading ? 'Loading...' : 'No data'}
+            </div>
+          )}
+        </ScrollArea>
+      </div>
     </div>
   )
 }

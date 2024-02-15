@@ -1,7 +1,7 @@
 import {
   ActionIcon,
   Avatar,
-  Divider,
+  CloseButton,
   Indicator,
   Input,
   Menu,
@@ -17,19 +17,47 @@ import {
   IconTrash
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
-import { useMemo } from 'react'
-import useAppParams from '../../hooks/useAppParams'
+import { useMemo, useState } from 'react'
 import { useAppSelector } from '../../redux/store'
 import { EMemberRole } from '../../types/workspace.type'
+import { useSetting } from './TeamSetting'
+
+const getEditableRoles = (
+  operatorRole?: EMemberRole,
+  targetRole?: EMemberRole
+): EMemberRole[] => {
+  if (operatorRole === EMemberRole.Owner) {
+    return [EMemberRole.Owner, EMemberRole.Admin, EMemberRole.Member]
+  }
+
+  if (operatorRole === EMemberRole.Admin) {
+    if (targetRole === EMemberRole.Owner) return []
+    return [EMemberRole.Admin, EMemberRole.Member]
+  }
+
+  return []
+}
 
 export function UsersStack() {
-  const { teamId } = useAppParams()
+  const { targetId, operatorMember } = useSetting()
+
+  const [search, setSearch] = useState('')
 
   const members =
-    useAppSelector(state =>
-      Object.values(state.workspace.members)
-        .filter(e => e.targetId === teamId)
-        .map(member => ({ member, user: state.workspace.users[member.userId] }))
+    useAppSelector(
+      state =>
+        Object.values(state.workspace.members)
+          .filter(e => e.targetId === targetId)
+          .map(member => ({
+            member,
+            user: state.workspace.users[member.userId]
+          }))
+          .filter(
+            ({ user }) =>
+              user?.userName.toLowerCase().includes(search.toLowerCase()) ||
+              user?.email.toLowerCase().includes(search.toLowerCase()) ||
+              user?.nickname?.toLowerCase().includes(search.toLowerCase())
+          ) || []
     ) || []
 
   const rows = useMemo(() => {
@@ -62,14 +90,24 @@ export function UsersStack() {
           </div>
         </Table.Td>
         <Table.Td>
-          <Select
-            data={[EMemberRole.Owner, EMemberRole.Admin, EMemberRole.Member]}
-            value={member.role}
-            variant='unstyled'
-            allowDeselect={false}
-          />
+          {member.isAccepted ? (
+            getEditableRoles(operatorMember?.role, member.role).length !== 0 ? (
+              <Select
+                data={getEditableRoles(operatorMember?.role, member.role)}
+                value={member.role}
+                variant='unstyled'
+                allowDeselect={false}
+              />
+            ) : (
+              <p>{member.role}</p>
+            )
+          ) : (
+            <p className='text-gray-500'>Pending</p>
+          )}
         </Table.Td>
-        <Table.Td>{dayjs(member.createdAt).format('DD/MM/YYYY')}</Table.Td>
+        <Table.Td>
+          {member.isAccepted && dayjs(member.createdAt).format('DD/MM/YYYY')}
+        </Table.Td>
         <Table.Td>
           <Menu
             transitionProps={{ transition: 'pop' }}
@@ -85,6 +123,7 @@ export function UsersStack() {
                 />
               </ActionIcon>
             </Menu.Target>
+
             <Menu.Dropdown>
               <Menu.Item
                 leftSection={
@@ -96,17 +135,21 @@ export function UsersStack() {
               >
                 Send message
               </Menu.Item>
-              <Menu.Item
-                leftSection={
-                  <IconTrash
-                    style={{ width: rem(16), height: rem(16) }}
-                    stroke={1.5}
-                  />
-                }
-                color='red'
-              >
-                Remove
-              </Menu.Item>
+
+              {getEditableRoles(operatorMember?.role, member.role).length !==
+                0 && (
+                <Menu.Item
+                  leftSection={
+                    <IconTrash
+                      style={{ width: rem(16), height: rem(16) }}
+                      stroke={1.5}
+                    />
+                  }
+                  color='red'
+                >
+                  Remove
+                </Menu.Item>
+              )}
             </Menu.Dropdown>
           </Menu>
         </Table.Td>
@@ -115,26 +158,52 @@ export function UsersStack() {
   }, [members])
 
   return (
-    <div className='relative flex-1'>
-      <ScrollArea className='absolute inset-0'>
-        <Table
-          stickyHeader
-          stickyHeaderOffset={0}
-          striped
-          withRowBorders={false}
-        >
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Employee</Table.Th>
-              <Table.Th className='w-32'>Role</Table.Th>
-              <Table.Th className='w-32'>Joined At</Table.Th>
-              <Table.Th className='w-11'></Table.Th>
-            </Table.Tr>
-          </Table.Thead>
+    <div className='flex flex-[5] flex-col'>
+      <div className='flex h-12 w-full items-center justify-end gap-2'>
+        <Input
+          className='flex h-[30px] items-center rounded bg-gray-100'
+          size='sm'
+          placeholder='Search members'
+          leftSection={<IconSearch size={14} />}
+          classNames={{
+            input: 'bg-transparent border-none min-h-[20px] h-[20px]'
+          }}
+          value={search}
+          onChange={e => setSearch(e.currentTarget.value)}
+          rightSectionPointerEvents='all'
+          rightSection={
+            <CloseButton
+              className='hover:bg-gray-200'
+              size={20}
+              aria-label='Clear input'
+              onClick={() => setSearch('')}
+              style={{ display: search ? undefined : 'none' }}
+            />
+          }
+        />
+      </div>
+      {/* <Divider variant='dashed' /> */}
+      <div className='relative flex-1'>
+        <ScrollArea className='absolute inset-0'>
+          <Table
+            stickyHeader
+            stickyHeaderOffset={0}
+            striped
+            withRowBorders={false}
+          >
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Employee</Table.Th>
+                <Table.Th className='w-32'>Role</Table.Th>
+                <Table.Th className='w-32'>Invited At</Table.Th>
+                <Table.Th className='w-11'></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
 
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
-      </ScrollArea>
+            <Table.Tbody>{rows}</Table.Tbody>
+          </Table>
+        </ScrollArea>
+      </div>
     </div>
   )
 }

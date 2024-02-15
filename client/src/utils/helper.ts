@@ -55,7 +55,7 @@ export const updateLabelMention = (json: JSONContent): JSONContent => {
               ...node.attrs,
               label:
                 getAppValue(
-                  state => state.workspace.users[node.attrs!.id!]?.email
+                  state => state.workspace.users[node.attrs!.id!]?.userName
                 ) || node.attrs.id
             }
           : undefined,

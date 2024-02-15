@@ -21,7 +21,7 @@ export default function ChannelItem({ channel }: { channel: TChannel }) {
             {channel.title || channel._id}
           </span>
           {unreadCount && (
-            <span className='h-4 w-4 rounded-full bg-gray-300 text-center leading-4 text-gray-800'>
+            <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center leading-4 text-gray-800 text-xs'>
               {unreadCount}
             </span>
           )}

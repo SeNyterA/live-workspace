@@ -158,6 +158,44 @@ export class MessageService {
     return newMess.toJSON()
   }
 
+  async _createForCard({
+    targetId,
+    userId,
+    messagePayload,
+    boardId
+  }: {
+    userId: string
+    targetId: string
+    messagePayload: { content: string }
+    boardId: string
+  }) {
+    await this.memberService._checkExisting({
+      userId,
+      targetId: boardId
+    })
+
+    const newMess = await this.messageModel.create({
+      messageReferenceId: boardId,
+      createdById: userId,
+      modifiedById: userId,
+      content: messagePayload.content,
+      messageFor: EMessageFor.Card,
+      messageType: EMessageType.Normal,
+      replyRootId: targetId
+    })
+
+    this.workspaceService.message({
+      rooms: [targetId],
+      data: {
+        action: 'create',
+        message: newMess
+      }
+    })
+
+    this._makeUnreadCount(targetId)
+    return newMess.toJSON()
+  }
+
   async _editMessage({
     messageId,
     userId

@@ -268,6 +268,8 @@ export default function Sidebar() {
       <TeamSetting
         isOpen={toggle === 'teamSetting'}
         onClose={() => setToggle(undefined)}
+        targetId={teamId!}
+        type='team'
       />
 
       {/* <CreateDirect
