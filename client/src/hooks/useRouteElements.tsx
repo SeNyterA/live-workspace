@@ -99,6 +99,14 @@ export default function useRouteElements() {
           ),
           children: [
             {
+              path: '',
+              element: (
+                <div className='flex flex-1 items-center justify-center'>
+                  Please choose content...
+                </div>
+              )
+            },
+            {
               path: 'board/:boardId',
               element: (
                 <ErrorBoundary fallback={<></>}>

@@ -12,9 +12,7 @@ export default function BoardHeader() {
     Object.values(state.workspace.properties).filter(
       property =>
         property.boardId === boardId &&
-        [EFieldType.Assignees, EFieldType.People, EFieldType.Select].includes(
-          property.fieldType
-        )
+        [EFieldType.People, EFieldType.Select].includes(property.fieldType)
     )
   )
 

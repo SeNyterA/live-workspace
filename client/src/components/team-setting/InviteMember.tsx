@@ -1,7 +1,6 @@
 import {
   ActionIcon,
   Avatar,
-  Divider,
   Indicator,
   Input,
   Menu,
@@ -14,8 +13,7 @@ import {
   IconDots,
   IconMessage,
   IconPlus,
-  IconSearch,
-  IconX
+  IconSearch
 } from '@tabler/icons-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -141,9 +139,9 @@ export function InviteMember() {
           }}
         />
 
-        <ActionIcon variant='light' className='h-[30px] w-[30px] bg-gray-100'>
+        {/* <ActionIcon variant='light' className='h-[30px] w-[30px] bg-gray-100'>
           <IconX className={`h-4 w-4 transition-transform`} />
-        </ActionIcon>
+        </ActionIcon> */}
       </div>
       {/* <Divider variant='dashed' /> */}
 

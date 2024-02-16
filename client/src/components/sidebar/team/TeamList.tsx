@@ -18,32 +18,35 @@ export default function TeamList() {
     <>
       <div className='flex h-full w-[56px] flex-col justify-center gap-2 py-2'>
         <ActionIcon
-          className='mx-2 flex h-fit w-fit items-center justify-center rounded-full p-0'
+          className={`mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${
+            teamId === 'personal' ? 'ring-[1.5px]' : ''
+          }`}
           variant='subtle'
           onClick={() => switchTeam({ teamId: 'personal' })}
         >
-          <Avatar />
+          <Avatar size={32} />
         </ActionIcon>
 
         <Divider variant='dashed' className='mx-4' />
         <div className='relative flex-1'>
-          <ScrollArea className='absolute inset-0 px-2' scrollbarSize={6}>
+          <ScrollArea
+            className='absolute inset-0'
+            scrollbarSize={6}
+            classNames={{ viewport: 'py-1 teamlist-viewport' }}
+          >
             {teams.map(team => (
               <ActionIcon
                 key={team._id}
-                className={`mt-1 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${
-                  teamId === team._id && '!rounded-lg bg-blue-50'
+                className={`mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${
+                  teamId === team._id ? 'ring-[1.5px]' : ''
                 }`}
-                variant='subtle'
+                variant='light'
+                size='md'
                 onClick={() => {
                   switchTeam({ teamId: team._id })
                 }}
               >
-                <Avatar
-                  className={`${
-                    teamId === team._id && '!rounded-lg bg-blue-50'
-                  }`}
-                />
+                <Avatar size={32} />
               </ActionIcon>
             ))}
           </ScrollArea>
@@ -51,13 +54,13 @@ export default function TeamList() {
         <Divider variant='dashed' className='mx-4' />
 
         <ActionIcon
-          className='mx-2 flex h-fit w-fit items-center justify-center rounded-full p-0'
+          className='m mx-auto flex h-fit w-fit items-center justify-center rounded-full p-0'
           variant='subtle'
           onClick={() => {
             toggleDrawer(true)
           }}
         >
-          <Avatar>
+          <Avatar size={32}>
             <IconPlus />
           </Avatar>
         </ActionIcon>

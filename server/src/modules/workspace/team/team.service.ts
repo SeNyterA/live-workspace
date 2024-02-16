@@ -183,8 +183,6 @@ export class TeamService {
           modifiedById: userId
         })
 
-        //send mail
-
         return {
           member: newMember.toJSON(),
           user: user.toJSON()
