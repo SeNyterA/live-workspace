@@ -16,19 +16,16 @@ export class MemberService {
     userId,
     inRoles = [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
     isAvailable = true,
-    isAccepted = true,
     throwErr
   }: {
     userId: string
     targetId: string
     inRoles?: EMemberRole[]
     isAvailable?: boolean
-    isAccepted?: boolean
     throwErr?: boolean
   }) {
     const existingMember = await this.memberModel.findOne({
       isAvailable,
-      isAccepted,
       userId,
       targetId,
       role: {

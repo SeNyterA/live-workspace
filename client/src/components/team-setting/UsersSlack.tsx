@@ -39,7 +39,7 @@ const getEditableRoles = (
 }
 
 export function UsersStack() {
-  const { targetId, operatorMember } = useSetting()
+  const { targetId, operatorMember, setUserSelected } = useSetting()
 
   const [search, setSearch] = useState('')
 
@@ -62,7 +62,7 @@ export function UsersStack() {
 
   const rows = useMemo(() => {
     return members.map(({ user, member }) => (
-      <Table.Tr key={member._id}>
+      <Table.Tr key={member._id} onClick={() => setUserSelected(user._id)}>
         <Table.Td>
           <div
             className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
@@ -90,24 +90,20 @@ export function UsersStack() {
           </div>
         </Table.Td>
         <Table.Td>
-          {member.isAccepted ? (
-            getEditableRoles(operatorMember?.role, member.role).length !== 0 ? (
-              <Select
-                data={getEditableRoles(operatorMember?.role, member.role)}
-                value={member.role}
-                variant='unstyled'
-                allowDeselect={false}
-              />
-            ) : (
-              <p>{member.role}</p>
-            )
+          {getEditableRoles(operatorMember?.role, member.role).length !== 0 ? (
+            <Select
+              data={getEditableRoles(operatorMember?.role, member.role)}
+              value={member.role}
+              variant='unstyled'
+              allowDeselect={false}
+            />
           ) : (
-            <p className='text-gray-500'>Pending</p>
+            <p>{member.role}</p>
           )}
         </Table.Td>
-        <Table.Td>
-          {member.isAccepted && dayjs(member.createdAt).format('DD/MM/YYYY')}
-        </Table.Td>
+
+        <Table.Td>{dayjs(member?.createdAt).format('DD/MM/YYYY')}</Table.Td>
+
         <Table.Td>
           <Menu
             transitionProps={{ transition: 'pop' }}
@@ -195,7 +191,8 @@ export function UsersStack() {
               <Table.Tr>
                 <Table.Th>Employee</Table.Th>
                 <Table.Th className='w-32'>Role</Table.Th>
-                <Table.Th className='w-32'>Invited At</Table.Th>
+                <Table.Th className='w-32'>Joined At</Table.Th>
+
                 <Table.Th className='w-11'></Table.Th>
               </Table.Tr>
             </Table.Thead>

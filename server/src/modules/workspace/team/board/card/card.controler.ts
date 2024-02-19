@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Patch, Post, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { MessageService } from 'src/modules/workspace/message/message.service'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
@@ -100,5 +108,14 @@ export class CardController {
       targetId: cardId,
       messagePayload
     })
+  }
+
+  @Get('/cards/:cardId/messages')
+  async getCardMessages(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Param('cardId') cardId: string
+  ) {
+    return this.cardService.getMessages({ boardId, cardId, userId: user.sub })
   }
 }

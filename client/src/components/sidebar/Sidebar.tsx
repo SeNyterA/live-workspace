@@ -14,6 +14,7 @@ import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
+import { EMemberRole } from '../../types/workspace.type'
 import DirectNavLink from '../layouts/DirectNavLink'
 // import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
@@ -42,6 +43,13 @@ export default function Sidebar() {
   )
   const [searchValue, setSearchValue] = useState('')
 
+  const myTeamRole = useAppSelector(
+    state =>
+      Object.values(state.workspace.members).find(
+        e => e.userId === state.auth.userInfo?._id && e.targetId === teamId
+      )?.role
+  )
+
   return (
     <>
       <div className='flex w-72 flex-col gap-2 py-3'>
@@ -58,18 +66,19 @@ export default function Sidebar() {
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
           />
-
-          <ActionIcon
-            variant='transparent'
-            aria-label='Settings'
-            className='h-[30px] w-[30px] bg-gray-100'
-            onClick={() => setToggle('teamSetting')}
-          >
-            <IconSettings
-              style={{ width: '70%', height: '70%' }}
-              stroke={1.5}
-            />
-          </ActionIcon>
+          {myTeamRole === EMemberRole.Owner && (
+            <ActionIcon
+              variant='transparent'
+              aria-label='Settings'
+              className='h-[30px] w-[30px] bg-gray-100'
+              onClick={() => setToggle('teamSetting')}
+            >
+              <IconSettings
+                style={{ width: '70%', height: '70%' }}
+                stroke={1.5}
+              />
+            </ActionIcon>
+          )}
         </div>
 
         <div className='relative flex-1'>
@@ -270,6 +279,7 @@ export default function Sidebar() {
         onClose={() => setToggle(undefined)}
         targetId={teamId!}
         type='team'
+        
       />
 
       {/* <CreateDirect

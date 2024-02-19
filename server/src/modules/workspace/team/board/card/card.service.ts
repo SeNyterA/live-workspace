@@ -324,4 +324,42 @@ export class CardService {
       data: updatedCard
     }
   }
+
+  async getMessages({
+    boardId,
+    cardId,
+    userId
+  }: {
+    cardId: string
+    boardId: string
+    userId: string
+  }) {
+    const card = await this.cardModel.findOne({
+      boardId,
+      _id: cardId
+    })
+
+    if (!card) {
+      return {
+        error: {
+          code: Errors['Card not found'],
+          err: 'Card not found',
+          userId,
+          boardId,
+          cardId
+        }
+      }
+    }
+
+    const messages = await this.messageService.messageModel
+      .find({
+        boardId,
+        targetId: cardId
+      })
+      .lean()
+
+    return {
+      data: messages
+    }
+  }
 }

@@ -175,7 +175,6 @@ export class TeamService {
       } else {
         const newMember = await this.memberModel.create({
           ...memberDto,
-          isAccepted: memberDto.role === EMemberRole.Owner ? true : false,
           targetId: newTeam._id.toString(),
           path: newTeam._id.toString(),
           type: EMemberType.Team,
@@ -236,7 +235,6 @@ export class TeamService {
           userId: teamMember.userId.toString(),
           targetId: newChannel._id.toString(),
           role: teamMember.role,
-          isAccepted: teamMember.role === EMemberRole.Owner ? true : false,
           path: `${teamMember.targetId.toString()}/${newChannel._id.toString()}`,
           type: EMemberType.Channel,
           createdById: userId,
@@ -334,7 +332,6 @@ export class TeamService {
             userId: teamMember.userId.toString(),
             targetId: newBoard._id.toString(),
             role: teamMember.role,
-            isAccepted: teamMember.role === EMemberRole.Owner ? true : false,
             path: `${teamMember.targetId.toString()}/${newBoard._id.toString()}`,
             type: EMemberType.Board,
             createdById: userId,

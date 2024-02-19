@@ -48,10 +48,4 @@ export class Member {
 
   @Prop({ default: true })
   isAvailable: boolean
-
-  @Prop()
-  acceptedAt?: Date
-
-  @Prop({ default: true })
-  isAccepted: boolean
 }

@@ -15,7 +15,7 @@ import { EMessageFor, EMessageType, Message } from './message.schema'
 export class MessageService {
   constructor(
     @InjectModel(Message.name)
-    private readonly messageModel: Model<Message>,
+    readonly messageModel: Model<Message>,
     private readonly directMessageService: DirectMessageService,
     private readonly memberService: MemberService,
     private readonly workspaceService: WorkspaceService

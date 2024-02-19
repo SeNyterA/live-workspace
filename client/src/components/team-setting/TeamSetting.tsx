@@ -10,9 +10,15 @@ type TSetting = {
   targetId: string
   type: 'team' | 'channel' | 'group' | 'board'
   operatorMember?: TMember
+  userSelected?: string
+  setUserSelected?: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
-const settingContext = createContext<TSetting>({ targetId: '', type: 'team' })
+const settingContext = createContext<TSetting>({
+  targetId: '',
+  type: 'team',
+  setUserSelected: () => {}
+})
 export const useSetting = () => useContext(settingContext)
 
 export default function TeamSetting({
@@ -25,6 +31,7 @@ export default function TeamSetting({
   onClose: () => void
 } & TSetting) {
   const [mode, setMode] = useState<'info' | 'members'>('info')
+  const [userSelected, setUserSelected] = useState<string>()
   const target = useAppSelector(
     e =>
       e.workspace.teams[targetId!] ||
@@ -61,7 +68,13 @@ export default function TeamSetting({
       }
     >
       <settingContext.Provider
-        value={{ targetId: targetId, type, operatorMember }}
+        value={{
+          targetId: targetId,
+          type,
+          operatorMember,
+          userSelected,
+          setUserSelected
+        }}
       >
         <div className='flex h-full w-full gap-3'>
           <div className='w-56'>
