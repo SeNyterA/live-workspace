@@ -45,7 +45,8 @@
     "reflect-metadata": "^0.1.12",
     "rimraf": "^5.0.5",
     "rxjs": "^7.8.1",
-    "slugify": "^1.6.6"
+    "slugify": "^1.6.6",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.2.1",
