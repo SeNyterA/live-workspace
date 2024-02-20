@@ -6,8 +6,8 @@ import {
   OneToMany,
   RelationId
 } from 'typeorm'
-import { BaseEntity } from './base.entity'
-import { Workspace } from './workspace.entity'
+import { BaseEntity } from '../base.entity'
+import { Workspace } from '../workspace.entity'
 
 export enum EFieldType {
   Date = 'Date',
