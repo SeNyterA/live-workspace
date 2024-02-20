@@ -1,7 +1,7 @@
 import { ActionIcon, Input, Select } from '@mantine/core'
 import { IconFilter, IconSearch } from '@tabler/icons-react'
 import { useAppSelector } from '../../redux/store'
-import { EFieldType } from '../../services/apis/board/board.api'
+import { EFieldType } from '../../services/apis/board.api'
 import { useBoard } from './BoardProvider'
 
 export default function BoardHeader() {

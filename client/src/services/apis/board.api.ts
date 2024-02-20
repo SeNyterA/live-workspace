@@ -1,4 +1,4 @@
-import { TWorkspaceDto } from '../../../types/dto.type'
+import { TWorkspaceDto } from '../../types/dto.type'
 import {
   EBlockType,
   JSONContent,
@@ -6,7 +6,7 @@ import {
   TCard,
   TMessage,
   TProperty
-} from '../../../types/workspace.type'
+} from '../../types/workspace.type'
 
 export type TCardProperties = {
   [key: string]: string | string[] | undefined | null
@@ -235,6 +235,19 @@ export type TBoardQueryApi = {
       board: TBoard
       cards: TCard[]
       properties: TProperty[]
+    }
+  }
+
+  cardMessages: {
+    url: {
+      baseUrl: '/workspace/boards/:boardId/cards/:cardId/messages'
+      urlParams: {
+        boardId: string
+        cardId: string
+      }
+    }
+    response: {
+      messages: TMessage[]
     }
   }
 }

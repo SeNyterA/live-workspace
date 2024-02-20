@@ -10,7 +10,7 @@ import Watching from '../../../redux/Watching'
 import {
   EFieldType,
   TCardProperties
-} from '../../../services/apis/board/board.api'
+} from '../../../services/apis/board.api'
 import { useAppMutation } from '../../../services/apis/useAppMutation'
 
 dayjs.extend(customParseFormat)

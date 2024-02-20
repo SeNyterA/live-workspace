@@ -185,7 +185,7 @@ export class MessageService {
     })
 
     this.workspaceService.message({
-      rooms: [targetId],
+      rooms: [boardId],
       data: {
         action: 'create',
         message: newMess

@@ -1,11 +1,18 @@
 import { Divider, Modal, ScrollArea } from '@mantine/core'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
-import { workspaceActions } from '../../../redux/slices/workspace.slice'
+import {
+  TMessages,
+  workspaceActions
+} from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { useAppQuery } from '../../../services/apis/useAppQuery'
 import { useAppEmitSocket } from '../../../services/socket/useAppEmitSocket'
+import { groupMessages } from '../../message/MessageContentProvider'
+import MessageGroup from '../../message/MessageGroup'
 import SendMessage from '../../message/SendMessage'
 import Editor from '../description/Editor'
 import CardTitle from './CardTitle'
@@ -17,8 +24,40 @@ export default function DetailCard() {
   const card = useAppSelector(state =>
     Object.values(state.workspace.cards).find(e => e._id === cardId)
   )
+  const cardMessages = useAppSelector(state =>
+    Object.values(state.workspace.messages).filter(
+      e => e.replyRootId === cardId
+    )
+  )
+
   const dispatch = useDispatch()
   const socketEmit = useAppEmitSocket()
+
+  const { data: cardMessagesApi } = useAppQuery({
+    key: 'cardMessages',
+    url: {
+      baseUrl: '/workspace/boards/:boardId/cards/:cardId/messages',
+      urlParams: {
+        boardId: card?.boardId!,
+        cardId: card?._id!
+      }
+    },
+    options: {
+      queryKey: [card?.boardId, card?._id],
+      enabled: !!card?.boardId && !!card?._id
+    }
+  })
+
+  useEffect(() => {
+    dispatch(
+      workspaceActions.addMessages(
+        cardMessagesApi?.messages?.reduce(
+          (pre, next) => ({ ...pre, [next._id]: next }),
+          {} as TMessages
+        ) || {}
+      )
+    )
+  }, [cardMessagesApi])
 
   const { mutateAsync: createChannelMessage } = useAppMutation(
     'createCardMessage',
@@ -89,6 +128,12 @@ export default function DetailCard() {
                   <Divider className='mx-4 my-4' />
 
                   <div className='px-2'>
+                    {groupMessages(cardMessages || []).map(groupMessage => (
+                      <MessageGroup
+                        key={groupMessage.messages[0]._id}
+                        messageGroup={groupMessage}
+                      />
+                    ))}
                     <SendMessage
                       targetId={card._id}
                       createMessage={async ({ files, value }) => {

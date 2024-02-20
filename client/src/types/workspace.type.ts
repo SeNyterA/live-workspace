@@ -1,4 +1,4 @@
-import { EFieldType } from '../services/apis/board/board.api'
+import { EFieldType } from '../services/apis/board.api'
 
 export enum EMemberRole {
   Owner = 'Owner',

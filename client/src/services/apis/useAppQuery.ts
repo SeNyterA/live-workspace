@@ -9,7 +9,7 @@ import {
   TMessage,
   TTeam
 } from '../../types/workspace.type'
-import { TBoardQueryApi } from './board/board.api'
+import { TBoardQueryApi } from './board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
 

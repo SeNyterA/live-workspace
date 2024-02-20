@@ -7,7 +7,7 @@ import {
 } from 'react'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
-import { EFieldType } from '../../services/apis/board/board.api'
+import { EFieldType } from '../../services/apis/board.api'
 import { TBoard } from '../../types/workspace.type'
 import { lsActions } from '../../utils/auth'
 

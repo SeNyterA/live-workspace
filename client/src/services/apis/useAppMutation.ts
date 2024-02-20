@@ -9,7 +9,7 @@ import {
   TMessage,
   TWorkspace
 } from '../../types/workspace.type'
-import { TBoardMutionApi } from './board/board.api'
+import { TBoardMutionApi } from './board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
 import { TUploadMutionApi } from './upload/upload.api'

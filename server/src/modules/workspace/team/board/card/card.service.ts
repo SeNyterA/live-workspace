@@ -353,13 +353,13 @@ export class CardService {
 
     const messages = await this.messageService.messageModel
       .find({
-        boardId,
-        targetId: cardId
+        messageReferenceId: boardId,
+        replyRootId: cardId
       })
       .lean()
 
     return {
-      data: messages
+      messages
     }
   }
 }
