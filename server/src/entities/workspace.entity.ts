@@ -1,4 +1,4 @@
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, RelationId } from 'typeorm'
 import { BaseEntity } from './base.entity'
 
 export enum WorkspaceType {
@@ -25,4 +25,10 @@ export class Workspace extends BaseEntity {
 
   @Column({ type: 'enum', enum: WorkspaceType, default: WorkspaceType.Team })
   type: WorkspaceType
+
+  @ManyToOne(() => Workspace, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'parentId' })
+  parent: Workspace
+  @RelationId((workspace: Workspace) => workspace.parent)
+  parentId: string
 }

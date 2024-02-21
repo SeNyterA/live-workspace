@@ -1,4 +1,5 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Exclude } from 'class-transformer'
+import { Column, Entity, JoinColumn, ManyToOne, RelationId } from 'typeorm'
 import { BaseEntity } from './base.entity'
 import { User } from './user.entity'
 import { Workspace } from './workspace.entity'
@@ -28,11 +29,17 @@ export class Member extends BaseEntity {
   @Column()
   path: string
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, {})
   @JoinColumn({ name: 'userId' })
+  @Exclude()
+  user: User
+  @RelationId((member: Member) => member.user)
   userId: string
 
-  @ManyToOne(() => Workspace)
+  @ManyToOne(() => Workspace, {})
   @JoinColumn({ name: 'targetId' })
+  @Exclude()
+  workspace: Workspace
+  @RelationId((member: Member) => member.workspace)
   targetId: string
 }
