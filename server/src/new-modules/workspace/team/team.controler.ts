@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { Workspace } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
-import { WorkspaceService } from './workspace.service'
+import { WorkspaceService } from '../workspace.service'
 
 @Controller('teams')
 export class TeamController {

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as crypto from 'crypto-js'
+import { Socket } from 'socket.io'
 import { Card } from 'src/entities/board/card.entity'
 import { Property } from 'src/entities/board/property.entity'
 import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
@@ -8,7 +9,9 @@ import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
 import { In, Repository } from 'typeorm'
-import { BoardService } from './board.service'
+import { RedisService } from '../redis/redis.service'
+import { BoardService } from './team/board/board.service'
+import { WorkspaceGateway } from './workspace.gateway'
 
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
@@ -37,9 +40,12 @@ export class WorkspaceService {
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
 
-    readonly boardService: BoardService
+    private readonly socketService: WorkspaceGateway,
+    readonly boardService: BoardService,
+    readonly redisService: RedisService
   ) {}
 
+  //#region Workspace
   async createTeam({
     user,
     workspace
@@ -221,4 +227,103 @@ export class WorkspaceService {
 
     return this.workspaceRepository.delete(_id)
   }
+
+  async getAllWorkspace({ user }: { user: TJwtUser }) {
+    return this.workspaceRepository.find({
+      where: { members: { user: { _id: user.sub, isAvailable: true } } }
+    })
+  }
+
+  async subscribeToWorkspaces({
+    user,
+    client
+  }: {
+    user: TJwtUser
+    client: Socket
+  }) {
+    const members = await this.memberRepository.find({
+      where: { user: { _id: user.sub, isAvailable: true } }
+    })
+
+    client.join(members.map(member => member.targetId))
+  }
+
+  //#endregion
+
+  //#region  Member
+  async addMembers({
+    membersDto,
+    user,
+    workspaceId
+  }: {
+    membersDto: Member[]
+    user: TJwtUser
+    workspaceId: string
+  }) {
+    const operator = await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub },
+        workspace: { _id: workspaceId },
+        role: In([EMemberRole.Owner, EMemberRole.Admin])
+      }
+    })
+
+    if (operator.role === EMemberRole.Owner) {
+      membersDto.forEach(member => {
+        this.memberRepository.save({
+          ...member,
+          workspace: { _id: workspaceId },
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        })
+      })
+    }
+
+    if (operator.role === EMemberRole.Admin) {
+      membersDto.forEach(member => {
+        this.memberRepository.save({
+          ...member,
+          role:
+            member.role === EMemberRole.Owner ? EMemberRole.Admin : member.role,
+          workspace: { _id: workspaceId },
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        })
+      })
+    }
+  }
+  //#endregion
+
+  //#region Typing
+  async startTyping(userId: string, targetId: string) {
+    await this.toggleTyping({ targetId, userId, type: 1 })
+    await this.redisService.redisClient.set(
+      `typing:${targetId}:${userId}`,
+      '',
+      'EX',
+      3
+    )
+  }
+
+  async stopTyping(userId: string, targetId: string) {
+    await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
+    this.toggleTyping({ targetId, userId, type: 0 })
+  }
+
+  async toggleTyping({
+    targetId,
+    type,
+    userId
+  }: {
+    targetId: string
+    userId: string
+    type: 0 | 1
+  }) {
+    this.socketService.server.to([targetId]).emit('typing', {
+      userId,
+      targetId,
+      type
+    })
+  }
+  //#endregion
 }

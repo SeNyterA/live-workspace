@@ -1,5 +1,13 @@
-import { Column, Entity, JoinColumn, ManyToOne, RelationId } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  RelationId
+} from 'typeorm'
 import { BaseEntity } from './base.entity'
+import { Member } from './member.entity'
 
 export enum WorkspaceType {
   Channel = 'Channel',
@@ -31,4 +39,7 @@ export class Workspace extends BaseEntity {
   parent: Workspace
   @RelationId((workspace: Workspace) => workspace.parent)
   parentId: string
+
+  @OneToMany(() => Member, member => member.workspace)
+  members: Member[]
 }
