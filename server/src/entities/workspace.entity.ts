@@ -11,15 +11,18 @@ export enum WorkspaceType {
 
 @Entity()
 export class Workspace extends BaseEntity {
-  @Column({ default: '' })
+  @Column()
   title: string
 
-  @Column({ default: '' })
-  description?: string
+  @Column()
+  description: string
 
-  @Column({ default: '' })
-  avatar?: string
+  @Column()
+  avatar: string
 
-  @Column({ type: 'enum', enum: WorkspaceType })
+  @Column()
+  displayUrl: string
+
+  @Column({ type: 'enum', enum: WorkspaceType, default: WorkspaceType.Team })
   type: WorkspaceType
 }

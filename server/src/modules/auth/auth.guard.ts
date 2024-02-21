@@ -7,8 +7,10 @@ import {
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
+import { InjectRepository } from '@nestjs/typeorm'
 import { Request } from 'express'
-import { UsersService } from 'src/modules/users/users.service'
+import { Repository } from 'typeorm'
+import { User } from '../users/user.schema'
 
 export const IS_PUBLIC_KEY = 'isPublic'
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
@@ -18,7 +20,9 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-    private usersService: UsersService
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -37,14 +41,21 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException()
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET
-      })
+      const payload = await this.jwtService
+        .verifyAsync(token, {
+          secret: process.env.JWT_SECRET
+        })
+        .catch(err => {
+          console.log(err)
+        })
 
-      await this.usersService.findById(payload?.sub)
+      await this.userRepository.findOneOrFail({
+        where: { _id: payload.sub }
+      })
 
       request['user'] = payload
     } catch {
+      console.log('payload')
       throw new UnauthorizedException()
     }
     return true

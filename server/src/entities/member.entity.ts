@@ -1,9 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne, RelationId } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { BaseEntity } from './base.entity'
 import { User } from './user.entity'
 import { Workspace } from './workspace.entity'
-
-import { Exclude } from 'class-transformer'
 
 export enum EMemberRole {
   Owner = 'Owner',
@@ -32,15 +30,9 @@ export class Member extends BaseEntity {
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })
-  @Exclude()
-  user: User
-  @RelationId((member: Member) => member.user)
   userId: string
 
   @ManyToOne(() => Workspace)
   @JoinColumn({ name: 'targetId' })
-  @Exclude()
-  workspace: Workspace
-  @RelationId((member: Member) => member.workspace)
   targetId: string
 }

@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
-import { MongooseModule, SchemaFactory } from '@nestjs/mongoose'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { User } from 'src/entities/user.entity'
 import { MailModule } from '../mail/mail.module'
-import { User } from '../users/user.schema'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: SchemaFactory.createForClass(User) }
-    ]),
+    TypeOrmModule.forFeature([User]),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,

@@ -1,6 +1,12 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
+import { APP_GUARD } from '@nestjs/core'
 import { TypeOrmModule } from '@nestjs/typeorm'
+import { User } from './entities/user.entity'
+import { AuthGuard } from './modules/auth/auth.guard'
+import { AuthModule } from './modules/auth/auth.module'
+import { MailModule } from './modules/mail/mail.module'
+import { WorkspaceModule } from './new-modules/workspace/workspace.module'
 
 @Module({
   imports: [
@@ -14,19 +20,17 @@ import { TypeOrmModule } from '@nestjs/typeorm'
       database: process.env.MYSQL_DB,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true
-    })
-    // AuthModule,
-    // UsersModule,
-    // WorkspaceModule,
-    // AWSModule,
-    // RedisModule,
-    // MailModule
+    }),
+    TypeOrmModule.forFeature([User]),
+    AuthModule,
+    WorkspaceModule,
+    MailModule
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard
+    }
   ]
-  // providers: [
-  //   {
-  //     provide: APP_GUARD,
-  //     useClass: AuthGuard
-  //   }
-  // ]
 })
 export class AppModule {}

@@ -5,7 +5,6 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  RelationId,
   UpdateDateColumn
 } from 'typeorm'
 import { User } from './user.entity'
@@ -17,15 +16,10 @@ export abstract class BaseEntity {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'createdById' })
   @Exclude()
-  createdBy: User
-  @RelationId((baseEntity: BaseEntity) => baseEntity.createdBy)
   createdById: string
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'modifiedById' })
-  @Exclude()
-  modifiedBy: User
-  @RelationId((baseEntity: BaseEntity) => baseEntity.modifiedBy)
   modifiedById: string
 
   @CreateDateColumn()
