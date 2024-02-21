@@ -8,7 +8,9 @@ import {
   RelationId
 } from 'typeorm'
 import { BaseEntity } from './base.entity'
+import { File } from './file.entity'
 import { Workspace } from './workspace.entity'
+import { JSONContent } from 'src/libs/helper'
 
 export enum EMessageType {
   Normal = 'N',
@@ -20,12 +22,10 @@ export class Message extends BaseEntity {
   @Column({ type: 'enum', enum: EMessageType, default: EMessageType.Normal })
   type: EMessageType
 
-  @Column({ type: 'json', default: {} })
-  content: {
-    [key: string]: string | string[] | undefined
-  }
+  @Column({ type: 'json' })
+  content: JSONContent
 
-  @Column({ type: 'json', default: {} })
+  @Column({ type: 'json' })
   reactions: {
     [userId: string]: string
   }

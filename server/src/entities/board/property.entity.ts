@@ -8,6 +8,7 @@ import {
 } from 'typeorm'
 import { BaseEntity } from '../base.entity'
 import { Workspace } from '../workspace.entity'
+import { Option } from './option.entity'
 
 export enum EFieldType {
   Date = 'Date',
@@ -24,15 +25,6 @@ export enum EFieldType {
 }
 
 @Entity()
-export class Option extends BaseEntity {
-  @Column()
-  title: string
-
-  @Column()
-  color: string
-}
-
-@Entity()
 export class Property extends BaseEntity {
   @Column({ default: '' })
   title: string
@@ -43,8 +35,8 @@ export class Property extends BaseEntity {
   @Column()
   order: number
 
-  @OneToMany(() => Option, option => option._id, { cascade: true })
-  fieldOption?: Option[]
+  @OneToMany(() => Option, option => option.property)
+  fieldOptions: Option[]
 
   @ManyToOne(() => Workspace)
   @JoinColumn({ name: 'boardId' })
