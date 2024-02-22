@@ -97,25 +97,26 @@ export default function MessageContent({
     messageId: string
   }>()
   const emitSocket = useAppEmitSocket()
-  useEffect(() => {
-    if (messages.length > 0) {
-      const lastMess = messages[messages.length - 1]
-      const _targetId =
-        targetId.channelId || targetId.directId || targetId.groupId
 
-      if (
-        _targetId &&
-        lastMess._id !== makeAsReadMessageId.current?.messageId
-      ) {
-        emitSocket({
-          key: 'makeReadMessage',
-          messageId: lastMess._id,
-          targetId: _targetId
-        })
-        makeAsReadMessageId.current = { messageId: lastMess._id }
-      }
-    }
-  }, [messages])
+  // useEffect(() => {
+  //   if (messages.length > 0) {
+  //     const lastMess = messages[messages.length - 1]
+  //     const _targetId =
+  //       targetId.channelId || targetId.directId || targetId.groupId
+
+  //     if (
+  //       _targetId &&
+  //       lastMess._id !== makeAsReadMessageId.current?.messageId
+  //     ) {
+  //       emitSocket({
+  //         key: 'makeReadMessage',
+  //         messageId: lastMess._id,
+  //         targetId: _targetId
+  //       })
+  //       makeAsReadMessageId.current = { messageId: lastMess._id }
+  //     }
+  //   }
+  // }, [messages])
   //#endregion
 
   useEffect(() => {

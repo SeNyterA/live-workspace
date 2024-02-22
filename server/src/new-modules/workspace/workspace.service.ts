@@ -1,26 +1,24 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
-import { Socket } from 'socket.io'
-import { Card } from 'src/entities/board/card.entity'
-import { Property } from 'src/entities/board/property.entity'
+import { Server, Socket } from 'socket.io'
 import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
 import { In, Repository } from 'typeorm'
-import { RedisService } from '../redis/redis.service'
 import { BoardService } from './team/board/board.service'
-import { WorkspaceGateway } from './workspace.gateway'
 
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
   data: Workspace
 }
 
-export type TBoardEmit = {
+export type TMemberEmit = {
   action: 'create' | 'update' | 'delete'
-} & ({ data: Property; type: 'property' } | { data: Card; type: 'card' })
+  member: Member
+}
 
 export const generateRandomHash = (
   inputString = Math.random().toString()
@@ -32,6 +30,8 @@ export const generateRandomHash = (
 
 @Injectable()
 export class WorkspaceService {
+  @WebSocketServer()
+  server: Server
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -40,9 +40,7 @@ export class WorkspaceService {
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
 
-    private readonly socketService: WorkspaceGateway,
-    readonly boardService: BoardService,
-    readonly redisService: RedisService
+    readonly boardService: BoardService
   ) {}
 
   //#region Workspace
@@ -294,35 +292,38 @@ export class WorkspaceService {
   }
   //#endregion
 
-  //#region Typing
-  async startTyping(userId: string, targetId: string) {
-    await this.toggleTyping({ targetId, userId, type: 1 })
-    await this.redisService.redisClient.set(
-      `typing:${targetId}:${userId}`,
-      '',
-      'EX',
-      3
-    )
-  }
-
-  async stopTyping(userId: string, targetId: string) {
-    await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
-    this.toggleTyping({ targetId, userId, type: 0 })
-  }
-
-  async toggleTyping({
-    targetId,
-    type,
-    userId
+  //#region SocketEmit
+  async workspaceEmit({
+    workspaces,
+    rooms
   }: {
-    targetId: string
-    userId: string
-    type: 0 | 1
+    workspaces: TWorkspaceSocket
+    rooms: string[]
   }) {
-    this.socketService.server.to([targetId]).emit('typing', {
-      userId,
-      targetId,
-      type
+    await this.server.to(rooms).emit('workspaces', {
+      workspaces
+    })
+  }
+
+  async memberEmit({
+    members,
+    rooms
+  }: {
+    members: TMemberEmit[]
+    rooms: string[]
+  }) {
+    const sockets = await this.server.fetchSockets()
+
+    members.forEach(async member => {
+      if (member.action === 'create') {
+        sockets
+          .find(socket => socket.rooms.has(member.member.targetId))
+          ?.join(member.member.targetId)
+      }
+    })
+
+    await this.server.to(rooms).emit('members', {
+      members
     })
   }
   //#endregion

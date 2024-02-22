@@ -1,10 +1,10 @@
 import { NavLink } from '@mantine/core'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
+import { TWorkspace } from '../../../new-types/workspace'
 import { useAppSelector } from '../../../redux/store'
-import { TBoard } from '../../../types/workspace.type'
 
-export default function BoardItem({ board }: { board: TBoard }) {
+export default function BoardItem({ board }: { board: TWorkspace }) {
   const { boardId } = useAppParams()
   const unreadCount = useAppSelector(
     state => state.workspace.unreadCount[board._id]

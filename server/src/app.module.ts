@@ -6,7 +6,10 @@ import { User } from './entities/user.entity'
 import { AuthGuard } from './modules/auth/auth.guard'
 import { AuthModule } from './modules/auth/auth.module'
 import { MailModule } from './modules/mail/mail.module'
+import { SocketModule } from './new-modules/socket/socket.module'
 import { WorkspaceModule } from './new-modules/workspace/workspace.module'
+import { RedisModule } from './new-modules/redis/redis.module'
+import { MessageModule } from './new-modules/workspace/message/message.module'
 
 @Module({
   imports: [
@@ -23,8 +26,11 @@ import { WorkspaceModule } from './new-modules/workspace/workspace.module'
     }),
     TypeOrmModule.forFeature([User]),
     AuthModule,
+    MailModule,
+    MessageModule,
     WorkspaceModule,
-    MailModule
+    SocketModule,
+    RedisModule
   ],
   providers: [
     {

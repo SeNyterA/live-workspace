@@ -3,12 +3,16 @@ import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
+// import { WorkspaceType } from '../../../new-types/workspace'
 import { useAppSelector } from '../../../redux/store'
 import CreateTeam from './CreateTeam'
 
 export default function TeamList() {
-  const teams =
-    useAppSelector(state => Object.values(state.workspace.teams)) || []
+  const teams = useAppSelector(state =>
+    Object.values(state.workspace.workspaces).filter(
+      team => team.type === 'Team'
+    )
+  )
 
   const { switchTeam } = useAppControlParams()
   const { teamId } = useAppParams()
@@ -34,7 +38,7 @@ export default function TeamList() {
             scrollbarSize={6}
             classNames={{ viewport: 'py-1 teamlist-viewport' }}
           >
-            {teams.map(team => (
+            {teams?.map(team => (
               <ActionIcon
                 key={team._id}
                 className={`mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${

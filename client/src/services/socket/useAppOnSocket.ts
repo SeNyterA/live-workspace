@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { TMessage } from '../../new-types/message'
 import { TUser } from '../../types/user.type'
 import {
   TBoard,
@@ -7,7 +8,6 @@ import {
   TDirect,
   TGroup,
   TMember,
-  TMessage,
   TProperty,
   TTeam
 } from '../../types/workspace.type'

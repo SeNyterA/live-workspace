@@ -11,7 +11,7 @@ import { BoardController } from './team/board/board.controler'
 import { BoardService } from './team/board/board.service'
 import { TeamController } from './team/team.controler'
 import { WorkspaceController } from './workspace.controler'
-import { WorkspaceGateway } from './workspace.gateway'
+
 import { WorkspaceService } from './workspace.service'
 
 @Module({
@@ -20,6 +20,7 @@ import { WorkspaceService } from './workspace.service'
     RedisModule
   ],
   controllers: [TeamController, BoardController, WorkspaceController],
-  providers: [WorkspaceService, BoardService, WorkspaceGateway]
+  providers: [WorkspaceService, BoardService],
+  exports: [WorkspaceService]
 })
 export class WorkspaceModule {}

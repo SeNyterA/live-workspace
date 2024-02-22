@@ -9,6 +9,7 @@ import DetailCard from '../components/boards/card/DetailCard'
 import ChannelMessage from '../components/message/ChannelMessage'
 import DirectMessage from '../components/message/DirectMessage'
 import GroupMessage from '../components/message/GroupMessage'
+import MessageContentWrapper from '../components/message/MessageContentWrapper'
 import Layout from '../Layout'
 import { authActions } from '../redux/slices/auth.slice'
 import { useAppSelector } from '../redux/store'
@@ -129,7 +130,8 @@ export default function useRouteElements() {
               path: 'channel/:channelId',
               element: (
                 <ErrorBoundary fallback={<></>}>
-                  <ChannelMessage />
+                  {/* <ChannelMessage /> */}
+                  <MessageContentWrapper />
                 </ErrorBoundary>
               )
             },

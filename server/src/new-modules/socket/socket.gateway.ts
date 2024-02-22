@@ -1,16 +1,13 @@
 import { JwtService } from '@nestjs/jwt'
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
-import { WsUser } from '../../decorators/users.decorator'
-import { WorkspaceService } from './workspace.service'
+import { WorkspaceService } from '../workspace/workspace.service'
 export type TJwtUser = {
   email: string
   userName: string
@@ -27,9 +24,7 @@ export interface CustomSocket extends Socket {
     origin: '*'
   }
 })
-export class WorkspaceGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server
   constructor(
@@ -75,30 +70,4 @@ export class WorkspaceGateway
       console.log(error)
     }
   }
-
-  @SubscribeMessage('startTyping')
-  async startTyping(
-    @WsUser() user: TJwtUser,
-    @MessageBody() { targetId }: { targetId: string }
-  ) {
-    this.workspaceService.startTyping(user.sub, targetId)
-  }
-
-  @SubscribeMessage('stopTyping')
-  async stopTyping(
-    @WsUser() user: TJwtUser,
-    @MessageBody() { targetId }: { targetId: string }
-  ) {
-    this.workspaceService.stopTyping(user.sub, targetId)
-  }
-
-  // @SubscribeMessage('makeReadMessage')
-  // async makeReadMessage(
-  //   @WsUser() user: TJwtUser,
-  //   @MessageBody()
-  //   { targetId, messageId }: { targetId: string; messageId: string }
-  // ) {
-  //   this.workspaceService.markMessageAsRead(user.sub, targetId, messageId)
-  //   this.workspaceService._markAsRead(user.sub, targetId)
-  // }
 }

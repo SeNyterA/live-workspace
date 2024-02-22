@@ -1,28 +1,23 @@
 import { createContext, ReactNode, useContext } from 'react'
-import { TParams } from '../../hooks/useAppParams'
+import { TMessage } from '../../new-types/message'
 import { useAppSelector } from '../../redux/store'
-import { EMessageType, TMessage } from '../../types/workspace.type'
 
-export type TTargetMessageId = Partial<
-  Pick<TParams, 'channelId' | 'groupId' | 'directId'>
->
 export type TGroupedMessage = {
   userId: string
   messages: TMessage[]
-  type: EMessageType
 }
 
 export type TMessageContentValue = {
   title: string
   messages: TMessage[]
   groupedMessages: TGroupedMessage[]
-  targetId: TTargetMessageId
+  targetId: string
   userTargetId?: string
 }
 const messageContentContext = createContext<TMessageContentValue>({
   messages: [],
   groupedMessages: [],
-  targetId: {},
+  targetId: '',
   title: ''
 })
 
@@ -39,11 +34,7 @@ export default function MessageContentProvider({
   const messages =
     useAppSelector(state =>
       Object.values(state.workspace.messages)
-        .filter(
-          e =>
-            (targetId.channelId || targetId.directId || targetId.groupId) ===
-            e.messageReferenceId
-        )
+        .filter(e => targetId === e.targetId)
         .sort(
           (a, b) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -68,17 +59,12 @@ export const groupMessages = (messages: TMessage[]): TGroupedMessage[] => {
   let currentGroup: TGroupedMessage | null = null
 
   messages.forEach(message => {
-    if (
-      currentGroup &&
-      currentGroup.type === message.messageType &&
-      currentGroup.userId === message.createdById
-    ) {
+    if (currentGroup && currentGroup.userId === message.createdById) {
       currentGroup.messages.push(message)
     } else {
       currentGroup = {
         userId: message.createdById,
-        messages: [message],
-        type: message.messageType
+        messages: [message]
       }
       groupedMessages.push(currentGroup)
     }

@@ -20,10 +20,10 @@ import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useEffect, useState } from 'react'
 import { useLayout } from '../../Layout'
+import { EMessageType } from '../../new-types/message.d'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { useAppMutation } from '../../services/apis/useAppMutation'
-import { EMessageType } from '../../types/workspace.type'
 import { updateLabelMention } from '../../utils/helper'
 import { groupByFileType } from '../new-message/helper'
 import UserDetailProvider from '../user/UserDetailProvider'
@@ -47,11 +47,13 @@ export default function MessageGroup({
   )
 
   const { mutateAsync: reaction } = useAppMutation('reaction')
-  const isOwner = useAppSelector(
-    state =>
+  const isOwner = useAppSelector(state => {
+    console.log(state.auth.userInfo?._id, messageGroup.messages[0].type)
+    return (
       state.auth.userInfo?._id === messageGroup.userId &&
-      messageGroup.type === EMessageType.Normal
-  )
+      messageGroup.messages[0].type === EMessageType.Normal
+    )
+  })
 
   useEffect(() => {
     if (!scrollableRef?.current) return

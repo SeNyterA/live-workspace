@@ -1,10 +1,10 @@
 import { NavLink } from '@mantine/core'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
+import { TWorkspace } from '../../../new-types/workspace'
 import { useAppSelector } from '../../../redux/store'
-import { TChannel } from '../../../types/workspace.type'
 
-export default function ChannelItem({ channel }: { channel: TChannel }) {
+export default function ChannelItem({ channel }: { channel: TWorkspace }) {
   const { channelId } = useAppParams()
   const unreadCount = useAppSelector(
     state => state.workspace.unreadCount[channel._id]
@@ -21,7 +21,7 @@ export default function ChannelItem({ channel }: { channel: TChannel }) {
             {channel.title || channel._id}
           </span>
           {unreadCount && (
-            <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center leading-4 text-gray-800 text-xs'>
+            <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center text-xs leading-4 text-gray-800'>
               {unreadCount}
             </span>
           )}

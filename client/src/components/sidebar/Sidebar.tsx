@@ -2,7 +2,6 @@ import { ActionIcon, Divider, Input, NavLink, ScrollArea } from '@mantine/core'
 import {
   IconHash,
   IconLayoutKanban,
-  IconMessage,
   IconPlus,
   IconSearch,
   IconSettings,
@@ -12,11 +11,10 @@ import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
-import { useAppSelector } from '../../redux/store'
+import { WorkspaceType } from '../../new-types/workspace.d'
+import { getAppValue, useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { EMemberRole } from '../../types/workspace.type'
-import DirectNavLink from '../layouts/DirectNavLink'
-// import CreateDirect from '../new-message/CreateDirect'
 import TeamSetting from '../team-setting/TeamSetting'
 import BoardItem from './board/BoardItem'
 import CreateBoard from './board/CreateBoard'
@@ -38,9 +36,10 @@ export default function Sidebar() {
   const { switchTo } = useAppControlParams()
   const path = useLocation()
   const [toggle, setToggle] = useState<TSideBarToggle>()
-  const team = useAppSelector(state =>
-    Object.values(state.workspace.teams).find(e => e._id === teamId)
-  )
+  const team = useAppSelector(state => {
+    console.log(state.workspace.workspaces)
+    return Object.values(state.workspace.workspaces).find(e => e._id === teamId)
+  })
   const [searchValue, setSearchValue] = useState('')
 
   const myTeamRole = useAppSelector(
@@ -49,6 +48,13 @@ export default function Sidebar() {
         e => e.userId === state.auth.userInfo?._id && e.targetId === teamId
       )?.role
   )
+
+  console.log({
+    teamId,
+    www: getAppValue(state =>
+      Object.values(state.workspace.workspaces)
+    )?.filter(e => e.parentId === teamId)
+  })
 
   return (
     <>
@@ -94,8 +100,10 @@ export default function Sidebar() {
                 >
                   <Watching
                     watchingFn={state =>
-                      Object.values(state.workspace.boards).filter(
-                        e => e.teamId === teamId
+                      Object.values(state.workspace.workspaces).filter(
+                        e =>
+                          e.type === WorkspaceType.Board &&
+                          e.parentId === teamId
                       )
                     }
                   >
@@ -127,13 +135,10 @@ export default function Sidebar() {
                 >
                   <Watching
                     watchingFn={state =>
-                      Object.values(state.workspace.channels).filter(
+                      Object.values(state.workspace.workspaces).filter(
                         e =>
-                          e.teamId === teamId &&
-                          [
-                            e.title.toLowerCase(),
-                            e.description?.toLowerCase()
-                          ].some(e => e?.includes(searchValue.toLowerCase()))
+                          e.type === WorkspaceType.Channel &&
+                          e.parentId === teamId
                       )
                     }
                   >
@@ -170,10 +175,8 @@ export default function Sidebar() {
             >
               <Watching
                 watchingFn={state =>
-                  Object.values(state.workspace.groups).filter(e =>
-                    [e.title.toLowerCase(), e.description?.toLowerCase()].some(
-                      e => e?.includes(searchValue.toLowerCase())
-                    )
+                  Object.values(state.workspace.workspaces).filter(
+                    e => e.type === WorkspaceType.Group
                   )
                 }
               >
@@ -196,7 +199,7 @@ export default function Sidebar() {
               />
             </NavLink>
 
-            <NavLink
+            {/* <NavLink
               className='my-1 p-1'
               label='Direct messages'
               leftSection={<IconMessage size='1rem' stroke={1.5} />}
@@ -269,7 +272,7 @@ export default function Sidebar() {
                   setToggle('createDirect')
                 }}
               />
-            </NavLink>
+            </NavLink> */}
           </ScrollArea>
         </div>
       </div>
@@ -279,7 +282,6 @@ export default function Sidebar() {
         onClose={() => setToggle(undefined)}
         targetId={teamId!}
         type='team'
-        
       />
 
       {/* <CreateDirect

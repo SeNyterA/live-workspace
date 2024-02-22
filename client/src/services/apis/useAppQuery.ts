@@ -1,14 +1,8 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { TMessage } from '../../new-types/message'
+import { TWorkspace } from '../../new-types/workspace'
 import { TUser } from '../../types/user.type'
-import {
-  TBoard,
-  TChannel,
-  TDirect,
-  TGroup,
-  TMember,
-  TMessage,
-  TTeam
-} from '../../types/workspace.type'
+import { TDirect, TMember } from '../../types/workspace.type'
 import { TBoardQueryApi } from './board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
@@ -50,31 +44,9 @@ type ApiQueryType = {
   //workspace
   workspace: {
     url: {
-      baseUrl: '/workspace'
+      baseUrl: '/workspaces'
     }
-    response: {
-      teams: {
-        teams: TTeam[]
-        members: TMember[]
-      }
-      channels: {
-        channels: TChannel[]
-        members: TMember[]
-      }
-      boards: {
-        boards: TBoard[]
-        members: TMember[]
-      }
-      groups: {
-        groups: TGroup[]
-        members: TMember[]
-      }
-      directs: {
-        directs: TDirect[]
-        directUserId: string[]
-      }
-      users: TUser[]
-    }
+    response: TWorkspace[]
   }
 
   targetMembers: {
@@ -93,41 +65,11 @@ type ApiQueryType = {
     }
   }
 
-  channelMessages: {
+  workpsaceMessages: {
     url: {
-      baseUrl: '/workspace/channels/:channelId/messages'
+      baseUrl: 'workspaces/:workspaceId/messages'
       urlParams: {
-        channelId: string
-      }
-    }
-    response: {
-      messages: TMessage[]
-      remainingCount: number
-    }
-  }
-
-  groupMessages: {
-    url: {
-      baseUrl: '/workspace/groups/:groupId/messages'
-      urlParams: {
-        groupId: string
-      }
-    }
-    response: {
-      messages: TMessage[]
-      remainingCount: number
-    }
-  }
-
-  directMessages: {
-    url: {
-      baseUrl: '/workspace/direct-messages/:targetId/messages'
-      urlParams: {
-        targetId: string
-      }
-      queryParams?: {
-        formId?: string
-        pageSize?: number
+        workspaceId: string
       }
     }
     response: {

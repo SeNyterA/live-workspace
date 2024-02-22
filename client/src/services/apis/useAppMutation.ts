@@ -1,18 +1,18 @@
 import { MutationOptions, useMutation } from '@tanstack/react-query'
 import { AxiosRequestConfig } from 'axios'
+import { TMessage } from '../../new-types/message'
 import { TChannelDto, TGroupDto, TTeamDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
 import {
   EMemberRole,
   JSONContent,
   TMember,
-  TMessage,
   TWorkspace
 } from '../../types/workspace.type'
 import { TBoardMutionApi } from './board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
-import { TUploadMutionApi } from './upload/upload.api'
+import { TUploadMutionApi } from './upload.api'
 
 const objectToFormData = (obj: any): FormData => {
   const formData = new FormData()
@@ -140,6 +140,20 @@ export type ApiMutationType = {
       attachments?: string[]
       replyToMessageId?: string
       replyRootId?: string
+    }
+    response: TMessage
+  }
+
+  sendWorkspaceMessage: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/messages'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    method: 'post'
+    payload: {
+      message: TMessage
     }
     response: TMessage
   }

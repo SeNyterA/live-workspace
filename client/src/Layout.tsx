@@ -41,56 +41,28 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [thread, setThread] = useState<TThread>()
   const [openInfo, toggleInfo] = useState(false)
 
-  const { data: workspaceData, isPending } = useAppQuery({
+  const { data: workspaces, isPending } = useAppQuery({
     key: 'workspace',
     url: {
-      baseUrl: '/workspace'
+      baseUrl: '/workspaces'
     },
     options: {
-      queryKey: ['/workspace']
+      queryKey: ['/workspaces']
     }
   })
+
   useEffect(() => {
-    if (workspaceData) {
-      const members = [
-        ...(workspaceData?.channels.members || []),
-        ...(workspaceData?.teams.members || []),
-        ...(workspaceData?.groups.members || []),
-        ...(workspaceData?.boards.members || [])
-      ].reduce((pre, next) => ({ ...pre, [next._id]: next }), {} as TMembers)
-
+    if (workspaces) {
       dispatch(
-        workspaceActions.updateData({
-          teams: workspaceData?.teams.teams.reduce(
+        workspaceActions.init({
+          workspaces: workspaces.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {}
-          ),
-          channels: workspaceData?.channels.channels.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          boards: workspaceData?.boards.boards.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          directs: workspaceData?.directs.directs.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          groups: workspaceData?.groups.groups.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-
-          users: workspaceData?.users.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          members
+          )
         })
       )
     }
-  }, [dispatch, workspaceData])
+  }, [dispatch, workspaces])
 
   const { data: unReadCountData } = useAppQuery({
     key: 'getUnreadCounts',
@@ -106,48 +78,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   useAppOnSocket({
     key: 'workspaces',
-    resFunc: ({ workspaces }) => {
-      const teams = workspaces.filter(e => e.type === 'team')
-      const channels = workspaces.filter(e => e.type === 'channel')
-      const boards = workspaces.filter(e => e.type === 'board')
-      const directs = workspaces.filter(e => e.type === 'direct')
-      const groups = workspaces.filter(e => e.type === 'group')
-      const members = workspaces.filter(e => e.type === 'member')
-      const users = workspaces.filter(e => e.type === 'user')
-
-      dispatch(
-        workspaceActions.updateData({
-          teams: teams.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          channels: channels.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          boards: boards.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          groups: groups.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          directs: directs.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          members: members.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          users: users.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          )
-        })
-      )
-    }
+    resFunc: ({ workspaces }) => {}
   })
 
   useAppOnSocket({
