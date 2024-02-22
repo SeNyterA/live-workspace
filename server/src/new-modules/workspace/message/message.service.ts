@@ -33,7 +33,7 @@ export class MessageService {
   ) {}
 
   async emitMessage({ message }: { message: Message }) {
-    this.server.to([message.target._id]).emit('message', { message })
+    this.server.to([message.targetId]).emit('message', { message })
   }
 
   async createMessage({
@@ -146,7 +146,10 @@ export class MessageService {
       }
     })
     message.isPinned = !message.isPinned
-    return this.messageRepository.save(message)
+    message.modifiedBy = { _id: user.sub } as any
+    const newMessage = await this.messageRepository.save(message)
+    this.emitMessage({ message: newMessage })
+    return newMessage
   }
 
   async reactionMessage({

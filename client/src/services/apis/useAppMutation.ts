@@ -219,7 +219,7 @@ export type ApiMutationType = {
     }
     method: 'post'
     payload: {
-      message: TMessage,
+      message: TMessage
       replyToId?: string
       threadId?: string
     }
@@ -235,6 +235,18 @@ export type ApiMutationType = {
       }
     }
     method: 'delete'
+    response: TMessage
+  }
+
+  pinWorkspaceMessage: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/messages/:messageId/pin'
+      urlParams: {
+        workspaceId: string
+        messageId: string
+      }
+    }
+    method: 'post'
     response: TMessage
   }
 } & TBoardMutionApi &

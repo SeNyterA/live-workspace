@@ -49,6 +49,21 @@ export class MessageController {
     })
   }
 
+  @Post(':messageId/pin')
+  pinMessage(
+    @HttpUser() user: TJwtUser,
+    @Param('workspaceId')
+    targetId: string,
+    @Param('messageId')
+    messageId: string
+  ) {
+    return this.messageService.pinMessage({
+      user,
+      messageId,
+      targetId
+    })
+  }
+
   @Get()
   getMessages(
     @HttpUser() user: TJwtUser,

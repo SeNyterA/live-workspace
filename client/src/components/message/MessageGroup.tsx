@@ -50,6 +50,10 @@ export default function MessageGroup({
   const { mutateAsync: deleteWorkspaceMessage } = useAppMutation(
     'deleteWorkspaceMessage'
   )
+  const { mutateAsync: pinWorkspaceMessage } = useAppMutation(
+    'pinWorkspaceMessage'
+  )
+
   const isOwner = useAppSelector(state => {
     console.log(state.auth.userInfo?._id, messageGroup.messages[0].type)
     return (
@@ -193,6 +197,19 @@ export default function MessageGroup({
                   <ActionIcon
                     variant='light'
                     className='text-gray-600 hover:text-gray-800'
+                    onClick={() => {
+                      pinWorkspaceMessage({
+                        method: 'post',
+                        url: {
+                          baseUrl:
+                            '/workspaces/:workspaceId/messages/:messageId/pin',
+                          urlParams: {
+                            messageId: message._id,
+                            workspaceId: message.targetId
+                          }
+                        }
+                      })
+                    }}
                   >
                     <IconPin size={18} />
                   </ActionIcon>
