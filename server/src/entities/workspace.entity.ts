@@ -8,6 +8,7 @@ import {
 } from 'typeorm'
 import { BaseEntity } from './base.entity'
 import { Member } from './member.entity'
+import { Message } from './message.entity'
 
 export enum WorkspaceType {
   Channel = 'Channel',
@@ -42,4 +43,7 @@ export class Workspace extends BaseEntity {
 
   @OneToMany(() => Member, member => member.workspace)
   members: Member[]
+
+  @OneToMany(() => Message, message => message.target)
+  messages: Message[]
 }

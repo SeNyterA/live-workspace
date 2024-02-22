@@ -9,11 +9,11 @@ import { useAppMutation } from '../../services/apis/useAppMutation'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
-import Info from './info/Info'
-import InfoProvier from './info/InfoProvier'
 import MessageContent from './MessageContent'
 import MessageContentProvider from './MessageContentProvider'
 import SendMessage from './SendMessage'
+import Info from './info/Info'
+import InfoProvier from './info/InfoProvier'
 import Thread from './thread/Thread'
 
 export default function MessageContentWrapper() {
@@ -139,7 +139,7 @@ export default function MessageContentWrapper() {
       </div>
 
       <Thread
-        createMessage={async ({ files, value }) => {
+        createMessage={async ({ files, value, thread }) => {
           await sendWorkspaceMessage(
             {
               url: {
@@ -150,7 +150,11 @@ export default function MessageContentWrapper() {
               },
               method: 'post',
               payload: {
-                message: { content: value } as any
+                message: {
+                  content: value
+                } as any,
+                threadId: thread.threadId,
+                replyToId: thread.replyId
               }
             },
             {

@@ -144,20 +144,6 @@ export type ApiMutationType = {
     response: TMessage
   }
 
-  sendWorkspaceMessage: {
-    url: {
-      baseUrl: '/workspaces/:workspaceId/messages'
-      urlParams: {
-        workspaceId: string
-      }
-    }
-    method: 'post'
-    payload: {
-      message: TMessage
-    }
-    response: TMessage
-  }
-
   createDirectMessage: {
     url: {
       baseUrl: '/workspace/direct-messages/:targetId/messages'
@@ -223,13 +209,41 @@ export type ApiMutationType = {
     payload: { icon: any }
     response: any
   }
+
+  sendWorkspaceMessage: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/messages'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    method: 'post'
+    payload: {
+      message: TMessage,
+      replyToId?: string
+      threadId?: string
+    }
+    response: TMessage
+  }
+
+  deleteWorkspaceMessage: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/messages/:messageId'
+      urlParams: {
+        workspaceId: string
+        messageId: string
+      }
+    }
+    method: 'delete'
+    response: TMessage
+  }
 } & TBoardMutionApi &
   TUploadMutionApi
 
 export const useAppMutation = <T extends keyof ApiMutationType>(
   _key: T,
   options?: {
-    config?: AxiosRequestConfig<ApiMutationType[T]['payload']>
+    config?: AxiosRequestConfig
     mutationOptions?: MutationOptions<
       ApiMutationType[T]['response'],
       unknown,
@@ -240,10 +254,10 @@ export const useAppMutation = <T extends keyof ApiMutationType>(
 ) => {
   const mutation = useMutation({
     mutationFn: async ({
-      payload,
       method,
       url,
-      isFormData
+      isFormData,
+      ...rest
     }: Omit<ApiMutationType[T], 'response'> & {
       isFormData?: boolean
     }): Promise<ApiMutationType[T]['response']> => {
@@ -253,7 +267,9 @@ export const useAppMutation = <T extends keyof ApiMutationType>(
       )
       const response = await http[method](
         _url,
-        isFormData ? objectToFormData(payload) : payload,
+        isFormData
+          ? objectToFormData((rest as any).payload)
+          : (rest as any).payload,
         options?.config
       )
 

@@ -47,6 +47,9 @@ export default function MessageGroup({
   )
 
   const { mutateAsync: reaction } = useAppMutation('reaction')
+  const { mutateAsync: deleteWorkspaceMessage } = useAppMutation(
+    'deleteWorkspaceMessage'
+  )
   const isOwner = useAppSelector(state => {
     console.log(state.auth.userInfo?._id, messageGroup.messages[0].type)
     return (
@@ -75,7 +78,7 @@ export default function MessageGroup({
       <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
         {!isOwner && (
           <p className='font-medium'>
-            {messageGroup.type === EMessageType.System
+            {messageGroup.messages[0].type === EMessageType.System
               ? EMessageType.System
               : createdByUser?.userName}
           </p>
@@ -96,11 +99,10 @@ export default function MessageGroup({
                 isOwner && 'items-end'
               }`}
             >
-              {!!message.replyToMessageId && (
+              {!!message.replyToId && (
                 <Watching
                   watchingFn={state => ({
-                    replyMessage:
-                      state.workspace.messages[message.replyToMessageId!],
+                    replyMessage: state.workspace.messages[message.replyToId!],
                     user: state.workspace.users[message.createdById!]
                   })}
                 >
@@ -162,7 +164,7 @@ export default function MessageGroup({
 
               <div
                 className={`group relative w-fit rounded bg-gray-100 p-1 ${
-                  message.replyRootId && 'cursor-pointer'
+                  message.replyToId && 'cursor-pointer'
                 }`}
                 key={message._id}
               >
@@ -200,9 +202,8 @@ export default function MessageGroup({
                     className='text-gray-600 hover:text-gray-800'
                     onClick={() => {
                       updateThread({
-                        targetId: message.messageReferenceId,
-                        targetType: message.messageFor,
-                        threadId: message.replyRootId || message._id
+                        targetId: message.targetId,
+                        threadId: message.threadId || message._id
                       })
                     }}
                   >
@@ -214,9 +215,9 @@ export default function MessageGroup({
                     className='text-gray-600 hover:text-gray-800'
                     onClick={() => {
                       updateThread({
-                        targetId: message.messageReferenceId,
-                        targetType: message.messageFor,
-                        threadId: message.replyRootId || message._id
+                        targetId: message.targetId,
+                        threadId: message.threadId || message._id,
+                        replyId: message._id
                       })
                     }}
                   >
@@ -225,6 +226,19 @@ export default function MessageGroup({
                   <ActionIcon
                     variant='light'
                     className='text-gray-600 hover:text-gray-800'
+                    onClick={() => {
+                      deleteWorkspaceMessage({
+                        method: 'delete',
+                        url: {
+                          baseUrl:
+                            '/workspaces/:workspaceId/messages/:messageId',
+                          urlParams: {
+                            messageId: message._id,
+                            workspaceId: message.targetId
+                          }
+                        }
+                      })
+                    }}
                   >
                     <IconTrash size={18} />
                   </ActionIcon>

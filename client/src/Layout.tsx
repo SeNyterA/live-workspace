@@ -10,22 +10,18 @@ import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
 import Sidebar from './components/sidebar/Sidebar'
 import TeamList from './components/sidebar/team/TeamList'
-import { TMembers, workspaceActions } from './redux/slices/workspace.slice'
+import { workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
-import { useAppOnSocket } from './services/socket/useAppOnSocket'
-import { EMessageFor } from './types/workspace.type'
 
 export type TThread = {
   threadId: string
   targetId: string
   replyId?: string
-  targetType: EMessageFor
 }
 
 type TLayoutContext = {
   thread?: TThread
   updateThread: (thread?: TThread) => void
-
   openInfo?: boolean
   toggleInfo: (info: boolean) => void
 }
@@ -70,37 +66,37 @@ export default function Layout({ children }: { children: ReactNode }) {
       baseUrl: 'workspace/getUnreadCounts'
     }
   })
-  useEffect(() => {
-    if (unReadCountData) {
-      dispatch(workspaceActions.setUnreadCounts(unReadCountData))
-    }
-  }, [dispatch, unReadCountData])
+  // useEffect(() => {
+  //   if (unReadCountData) {
+  //     dispatch(workspaceActions.setUnreadCounts(unReadCountData))
+  //   }
+  // }, [dispatch, unReadCountData])
 
-  useAppOnSocket({
-    key: 'workspaces',
-    resFunc: ({ workspaces }) => {}
-  })
+  // useAppOnSocket({
+  //   key: 'workspaces',
+  //   resFunc: ({ workspaces }) => {}
+  // })
 
-  useAppOnSocket({
-    key: 'unReadCount',
-    resFunc: ({ count, targetId }) => {
-      dispatch(workspaceActions.setUnreadCounts({ [targetId]: count }))
-    }
-  })
+  // useAppOnSocket({
+  //   key: 'unReadCount',
+  //   resFunc: ({ count, targetId }) => {
+  //     dispatch(workspaceActions.setUnreadCounts({ [targetId]: count }))
+  //   }
+  // })
 
-  useAppOnSocket({
-    key: 'users',
-    resFunc: ({ users }) => {
-      dispatch(
-        workspaceActions.addUsers(
-          users.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          )
-        )
-      )
-    }
-  })
+  // useAppOnSocket({
+  //   key: 'users',
+  //   resFunc: ({ users }) => {
+  //     dispatch(
+  //       workspaceActions.addUsers(
+  //         users.reduce(
+  //           (pre, next) => ({ ...pre, [next.data._id]: next.data }),
+  //           {}
+  //         )
+  //       )
+  //     )
+  //   }
+  // })
 
   return (
     <div className='relative flex h-screen w-screen flex-col text-sm'>

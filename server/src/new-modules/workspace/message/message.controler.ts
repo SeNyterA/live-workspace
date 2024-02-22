@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query
+} from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { Message } from 'src/entities/message.entity'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
@@ -23,6 +31,21 @@ export class MessageController {
       user,
       targetId,
       ...payload
+    })
+  }
+
+  @Delete(':messageId')
+  deleteMessage(
+    @HttpUser() user: TJwtUser,
+    @Param('workspaceId')
+    targetId: string,
+    @Param('messageId')
+    messageId: string
+  ) {
+    return this.messageService.deleteMessage({
+      user,
+      messageId,
+      targetId
     })
   }
 

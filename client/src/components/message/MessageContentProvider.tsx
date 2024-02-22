@@ -34,7 +34,7 @@ export default function MessageContentProvider({
   const messages =
     useAppSelector(state =>
       Object.values(state.workspace.messages)
-        .filter(e => targetId === e.targetId)
+        .filter(e => targetId === e.targetId && e.isAvailable)
         .sort(
           (a, b) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()

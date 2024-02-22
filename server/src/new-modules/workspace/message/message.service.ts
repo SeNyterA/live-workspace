@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberType, Member } from 'src/entities/member.entity'
+import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
 import { Message } from 'src/entities/message.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace } from 'src/entities/workspace.entity'
@@ -182,6 +182,50 @@ export class MessageService {
     }
 
     return this.messageRepository.save(message)
+  }
+
+  async deleteMessage({
+    messageId,
+    user,
+    targetId
+  }: {
+    messageId: string
+    user: TJwtUser
+    targetId: string
+  }) {
+    const message = await this.messageRepository.findOneOrFail({
+      where: [
+        {
+          _id: messageId,
+          createdBy: { _id: user.sub },
+          target: {
+            _id: targetId,
+            members: {
+              _id: user.sub,
+              isAvailable: true
+            }
+          }
+        },
+        {
+          _id: messageId,
+          target: {
+            _id: targetId,
+            members: {
+              _id: user.sub,
+              isAvailable: true,
+              role: In([EMemberRole.Admin, EMemberRole.Owner])
+            }
+          }
+        }
+      ]
+    })
+
+    message.isAvailable = false
+    message.modifiedBy._id = user.sub
+
+    const messageUpdated = await this.messageRepository.save(message)
+    this.emitMessage({ message: messageUpdated })
+    return messageUpdated
   }
 
   //#region Typing

@@ -12,7 +12,8 @@ export default function Thread({
 }: {
   createMessage: ({
     files,
-    value
+    value,
+    thread
   }: {
     value?: JSONContent | undefined
     files: string[]
@@ -20,9 +21,10 @@ export default function Thread({
   }) => void
 }) {
   const { updateThread, thread } = useLayout()
+
   const threadMessages = useAppSelector(state =>
     Object.values(state.workspace.messages).filter(
-      m => m._id === thread?.threadId || m.replyRootId === thread?.threadId
+      m => m._id === thread?.threadId || m.threadId === thread?.threadId
     )
   )
 
