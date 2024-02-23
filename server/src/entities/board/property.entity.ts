@@ -1,6 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, RelationId } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  RelationId
+} from 'typeorm'
 import { BaseEntity } from '../base.entity'
 import { Workspace } from '../workspace.entity'
+import { Option } from './option.entity'
 
 export enum EFieldType {
   Date = 'Date',
@@ -32,4 +40,7 @@ export class Property extends BaseEntity {
   board: Workspace
   @RelationId((property: Property) => property.board)
   boardId: string
+
+  @OneToMany(() => Option, option => option.property)
+  options: Option[]
 }

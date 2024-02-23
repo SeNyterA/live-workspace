@@ -24,7 +24,7 @@ export const getAppValue = <T>(
     const value = selector(store.getState())
     return value || defaultValue
   } catch (error) {
-    console.log('_useSelector error', error)
+    // console.log('_useSelector error', error)
     return defaultValue
   }
 }
@@ -37,7 +37,7 @@ export const useAppSelector = <T>(
     const value = useSelector(selector)
     return value || defaultValue
   } catch (error) {
-    console.log('_useSelector error', error)
+    // console.log('_useSelector error', error)
     return defaultValue
   }
 }

@@ -227,9 +227,28 @@ export class WorkspaceService {
   }
 
   async getAllWorkspace({ user }: { user: TJwtUser }) {
-    return this.workspaceRepository.find({
+    const workspaces = await this.workspaceRepository.find({
       where: { members: { user: { _id: user.sub, isAvailable: true } } }
     })
+
+    return workspaces
+  }
+
+  async getWorkspaceById({
+    workspaceId,
+    user
+  }: {
+    user: TJwtUser
+    workspaceId: string
+  }) {
+    const workspace = await this.workspaceRepository.findOneOrFail({
+      where: {
+        _id: workspaceId,
+        members: { user: { _id: user.sub, isAvailable: true } }
+      },
+      relations: ['members', 'members.user']
+    })
+    return workspace
   }
 
   async subscribeToWorkspaces({
@@ -289,6 +308,28 @@ export class WorkspaceService {
         })
       })
     }
+  }
+
+  async workpsaceMembers({
+    user,
+    workspaceId
+  }: {
+    user: TJwtUser
+    workspaceId: string
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        workspace: { _id: workspaceId },
+        user: { _id: user.sub, isAvailable: true }
+      }
+    })
+
+    const members = await this.memberRepository.find({
+      where: { workspace: { _id: workspaceId, isAvailable: true } },
+      relations: ['user']
+    })
+
+    return members
   }
   //#endregion
 

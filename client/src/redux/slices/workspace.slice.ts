@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assign } from 'lodash'
+import { TOption } from '../../new-types/board'
 import { TMessage } from '../../new-types/message'
+import { TUser } from '../../new-types/user'
 import { TWorkspace } from '../../new-types/workspace'
-import { TUser } from '../../types/user.type'
 import { TCard, TMember, TProperty } from '../../types/workspace.type'
 
 export type TUsers = { [userId: string]: TUser }
@@ -18,6 +19,7 @@ export type TCards = { [cardId: string]: TCard }
 export type TProperties = { [propertyId: string]: TProperty }
 export type TpropertiesTracking = { [boardId: string]: string }
 export type TWorkspaces = { [cardId: string]: TWorkspace }
+export type TOptions = { [optionId: string]: TOption }
 
 type TWorkpsaceStore = {
   workspaces: TWorkspaces
@@ -29,6 +31,7 @@ type TWorkpsaceStore = {
 
   cards: TCards
   properties: TProperties
+  options: TOptions
   propertiesTracking: TpropertiesTracking
 }
 
@@ -41,6 +44,7 @@ const initialState: TWorkpsaceStore = {
   unreadCount: {},
   cards: {},
   properties: {},
+  options: {},
   propertiesTracking: {}
 }
 const workspaceSlice = createSlice({

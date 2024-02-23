@@ -179,10 +179,10 @@ export type ApiMutationType = {
 
   createTeam: {
     url: {
-      baseUrl: '/workspace/teams'
+      baseUrl: '/teams'
     }
     method: 'post'
-    payload: TTeamDto
+    payload: { workspace: TWorkspace }
     response: TWorkspace
   }
 

@@ -229,10 +229,14 @@ export default function CreateTeam({
           onClick={handleSubmit(({ channels, ...data }) => {
             createTeam({
               url: {
-                baseUrl: '/workspace/teams'
+                baseUrl: '/teams'
               },
               method: 'post',
-              payload: { ...data, channelTitles: channels?.map(e => e.title) }
+              payload: {
+                workspace: {
+                  title: data.title
+                } as any
+              }
             }).then(data => {
               onClose()
             })

@@ -78,7 +78,8 @@ export class BoardService {
         property: { _id: properties.identifiers[0]._id },
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub },
-        board: { _id: board._id }
+        board: { _id: board._id },
+        order: 0
       },
       {
         color: '#00FF00',
@@ -86,7 +87,8 @@ export class BoardService {
         property: { _id: properties.identifiers[0]._id },
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub },
-        board: { _id: board._id }
+        board: { _id: board._id },
+        order: 1
       },
       {
         color: '#0000FF',
@@ -94,7 +96,8 @@ export class BoardService {
         property: { _id: properties.identifiers[0]._id },
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub },
-        board: { _id: board._id }
+        board: { _id: board._id },
+        order: 2
       },
       {
         color: '#FFFF00',
@@ -102,7 +105,8 @@ export class BoardService {
         property: { _id: properties.identifiers[0]._id },
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub },
-        board: { _id: board._id }
+        board: { _id: board._id },
+        order: 3
       },
       {
         color: '#FF00FF',
@@ -110,7 +114,8 @@ export class BoardService {
         property: { _id: properties.identifiers[0]._id },
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub },
-        board: { _id: board._id }
+        board: { _id: board._id },
+        order: 4
       },
       {
         color: '#008080',
@@ -118,20 +123,21 @@ export class BoardService {
         property: { _id: properties.identifiers[0]._id },
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub },
-        board: { _id: board._id }
+        board: { _id: board._id },
+        order: 5
       }
     ])
 
     const cardsData = []
-    for (let i = 1; i <= 100; i++) {
+    for (let i = 1; i <= 10000; i++) {
       const card = {
         title: `Task AAA${i}`,
         board: { _id: board._id },
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub },
         properties: {
-          [properties.identifiers[0]._id]: options.identifiers[0]._id,
-          [properties.identifiers[1]._id]: `${i * 10}%`,
+          [properties.identifiers[0]._id]: options.identifiers[i % 6]._id,
+          [properties.identifiers[1]._id]: `${(i * 10) % 100}%`,
           [properties.identifiers[2]._id]: user.sub
         }
       }
@@ -140,8 +146,6 @@ export class BoardService {
     }
 
     const cards = await this.cardRepository.insert(cardsData)
-
-    console.log(cards)
   }
 
   async createBoard({
@@ -194,5 +198,35 @@ export class BoardService {
       workspace: newWorkspace,
       member
     }
+  }
+
+  async getBoardById({
+    user,
+    workspaceId
+  }: {
+    user: TJwtUser
+    workspaceId: string
+  }) {
+    const workspace = await this.workspaceRepository.findOneOrFail({
+      where: {
+        _id: workspaceId,
+        members: { user: { _id: user.sub, isAvailable: true } }
+      },
+      relations: [
+        'members',
+        'members.user',
+        'properties',
+        'properties.options'
+        // 'cards'
+      ]
+    })
+
+    const cards = await this.cardRepository.find({
+      where: {
+        board: { _id: workspaceId }
+      }
+    })
+
+    return { ...workspace, cards }
   }
 }

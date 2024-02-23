@@ -1,4 +1,8 @@
+
 import { TBase } from './base'
+import { TProperty } from './board'
+import { TMember } from './member'
+import { TMessage } from './message'
 
 export enum WorkspaceType {
   Channel = 'Channel',
@@ -14,5 +18,12 @@ export type TWorkspace = TBase & {
   avatar: string
   displayUrl: string
   type: WorkspaceType
+  parent: Workspace
   parentId: string
+
+  members?: TMember[]
+  messages?: TMessage[]
+  properties?: TProperty[]
+
+  cards?: TCard[]
 }

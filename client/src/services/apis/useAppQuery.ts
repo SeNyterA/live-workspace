@@ -44,9 +44,29 @@ type ApiQueryType = {
   //workspace
   workspace: {
     url: {
+      baseUrl: '/workspaces/:workspaceId'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    response: TWorkspace
+  }
+
+  workspaces: {
+    url: {
       baseUrl: '/workspaces'
     }
     response: TWorkspace[]
+  }
+
+  board: {
+    url: {
+      baseUrl: '/boards/:boardId'
+      urlParams: {
+        boardId: string
+      }
+    }
+    response: TWorkspace
   }
 
   targetMembers: {

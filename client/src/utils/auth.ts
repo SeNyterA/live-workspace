@@ -32,7 +32,8 @@ export const lsActions = {
     }
   },
 
-  getTrackingId: (key: string) => localStorage.getItem(key),
+  getTrackingId: (key: string) =>
+    localStorage.getItem(key) as string | undefined,
   setTrackingId: (key: string, value: string) =>
     localStorage.setItem(key, value),
 

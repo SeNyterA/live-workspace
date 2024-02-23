@@ -11,6 +11,9 @@ export class Option extends BaseEntity {
   @Column()
   color: string
 
+  @Column({ type: 'int' })
+  order: number
+
   @ManyToOne(() => Property)
   @JoinColumn({ name: 'propertyId' })
   property: Property

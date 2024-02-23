@@ -32,6 +32,9 @@ export class Card extends BaseEntity {
   @ManyToOne(() => Workspace)
   @JoinColumn({ name: 'boardId' })
   board: Workspace
+
+  @ManyToOne(() => Workspace)
+  @JoinColumn({ name: 'boardId' })
   @RelationId((card: Card) => card.board)
   boardId: string
 }

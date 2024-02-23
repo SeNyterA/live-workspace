@@ -7,6 +7,8 @@ import {
   RelationId
 } from 'typeorm'
 import { BaseEntity } from './base.entity'
+import { Card } from './board/card.entity'
+import { Property } from './board/property.entity'
 import { Member } from './member.entity'
 import { Message } from './message.entity'
 
@@ -42,8 +44,14 @@ export class Workspace extends BaseEntity {
   parentId: string
 
   @OneToMany(() => Member, member => member.workspace)
-  members: Member[]
+  members?: Member[]
 
   @OneToMany(() => Message, message => message.target)
-  messages: Message[]
+  messages?: Message[]
+
+  @OneToMany(() => Property, property => property.board)
+  properties?: Property[]
+
+  @OneToMany(() => Card, card => card.board)
+  cards?: Card[]
 }

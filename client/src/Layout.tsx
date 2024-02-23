@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
 import Sidebar from './components/sidebar/Sidebar'
 import TeamList from './components/sidebar/team/TeamList'
+import useAppParams from './hooks/useAppParams'
 import { workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
 
@@ -36,14 +37,26 @@ export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
   const [thread, setThread] = useState<TThread>()
   const [openInfo, toggleInfo] = useState(false)
+  const { boardId, channelId, directId, groupId, teamId } = useAppParams()
 
   const { data: workspaces, isPending } = useAppQuery({
-    key: 'workspace',
+    key: 'workspaces',
     url: {
       baseUrl: '/workspaces'
+    }
+  })
+
+  const { data: team, isPending: teamLoading } = useAppQuery({
+    key: 'workspace',
+    url: {
+      baseUrl: '/workspaces/:workspaceId',
+      urlParams: {
+        workspaceId: teamId || ''
+      }
     },
     options: {
-      queryKey: ['/workspaces']
+      queryKey: [teamId],
+      enabled: !!teamId
     }
   })
 

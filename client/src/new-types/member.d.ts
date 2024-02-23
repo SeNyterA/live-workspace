@@ -1,3 +1,6 @@
+import { TBase } from './base'
+import { TUser } from './user'
+
 export enum EMemberRole {
   Owner = 'Owner',
   Admin = 'Admin',
@@ -18,4 +21,5 @@ export type TMember = TBase & {
   path: string
   userId: string
   targetId: string
+  user?: TUser
 }

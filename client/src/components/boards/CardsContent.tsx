@@ -6,7 +6,6 @@ import useAppControlParams from '../../hooks/useAppControlParams'
 import useRenderCount from '../../hooks/useRenderCount'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../redux/store'
-import { EFieldType } from '../../services/apis/board.api'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { TOption } from '../../types/workspace.type'
 import { useBoard } from './BoardProvider'
@@ -43,29 +42,12 @@ export default function CardsContent() {
     state => state.workspace.properties[trackingId!]
   )
 
-  // const memberUsers = useAppSelector(state =>
-  //   Object.values(state.workspace.members)
-  //     .filter(e => e.targetId === boardId)
-  //     .map(member => ({
-  //       member,
-  //       user: state.workspace.users[member.userId]
-  //     }))
-  // )
-
-  const getOptions = (): TOption[] | undefined => {
-    switch (propertyRoot?.fieldType) {
-      case EFieldType.Select:
-        return propertyRoot?.fieldOption || []
-      // case EFieldType.People:
-      //   return memberUsers
-      //     ?.filter(e => !!e.user)
-      //     .map(e => ({ _id: e.user._id, title: e.user.userName }))
-      default:
-        return []
-    }
-  }
-
-  const options = getOptions() || []
+  const options = useAppSelector(state =>
+    Object.values(state.workspace.options)
+      .filter(option => option.propertyId === trackingId)
+      .sort((a, b) => a.order - b.order)
+  )
+  console.log({ options })
 
   return (
     <>
@@ -87,79 +69,79 @@ export default function CardsContent() {
                       result.destination.index
                     )
 
-                    dispatch(
-                      workspaceActions.updatePropertyOptions({
-                        propertyId: propertyRoot._id,
-                        fieldOption: newFieldOption
-                      })
-                    )
+                    // dispatch(
+                    //   workspaceActions.updatePropertyOptions({
+                    //     propertyId: propertyRoot._id,
+                    //     fieldOption: newFieldOption
+                    //   })
+                    // )
 
-                    updateProperty({
-                      method: 'patch',
-                      url: {
-                        baseUrl:
-                          '/workspace/boards/:boardId/properties/:propertyId',
-                        urlParams: {
-                          boardId: boardId!,
-                          propertyId: propertyRoot._id
-                        }
-                      },
-                      payload: {
-                        fieldOption: newFieldOption
-                      }
-                    }).catch(() => {
-                      dispatch(
-                        workspaceActions.updatePropertyOptions({
-                          propertyId: propertyRoot._id,
-                          fieldOption: propertyRoot.fieldOption || []
-                        })
-                      )
-                    })
+                    // updateProperty({
+                    //   method: 'patch',
+                    //   url: {
+                    //     baseUrl:
+                    //       '/workspace/boards/:boardId/properties/:propertyId',
+                    //     urlParams: {
+                    //       boardId: boardId!,
+                    //       propertyId: propertyRoot._id
+                    //     }
+                    //   },
+                    //   payload: {
+                    //     fieldOption: newFieldOption
+                    //   }
+                    // }).catch(() => {
+                    //   dispatch(
+                    //     workspaceActions.updatePropertyOptions({
+                    //       propertyId: propertyRoot._id,
+                    //       fieldOption: propertyRoot.fieldOption || []
+                    //     })
+                    //   )
+                    // })
                   }
 
-                  if (result.type === 'card') {
-                    if (!result.destination?.droppableId) return
-                    const oldCard = getAppValue(
-                      state => state.workspace.cards[result.draggableId]
-                    )
-                    if (!oldCard) return
+                  // if (result.type === 'card') {
+                  //   if (!result.destination?.droppableId) return
+                  //   const oldCard = getAppValue(
+                  //     state => state.workspace.cards[result.draggableId]
+                  //   )
+                  //   if (!oldCard) return
 
-                    dispatch(
-                      workspaceActions.updateCardProperties({
-                        cardId: result.draggableId,
-                        data: {
-                          ...oldCard.properties,
-                          [propertyRoot._id]: result.destination.droppableId
-                        }
-                      })
-                    )
+                  //   dispatch(
+                  //     workspaceActions.updateCardProperties({
+                  //       cardId: result.draggableId,
+                  //       data: {
+                  //         ...oldCard.properties,
+                  //         [propertyRoot._id]: result.destination.droppableId
+                  //       }
+                  //     })
+                  //   )
 
-                    updateCard({
-                      method: 'patch',
-                      url: {
-                        baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                        urlParams: {
-                          boardId: boardId!,
-                          cardId: result.draggableId
-                        }
-                      },
-                      payload: {
-                        properties: {
-                          ...oldCard.properties,
-                          [propertyRoot._id]: result.destination?.droppableId
-                        }
-                      }
-                    }).catch(() => {
-                      dispatch(
-                        workspaceActions.updateCardProperties({
-                          cardId: result.draggableId,
-                          data: {
-                            ...oldCard.properties
-                          }
-                        })
-                      )
-                    })
-                  }
+                  //   updateCard({
+                  //     method: 'patch',
+                  //     url: {
+                  //       baseUrl: '/workspace/boards/:boardId/cards/:cardId',
+                  //       urlParams: {
+                  //         boardId: boardId!,
+                  //         cardId: result.draggableId
+                  //       }
+                  //     },
+                  //     payload: {
+                  //       properties: {
+                  //         ...oldCard.properties,
+                  //         [propertyRoot._id]: result.destination?.droppableId
+                  //       }
+                  //     }
+                  //   }).catch(() => {
+                  //     dispatch(
+                  //       workspaceActions.updateCardProperties({
+                  //         cardId: result.draggableId,
+                  //         data: {
+                  //           ...oldCard.properties
+                  //         }
+                  //       })
+                  //     )
+                  //   })
+                  // }
                 }}
               >
                 <Droppable
@@ -173,7 +155,7 @@ export default function CardsContent() {
                       {...dropProvided.droppableProps}
                       ref={dropProvided.innerRef}
                     >
-                      {options.map((option, index) => (
+                      {options?.map((option, index) => (
                         <Draggable
                           key={option._id}
                           draggableId={option._id}
@@ -187,7 +169,8 @@ export default function CardsContent() {
                             >
                               <div
                                 {...dragProvided.dragHandleProps}
-                                className='flex h-9 items-center justify-between rounded bg-gray-100 px-2'
+                                className='sticky top-3 flex h-9 items-center justify-between rounded border border-gray-300 bg-gray-100 px-2 ring-1 ring-blue-300'
+                                // style={{ backgroundColor: option.color }}
                               >
                                 <span>{option.title}</span>
                                 <ActionIcon

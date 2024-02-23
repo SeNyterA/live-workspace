@@ -1,6 +1,7 @@
 import { JSONContent } from '@tiptap/react'
 import { TBase } from './base'
 import { TFile } from './file'
+import { TWorkspace } from './workspace'
 
 export type TCard = TBase & {
   title: string
@@ -30,6 +31,9 @@ export type TProperty = TBase & {
   fieldType: EFieldType
   order: number
   boardId: string
+
+  board?: TWorkspace
+  options?: TOption[]
 }
 
 export type TOption = TBase & {
@@ -37,4 +41,5 @@ export type TOption = TBase & {
   color: string
   propertyId: string
   boardId: string
+  order: number
 }
