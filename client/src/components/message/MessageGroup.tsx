@@ -55,7 +55,6 @@ export default function MessageGroup({
   )
 
   const isOwner = useAppSelector(state => {
-    console.log(state.auth.userInfo?._id, messageGroup.messages[0].type)
     return (
       state.auth.userInfo?._id === messageGroup.userId &&
       messageGroup.messages[0].type === EMessageType.Normal

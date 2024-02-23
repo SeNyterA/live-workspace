@@ -74,6 +74,18 @@ export class WorkspaceService {
       })
     )
 
+    if (true) {
+      // Fetch 100 users from the database
+      const users = await this.userRepository.find({
+        take: 1000
+      })
+
+      // Create a new member for each user in the workspace
+      await this.memberRepository.insert(
+        users.map(user => ({ user, workspace: newWorkspace }))
+      )
+    }
+
     await this.boardService.createBoard({
       teamId: newWorkspace._id,
       user,

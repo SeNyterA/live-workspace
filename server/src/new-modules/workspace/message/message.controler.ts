@@ -64,6 +64,14 @@ export class MessageController {
     })
   }
 
+  @Get('/pined')
+  getPinedMessages(
+    @HttpUser() user: TJwtUser,
+    @Param('workspaceId') targetId: string
+  ) {
+    return this.messageService.getPinedMessages({ user, targetId })
+  }
+
   @Get()
   getMessages(
     @HttpUser() user: TJwtUser,

@@ -9,11 +9,11 @@ import { useAppMutation } from '../../services/apis/useAppMutation'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
+import Info from './info/Info'
+import InfoProvier from './info/InfoProvier'
 import MessageContent from './MessageContent'
 import MessageContentProvider from './MessageContentProvider'
 import SendMessage from './SendMessage'
-import Info from './info/Info'
-import InfoProvier from './info/InfoProvier'
 import Thread from './thread/Thread'
 
 export default function MessageContentWrapper() {
@@ -40,7 +40,7 @@ export default function MessageContentWrapper() {
   const workspace = useAppSelector(state =>
     Object.values(state.workspace.workspaces).find(e => e._id === channelId)
   )
-  const { data: workpsaceMessages } = useAppQuery({
+  const { data: workpsaceMessages, refetch } = useAppQuery({
     key: 'workpsaceMessages',
     url: {
       baseUrl: 'workspaces/:workspaceId/messages',
@@ -93,7 +93,6 @@ export default function MessageContentWrapper() {
             />
           </ActionIcon>
         </div>
-
         <Divider variant='dashed' />
         <MessageContentProvider
           value={{
@@ -101,39 +100,52 @@ export default function MessageContentWrapper() {
             targetId: workspaceId
           }}
         >
-          <MessageContent key={workspaceId} />
+          <MessageContent
+            key={workspaceId}
+            loadMore={loadFromId => {
+              console.log('loadmore', loadFromId)
+            }}
+            remainingCount={workpsaceMessages?.remainingCount}
+          />
         </MessageContentProvider>
 
         <SendMessage
           targetId={channelId || ''}
           createMessage={async ({ files, value }) => {
-            await sendWorkspaceMessage(
-              {
-                url: {
-                  baseUrl: '/workspaces/:workspaceId/messages',
-                  urlParams: {
-                    workspaceId: workspaceId
+            Array(100)
+              .fill(0)
+              .map(async () => {
+                await sendWorkspaceMessage(
+                  {
+                    url: {
+                      baseUrl: '/workspaces/:workspaceId/messages',
+                      urlParams: {
+                        workspaceId: workspaceId
+                      }
+                    },
+                    method: 'post',
+                    payload: {
+                      message: {
+                        content: value,
+                        isPinned: Math.random() > 0.2
+                      } as any
+                    }
+                  },
+                  {
+                    onSuccess(message) {
+                      dispatch(
+                        workspaceActions.updateData({
+                          messages: { [message._id]: message }
+                        })
+                      )
+                      socketEmit({
+                        key: 'stopTyping',
+                        targetId: workspaceId
+                      })
+                    }
                   }
-                },
-                method: 'post',
-                payload: {
-                  message: { content: value } as any
-                }
-              },
-              {
-                onSuccess(message) {
-                  dispatch(
-                    workspaceActions.updateData({
-                      messages: { [message._id]: message }
-                    })
-                  )
-                  socketEmit({
-                    key: 'stopTyping',
-                    targetId: workspaceId
-                  })
-                }
-              }
-            )
+                )
+              })
           }}
         />
       </div>

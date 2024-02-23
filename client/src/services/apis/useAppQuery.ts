@@ -98,6 +98,16 @@ type ApiQueryType = {
     }
   }
 
+  workpsacePinedMessages: {
+    url: {
+      baseUrl: 'workspaces/:workspaceId/messages/pined'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    response: TMessage[]
+  }
+
   findUsersByKeyword: {
     url: {
       baseUrl: '/users/by-keyword'
@@ -161,7 +171,10 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
   url,
   options
 }: Omit<ApiQueryType[T], 'response'> & { key: T } & {
-  options?: Omit<UseQueryOptions<ApiQueryType[T]['response']>, 'queryFn'>
+  options?: Omit<
+    UseQueryOptions<ApiQueryType[T]['response']>,
+    'queryFn' | 'queryKey'
+  > & { queryKey?: string[] | string }
 }) => {
   const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
 

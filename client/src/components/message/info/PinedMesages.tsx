@@ -1,11 +1,33 @@
-import { NavLink } from '@mantine/core'
-import { useMessageInfo } from './InfoProvier'
+import { Avatar, Badge, Divider, NavLink } from '@mantine/core'
+import { Link } from '@mantine/tiptap'
+import Highlight from '@tiptap/extension-highlight'
+import Mention from '@tiptap/extension-mention'
+import TextAlign from '@tiptap/extension-text-align'
+import Underline from '@tiptap/extension-underline'
+import { generateHTML } from '@tiptap/html'
+import StarterKit from '@tiptap/starter-kit'
+import dayjs from 'dayjs'
+import DOMPurify from 'dompurify'
+import useAppParams from '../../../hooks/useAppParams'
+import Watching from '../../../redux/Watching'
+import { useAppQuery } from '../../../services/apis/useAppQuery'
+import { updateLabelMention } from '../../../utils/helper'
+import UserDetailProvider from '../../user/UserDetailProvider'
 
 export default function PinedMesages() {
-  const {
-    type,
-    targetId: { channelId, directId, boardId, groupId }
-  } = useMessageInfo()
+  const { channelId, groupId, directId } = useAppParams()
+  const workspaceId = channelId || groupId || directId
+  const { data: pinedMessages } = useAppQuery({
+    key: 'workpsacePinedMessages',
+    url: {
+      baseUrl: 'workspaces/:workspaceId/messages/pined',
+      urlParams: { workspaceId: workspaceId! }
+    },
+    options: {
+      enabled: !!workspaceId
+    }
+  })
+  console.log({ pinedMessages })
 
   return (
     <NavLink
@@ -13,52 +35,56 @@ export default function PinedMesages() {
       label={
         <div className='flex items-center justify-between'>
           Pined messages
-          {/* {members?.length && (
+          {pinedMessages?.length && (
             <Badge variant='light' color='gray'>
-              {members.length}
+              {pinedMessages.length}
             </Badge>
-          )} */}
+          )}
         </div>
       }
       onClick={() => {}}
       classNames={{ children: 'pl-0' }}
     >
-      {/* {members?.map(({ member, user }) => (
-        <div className='mt-2 flex flex-1 items-center gap-2' key={user?._id}>
-          <UserDetailProvider user={user}>
-            <Indicator
-              inline
-              size={16}
-              offset={3}
-              position='bottom-end'
-              color='yellow'
-              withBorder
-            >
-              <Avatar src={user?.avatar} size={36} />
-            </Indicator>
-          </UserDetailProvider>
-
-          <div className='flex flex-1 flex-col justify-center'>
-            <p className='max-w-[150px] truncate font-medium leading-4'>
-              {user?.userName}
-            </p>
-            <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
-              {user?.email}
-            </p>
-          </div>
-
-          {member && (
-            <Badge
-              variant='light'
-              color={getRoleColor(member.role)}
-              radius='xs'
-              className='w-20'
-            >
-              {member.role}
-            </Badge>
-          )}
-        </div>
-      ))} */}
+      {pinedMessages?.map(message => (
+        <>
+          <Watching
+            key={message._id}
+            watchingFn={state => state.workspace.users[message.createdById]}
+          >
+            {createBy => (
+              <div className='flex gap-2 rounded'>
+                <UserDetailProvider user={createBy}>
+                  <Avatar src={createBy?.avatar} />
+                </UserDetailProvider>
+                <div className='flex-1'>
+                  <p className='font-medium'>
+                    {createBy?.userName || 'Senytera'}
+                  </p>
+                  <p className='text-xs'>
+                    {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                  </p>
+                  <div
+                    className='mt-1 rounded bg-gray-100 p-1 text-sm'
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(
+                        generateHTML(updateLabelMention(message.content), [
+                          StarterKit,
+                          Underline,
+                          Link,
+                          Highlight,
+                          TextAlign,
+                          Mention
+                        ])
+                      )
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </Watching>
+          <Divider className='my-2' variant='dashed'/>
+        </>
+      ))}
     </NavLink>
   )
 }

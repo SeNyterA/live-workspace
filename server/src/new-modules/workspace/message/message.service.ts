@@ -152,6 +152,29 @@ export class MessageService {
     return newMessage
   }
 
+  async getPinedMessages({
+    targetId,
+    user
+  }: {
+    user: TJwtUser
+    targetId: string
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub, isAvailable: true },
+        workspace: { _id: targetId }
+      }
+    })
+
+    return this.messageRepository.find({
+      where: {
+        target: { _id: targetId, isAvailable: true },
+        isPinned: true,
+        isAvailable: true
+      }
+    })
+  }
+
   async reactionMessage({
     messageId,
     reaction,

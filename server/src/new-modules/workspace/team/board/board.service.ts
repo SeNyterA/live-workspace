@@ -129,7 +129,7 @@ export class BoardService {
     ])
 
     const cardsData = []
-    for (let i = 1; i <= 10000; i++) {
+    for (let i = 1; i <= 400; i++) {
       const card = {
         title: `Task AAA${i}`,
         board: { _id: board._id },

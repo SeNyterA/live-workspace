@@ -130,7 +130,6 @@ export default function useRouteElements() {
               path: 'channel/:channelId',
               element: (
                 <ErrorBoundary fallback={<></>}>
-                  {/* <ChannelMessage /> */}
                   <MessageContentWrapper />
                 </ErrorBoundary>
               )
