@@ -12,11 +12,13 @@ export default function CardOptions({
   optionId: string
 }) {
   const { boardId } = useAppParams()
-  const { sortBy } = useBoard()
+  const { sortBy, searchValue } = useBoard()
   const cards = useAppSelector(state =>
     Object.values(state.workspace.cards).filter(
       card =>
-        card.boardId === boardId && card.properties?.[propertyId] === optionId
+        card.boardId === boardId &&
+        card.properties?.[propertyId] === optionId &&
+        card.title.toLowerCase().includes(searchValue?.toLowerCase() || '')
     )
   )?.sort((a, b) => {
     switch (sortBy) {

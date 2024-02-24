@@ -25,11 +25,14 @@ type TBoardContext = {
   sortBy?: TSortBy
   setSortBy: (sortBy: TSortBy) => void
   setTrackingId: (trackingId: string) => void
+  searchValue?: string
+  setSearchValue: (searchValue: string) => void
 }
 
 const boardContext = createContext<TBoardContext>({
   setSortBy: () => {},
-  setTrackingId: () => {}
+  setTrackingId: () => {},
+  setSearchValue: () => {}
 })
 
 export const useBoard = () => useContext(boardContext)
@@ -37,6 +40,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
   const { boardId } = useAppParams()
   const [trackingId, setTrackingId] = useState<string>()
   const [sortBy, setSortBy] = useState<TSortBy>('label')
+  const [searchValue, setSearchValue] = useState<string>('')
 
   const dispatch = useDispatch()
   const { data: detailBoardData } = useAppQuery({
@@ -96,6 +100,8 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
         boardId,
         sortBy,
         trackingId,
+        setSearchValue,
+        searchValue,
         setSortBy: value => {
           setSortBy(value)
         },
