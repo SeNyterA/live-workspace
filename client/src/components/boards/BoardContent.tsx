@@ -1,10 +1,10 @@
 import { ActionIcon, Divider } from '@mantine/core'
 import { IconChevronRight } from '@tabler/icons-react'
 import { useState } from 'react'
+import Info from '../message/info/Info'
 import BoardHeader from './BoardHeader'
 import BoardProvider from './BoardProvider'
 import CardsContent from './CardsContent'
-import Info from '../message/info/Info'
 
 export default function BoardContent() {
   const [openInfo, setOpenInfo] = useState(false)

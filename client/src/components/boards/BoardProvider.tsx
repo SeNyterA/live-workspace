@@ -7,12 +7,12 @@ import {
 } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
-import { EFieldType } from '../../new-types/board.d'
+import { EFieldType, TProperty } from '../../new-types/board.d'
 import { TWorkspace } from '../../new-types/workspace'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
-import { TProperty } from '../../types/workspace.type'
+import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
 import { lsActions } from '../../utils/auth'
 import { arrayToObject, extractWorkspace } from '../../utils/helper'
 
@@ -43,7 +43,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
   const [searchValue, setSearchValue] = useState<string>('')
 
   const dispatch = useDispatch()
-  const { data: detailBoardData } = useAppQuery({
+  useAppQuery({
     key: 'board',
     url: {
       baseUrl: '/boards/:boardId',
@@ -56,7 +56,6 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
       enabled: !!boardId
     },
     onSucess(data) {
-      console.log('data', data)
       const { cards, members, options, properties, users, workspace } =
         extractWorkspace(data)
 
@@ -73,6 +72,30 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
     }
   })
 
+  useAppOnSocket({
+    key: 'option',
+    resFunc(data) {
+      dispatch(
+        workspaceActions.updateData({
+          options: {
+            [data.option._id]: data.option
+          }
+        })
+      )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'card',
+    resFunc(data) {
+      dispatch(
+        workspaceActions.updateData({
+          cards: { [data.card._id]: data.card }
+        })
+      )
+    }
+  })
+
   const board = useAppSelector(
     state => state.workspace.workspaces[boardId || '']
   )
@@ -83,15 +106,16 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const _trackingId = checkTrackingId({
       boardId,
-      properties
+      properties,
+      trackingId
     })
 
-    console.log({ _trackingId, trackingId })
-
-    if (!!_trackingId && _trackingId !== trackingId) {
+    if (!!_trackingId) {
       setTrackingId(_trackingId)
     }
   }, [properties, boardId, trackingId])
+
+  console.log({ trackingId })
 
   return (
     <boardContext.Provider
@@ -106,6 +130,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
           setSortBy(value)
         },
         setTrackingId: value => {
+          console.log({ value })
           if (
             properties?.find(
               e =>
@@ -130,25 +155,32 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
 
 const checkTrackingId = ({
   boardId,
-  properties
+  properties,
+  trackingId
 }: {
   properties?: TProperty[]
   boardId?: string
+  trackingId?: string
 }) => {
   if (!boardId) return
   if (!properties) return
 
-  const trackingId = lsActions.getTrackingId(boardId)
+  if (
+    properties.find(
+      e =>
+        e._id === trackingId &&
+        [EFieldType.Assignees, EFieldType.People, EFieldType.Select].includes(
+          e.fieldType
+        )
+    )?._id
+  )
+    return undefined
 
-  console.log({
-    boardId,
-    properties,
-    trackingId
-  })
+  const lsTrackingId = lsActions.getTrackingId(boardId)
 
   let _trackingId = properties.find(
     e =>
-      e._id === trackingId &&
+      e._id === lsTrackingId &&
       [EFieldType.Assignees, EFieldType.People, EFieldType.Select].includes(
         e.fieldType
       )

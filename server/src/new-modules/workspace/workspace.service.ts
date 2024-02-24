@@ -51,6 +51,7 @@ export class WorkspaceService {
     workspace: Workspace
     user: TJwtUser
   }) {
+    console.log(workspace)
     const newWorkspace = await this.workspaceRepository.save(
       this.workspaceRepository.create({
         ...workspace,

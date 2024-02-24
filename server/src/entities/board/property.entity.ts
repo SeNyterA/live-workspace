@@ -32,7 +32,7 @@ export class Property extends BaseEntity {
   @Column({ type: 'enum', enum: EFieldType })
   fieldType: EFieldType
 
-  @Column()
+  @Column('float')
   order: number
 
   @ManyToOne(() => Workspace)

@@ -90,24 +90,6 @@ export default function MessageContentProvider({
       const __user = _members.map(e => e.user)
       const __members = _members.map(e => e.member)
 
-      console.log({
-        workspaces: { [workspace._id]: workspace },
-        members: __members.reduce(
-          (pre, next) => ({
-            ...pre,
-            [next._id]: next
-          }),
-          {}
-        ),
-        users: __user.reduce(
-          (pre, next) => ({
-            ...pre,
-            ...(!!next && { [next._id]: next })
-          }),
-          {}
-        )
-      })
-
       dispatch(
         workspaceActions.updateData({
           workspaces: { [workspace._id]: workspace },

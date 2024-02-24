@@ -85,28 +85,6 @@ export type TBoardMutionApi = {
     }
   }
 
-  updateCard: {
-    url: {
-      baseUrl: '/workspace/boards/:boardId/cards/:cardId'
-      urlParams: {
-        boardId: string
-        cardId: string
-      }
-    }
-    method: 'patch'
-    payload: TcardDto
-    response: {
-      error?: {
-        code: number
-        err: string
-        userId: string
-        boardId: string
-        cardId: string
-      }
-      data?: TCard
-    }
-  }
-
   createBlock: {
     url: {
       baseUrl: '/workspace/boards/:boardId/cards/:cardId/blocks'

@@ -4,28 +4,85 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useRenderCount from '../../hooks/useRenderCount'
-import { useAppSelector } from '../../redux/store'
+import { TOption } from '../../new-types/board'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
+import { getAppValue, useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/useAppMutation'
-import { TOption } from '../../types/workspace.type'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
-const updateOptionPosition = (
-  options: TOption[],
-  optionId: string,
-  moveToIndex: number
-): TOption[] => {
-  const updatedOptions = [...options]
-  const currentIndex = options.findIndex(option => option._id === optionId)
+const getOptionWithNewOrder = ({
+  draggableId,
+  to,
+  from,
+  options
+}: {
+  options?: TOption[]
+  from: number
+  to?: number
+  draggableId: string
+}) => {
+  try {
+    const optionTaget = options?.find(e => e._id === draggableId)
 
-  if (currentIndex === -1 || moveToIndex < 0 || moveToIndex >= options.length) {
-    return updatedOptions
+    if (!optionTaget) return
+
+    if (to === from || to === undefined) return
+
+    const optionBefore = options?.[to - 1]
+    const optionAfter = options?.[to]
+
+    if (to === 0 && optionAfter) {
+      return {
+        newOption: { ...optionTaget, order: optionAfter.order / 2 },
+        oldOption: optionTaget
+      }
+    }
+
+    if (to === (options || []).length - 1 && optionBefore) {
+      return {
+        newOption: { ...optionTaget, order: optionBefore.order + 0.5 },
+        oldOption: optionTaget
+      }
+    }
+
+    if (optionAfter && optionBefore) {
+      return {
+        newOption: {
+          ...optionTaget,
+          order: (optionAfter.order + optionBefore.order) / 2
+        },
+        oldOption: optionTaget
+      }
+    }
+  } catch (error) {
+    console.log(error)
+    return
   }
+}
 
-  const [removedOption] = updatedOptions.splice(currentIndex, 1)
-  updatedOptions.splice(moveToIndex, 0, removedOption)
+const getCardUpdated = ({
+  cardId,
+  optionId,
+  trackingId
+}: {
+  trackingId: string
+  cardId: string
+  optionId: string
+}) => {
+  const card = getAppValue(state => state.workspace.cards[cardId])
+  if (!card) return
 
-  return updatedOptions
+  return {
+    newCard: {
+      ...card,
+      properties: {
+        ...card.properties,
+        [trackingId]: optionId
+      }
+    },
+    oldCard: card
+  }
 }
 
 export default function CardsContent() {
@@ -33,8 +90,8 @@ export default function CardsContent() {
   const { trackingId, boardId } = useBoard()
   const { toogleCard } = useAppControlParams()
   const { mutateAsync: createCard } = useAppMutation('createCard')
+  const { mutateAsync: updateOption } = useAppMutation('updateOption')
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
-  const { mutateAsync: updateProperty } = useAppMutation('updateProperty')
   const dispatch = useDispatch()
 
   const propertyRoot = useAppSelector(
@@ -58,87 +115,88 @@ export default function CardsContent() {
             <DragDropContext
               onDragEnd={result => {
                 if (result.type === 'column') {
-                  if (result.destination?.index === undefined) return
+                  const data = getOptionWithNewOrder({
+                    draggableId: result.draggableId,
+                    from: result.source.index,
+                    to: result.destination?.index || 0,
+                    options
+                  })
+                  if (!data) return
 
-                  const newFieldOption = updateOptionPosition(
-                    propertyRoot.fieldOption || [],
-                    result.draggableId,
-                    result.destination.index
+                  const { newOption, oldOption } = data
+                  dispatch(
+                    workspaceActions.updateData({
+                      options: { [newOption._id]: newOption }
+                    })
                   )
-
-                  // dispatch(
-                  //   workspaceActions.updatePropertyOptions({
-                  //     propertyId: propertyRoot._id,
-                  //     fieldOption: newFieldOption
-                  //   })
-                  // )
-
-                  // updateProperty({
-                  //   method: 'patch',
-                  //   url: {
-                  //     baseUrl:
-                  //       '/workspace/boards/:boardId/properties/:propertyId',
-                  //     urlParams: {
-                  //       boardId: boardId!,
-                  //       propertyId: propertyRoot._id
-                  //     }
-                  //   },
-                  //   payload: {
-                  //     fieldOption: newFieldOption
-                  //   }
-                  // }).catch(() => {
-                  //   dispatch(
-                  //     workspaceActions.updatePropertyOptions({
-                  //       propertyId: propertyRoot._id,
-                  //       fieldOption: propertyRoot.fieldOption || []
-                  //     })
-                  //   )
-                  // })
+                  updateOption(
+                    {
+                      url: {
+                        baseUrl: 'boards/:boardId/options/:optionId',
+                        urlParams: {
+                          boardId: boardId!,
+                          optionId: newOption._id
+                        }
+                      },
+                      method: 'patch',
+                      payload: {
+                        option: {
+                          _id: newOption._id,
+                          order: newOption.order
+                        } as any
+                      }
+                    },
+                    {
+                      onError: error => {
+                        dispatch(
+                          workspaceActions.updateData({
+                            options: { [oldOption._id]: oldOption }
+                          })
+                        )
+                      }
+                    }
+                  )
                 }
-
-                // if (result.type === 'card') {
-                //   if (!result.destination?.droppableId) return
-                //   const oldCard = getAppValue(
-                //     state => state.workspace.cards[result.draggableId]
-                //   )
-                //   if (!oldCard) return
-
-                //   dispatch(
-                //     workspaceActions.updateCardProperties({
-                //       cardId: result.draggableId,
-                //       data: {
-                //         ...oldCard.properties,
-                //         [propertyRoot._id]: result.destination.droppableId
-                //       }
-                //     })
-                //   )
-
-                //   updateCard({
-                //     method: 'patch',
-                //     url: {
-                //       baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                //       urlParams: {
-                //         boardId: boardId!,
-                //         cardId: result.draggableId
-                //       }
-                //     },
-                //     payload: {
-                //       properties: {
-                //         ...oldCard.properties,
-                //         [propertyRoot._id]: result.destination?.droppableId
-                //       }
-                //     }
-                //   }).catch(() => {
-                //     dispatch(
-                //       workspaceActions.updateCardProperties({
-                //         cardId: result.draggableId,
-                //         data: {
-                //           ...oldCard.properties
-                //         }
-                //       })
-                //     )
-                //   })
-                // }
+                if (result.type === 'card') {
+                  const data = getCardUpdated({
+                    cardId: result.draggableId,
+                    optionId: result.destination?.droppableId || '',
+                    trackingId: trackingId!
+                  })
+                  if (!data) return
+                  const { newCard, oldCard } = data
+                  dispatch(
+                    workspaceActions.updateData({
+                      cards: { [newCard._id]: newCard }
+                    })
+                  )
+                  updateCard(
+                    {
+                      url: {
+                        baseUrl: 'boards/:boardId/cards/:cardId',
+                        urlParams: { boardId: boardId!, cardId: newCard._id }
+                      },
+                      method: 'patch',
+                      payload: {
+                        card: { properties: newCard.properties } as any
+                      }
+                    },
+                    {
+                      onSuccess(data, variables, context) {
+                        if (data._id) {
+                          toogleCard({ cardId: data._id })
+                        }
+                      },
+                      onError: () => {
+                        dispatch(
+                          workspaceActions.updateData({
+                            cards: { [oldCard._id]: oldCard }
+                          })
+                        )
+                      }
+                    }
+                  )
+                }
               }}
             >
               <Droppable

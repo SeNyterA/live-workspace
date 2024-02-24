@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assign } from 'lodash'
-import { TOption } from '../../new-types/board'
+import { TCard, TOption, TProperty } from '../../new-types/board'
+import { TMember } from '../../new-types/member'
 import { TMessage } from '../../new-types/message'
 import { TUser } from '../../new-types/user'
 import { TWorkspace } from '../../new-types/workspace'
-import { TCard, TMember, TProperty } from '../../types/workspace.type'
 
 export type TUsers = { [userId: string]: TUser }
 export type TMembers = { [membersId: string]: TMember }

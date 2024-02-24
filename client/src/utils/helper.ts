@@ -1,8 +1,8 @@
 import { JSONContent } from '@tiptap/react'
-import { TOption } from '../new-types/board'
+import { TOption, TProperty } from '../new-types/board'
+import { TMember } from '../new-types/member'
 import { TWorkspace } from '../new-types/workspace'
 import { getAppValue } from '../redux/store'
-import { TMember } from '../types/workspace.type'
 
 export const cleanObj = <T extends Record<string, any>>(
   params: T
@@ -83,7 +83,7 @@ export const extractWorkspace = (workspace: TWorkspace) => {
     .flat() as TOption[] | undefined
   const properties = workspace.properties?.map(
     ({ options, ...property }) => property
-  )
+  ) as TProperty[] | undefined
 
   // Extract cards
   const cards = workspace.cards

@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
+import { TCard, TOption } from '../../new-types/board'
 import { TMessage } from '../../new-types/message'
 import { TUser } from '../../types/user.type'
 import {
   TBoard,
-  TCard,
   TChannel,
   TDirect,
   TGroup,
@@ -76,6 +76,19 @@ export type ApiSocketType = {
     response: {
       count: number
       targetId: string
+    }
+  }
+
+  option: {
+    response: {
+      option: TOption
+      mode: 'create' | 'update' | 'delete'
+    }
+  }
+  card: {
+    response: {
+      card: TCard
+      mode: 'create' | 'update' | 'delete'
     }
   }
 }

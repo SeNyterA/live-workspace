@@ -10,10 +10,10 @@ import {
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import useAppParams from '../../hooks/useAppParams'
+import { EMemberRole } from '../../new-types/member.d'
 import { WorkspaceType } from '../../new-types/workspace.d'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { EMemberRole } from '../../types/workspace.type'
 import TeamSetting from '../team-setting/TeamSetting'
 import BoardItem from './board/BoardItem'
 import CreateBoard from './board/CreateBoard'
@@ -36,17 +36,9 @@ export default function Sidebar() {
   const path = useLocation()
   const [toggle, setToggle] = useState<TSideBarToggle>()
   const team = useAppSelector(state => {
-    console.log(state.workspace.workspaces)
     return Object.values(state.workspace.workspaces).find(e => e._id === teamId)
   })
   const [searchValue, setSearchValue] = useState('')
-
-  const myTeamRole = useAppSelector(
-    state =>
-      Object.values(state.workspace.members).find(
-        e => e.userId === state.auth.userInfo?._id && e.targetId === teamId
-      )?.role
-  )
 
   return (
     <>
@@ -64,19 +56,32 @@ export default function Sidebar() {
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
           />
-          {myTeamRole === EMemberRole.Owner && (
-            <ActionIcon
-              variant='transparent'
-              aria-label='Settings'
-              className='h-[30px] w-[30px] bg-gray-100'
-              onClick={() => setToggle('teamSetting')}
-            >
-              <IconSettings
-                style={{ width: '70%', height: '70%' }}
-                stroke={1.5}
-              />
-            </ActionIcon>
-          )}
+          <Watching
+            watchingFn={state => {
+              return Object.values(state.workspace.members).find(
+                e =>
+                  e.userId === state.auth.userInfo?._id && e.targetId === teamId
+              )?.role
+            }}
+          >
+            {myTeamRole => (
+              <>
+                {myTeamRole === EMemberRole.Owner && (
+                  <ActionIcon
+                    variant='transparent'
+                    aria-label='Settings'
+                    className='h-[30px] w-[30px] bg-gray-100'
+                    onClick={() => setToggle('teamSetting')}
+                  >
+                    <IconSettings
+                      style={{ width: '70%', height: '70%' }}
+                      stroke={1.5}
+                    />
+                  </ActionIcon>
+                )}
+              </>
+            )}
+          </Watching>
         </div>
 
         <div className='relative flex-1'>

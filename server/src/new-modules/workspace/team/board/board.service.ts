@@ -1,14 +1,17 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
+import { Server } from 'socket.io'
 import { Card } from 'src/entities/board/card.entity'
 import { Option } from 'src/entities/board/option.entity'
-import { EFieldType, Property } from 'src/entities/board/property.entity'
+import { Property } from 'src/entities/board/property.entity'
 import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
 import { In, Repository } from 'typeorm'
+import { generateBoardData } from './board.init'
 
 export const generateRandomHash = (
   inputString = Math.random().toString()
@@ -18,8 +21,15 @@ export const generateRandomHash = (
   return truncatedHash
 }
 
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 @Injectable()
 export class BoardService {
+  @WebSocketServer()
+  server: Server
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -40,112 +50,16 @@ export class BoardService {
     private readonly cardRepository: Repository<Card>
   ) {}
 
-  async initBoardData({ board, user }: { board: Workspace; user: TJwtUser }) {
-    const properties = await this.propertyRepository.insert([
-      {
-        title: 'Status',
-        board: { _id: board._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
+  async initBoardData({ board }: { board: Workspace }) {
+    const { cards, options, properties } = generateBoardData({
+      boardId: board._id
+    })
 
-        order: 0,
-        fieldType: EFieldType.Select
-      },
-      {
-        title: 'Progress',
-        board: { _id: board._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
+    const _properties = await this.propertyRepository.insert(properties)
+    const _options = await this.optionRepository.insert(options)
+    const _cards = await this.cardRepository.insert(cards)
 
-        order: 1,
-        fieldType: EFieldType.String
-      },
-      {
-        title: 'Assignee',
-        board: { _id: board._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-
-        order: 2,
-        fieldType: EFieldType.People
-      }
-    ])
-
-    const options = await this.optionRepository.insert([
-      {
-        color: '#FF0000',
-        title: 'To Do',
-        property: { _id: properties.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        board: { _id: board._id },
-        order: 0
-      },
-      {
-        color: '#00FF00',
-        title: 'In Progress',
-        property: { _id: properties.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        board: { _id: board._id },
-        order: 1
-      },
-      {
-        color: '#0000FF',
-        title: 'Done',
-        property: { _id: properties.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        board: { _id: board._id },
-        order: 2
-      },
-      {
-        color: '#FFFF00',
-        title: 'Review',
-        property: { _id: properties.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        board: { _id: board._id },
-        order: 3
-      },
-      {
-        color: '#FF00FF',
-        title: 'Blocked',
-        property: { _id: properties.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        board: { _id: board._id },
-        order: 4
-      },
-      {
-        color: '#008080',
-        title: 'On Hold',
-        property: { _id: properties.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        board: { _id: board._id },
-        order: 5
-      }
-    ])
-
-    const cardsData = []
-    for (let i = 1; i <= 400; i++) {
-      const card = {
-        title: `Task AAA${i}`,
-        board: { _id: board._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        properties: {
-          [properties.identifiers[0]._id]: options.identifiers[i % 6]._id,
-          [properties.identifiers[1]._id]: `${(i * 10) % 100}%`,
-          [properties.identifiers[2]._id]: user.sub
-        }
-      }
-
-      cardsData.push(card)
-    }
-
-    const cards = await this.cardRepository.insert(cardsData)
+    return { properties: _properties, options: _options, cards: _cards }
   }
 
   async createBoard({
@@ -190,9 +104,10 @@ export class BoardService {
     )
 
     this.initBoardData({
-      board: newWorkspace,
-      user
+      board: newWorkspace
     })
+
+    console.log(generateBoardData({ boardId: newWorkspace._id }))
 
     return {
       workspace: newWorkspace,
@@ -226,5 +141,74 @@ export class BoardService {
     })
 
     return { ...workspace, cards, members }
+  }
+
+  async updateOption({
+    boardId,
+    optionId,
+    user,
+    newOption
+  }: {
+    optionId: string
+    user: TJwtUser
+    boardId: string
+    newOption: Option
+  }) {
+    const option = await this.optionRepository.findOneOrFail({
+      where: {
+        _id: optionId,
+        board: {
+          _id: boardId,
+          isAvailable: true,
+          members: { user: { _id: user.sub }, isAvailable: true }
+        }
+      }
+    })
+    const optionUpdate = await this.optionRepository.save({
+      ...option,
+      ...newOption,
+      modifiedBy: { _id: user.sub }
+    })
+
+    this.server
+      .to(boardId)
+      .emit('option', { option: optionUpdate, mode: 'update' })
+
+    return optionUpdate
+  }
+
+  async updateCard({
+    boardId,
+    card,
+    user,
+    cardId
+  }: {
+    user: TJwtUser
+    card: Card
+    boardId: string
+    cardId: string
+  }) {
+    const _card = await this.cardRepository.findOneOrFail({
+      where: {
+        _id: cardId,
+        board: {
+          _id: boardId,
+          isAvailable: true,
+          members: {
+            user: { _id: user.sub, isAvailable: true },
+            isAvailable: true
+          }
+        }
+      }
+    })
+    const cardUpdated = await this.cardRepository.save({
+      ..._card,
+      ...card,
+      modifiedBy: { _id: user.sub }
+    })
+
+    this.server.to(boardId).emit('card', { card: cardUpdated, mode: 'update' })
+
+    return cardUpdated
   }
 }

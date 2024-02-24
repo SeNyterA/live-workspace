@@ -11,7 +11,7 @@ export class Option extends BaseEntity {
   @Column()
   color: string
 
-  @Column({ type: 'int' })
+  @Column('float')
   order: number
 
   @ManyToOne(() => Property)

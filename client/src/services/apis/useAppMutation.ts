@@ -1,7 +1,8 @@
 import { MutationOptions, useMutation } from '@tanstack/react-query'
 import { AxiosRequestConfig } from 'axios'
+import { TCard, TOption } from '../../new-types/board'
 import { TMessage } from '../../new-types/message'
-import { TChannelDto, TGroupDto, TTeamDto } from '../../types/dto.type'
+import { TChannelDto, TGroupDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
 import {
   EMemberRole,
@@ -248,6 +249,32 @@ export type ApiMutationType = {
     }
     method: 'post'
     response: TMessage
+  }
+
+  updateOption: {
+    url: {
+      baseUrl: 'boards/:boardId/options/:optionId'
+      urlParams: {
+        boardId: string
+        optionId: string
+      }
+    }
+    method: 'patch'
+    payload: { option: TOption }
+    response: TOption
+  }
+
+  updateCard: {
+    url: {
+      baseUrl: 'boards/:boardId/cards/:cardId'
+      urlParams: {
+        boardId: string
+        cardId: string
+      }
+    }
+    method: 'patch'
+    payload: { card: TCard }
+    response: TCard
   }
 } & TBoardMutionApi &
   TUploadMutionApi
