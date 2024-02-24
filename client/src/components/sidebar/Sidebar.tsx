@@ -9,10 +9,9 @@ import {
 } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { WorkspaceType } from '../../new-types/workspace.d'
-import { getAppValue, useAppSelector } from '../../redux/store'
+import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { EMemberRole } from '../../types/workspace.type'
 import TeamSetting from '../team-setting/TeamSetting'
@@ -32,8 +31,8 @@ export type TSideBarToggle =
   | 'createGroup'
 
 export default function Sidebar() {
-  const { channelId, teamId, directId, boardId, groupId } = useAppParams()
-  const { switchTo } = useAppControlParams()
+  const { channelId, teamId, boardId, groupId } = useAppParams()
+
   const path = useLocation()
   const [toggle, setToggle] = useState<TSideBarToggle>()
   const team = useAppSelector(state => {
@@ -48,13 +47,6 @@ export default function Sidebar() {
         e => e.userId === state.auth.userInfo?._id && e.targetId === teamId
       )?.role
   )
-
-  console.log({
-    teamId,
-    www: getAppValue(state =>
-      Object.values(state.workspace.workspaces)
-    )?.filter(e => e.parentId === teamId)
-  })
 
   return (
     <>

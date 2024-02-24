@@ -1,8 +1,10 @@
+import { on } from 'events'
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { TMember } from '../../new-types/member'
 import { TMessage } from '../../new-types/message'
 import { TWorkspace } from '../../new-types/workspace'
 import { TUser } from '../../types/user.type'
-import { TDirect, TMember } from '../../types/workspace.type'
+import { TDirect } from '../../types/workspace.type'
 import { TBoardQueryApi } from './board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
@@ -49,7 +51,7 @@ type ApiQueryType = {
         workspaceId: string
       }
     }
-    response: TWorkspace
+    response: { workspace: TWorkspace; members: TMember[] }
   }
 
   workspaces: {
@@ -169,12 +171,14 @@ type ApiQueryType = {
 
 export const useAppQuery = <T extends keyof ApiQueryType>({
   url,
-  options
+  options,
+  onSucess
 }: Omit<ApiQueryType[T], 'response'> & { key: T } & {
   options?: Omit<
     UseQueryOptions<ApiQueryType[T]['response']>,
     'queryFn' | 'queryKey'
   > & { queryKey?: string[] | string }
+  onSucess?: (data: ApiQueryType[T]['response']) => void
 }) => {
   const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
 
@@ -191,7 +195,7 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
       const response = await http.get(urlApi, {
         params: (url as any)?.queryParams
       })
-
+      onSucess && onSucess(response.data)
       return response.data
     }
   })

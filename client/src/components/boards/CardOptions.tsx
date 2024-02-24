@@ -1,6 +1,7 @@
 import { Draggable, Droppable } from 'react-beautiful-dnd'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
+import { useBoard } from './BoardProvider'
 import CardItem from './card/CardItem'
 
 export default function CardOptions({
@@ -11,13 +12,24 @@ export default function CardOptions({
   optionId: string
 }) {
   const { boardId } = useAppParams()
-
+  const { sortBy } = useBoard()
   const cards = useAppSelector(state =>
     Object.values(state.workspace.cards).filter(
       card =>
         card.boardId === boardId && card.properties?.[propertyId] === optionId
     )
-  )
+  )?.sort((a, b) => {
+    switch (sortBy) {
+      case 'label':
+        return a.title.localeCompare(b.title)
+      case 'createdAt':
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      case 'updatedAt':
+        return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+      default:
+        return a.title.localeCompare(b.title)
+    }
+  })
 
   return (
     <Droppable droppableId={optionId} type='card'>

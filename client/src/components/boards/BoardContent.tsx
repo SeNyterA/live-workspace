@@ -4,6 +4,7 @@ import { useState } from 'react'
 import BoardHeader from './BoardHeader'
 import BoardProvider from './BoardProvider'
 import CardsContent from './CardsContent'
+import Info from '../message/info/Info'
 
 export default function BoardContent() {
   const [openInfo, setOpenInfo] = useState(false)
@@ -30,20 +31,12 @@ export default function BoardContent() {
           <CardsContent />
         </div>
 
-        {/* {openInfo && (
+        {openInfo && (
           <>
             <Divider orientation='vertical' variant='dashed' />
-            <InfoProvier
-              value={{
-                title: board?.title || '',
-                targetId: { boardId },
-                type: 'board'
-              }}
-            >
-              <Info />
-            </InfoProvier>
+            <Info />
           </>
-        )} */}
+        )}
       </div>
     </BoardProvider>
   )

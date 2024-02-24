@@ -212,13 +212,7 @@ export class BoardService {
         _id: workspaceId,
         members: { user: { _id: user.sub, isAvailable: true } }
       },
-      relations: [
-        'members',
-        'members.user',
-        'properties',
-        'properties.options'
-        // 'cards'
-      ]
+      relations: ['properties', 'properties.options']
     })
 
     const cards = await this.cardRepository.find({
@@ -226,7 +220,11 @@ export class BoardService {
         board: { _id: workspaceId }
       }
     })
+    const members = await this.memberRepository.find({
+      where: { workspace: { _id: workspaceId } },
+      relations: ['user']
+    })
 
-    return { ...workspace, cards }
+    return { ...workspace, cards, members }
   }
 }

@@ -1,11 +1,5 @@
 import { Divider, LoadingOverlay } from '@mantine/core'
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
 import Sidebar from './components/sidebar/Sidebar'
@@ -43,35 +37,18 @@ export default function Layout({ children }: { children: ReactNode }) {
     key: 'workspaces',
     url: {
       baseUrl: '/workspaces'
-    }
-  })
-
-  const { data: team, isPending: teamLoading } = useAppQuery({
-    key: 'workspace',
-    url: {
-      baseUrl: '/workspaces/:workspaceId',
-      urlParams: {
-        workspaceId: teamId || ''
-      }
     },
-    options: {
-      queryKey: [teamId],
-      enabled: !!teamId
-    }
-  })
-
-  useEffect(() => {
-    if (workspaces) {
+    onSucess(data) {
       dispatch(
         workspaceActions.init({
-          workspaces: workspaces.reduce(
+          workspaces: data.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {}
           )
         })
       )
     }
-  }, [dispatch, workspaces])
+  })
 
   const { data: unReadCountData } = useAppQuery({
     key: 'getUnreadCounts',

@@ -1,6 +1,10 @@
 import { createContext, ReactNode, useContext } from 'react'
+import { useDispatch } from 'react-redux'
+import useAppParams from '../../hooks/useAppParams'
 import { TMessage } from '../../new-types/message'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
+import { useAppQuery } from '../../services/apis/useAppQuery'
 
 export type TGroupedMessage = {
   userId: string
@@ -8,52 +12,15 @@ export type TGroupedMessage = {
 }
 
 export type TMessageContentValue = {
-  title: string
   messages: TMessage[]
   groupedMessages: TGroupedMessage[]
-  targetId: string
-  userTargetId?: string
 }
 const messageContentContext = createContext<TMessageContentValue>({
   messages: [],
-  groupedMessages: [],
-  targetId: '',
-  title: ''
+  groupedMessages: []
 })
 
 export const useMessageContent = () => useContext(messageContentContext)
-
-export default function MessageContentProvider({
-  children,
-  value
-}: {
-  value: Omit<TMessageContentValue, 'messages' | 'groupedMessages'>
-  children: ReactNode
-}) {
-  const { targetId } = value
-  const messages =
-    useAppSelector(state =>
-      Object.values(state.workspace.messages)
-        .filter(e => targetId === e.targetId && e.isAvailable)
-        .sort(
-          (a, b) =>
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        )
-    ) || []
-
-  return (
-    <messageContentContext.Provider
-      value={{
-        ...value,
-        messages,
-        groupedMessages: groupMessages(messages)
-      }}
-    >
-      {children}
-    </messageContentContext.Provider>
-  )
-}
-
 export const groupMessages = (messages: TMessage[]): TGroupedMessage[] => {
   const groupedMessages: TGroupedMessage[] = []
   let currentGroup: TGroupedMessage | null = null
@@ -71,4 +38,116 @@ export const groupMessages = (messages: TMessage[]): TGroupedMessage[] => {
   })
 
   return groupedMessages
+}
+
+export default function MessageContentProvider({
+  children
+}: {
+  children: ReactNode
+}) {
+  const { channelId, groupId, directId } = useAppParams()
+  const targetId = channelId || groupId || directId || ''
+  const dispatch = useDispatch()
+
+  const { data: workpsaceMessages, refetch } = useAppQuery({
+    key: 'workpsaceMessages',
+    url: {
+      baseUrl: 'workspaces/:workspaceId/messages',
+      urlParams: {
+        workspaceId: targetId
+      }
+    },
+    options: {
+      queryKey: [targetId],
+      enabled: !!targetId
+    },
+    onSucess({ messages, remainingCount }) {
+      dispatch(
+        workspaceActions.updateData({
+          messages: messages.reduce(
+            (pre, next) => ({
+              ...pre,
+              [next._id]: next
+            }),
+            {}
+          )
+        })
+      )
+    }
+  })
+
+  useAppQuery({
+    key: 'workspace',
+    url: {
+      baseUrl: '/workspaces/:workspaceId',
+      urlParams: { workspaceId: targetId }
+    },
+    onSucess({ workspace, members }) {
+      const _members = members.map(e => {
+        const { user, ...member } = e
+        return { user, member }
+      })
+      const __user = _members.map(e => e.user)
+      const __members = _members.map(e => e.member)
+
+      console.log({
+        workspaces: { [workspace._id]: workspace },
+        members: __members.reduce(
+          (pre, next) => ({
+            ...pre,
+            [next._id]: next
+          }),
+          {}
+        ),
+        users: __user.reduce(
+          (pre, next) => ({
+            ...pre,
+            ...(!!next && { [next._id]: next })
+          }),
+          {}
+        )
+      })
+
+      dispatch(
+        workspaceActions.updateData({
+          workspaces: { [workspace._id]: workspace },
+          members: __members.reduce(
+            (pre, next) => ({
+              ...pre,
+              [next._id]: next
+            }),
+            {}
+          ),
+          users: __user.reduce(
+            (pre, next) => ({
+              ...pre,
+              ...(!!next && { [next._id]: next })
+            }),
+            {}
+          )
+        })
+      )
+    }
+  })
+
+  const messages =
+    useAppSelector(state =>
+      Object.values(state.workspace.messages)
+        .filter(e => targetId === e.targetId && e.isAvailable)
+        .sort(
+          (a, b) =>
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        )
+    ) || []
+
+  return (
+    <messageContentContext.Provider
+      value={{
+        messages,
+        groupedMessages: groupMessages(messages)
+      }}
+    >
+      {children}
+    </messageContentContext.Provider>
+  )
 }

@@ -16,7 +16,7 @@ import { TProperty } from '../../types/workspace.type'
 import { lsActions } from '../../utils/auth'
 import { arrayToObject, extractWorkspace } from '../../utils/helper'
 
-type TSortBy = 'label' | 'createdAt' | 'updatedAt'
+export type TSortBy = 'label' | 'createdAt' | 'updatedAt'
 
 type TBoardContext = {
   boardId?: string
@@ -48,14 +48,13 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
       }
     },
     options: {
-      queryKey: [boardId],
+      queryKey: [boardId!],
       enabled: !!boardId
-    }
-  })
-  useEffect(() => {
-    if (detailBoardData) {
+    },
+    onSucess(data) {
+      console.log('data', data)
       const { cards, members, options, properties, users, workspace } =
-        extractWorkspace(detailBoardData)
+        extractWorkspace(data)
 
       dispatch(
         workspaceActions.updateData({
@@ -68,7 +67,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
         })
       )
     }
-  }, [detailBoardData])
+  })
 
   const board = useAppSelector(
     state => state.workspace.workspaces[boardId || '']

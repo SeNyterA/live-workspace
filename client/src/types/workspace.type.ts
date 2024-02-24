@@ -30,8 +30,8 @@ export type TWorkspace = {
   avatar?: string
   createdById: string
   modifiedById: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
   isAvailable: boolean
 }
 

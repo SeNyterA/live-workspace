@@ -257,10 +257,14 @@ export class WorkspaceService {
       where: {
         _id: workspaceId,
         members: { user: { _id: user.sub, isAvailable: true } }
-      },
-      relations: ['members', 'members.user']
+      }
     })
-    return workspace
+
+    const members = await this.memberRepository.find({
+      where: { workspace: { _id: workspaceId } },
+      relations: ['user']
+    })
+    return { workspace, members }
   }
 
   async subscribeToWorkspaces({

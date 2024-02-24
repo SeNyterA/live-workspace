@@ -1,45 +1,20 @@
-import { Avatar, Badge, Divider, Indicator, NavLink } from '@mantine/core'
+import { Avatar, Badge, Indicator, NavLink, ScrollArea } from '@mantine/core'
+import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
 import { EMemberRole } from '../../../types/workspace.type'
-import UserDetailProvider from '../../user/UserDetailProvider'
-import { useMessageInfo } from './InfoProvier'
 
 export default function Members() {
-  const {
-    type,
-    targetId: { channelId, directId, boardId, groupId }
-  } = useMessageInfo()
+  const { boardId, channelId, directId, groupId } = useAppParams()
+  const targetId = channelId || groupId || directId || boardId || ''
 
-  const members = useAppSelector(state => {
-    const _members = Object.values(state.workspace.members)
-    const _users = Object.values(state.workspace.users)
-    switch (type) {
-      case 'channel':
-      case 'board':
-      case 'group':
-        return _members
-          .filter(members =>
-            [channelId, boardId, groupId].includes(members.targetId)
-          )
-          .map(members => ({
-            member: members,
-            user: _users.find(user => user._id === members.userId)
-          }))
-
-      case 'direct':
-        return _users
-          .filter(user =>
-            (
-              Object.values(state.workspace.directs).find(
-                direct => direct._id === directId
-              )?.userIds || []
-            ).includes(user._id)
-          )
-          .map(user => ({ user, member: undefined }))
-      default:
-        return []
-    }
-  })
+  const members = useAppSelector(state =>
+    Object.values(state.workspace.members)
+      .filter(member => member.targetId === targetId)
+      .map(member => ({
+        member,
+        user: state.workspace.users[member.userId]
+      }))
+  )
 
   const getRoleColor = (role: EMemberRole) => {
     switch (role) {
@@ -52,9 +27,9 @@ export default function Members() {
     }
   }
 
-  const enableMembers = members?.filter(
-    ({ member, user }) => user?.isAvailable && member?.isAvailable
-  )
+  const enableMembers = members
+    ?.filter(({ member, user }) => user?.isAvailable && member?.isAvailable)
+    .sort((a, b) => (a.member.role > b.member.role ? 1 : -1))
 
   const disableMembers = members?.filter(
     ({ member, user }) => !user?.isAvailable || !member?.isAvailable
@@ -74,15 +49,18 @@ export default function Members() {
         </div>
       }
       onClick={() => {}}
-      classNames={{ children: 'pl-0 pb-2' }}
+      classNames={{
+        children:
+          'h-[300px] relative w-full border rounded border-dashed border-amber-600'
+      }}
     >
-      {!!enableMembers?.length &&
-        enableMembers?.map(({ member, user }) => (
-          <div
-            className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
-            key={user?._id}
-          >
-            <UserDetailProvider user={user}>
+      <ScrollArea className='absolute inset-2 right-0 pr-2' scrollbarSize={8} >
+        {!!enableMembers?.length &&
+          enableMembers?.map(({ member, user }) => (
+            <div
+              className='mt-2 flex max-w-full flex-1 items-center gap-1 first:mt-0'
+              key={user?._id}
+            >
               <Indicator
                 inline
                 size={16}
@@ -93,50 +71,6 @@ export default function Members() {
               >
                 <Avatar src={user?.avatar} size={36} />
               </Indicator>
-            </UserDetailProvider>
-
-            <div className='flex flex-1 flex-col justify-center'>
-              <p className='max-w-[150px] truncate font-medium leading-4'>
-                {user?.userName}
-              </p>
-              <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
-                {user?.email}
-              </p>
-            </div>
-
-            {member && (
-              <Badge
-                variant='light'
-                color={getRoleColor(member.role)}
-                radius='xs'
-                className='w-20'
-              >
-                {member.role}
-              </Badge>
-            )}
-          </div>
-        ))}
-
-      {!!disableMembers?.length && (
-        <>
-          {/* <Divider variant='dashed' className='mt-2' /> */}
-          {disableMembers.map(({ member, user }) => (
-            <div
-              className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
-              key={user?._id}
-            >
-              <UserDetailProvider user={user}>
-                <Indicator
-                  inline
-                  size={16}
-                  offset={3}
-                  position='bottom-end'
-                  color='yellow'
-                  withBorder
-                >
-                  <Avatar src={user?.avatar} size={36} />
-                </Indicator>
-              </UserDetailProvider>
 
               <div className='flex flex-1 flex-col justify-center'>
                 <p className='max-w-[150px] truncate font-medium leading-4'>
@@ -150,17 +84,58 @@ export default function Members() {
               {member && (
                 <Badge
                   variant='light'
-                  color={'dark'}
+                  color={getRoleColor(member.role)}
                   radius='xs'
-                  className='w-20'
+                  className='w-16 px-0'
                 >
-                  None
+                  {member.role}
                 </Badge>
               )}
             </div>
           ))}
-        </>
-      )}
+        {!!disableMembers?.length && (
+          <>
+            {/* <Divider variant='dashed' className='mt-2' /> */}
+            {disableMembers.map(({ member, user }) => (
+              <div
+                className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
+                key={user?._id}
+              >
+                <Indicator
+                  inline
+                  size={16}
+                  offset={3}
+                  position='bottom-end'
+                  color='yellow'
+                  withBorder
+                >
+                  <Avatar src={user?.avatar} size={36} />
+                </Indicator>
+
+                <div className='flex flex-1 flex-col justify-center'>
+                  <p className='max-w-[150px] truncate font-medium leading-4'>
+                    {user?.userName}
+                  </p>
+                  <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+                    {user?.email}
+                  </p>
+                </div>
+
+                {member && (
+                  <Badge
+                    variant='light'
+                    color={'dark'}
+                    radius='xs'
+                    className='w-20'
+                  >
+                    None
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </>
+        )}
+      </ScrollArea>
     </NavLink>
   )
 }
