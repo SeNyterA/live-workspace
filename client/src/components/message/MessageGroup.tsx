@@ -73,9 +73,13 @@ export default function MessageGroup({
       } ${classNames?.wrapper}`}
     >
       {!isOwner && (
-        <UserDetailProvider user={createdByUser}>
-          <Avatar src={createdByUser?.avatar} />
-        </UserDetailProvider>
+        // <UserDetailProvider user={createdByUser}>
+        <Avatar
+          src={createdByUser?.avatar}
+          size={32}
+          className='ring-1 ring-offset-1'
+        />
+        // </UserDetailProvider>
       )}
 
       <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>

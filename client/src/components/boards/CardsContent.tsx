@@ -184,7 +184,10 @@ export default function CardsContent() {
                     {
                       onSuccess(data, variables, context) {
                         if (data._id) {
-                          toogleCard({ cardId: data._id })
+                          // toogleCard({ cardId: data._id })
+                          dispatch(
+                            workspaceActions.updateData({ [data._id]: data })
+                          )
                         }
                       },
                       onError: () => {

@@ -7,5 +7,5 @@ export class File extends BaseEntity {
   path: string
 
   @Column({ type: 'float' })
-  size: number
+  size?: number
 }

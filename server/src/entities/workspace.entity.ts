@@ -20,6 +20,11 @@ export enum WorkspaceType {
   Team = 'Team'
 }
 
+export enum WorkspaceStatus {
+  Private = 'Private',
+  Public = 'Public'
+}
+
 @Entity()
 export class Workspace extends BaseEntity {
   @Column()
@@ -36,6 +41,13 @@ export class Workspace extends BaseEntity {
 
   @Column({ type: 'enum', enum: WorkspaceType, default: WorkspaceType.Team })
   type: WorkspaceType
+
+  @Column({
+    type: 'enum',
+    enum: WorkspaceStatus,
+    default: WorkspaceStatus.Public
+  })
+  status: WorkspaceStatus
 
   @ManyToOne(() => Workspace, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'parentId' })

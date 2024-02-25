@@ -41,8 +41,8 @@ export default function TeamList() {
             {teams?.map(team => (
               <ActionIcon
                 key={team._id}
-                className={`mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${
-                  teamId === team._id ? 'ring-[1.5px]' : ''
+                className={`relative mx-auto mt-2 flex h-fit w-fit items-center justify-center p-0 first:mt-0 ${
+                  teamId === team._id ? 'rounded ring-1 ring-offset-2' : 'rounded-full '
                 }`}
                 variant='light'
                 size='md'
@@ -50,7 +50,15 @@ export default function TeamList() {
                   switchTeam({ teamId: team._id })
                 }}
               >
-                <Avatar size={32} />
+                <Avatar
+                radius="sm"
+                  size={32}
+                  className={teamId === team._id ? 'rounded' : ''}
+                  src={
+                    team.avatar ||
+                    'https://static.tuoitre.vn/tto/i/s626//2015/07/13/1-1436781816.jpg'
+                  }
+                />
               </ActionIcon>
             ))}
           </ScrollArea>

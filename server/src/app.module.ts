@@ -10,6 +10,7 @@ import { SocketModule } from './new-modules/socket/socket.module'
 import { WorkspaceModule } from './new-modules/workspace/workspace.module'
 import { RedisModule } from './new-modules/redis/redis.module'
 import { MessageModule } from './new-modules/workspace/message/message.module'
+import { AWSModule } from './new-modules/aws/aws.module'
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { MessageModule } from './new-modules/workspace/message/message.module'
     MessageModule,
     WorkspaceModule,
     SocketModule,
-    RedisModule
+    RedisModule,
+    AWSModule
   ],
   providers: [
     {

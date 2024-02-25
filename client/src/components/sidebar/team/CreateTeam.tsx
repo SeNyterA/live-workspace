@@ -1,12 +1,16 @@
 import {
   ActionIcon,
+  Avatar,
   Button,
   Checkbox,
   Drawer,
+  Image,
+  Input,
   ScrollArea,
   Textarea,
   TextInput
 } from '@mantine/core'
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { IconHash, IconX } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import {
@@ -16,14 +20,23 @@ import {
   useFieldArray,
   useForm
 } from 'react-hook-form'
+import { TFile } from '../../../new-types/file'
 import { useAppMutation } from '../../../services/apis/useAppMutation'
-import { TTeamDto } from '../../../types/dto.type'
+import { TMemberDto } from '../../../types/dto.type'
 import { EMemberRole } from '../../../types/workspace.type'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
 
-type TForm = Omit<TTeamDto, 'channelTitles'> & {
+type TForm = {
   channels?: { title: string }[]
+  boards?: { title: string; isInitData: boolean }[]
+  displayUrl: string
+  thumbnail?: TFile
+  avatar?: TFile
+  title: string
+  description?: string
+  members?: TMemberDto[]
+  dispayName: string
 }
 
 const Channels = ({ control }: { control: Control<TForm, any> }) => {
@@ -81,6 +94,69 @@ const Channels = ({ control }: { control: Control<TForm, any> }) => {
           }}
         >
           Add Channel
+        </Button>
+      </div>
+    </Checkbox.Group>
+  )
+}
+
+const Boards = ({ control }: { control: Control<TForm, any> }) => {
+  const { append, fields, remove } = useFieldArray({
+    control,
+    name: 'channels'
+  })
+
+  return (
+    <Checkbox.Group
+      label='Init boards'
+      description='Members will be added when created.'
+      className='mt-2'
+    >
+      {fields?.map((_, index) => (
+        <>
+          <Controller
+            key={_.id}
+            control={control}
+            name={`boards.${index}.title`}
+            rules={{
+              required: 'Channel name is required'
+            }}
+            render={({ field: { value, onChange }, fieldState }) => (
+              <TextInput
+                className='mt-2 flex-1'
+                value={value}
+                onChange={onChange}
+                placeholder='General'
+                leftSection={<IconHash size={16} />}
+                rightSection={
+                  <ActionIcon
+                    variant='transparent'
+                    className='bg-gray-100'
+                    onClick={() => remove(index)}
+                  >
+                    <IconX size={16} />
+                  </ActionIcon>
+                }
+                classNames={{
+                  input: 'border border-dashed'
+                }}
+                error={fieldState.error && fieldState.error.message}
+              />
+            )}
+          />
+        </>
+      ))}
+      <div className='mt-2 flex justify-end'>
+        <Button
+          size='sm'
+          variant='light'
+          onClick={() => {
+            append({
+              title: ''
+            })
+          }}
+        >
+          Add board
         </Button>
       </div>
     </Checkbox.Group>
@@ -152,10 +228,18 @@ export default function CreateTeam({
   refetchKey?: string
   defaultValues?: DefaultValues<TForm>
 }) {
-  const { control, handleSubmit, reset } = useForm<TForm>({
+  const { control, handleSubmit, reset, setValue } = useForm<TForm>({
     defaultValues
   })
   const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
+
+  const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
+    config: {
+      headers: {
+        'Content-Type': undefined
+      }
+    }
+  })
 
   useEffect(() => {
     isOpen && reset(defaultValues)
@@ -174,49 +258,188 @@ export default function CreateTeam({
       classNames={{
         content: 'rounded-lg flex flex-col',
         inner: 'p-3',
-        body: 'flex flex-col flex-1'
+        body: 'flex flex-col flex-1 overflow-y-hidden'
       }}
     >
-      {/* <DropAvt /> */}
-      <Controller
-        control={control}
-        name='title'
-        rules={{
-          required: 'Team name is required'
-        }}
-        render={({ field: { value, onChange }, fieldState }) => (
-          <TextInput
-            data-autofocus
-            withAsterisk
-            label='Team Name'
-            placeholder='Enter the team name'
-            // description='Leave it blank to use the default name...'
-            size='sm'
-            value={value}
-            onChange={e => onChange(e.target.value)}
-            error={fieldState.error && fieldState.error.message}
+      {/* <FileButton onChange={()=>{}} accept='image/png,image/jpeg'>
+        {props => <Button {...props}>Upload image</Button>}
+      </FileButton */}
+      <div className='relative flex-1'>
+        <ScrollArea
+          scrollbarSize={8}
+          className='absolute inset-0 right-[-12px] pr-3'
+        >
+          <Controller
+            control={control}
+            name='thumbnail'
+            render={({ field: { value, onChange } }) => (
+              <>
+                <Dropzone
+                  onDrop={files =>
+                    uploadFile(
+                      {
+                        method: 'post',
+                        isFormData: true,
+                        url: {
+                          baseUrl: '/upload'
+                        },
+                        payload: { file: files[0] }
+                      },
+                      {
+                        onSuccess(data, variables, context) {
+                          setValue('thumbnail', data)
+                        }
+                      }
+                    )
+                  }
+                  multiple={false}
+                  onReject={files => console.log('rejected files', files)}
+                  maxSize={3 * 1024 ** 2}
+                  accept={IMAGE_MIME_TYPE}
+                  className='w-full'
+                >
+                  <Avatar
+                    classNames={{ placeholder: 'rounded-lg' }}
+                    src={value?.path}
+                    className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
+                    alt='Team thumbnail'
+                  >
+                    Team thumbnail
+                  </Avatar>
+                </Dropzone>
+                <Input.Description className=''>
+                  This image is used for thumbnail
+                </Input.Description>
+              </>
+            )}
           />
-        )}
-      />
 
-      <Controller
-        control={control}
-        name='description'
-        render={({ field: { value, onChange } }) => (
-          <Textarea
-            label='Team Description'
-            // description='Description for the team'
-            placeholder='Enter a description for the team...'
-            className='mt-2'
-            value={value}
-            onChange={e => onChange(e.target.value)}
+          <Controller
+            control={control}
+            name='avatar'
+            render={({ field: { value, onChange } }) => (
+              <>
+                <Dropzone
+                  onDrop={files =>
+                    uploadFile(
+                      {
+                        method: 'post',
+                        isFormData: true,
+                        url: {
+                          baseUrl: '/upload'
+                        },
+                        payload: { file: files[0] }
+                      },
+                      {
+                        onSuccess(data, variables, context) {
+                          setValue('avatar', data)
+                        }
+                      }
+                    )
+                  }
+                  multiple={false}
+                  onReject={files => console.log('rejected files', files)}
+                  maxSize={3 * 1024 ** 2}
+                  accept={IMAGE_MIME_TYPE}
+                  className='mt-2'
+                  classNames={{
+                    inner: 'flex gap-2'
+                  }}
+                >
+                  <Image
+                    src={value?.path}
+                    fallbackSrc=''
+                    className='h-32 w-32 rounded-lg'
+                  />
+                  <Image
+                    src={value?.path}
+                    fallbackSrc=''
+                    className='h-24 w-24 rounded-lg'
+                  />
+                  <Image
+                    src={value?.path}
+                    fallbackSrc=''
+                    className='h-16 w-16 rounded-lg'
+                  />
+                  <Image
+                    src={value?.path}
+                    fallbackSrc=''
+                    className='h-8 w-8 rounded-lg'
+                  />
+                </Dropzone>
+                <Input.Description className=''>
+                  This image is used for avatar
+                </Input.Description>
+              </>
+            )}
           />
-        )}
-      />
 
-      <Channels control={control} />
+          <Controller
+            control={control}
+            name='title'
+            rules={{
+              required: 'Team name is required'
+            }}
+            render={({ field: { value, onChange }, fieldState }) => (
+              <TextInput
+                data-autofocus
+                withAsterisk
+                label='Team Name'
+                placeholder='Enter the team name'
+                // description='Leave it blank to use the default name...'
+                size='sm'
+                className='mt-2'
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                error={fieldState.error && fieldState.error.message}
+              />
+            )}
+          />
 
-      <Members control={control} />
+          <Controller
+            control={control}
+            name='dispayName'
+            rules={{
+              required: 'Display name is required'
+            }}
+            render={({ field: { value, onChange }, fieldState }) => (
+              <TextInput
+                data-autofocus
+                withAsterisk
+                label='Dispay url'
+                placeholder='Enter the display url'
+                description='This is the url that will be used to access the team. e.g. .../teams/your-team-name'
+                size='sm'
+                className='mt-2'
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                error={fieldState.error && fieldState.error.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name='description'
+            render={({ field: { value, onChange } }) => (
+              <Textarea
+                label='Team Description'
+                // description='Description for the team'
+                placeholder='Enter a description for the team...'
+                className='mt-2'
+                value={value}
+                onChange={e => onChange(e.target.value)}
+              />
+            )}
+          />
+
+          <Channels control={control} />
+
+          <Boards control={control} />
+
+          <Members control={control} />
+        </ScrollArea>
+      </div>
 
       <div className='mt-2 flex items-center justify-end gap-3'>
         <Button variant='default' color='red'>

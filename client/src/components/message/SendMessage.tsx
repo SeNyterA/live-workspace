@@ -122,7 +122,7 @@ export default function SendMessage({
               ?.filter(item =>
                 item.userName.toLowerCase().startsWith(query.toLowerCase())
               )
-              .slice(0, 100)
+              .slice(0, 10)
           },
 
           render: () => {
@@ -147,7 +147,7 @@ export default function SendMessage({
                   showOnCreate: true,
                   interactive: true,
                   trigger: 'manual',
-                  placement: 'bottom-start'
+                  placement: 'auto-start'
                 })
               },
 

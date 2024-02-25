@@ -1,4 +1,11 @@
-import { ActionIcon, Divider, Input, NavLink, ScrollArea } from '@mantine/core'
+import {
+  ActionIcon,
+  Divider,
+  Image,
+  Input,
+  NavLink,
+  ScrollArea
+} from '@mantine/core'
 import {
   IconHash,
   IconLayoutKanban,
@@ -43,9 +50,18 @@ export default function Sidebar() {
   return (
     <>
       <div className='flex w-72 flex-col gap-2 py-3'>
-        <p className='px-4 text-xl'>{team?.title}</p>
+        <div className='px-4'>
+          <p className='text-xl'>{team?.title}</p>
+          <p className='text-gray-500'>Wellcome to team</p>
+          <Image
+            src={
+              'https://static.tuoitre.vn/tto/i/s626//2015/07/13/1-1436781816.jpg'
+            }
+            className='w-full max-h-32 rounded-lg'
+          />
+        </div>
         <div className='flex items-center justify-center gap-2 px-4'>
-          <Input
+          {/* <Input
             className='flex h-[30px] flex-1 items-center rounded bg-gray-100'
             size='sm'
             placeholder='Search on workspace'
@@ -55,7 +71,7 @@ export default function Sidebar() {
             }}
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
-          />
+          /> */}
           <Watching
             watchingFn={state => {
               return Object.values(state.workspace.members).find(
