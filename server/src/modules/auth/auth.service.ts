@@ -6,8 +6,9 @@ import {
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import * as crypto from 'crypto-js'
+import { EFileSourceType, File } from 'src/entities/file.entity'
 import { User } from 'src/entities/user.entity'
-import { TCreateUser, TUser } from 'src/modules/users/user.dto'
+import { TCreateUser } from 'src/modules/users/user.dto'
 import { Repository } from 'typeorm'
 import { MailService } from '../mail/mail.service'
 import { TLoginPayload } from './auth.dto'
@@ -39,6 +40,8 @@ export class AuthService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(File)
+    private readonly fileRepository: Repository<File>,
     private readonly mailService: MailService
   ) {}
 
@@ -72,7 +75,7 @@ export class AuthService {
     }
   }
 
-  private async _generateUserCredentials(user: TUser): Promise<string> {
+  private async _generateUserCredentials(user: User): Promise<string> {
     const payload = {
       email: user.email,
       userName: user.userName,
@@ -120,11 +123,20 @@ export class AuthService {
           userName: payload.email.split('@')[0],
           email: payload.email,
           firebaseId: payload.user_id,
-          avatar: payload.picture,
           nickname: payload.name
         })
-        await this.userRepository.save(user)
+
+        const avatarFile = await this.fileRepository.create({
+          path: payload.picture,
+          sourceType: EFileSourceType.Link
+        })
+        await this.fileRepository.save(avatarFile)
+
+        console.log(avatarFile)
+
+        await this.userRepository.save({ ...user, avatar: avatarFile })
       }
+
       const access_token = await this._generateUserCredentials(user)
       return {
         user: user,
@@ -136,51 +148,51 @@ export class AuthService {
   }
 
   async signUp(userDto: TCreateUser) {
-    const existingUser = await this.userRepository.findOne({
-      where: [{ email: userDto.email }, { userName: userDto.userName }]
-    })
-    if (existingUser) {
-      if (existingUser.isAvailable) {
-        return false
-      } else {
-        const tokenVerify = this.jwtService.sign(
-          { sub: existingUser._id },
-          {
-            secret: process.env.JWT_SECRET,
-            expiresIn: '1h'
-          }
-        )
-        const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
-        this.mailService.sendEmail({
-          to: userDto.email,
-          subject: 'Verify Your Account',
-          text: `Hello ${existingUser.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
-        })
-        return true
-      }
-    } else {
-      const _password = userDto.password
-      const hashedPassword = crypto.SHA256(_password).toString()
-      userDto.password = hashedPassword
-      const user = await this.userRepository.create({
-        ...userDto,
-        isAvailable: false
-      })
-      await this.userRepository.save(user)
-      const tokenVerify = this.jwtService.sign(
-        { sub: user._id },
-        {
-          expiresIn: '1h'
-        }
-      )
-      const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
-      this.mailService.sendEmail({
-        to: userDto.email,
-        subject: 'Verify Your Account',
-        text: `Hello ${user.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
-      })
-      return true
-    }
+    // const existingUser = await this.userRepository.findOne({
+    //   where: [{ email: userDto.email }, { userName: userDto.userName }]
+    // })
+    // if (existingUser) {
+    //   if (existingUser.isAvailable) {
+    //     return false
+    //   } else {
+    //     const tokenVerify = this.jwtService.sign(
+    //       { sub: existingUser._id },
+    //       {
+    //         secret: process.env.JWT_SECRET,
+    //         expiresIn: '1h'
+    //       }
+    //     )
+    //     const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
+    //     this.mailService.sendEmail({
+    //       to: userDto.email,
+    //       subject: 'Verify Your Account',
+    //       text: `Hello ${existingUser.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
+    //     })
+    //     return true
+    //   }
+    // } else {
+    //   const _password = userDto.password
+    //   const hashedPassword = crypto.SHA256(_password).toString()
+    //   userDto.password = hashedPassword
+    //   const user = await this.userRepository.create({
+    //     ...userDto,
+    //     isAvailable: false
+    //   })
+    //   await this.userRepository.save(user)
+    //   const tokenVerify = this.jwtService.sign(
+    //     { sub: user._id },
+    //     {
+    //       expiresIn: '1h'
+    //     }
+    //   )
+    //   const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
+    //   this.mailService.sendEmail({
+    //     to: userDto.email,
+    //     subject: 'Verify Your Account',
+    //     text: `Hello ${user.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
+    //   })
+    //   return true
+    // }
   }
 
   async verifyAccount(token: string) {
@@ -210,7 +222,10 @@ export class AuthService {
   }
 
   async getProfile(id: string) {
-    const user = await this.userRepository.findOne({ where: { _id: id } })
+    const user = await this.userRepository.findOne({
+      where: { _id: id },
+      relations: ['avatar']
+    })
     return user
   }
 }

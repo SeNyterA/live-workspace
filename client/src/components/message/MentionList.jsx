@@ -66,7 +66,7 @@ export default forwardRef((props, ref) => {
               className='mt-2 flex max-w-full flex-1 items-center gap-1 first:mt-0'
               key={user?._id}
             >
-              <Avatar src={user?.avatar} size={32} className='' />
+              <Avatar src={user?.avatar?.path} size={32} className='' />
 
               <div className='flex flex-1 flex-col justify-center'>
                 <p className='max-w-[250px] truncate font-medium leading-4'>

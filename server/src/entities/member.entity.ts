@@ -29,6 +29,9 @@ export class Member extends BaseEntity {
   @Column()
   path: string
 
+  @Column({ type: 'float', default: 0 })
+  order: number
+
   @ManyToOne(() => User, {})
   @JoinColumn({ name: 'userId' })
   @Exclude()

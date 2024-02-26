@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
+import { File } from './file.entity'
 
 @Entity()
 export class User {
@@ -24,9 +27,6 @@ export class User {
   @Column({ nullable: true })
   nickname?: string
 
-  @Column({ nullable: true })
-  avatar?: string
-
   @Column()
   @Exclude()
   password: string
@@ -39,4 +39,8 @@ export class User {
 
   @Column({ default: true })
   isAvailable: boolean
+
+  @OneToOne(() => File)
+  @JoinColumn({ name: 'avatarId' })
+  avatar: File
 }

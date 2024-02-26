@@ -37,19 +37,23 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       if (!client?.handshake?.auth?.token) throw new Error('Missing token')
 
-      const user = await this.jwtService.verifyAsync(
+      const jwtUser = await this.jwtService.verifyAsync(
         client.handshake.auth.token,
         { secret: process.env.JWT_SECRET }
       )
+      console.log(jwtUser)
 
-      if (!user?.sub) throw new Error('Invalid user')
-      client.user = user
+      if (!jwtUser?.sub) throw new Error('Invalid user')
+      client.user = jwtUser
 
       await this.workspaceService.subscribeToWorkspaces({
         client,
-        user
+        user: jwtUser
       })
-      await this.redisService.redisClient.set(`presence:${user.sub}`, 'online')
+      await this.redisService.redisClient.set(
+        `presence:${jwtUser.sub}`,
+        'online'
+      )
     } catch (error) {
       client.disconnect()
       console.log(error)

@@ -69,7 +69,7 @@ export default function Members() {
                 color='yellow'
                 withBorder
               >
-                <Avatar src={user?.avatar} size={36} />
+                <Avatar src={user?.avatar?.path} size={36} />
               </Indicator>
 
               <div className='flex flex-1 flex-col justify-center'>
@@ -109,7 +109,7 @@ export default function Members() {
                   color='yellow'
                   withBorder
                 >
-                  <Avatar src={user?.avatar} size={36} />
+                  <Avatar src={user?.avatar?.path} size={36} />
                 </Indicator>
 
                 <div className='flex flex-1 flex-col justify-center'>

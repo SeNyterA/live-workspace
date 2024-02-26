@@ -4,11 +4,13 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   RelationId
 } from 'typeorm'
 import { BaseEntity } from './base.entity'
 import { Card } from './board/card.entity'
 import { Property } from './board/property.entity'
+import { File } from './file.entity'
 import { Member } from './member.entity'
 import { Message } from './message.entity'
 
@@ -33,8 +35,13 @@ export class Workspace extends BaseEntity {
   @Column()
   description: string
 
-  @Column()
-  avatar: string
+  @OneToOne(() => File)
+  @JoinColumn({ name: 'avatar' })
+  avatar: File
+
+  @OneToOne(() => File)
+  @JoinColumn({ name: 'thumbnail' })
+  thumbnail: File
 
   @Column()
   displayUrl: string

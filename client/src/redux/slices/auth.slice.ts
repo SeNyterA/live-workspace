@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TUser } from '../../types/user.type'
 import { lsActions } from '../../utils/auth'
+import { TUser } from '../../new-types/user'
 
 interface UserState {
   userInfo: TUser | null
