@@ -54,7 +54,7 @@ export default function PinedMesages() {
 
   return (
     <NavLink
-      className='mt-1 p-1 pl-0'
+      className='sticky top-8 z-[2] mt-1 bg-white p-1 pl-0'
       label={
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>Pined messages</p>
@@ -69,52 +69,50 @@ export default function PinedMesages() {
       onClick={() => {}}
       classNames={{
         children:
-          'h-[300px] relative w-full border rounded border-dashed border-none bg-gray-50'
+          'pl-0 border-0 border-b border-dashed border-gray-200 pb-2 mb-4'
       }}
     >
-      <ScrollArea className='absolute inset-2 right-0 pr-2' scrollbarSize={8}>
-        {pinedMessages?.map((message, index) => (
-          <>
-            <Watching
-              key={message._id}
-              watchingFn={state => state.workspace.users[message.createdById]}
-            >
-              {createBy => (
-                <div className='flex gap-2 rounded first:mt-2'>
-                  <Avatar src={createBy?.avatar?.path} />
+      {pinedMessages?.map((message, index) => (
+        <>
+          <Watching
+            key={message._id}
+            watchingFn={state => state.workspace.users[message.createdById]}
+          >
+            {createBy => (
+              <div className='flex gap-2 rounded first:mt-2'>
+                <Avatar src={createBy?.avatar?.path} />
 
-                  <div className='flex-1'>
-                    <p className='font-medium'>
-                      {createBy?.userName || 'Senytera'}
-                    </p>
-                    <p className='text-xs'>
-                      {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
-                    </p>
-                    <div
-                      className='mt-1 rounded text-sm'
-                      dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(
-                          generateHTML(updateLabelMention(message.content), [
-                            StarterKit,
-                            Underline,
-                            Link,
-                            Highlight,
-                            TextAlign,
-                            Mention
-                          ])
-                        )
-                      }}
-                    />
-                  </div>
+                <div className='flex-1'>
+                  <p className='font-medium'>
+                    {createBy?.userName || 'Senytera'}
+                  </p>
+                  <p className='text-xs'>
+                    {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                  </p>
+                  <div
+                    className='mt-1 rounded text-sm'
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(
+                        generateHTML(updateLabelMention(message.content), [
+                          StarterKit,
+                          Underline,
+                          Link,
+                          Highlight,
+                          TextAlign,
+                          Mention
+                        ])
+                      )
+                    }}
+                  />
                 </div>
-              )}
-            </Watching>
-            {index < pinedMessages.length - 1 && (
-              <Divider className='my-2' variant='dashed' />
+              </div>
             )}
-          </>
-        ))}
-      </ScrollArea>
+          </Watching>
+          {index < pinedMessages.length - 1 && (
+            <Divider className='my-2' variant='dashed' />
+          )}
+        </>
+      ))}
     </NavLink>
   )
 }

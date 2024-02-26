@@ -20,7 +20,7 @@ export default function Files() {
 
   return (
     <NavLink
-      className='mt-1 p-1 pl-0'
+      className='sticky top-16 z-[2] mt-1 bg-white p-1 pl-0'
       label={
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>File</p>
@@ -34,23 +34,16 @@ export default function Files() {
       }
       onClick={() => {}}
       classNames={{
-        children:
-          'h-[300px] relative w-full border rounded border-dashed border-none bg-gray-50'
+        children: 'pl-0'
       }}
     >
-      <ScrollArea
-        className='absolute inset-2 right-0 pr-2'
-        scrollbarSize={8}
-        classNames={{ viewport: '' }}
-      >
-        <div className='grid w-full grid-cols-3 gap-2'>
-          {workspaceFiles?.map((file, index) => {
-            const url = new URL(file.path)
-            url.searchParams.set('quality', 'low')
-            return <Image src={url.toString()} className='aspect-[1] rounded' />
-          })}
-        </div>
-      </ScrollArea>
+      <div className='grid w-full grid-cols-3 gap-2'>
+        {workspaceFiles?.map((file, index) => {
+          const url = new URL(file.path)
+          url.searchParams.set('quality', 'low')
+          return <Image src={url.toString()} className='aspect-[1] rounded' />
+        })}
+      </div>
     </NavLink>
   )
 }

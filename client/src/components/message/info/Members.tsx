@@ -1,4 +1,4 @@
-import { Avatar, Badge, Indicator, NavLink, ScrollArea } from '@mantine/core'
+import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
 import { EMemberRole } from '../../../types/workspace.type'
@@ -37,7 +37,7 @@ export default function Members() {
 
   return (
     <NavLink
-      className='p-1 pl-0'
+      className='sticky top-0 z-[2] bg-white p-1 pl-0'
       label={
         <div className='flex items-center justify-between'>
           Members
@@ -51,91 +51,48 @@ export default function Members() {
       onClick={() => {}}
       classNames={{
         children:
-          'h-[300px] relative w-full border rounded border-dashed bg-gray-50 border-none'
+          'pl-0 border-0 border-b border-dashed border-gray-200 pb-2 mb-4'
       }}
     >
-      <ScrollArea className='absolute inset-2 right-0 pr-2' scrollbarSize={8} >
-        {!!enableMembers?.length &&
-          enableMembers?.map(({ member, user }) => (
-            <div
-              className='mt-2 flex max-w-full flex-1 items-center gap-1 first:mt-0'
-              key={user?._id}
+      {!!enableMembers?.length &&
+        enableMembers?.map(({ member, user }) => (
+          <div
+            className='mt-2 flex max-w-full flex-1 items-center gap-1 first:mt-0'
+            key={user?._id}
+          >
+            <Indicator
+              inline
+              size={16}
+              offset={3}
+              position='bottom-end'
+              color='yellow'
+              withBorder
+              zIndex={1}
             >
-              <Indicator
-                inline
-                size={16}
-                offset={3}
-                position='bottom-end'
-                color='yellow'
-                withBorder
-              >
-                <Avatar src={user?.avatar?.path} size={36} />
-              </Indicator>
+              <Avatar src={user?.avatar?.path} size={36} />
+            </Indicator>
 
-              <div className='flex flex-1 flex-col justify-center'>
-                <p className='max-w-[150px] truncate font-medium leading-4'>
-                  {user?.userName}
-                </p>
-                <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
-                  {user?.email}
-                </p>
-              </div>
-
-              {member && (
-                <Badge
-                  variant='light'
-                  color={getRoleColor(member.role)}
-                  radius='xs'
-                  className='w-16 px-0'
-                >
-                  {member.role}
-                </Badge>
-              )}
+            <div className='flex flex-1 flex-col justify-center'>
+              <p className='max-w-[150px] truncate font-medium leading-4'>
+                {user?.userName}
+              </p>
+              <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+                {user?.email}
+              </p>
             </div>
-          ))}
-        {!!disableMembers?.length && (
-          <>
-            {/* <Divider variant='dashed' className='mt-2' /> */}
-            {disableMembers.map(({ member, user }) => (
-              <div
-                className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
-                key={user?._id}
+
+            {member && (
+              <Badge
+                variant='light'
+                color={getRoleColor(member.role)}
+                radius='xs'
+                className='w-16 px-0'
               >
-                <Indicator
-                  inline
-                  size={16}
-                  offset={3}
-                  position='bottom-end'
-                  color='yellow'
-                  withBorder
-                >
-                  <Avatar src={user?.avatar?.path} size={36} />
-                </Indicator>
-
-                <div className='flex flex-1 flex-col justify-center'>
-                  <p className='max-w-[150px] truncate font-medium leading-4'>
-                    {user?.userName}
-                  </p>
-                  <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
-                    {user?.email}
-                  </p>
-                </div>
-
-                {member && (
-                  <Badge
-                    variant='light'
-                    color={'dark'}
-                    radius='xs'
-                    className='w-20'
-                  >
-                    None
-                  </Badge>
-                )}
-              </div>
-            ))}
-          </>
-        )}
-      </ScrollArea>
+                {member.role}
+              </Badge>
+            )}
+          </div>
+        ))}
     </NavLink>
   )
 }
