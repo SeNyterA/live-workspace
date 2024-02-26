@@ -1,6 +1,6 @@
-
 import { TBase } from './base'
 import { TProperty } from './board'
+import { TFile } from './file'
 import { TMember } from './member'
 import { TMessage } from './message'
 
@@ -15,7 +15,8 @@ export enum WorkspaceType {
 export type TWorkspace = TBase & {
   title: string
   description: string
-  avatar: string
+  avatar?: TFile
+  thumbnail?: TFile
   displayUrl: string
   type: WorkspaceType
   parent: Workspace

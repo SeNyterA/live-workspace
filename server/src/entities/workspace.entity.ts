@@ -35,13 +35,13 @@ export class Workspace extends BaseEntity {
   @Column()
   description: string
 
-  @OneToOne(() => File)
+  @OneToOne(() => File, { nullable: true })
   @JoinColumn({ name: 'avatar' })
-  avatar: File
+  avatar?: File
 
-  @OneToOne(() => File)
+  @OneToOne(() => File, { nullable: true })
   @JoinColumn({ name: 'thumbnail' })
-  thumbnail: File
+  thumbnail?: File
 
   @Column()
   displayUrl: string

@@ -9,9 +9,12 @@ import CreateTeam from './CreateTeam'
 
 export default function TeamList() {
   const teams = useAppSelector(state =>
-    Object.values(state.workspace.workspaces).filter(
-      team => team.type === 'Team'
-    )
+    Object.values(state.workspace.workspaces)
+      .filter(team => team.type === 'Team')
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      )
   )
 
   const { switchTeam } = useAppControlParams()
@@ -42,7 +45,9 @@ export default function TeamList() {
               <ActionIcon
                 key={team._id}
                 className={`relative mx-auto mt-2 flex h-fit w-fit items-center justify-center p-0 first:mt-0 ${
-                  teamId === team._id ? 'rounded ring-1 ring-offset-2' : 'rounded-full '
+                  teamId === team._id
+                    ? 'rounded-full ring-1 ring-offset-2'
+                    : 'rounded-full '
                 }`}
                 variant='light'
                 size='md'
@@ -51,13 +56,10 @@ export default function TeamList() {
                 }}
               >
                 <Avatar
-                radius="sm"
+                  radius='sm'
                   size={32}
                   className={teamId === team._id ? 'rounded' : ''}
-                  src={
-                    team.avatar ||
-                    'https://static.tuoitre.vn/tto/i/s626//2015/07/13/1-1436781816.jpg'
-                  }
+                  src={team.avatar?.path}
                 />
               </ActionIcon>
             ))}

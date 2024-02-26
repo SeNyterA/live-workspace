@@ -1,16 +1,8 @@
-import {
-  ActionIcon,
-  Divider,
-  Image,
-  Input,
-  NavLink,
-  ScrollArea
-} from '@mantine/core'
+import { ActionIcon, Divider, Image, NavLink, ScrollArea } from '@mantine/core'
 import {
   IconHash,
   IconLayoutKanban,
   IconPlus,
-  IconSearch,
   IconSettings,
   IconUsersGroup
 } from '@tabler/icons-react'
@@ -45,19 +37,17 @@ export default function Sidebar() {
   const team = useAppSelector(state => {
     return Object.values(state.workspace.workspaces).find(e => e._id === teamId)
   })
-  const [searchValue, setSearchValue] = useState('')
+  // const [searchValue, setSearchValue] = useState('')
 
   return (
     <>
       <div className='flex w-72 flex-col gap-2 py-3'>
         <div className='px-4'>
           <p className='text-xl'>{team?.title}</p>
-          <p className='text-gray-500'>Wellcome to team</p>
+          <p className='text-gray-500'>{team?.description}</p>
           <Image
-            src={
-              'https://static.tuoitre.vn/tto/i/s626//2015/07/13/1-1436781816.jpg'
-            }
-            className='w-full max-h-32 rounded-lg'
+            src={team?.thumbnail?.path}
+            className='max-h-32 w-full rounded-lg'
           />
         </div>
         <div className='flex items-center justify-center gap-2 px-4'>

@@ -9,12 +9,13 @@ import {
   useCombobox
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
-import { useAppQuery } from '../../services/apis/useAppQuery'
-import './userCombobox.module.css'
 import { useAppSelector } from '../../redux/store'
+import { useAppQuery } from '../../services/apis/useAppQuery'
+import { arrayToObject } from '../../utils/helper'
+import './userCombobox.module.css'
 
 export default function UserCombobox({
   usersSelectedId = [],
@@ -45,20 +46,15 @@ export default function UserCombobox({
     options: {
       queryKey: [keyword],
       enabled: !!keyword
+    },
+    onSucess(data) {
+      dispatch(
+        workspaceActions.updateData({
+          users: arrayToObject(data.users, '_id')
+        })
+      )
     }
   })
-
-  useEffect(() => {
-    if (userData)
-      dispatch(
-        workspaceActions.addUsers(
-          userData.users.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          )
-        )
-      )
-  }, [userData])
 
   return (
     <Combobox
@@ -67,6 +63,7 @@ export default function UserCombobox({
         // combobox.closeDropdown()
       }}
       store={combobox}
+      position='top-start'
     >
       <Combobox.Target>
         <TextInput
@@ -98,7 +95,7 @@ export default function UserCombobox({
                       className='mt-3 flex flex-1 items-center gap-2 first:mt-0'
                       key={item._id}
                     >
-                      <Avatar src={item.avatar} />
+                      <Avatar src={item.avatar?.path} />
                       <div className='flex flex-1 flex-col justify-center'>
                         <p className='font-medium leading-5'>{item.userName}</p>
                         <p className='text-xs leading-3 text-gray-500'>

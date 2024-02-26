@@ -51,7 +51,7 @@ export default function Members() {
       onClick={() => {}}
       classNames={{
         children:
-          'h-[300px] relative w-full border rounded border-dashed border-amber-600'
+          'h-[300px] relative w-full border rounded border-dashed bg-gray-50 border-none'
       }}
     >
       <ScrollArea className='absolute inset-2 right-0 pr-2' scrollbarSize={8} >

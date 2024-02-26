@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { TCard, TOption } from '../../new-types/board'
 import { TMessage } from '../../new-types/message'
+import { TWorkspace } from '../../new-types/workspace'
 import { TUser } from '../../types/user.type'
 import {
   TBoard,
@@ -57,6 +58,12 @@ export type ApiSocketType = {
   workspaces: {
     response: {
       workspaces: TWorkspaceSocket[]
+    }
+  }
+
+  workspace: {
+    response: {
+      workspace: TWorkspace
     }
   }
 

@@ -269,6 +269,7 @@ export class WorkspaceService {
     )
     if (members) {
       const sockets = await this.socketService.server.fetchSockets()
+      sockets[0]
       members.forEach(member => {
         if (member.type === 'member' && member.action === 'create') {
           sockets

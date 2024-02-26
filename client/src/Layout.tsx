@@ -7,6 +7,7 @@ import TeamList from './components/sidebar/team/TeamList'
 import useAppParams from './hooks/useAppParams'
 import { workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
+import { useAppOnSocket } from './services/socket/useAppOnSocket'
 
 export type TThread = {
   threadId: string
@@ -50,43 +51,16 @@ export default function Layout({ children }: { children: ReactNode }) {
     }
   })
 
-  const { data: unReadCountData } = useAppQuery({
-    key: 'getUnreadCounts',
-    url: {
-      baseUrl: 'workspace/getUnreadCounts'
+  useAppOnSocket({
+    key: 'workspace',
+    resFunc: ({ workspace }) => {
+      dispatch(
+        workspaceActions.updateData({
+          workspaces: { [workspace._id]: workspace }
+        })
+      )
     }
   })
-  // useEffect(() => {
-  //   if (unReadCountData) {
-  //     dispatch(workspaceActions.setUnreadCounts(unReadCountData))
-  //   }
-  // }, [dispatch, unReadCountData])
-
-  // useAppOnSocket({
-  //   key: 'workspaces',
-  //   resFunc: ({ workspaces }) => {}
-  // })
-
-  // useAppOnSocket({
-  //   key: 'unReadCount',
-  //   resFunc: ({ count, targetId }) => {
-  //     dispatch(workspaceActions.setUnreadCounts({ [targetId]: count }))
-  //   }
-  // })
-
-  // useAppOnSocket({
-  //   key: 'users',
-  //   resFunc: ({ users }) => {
-  //     dispatch(
-  //       workspaceActions.addUsers(
-  //         users.reduce(
-  //           (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-  //           {}
-  //         )
-  //       )
-  //     )
-  //   }
-  // })
 
   return (
     <div className='relative flex h-screen w-screen flex-col text-sm'>

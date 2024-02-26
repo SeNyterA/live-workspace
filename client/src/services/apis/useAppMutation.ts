@@ -2,14 +2,10 @@ import { MutationOptions, useMutation } from '@tanstack/react-query'
 import { AxiosRequestConfig } from 'axios'
 import { TCard, TOption } from '../../new-types/board'
 import { TMessage } from '../../new-types/message'
+import { TWorkspace } from '../../new-types/workspace'
 import { TChannelDto, TGroupDto } from '../../types/dto.type'
 import { TUser } from '../../types/user.type'
-import {
-  EMemberRole,
-  JSONContent,
-  TMember,
-  TWorkspace
-} from '../../types/workspace.type'
+import { EMemberRole, JSONContent, TMember } from '../../types/workspace.type'
 import { TBoardMutionApi } from './board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
@@ -183,7 +179,7 @@ export type ApiMutationType = {
       baseUrl: '/teams'
     }
     method: 'post'
-    payload: { workspace: TWorkspace }
+    payload: { workspace: TWorkspace; channels?: TWorkspace[] }
     response: TWorkspace
   }
 

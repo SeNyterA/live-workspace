@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   Drawer,
-  Image,
   Input,
   ScrollArea,
   Textarea,
@@ -103,7 +102,7 @@ const Channels = ({ control }: { control: Control<TForm, any> }) => {
 const Boards = ({ control }: { control: Control<TForm, any> }) => {
   const { append, fields, remove } = useFieldArray({
     control,
-    name: 'channels'
+    name: 'boards'
   })
 
   return (
@@ -151,9 +150,7 @@ const Boards = ({ control }: { control: Control<TForm, any> }) => {
           size='sm'
           variant='light'
           onClick={() => {
-            append({
-              title: ''
-            })
+            append({ isInitData: true, title: '' })
           }}
         >
           Add board
@@ -346,24 +343,24 @@ export default function CreateTeam({
                     inner: 'flex gap-2'
                   }}
                 >
-                  <Image
+                  <Avatar
+                    classNames={{ placeholder: 'rounded-lg' }}
                     src={value?.path}
-                    fallbackSrc=''
                     className='h-32 w-32 rounded-lg'
                   />
-                  <Image
+                  <Avatar
+                    classNames={{ placeholder: 'rounded-lg' }}
                     src={value?.path}
-                    fallbackSrc=''
                     className='h-24 w-24 rounded-lg'
                   />
-                  <Image
+                  <Avatar
+                    classNames={{ placeholder: 'rounded-lg' }}
                     src={value?.path}
-                    fallbackSrc=''
                     className='h-16 w-16 rounded-lg'
                   />
-                  <Image
+                  <Avatar
+                    classNames={{ placeholder: 'rounded-lg' }}
                     src={value?.path}
-                    fallbackSrc=''
                     className='h-8 w-8 rounded-lg'
                   />
                 </Dropzone>
@@ -449,7 +446,8 @@ export default function CreateTeam({
         <Button
           loading={isPending}
           disabled={isPending}
-          onClick={handleSubmit(({ channels, ...data }) => {
+          onClick={handleSubmit(({ ...data }) => {
+            console.log({ data })
             createTeam({
               url: {
                 baseUrl: '/teams'
@@ -457,8 +455,12 @@ export default function CreateTeam({
               method: 'post',
               payload: {
                 workspace: {
-                  title: data.title
-                } as any
+                  title: data.title,
+                  avatar: data.avatar,
+                  thumbnail: data.thumbnail,
+                  description: data.description
+                } as any,
+                channels: data.channels?.map(e => ({ title: e.title })) as any[]
               }
             }).then(data => {
               onClose()

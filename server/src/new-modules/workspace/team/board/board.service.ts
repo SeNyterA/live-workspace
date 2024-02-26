@@ -8,9 +8,13 @@ import { Option } from 'src/entities/board/option.entity'
 import { Property } from 'src/entities/board/property.entity'
 import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
-import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
+import {
+  Workspace,
+  WorkspaceStatus,
+  WorkspaceType
+} from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
-import { In, Repository } from 'typeorm'
+import { In, Not, Repository } from 'typeorm'
 import { generateBoardData } from './board.init'
 
 export const generateRandomHash = (
@@ -50,9 +54,9 @@ export class BoardService {
     private readonly cardRepository: Repository<Card>
   ) {}
 
-  async initBoardData({ board }: { board: Workspace }) {
+  async initBoardData({ boardId }: { boardId: string }) {
     const { cards, options, properties } = generateBoardData({
-      boardId: board._id
+      boardId: boardId
     })
 
     const _properties = await this.propertyRepository.insert(properties)
@@ -79,39 +83,52 @@ export class BoardService {
       }
     })
 
-    const newWorkspace = await this.workspaceRepository.save(
-      this.workspaceRepository.create({
-        ...workspace,
-        type: WorkspaceType.Board,
-        displayUrl: generateRandomHash(),
-
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        parent: { _id: teamId }
-      })
-    )
-
-    const member = await this.memberRepository.save(
-      this.memberRepository.create({
-        role: EMemberRole.Owner,
-        type: EMemberType.Board,
-
-        modifiedBy: { _id: user.sub },
-        createdBy: { _id: user.sub },
-        user: { _id: user.sub },
-        workspace: { _id: newWorkspace._id }
-      })
-    )
-
-    this.initBoardData({
-      board: newWorkspace
+    const newWorkspace = await this.workspaceRepository.insert({
+      ...workspace,
+      type: WorkspaceType.Board,
+      displayUrl: generateRandomHash(),
+      createdBy: { _id: user.sub },
+      modifiedBy: { _id: user.sub },
+      parent: { _id: teamId }
     })
 
-    console.log(generateBoardData({ boardId: newWorkspace._id }))
+    const workpsaceMembers =
+      newWorkspace.generatedMaps[0].status === WorkspaceStatus.Public
+        ? await this.memberRepository.find({
+            where: {
+              workspace: { _id: teamId },
+              isAvailable: true,
+              user: { _id: Not(user.sub), isAvailable: true }
+            }
+          })
+        : []
+
+    const members = await this.memberRepository.insert([
+      {
+        role: EMemberRole.Owner,
+        type: EMemberType.Board,
+        user: { _id: user.sub },
+        workspace: { _id: newWorkspace.identifiers[0]._id },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      },
+      ...workpsaceMembers.map(member => ({
+        role: EMemberRole.Member,
+        type: EMemberType.Board,
+        user: { _id: member.userId },
+        workspace: { _id: newWorkspace.identifiers[0]._id },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      }))
+    ])
+
+    this.initBoardData({
+      boardId: newWorkspace.identifiers[0]._id
+    })
 
     return {
       workspace: newWorkspace,
-      member
+      members
     }
   }
 

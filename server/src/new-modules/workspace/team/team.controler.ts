@@ -11,11 +11,13 @@ export class TeamController {
   @Post()
   create(
     @HttpUser() user: TJwtUser,
-    @Body() { workspace }: { workspace: Workspace }
+    @Body()
+    { workspace, channels }: { workspace: Workspace; channels?: Workspace[] }
   ) {
     return this.workspaceService.createTeam({
       user,
-      workspace
+      workspace,
+      channels
     })
   }
 }

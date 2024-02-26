@@ -2,7 +2,7 @@ export type TBase = {
   _id: string
   createdById: string
   modifiedById: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
   isAvailable: boolean
 }
