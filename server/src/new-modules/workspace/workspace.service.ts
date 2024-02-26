@@ -13,6 +13,7 @@ import {
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
 import { In, Not, Repository } from 'typeorm'
 import { BoardService } from './team/board/board.service'
+import { File } from 'src/entities/file.entity'
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
   data: Workspace
@@ -48,6 +49,8 @@ export class WorkspaceService {
     private readonly workspaceRepository: Repository<Workspace>,
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
+    @InjectRepository(File)
+    private readonly fileRepository: Repository<File>,
 
     readonly boardService: BoardService
   ) {}
@@ -309,13 +312,15 @@ export class WorkspaceService {
       where: {
         _id: workspaceId,
         members: { user: { _id: user.sub, isAvailable: true } }
-      }
+      },
+      relations: ['avatar', 'thumbnail']
     })
 
     const members = await this.memberRepository.find({
       where: { workspace: { _id: workspaceId } },
       relations: ['user']
     })
+
     return { workspace, members }
   }
 
@@ -451,4 +456,32 @@ export class WorkspaceService {
     })
   }
   //#endregion
+
+  async getWorkspaceFiles({
+    workspaceId,
+    user
+  }: {
+    workspaceId: string
+    user: TJwtUser
+  }) {
+    await this.workspaceRepository.findOneOrFail({
+      where: {
+        _id: workspaceId,
+        members: {
+          user: { _id: user.sub, isAvailable: true },
+          isAvailable: true
+        },
+        isAvailable: true
+      }
+    })
+
+    const files = await this.fileRepository.find({
+      where: {
+        isAvailable: true,
+        messages: [{ target: { _id: workspaceId }, isAvailable: true }]
+      }
+    })
+
+    return files
+  }
 }

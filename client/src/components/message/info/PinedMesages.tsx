@@ -58,9 +58,9 @@ export default function PinedMesages() {
       label={
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>Pined messages</p>
-          {pinedMessages?.length && (
+          {pinedMessages!.length > 0 && (
             <Badge variant='light' color='gray'>
-              {pinedMessages.length}
+              {pinedMessages!.length}
             </Badge>
           )}
           {isPending && <Loader size={10} />}
@@ -69,7 +69,7 @@ export default function PinedMesages() {
       onClick={() => {}}
       classNames={{
         children:
-          'h-[300px] relative w-full border rounded border-dashed border-amber-600'
+          'h-[300px] relative w-full border rounded border-dashed border-none bg-gray-50'
       }}
     >
       <ScrollArea className='absolute inset-2 right-0 pr-2' scrollbarSize={8}>
@@ -81,7 +81,7 @@ export default function PinedMesages() {
             >
               {createBy => (
                 <div className='flex gap-2 rounded first:mt-2'>
-                  <Avatar src={createBy?.avatar} />
+                  <Avatar src={createBy?.avatar?.path} />
 
                   <div className='flex-1'>
                     <p className='font-medium'>
@@ -91,7 +91,7 @@ export default function PinedMesages() {
                       {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
                     </p>
                     <div
-                      className='mt-1 rounded bg-gray-100 p-1 text-sm'
+                      className='mt-1 rounded text-sm'
                       dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(
                           generateHTML(updateLabelMention(message.content), [

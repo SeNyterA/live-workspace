@@ -75,41 +75,39 @@ export default function MessageContentWrapper() {
 
           <SendMessage
             targetId={channelId || ''}
-            createMessage={async ({ files, value }) => {
-              Array(100)
-                .fill(0)
-                .map(async () => {
-                  await sendWorkspaceMessage(
-                    {
-                      url: {
-                        baseUrl: '/workspaces/:workspaceId/messages',
-                        urlParams: {
-                          workspaceId: workspaceId
-                        }
-                      },
-                      method: 'post',
-                      payload: {
-                        message: {
-                          content: value,
-                          isPinned: Math.random() > 0.2
-                        } as any
-                      }
-                    },
-                    {
-                      onSuccess(message) {
-                        dispatch(
-                          workspaceActions.updateData({
-                            messages: { [message._id]: message }
-                          })
-                        )
-                        socketEmit({
-                          key: 'stopTyping',
-                          targetId: workspaceId
-                        })
-                      }
+            createMessage={({ files, value }) => {
+              console.log({ value, files })
+
+              sendWorkspaceMessage(
+                {
+                  url: {
+                    baseUrl: '/workspaces/:workspaceId/messages',
+                    urlParams: {
+                      workspaceId: workspaceId
                     }
-                  )
-                })
+                  },
+                  method: 'post',
+                  payload: {
+                    message: {
+                      content: value,
+                      attachments: files
+                    } as any
+                  }
+                },
+                {
+                  onSuccess(message) {
+                    dispatch(
+                      workspaceActions.updateData({
+                        messages: { [message._id]: message }
+                      })
+                    )
+                    socketEmit({
+                      key: 'stopTyping',
+                      targetId: workspaceId
+                    })
+                  }
+                }
+              )
             }}
           />
         </div>

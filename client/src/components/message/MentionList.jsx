@@ -1,6 +1,6 @@
+import { Avatar } from '@mantine/core'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import './MentionList.scss'
-import { Avatar } from '@mantine/core'
 
 export default forwardRef((props, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0)

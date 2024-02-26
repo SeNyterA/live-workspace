@@ -13,7 +13,7 @@ export type TMessage = TBase & {
     [userId: string]: string
   }
   isPinned: boolean
-  attachments: TFile[]
+  attachments?: TFile[]
   targetId: string
   replyToId: string
   threadId: string

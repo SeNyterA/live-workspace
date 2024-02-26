@@ -2,6 +2,7 @@ import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconSettings } from '@tabler/icons-react'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
+import Files from './Files'
 import Members from './Members'
 import PinedMesages from './PinedMesages'
 
@@ -37,6 +38,7 @@ export default function Info() {
           >
             <Members />
             {!!(channelId || groupId || directId) && <PinedMesages />}
+            <Files />
           </ScrollArea>
         </div>
       </div>

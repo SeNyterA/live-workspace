@@ -49,10 +49,12 @@ export class MessageService {
     replyToId?: string
     threadId?: string
   }) {
+    console.log(message)
     this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId },
+        workspace: { _id: targetId, isAvailable: true },
+        isAvailable: true,
         type: In([
           EMemberType.Channel,
           EMemberType.DirectMessage,
@@ -69,12 +71,20 @@ export class MessageService {
         target: { _id: targetId },
         replyTo: replyToId ? { _id: replyToId } : undefined,
         thread: threadId ? { _id: threadId } : undefined
-      })
+      }),
+      { reload: true }
     )
+    console.log(newMessage)
 
-    this.emitMessage({ message: newMessage })
+    const messageInserted = await this.messageRepository.findOneOrFail({
+      where: { _id: newMessage._id },
+      relations: ['attachments']
+    })
+    console.log(messageInserted)
 
-    return newMessage
+    this.emitMessage({ message: messageInserted })
+
+    return messageInserted
   }
 
   async getMessages({
@@ -116,7 +126,8 @@ export class MessageService {
       order: {
         createdAt: 'DESC'
       },
-      take: Number(size)
+      take: Number(size),
+      relations: ['attachments']
     })
 
     const remainingCount = totalMessages - messages.length

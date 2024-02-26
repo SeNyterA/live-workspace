@@ -13,10 +13,19 @@ import { TeamController } from './team/team.controler'
 import { WorkspaceController } from './workspace.controler'
 
 import { WorkspaceService } from './workspace.service'
+import { File } from 'src/entities/file.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Member, Workspace, Property, Option, Card]),
+    TypeOrmModule.forFeature([
+      User,
+      Member,
+      Workspace,
+      Property,
+      Option,
+      Card,
+      File
+    ]),
     RedisModule
   ],
   controllers: [TeamController, BoardController, WorkspaceController],

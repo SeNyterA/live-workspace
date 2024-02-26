@@ -1,4 +1,5 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { TFile } from '../../new-types/file'
 import { TMember } from '../../new-types/member'
 import { TMessage } from '../../new-types/message'
 import { TUser } from '../../new-types/user'
@@ -58,6 +59,16 @@ type ApiQueryType = {
       baseUrl: '/workspaces'
     }
     response: TWorkspace[]
+  }
+
+  workspaceFiles: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/files'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    response: TFile[]
   }
 
   board: {

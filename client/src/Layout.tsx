@@ -8,6 +8,7 @@ import useAppParams from './hooks/useAppParams'
 import { workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
 import { useAppOnSocket } from './services/socket/useAppOnSocket'
+import { arrayToObject } from './utils/helper'
 
 export type TThread = {
   threadId: string
@@ -48,6 +49,29 @@ export default function Layout({ children }: { children: ReactNode }) {
           )
         })
       )
+    }
+  })
+
+  useAppQuery({
+    key: 'workspace',
+    url: {
+      baseUrl: '/workspaces/:workspaceId',
+      urlParams: { workspaceId: teamId! }
+    },
+    onSucess({ members, workspace }) {
+      dispatch(
+        workspaceActions.updateData({
+          workspaces: { [workspace._id]: workspace },
+          members: arrayToObject(members, '_id'),
+          users: arrayToObject(
+            members.map(e => e.user),
+            '_id'
+          )
+        })
+      )
+    },
+    options: {
+      enabled: !!teamId
     }
   })
 

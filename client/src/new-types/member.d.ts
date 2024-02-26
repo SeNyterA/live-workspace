@@ -21,5 +21,5 @@ export type TMember = TBase & {
   path: string
   userId: string
   targetId: string
-  user?: TUser
+  user: TUser
 }

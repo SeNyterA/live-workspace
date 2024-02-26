@@ -34,7 +34,9 @@ export class Message extends BaseEntity {
   isPinned: boolean
 
   @ManyToMany(() => File)
-  @JoinTable()
+  @JoinTable({
+    name: 'message_attachment'
+  })
   attachments: File[]
 
   @ManyToOne(() => Workspace)

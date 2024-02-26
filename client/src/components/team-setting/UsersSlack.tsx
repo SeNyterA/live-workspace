@@ -19,8 +19,8 @@ import {
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useAppSelector } from '../../redux/store'
-import { EMemberRole } from '../../types/workspace.type'
 import { useSetting } from './TeamSetting'
+import { EMemberRole } from '../../new-types/member.d'
 
 const getEditableRoles = (
   operatorRole?: EMemberRole,
@@ -59,6 +59,8 @@ export function UsersStack() {
               user?.nickname?.toLowerCase().includes(search.toLowerCase())
           ) || []
     ) || []
+
+    console.log(members)
 
   const rows = useMemo(() => {
     return members.map(({ user, member }) => (

@@ -75,7 +75,7 @@ export default function MessageGroup({
       {!isOwner && (
         // <UserDetailProvider user={createdByUser}>
         <Avatar
-          src={createdByUser?.avatar}
+          src={createdByUser?.avatar?.path}
           size={32}
           className='ring-1 ring-offset-1'
         />
@@ -97,7 +97,9 @@ export default function MessageGroup({
           )}
         </p>
         {messageGroup.messages.map(message => {
-          const { images } = groupByFileType(message.attachments || [])
+          const { images } = groupByFileType(
+            message.attachments?.map(e => e.path) || []
+          )
 
           return (
             <div

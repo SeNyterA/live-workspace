@@ -1,8 +1,9 @@
-import { ActionIcon, Divider, Image, NavLink, ScrollArea } from '@mantine/core'
+import { ActionIcon, Divider, Image, Input, NavLink, ScrollArea } from '@mantine/core'
 import {
   IconHash,
   IconLayoutKanban,
   IconPlus,
+  IconSearch,
   IconSettings,
   IconUsersGroup
 } from '@tabler/icons-react'
@@ -37,7 +38,7 @@ export default function Sidebar() {
   const team = useAppSelector(state => {
     return Object.values(state.workspace.workspaces).find(e => e._id === teamId)
   })
-  // const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useState('')
 
   return (
     <>
@@ -51,7 +52,7 @@ export default function Sidebar() {
           />
         </div>
         <div className='flex items-center justify-center gap-2 px-4'>
-          {/* <Input
+          <Input
             className='flex h-[30px] flex-1 items-center rounded bg-gray-100'
             size='sm'
             placeholder='Search on workspace'
@@ -61,7 +62,7 @@ export default function Sidebar() {
             }}
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
-          /> */}
+          />
           <Watching
             watchingFn={state => {
               return Object.values(state.workspace.members).find(
@@ -72,7 +73,7 @@ export default function Sidebar() {
           >
             {myTeamRole => (
               <>
-                {myTeamRole === EMemberRole.Owner && (
+                {true && (
                   <ActionIcon
                     variant='transparent'
                     aria-label='Settings'
