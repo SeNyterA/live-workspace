@@ -11,7 +11,7 @@ type TSetting = {
   type: 'team' | 'channel' | 'group' | 'board'
   operatorMember?: TMember
   userSelected?: string
-  setUserSelected?: React.Dispatch<React.SetStateAction<string | undefined>>
+  setUserSelected: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 const settingContext = createContext<TSetting>({
@@ -29,7 +29,7 @@ export default function TeamSetting({
 }: {
   isOpen: boolean
   onClose: () => void
-} & TSetting) {
+} & Pick<TSetting, 'type' | 'targetId'>) {
   const [mode, setMode] = useState<'info' | 'members'>('info')
   const [userSelected, setUserSelected] = useState<string>()
   const target = useAppSelector(state => state.workspace.workspaces[targetId])

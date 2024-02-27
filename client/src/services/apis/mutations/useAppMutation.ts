@@ -2,9 +2,9 @@ import { MutationOptions, useMutation } from '@tanstack/react-query'
 import { AxiosRequestConfig } from 'axios'
 import { TCard, TOption } from '../../../new-types/board'
 import { TMessage } from '../../../new-types/message'
+import { TUser } from '../../../new-types/user'
 import { TWorkspace } from '../../../new-types/workspace'
-import { TChannelDto, TGroupDto } from '../../../types/dto.type'
-import { TUser } from '../../../types/user.type'
+import { TChannelDto } from '../../../types/dto.type'
 import {
   EMemberRole,
   JSONContent,

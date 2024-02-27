@@ -10,6 +10,7 @@ import StarterKit from '@tiptap/starter-kit'
 import DOMPurify from 'dompurify'
 import { Fragment } from 'react'
 import { TThread, useLayout } from '../../../Layout'
+import { TFile } from '../../../new-types/file'
 import { useAppSelector } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
 import { updateLabelMention } from '../../../utils/helper'
@@ -25,8 +26,8 @@ export default function Thread({
     value,
     thread
   }: {
-    value?: JSONContent | undefined
-    files: string[]
+    value?: JSONContent
+    files: TFile[]
     thread: TThread
   }) => void
 }) {
@@ -97,7 +98,12 @@ export default function Thread({
           infoWrapper: '!left-4 !right-4'
         }}
         targetId={thread.targetId}
-        createMessage={data => createMessage({ ...data, thread })}
+        createMessage={data =>
+          createMessage({
+            ...data,
+            thread
+          })
+        }
       />
     </Drawer>
   )

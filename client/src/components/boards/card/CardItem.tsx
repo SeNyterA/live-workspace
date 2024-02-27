@@ -1,11 +1,11 @@
 import { IconCheckbox } from '@tabler/icons-react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
-import { TCard } from '../../../types/workspace.type'
+import { TCard } from '../../../new-types/board'
 import { getItemsWithMatchingKey } from '../../../utils/helper'
 
 export default function CardItem({ card }: { card: TCard }) {
   const { toogleCard } = useAppControlParams()
-  const checkboxes = getItemsWithMatchingKey(card.data || {}, 'taskItem')
+  const checkboxes = getItemsWithMatchingKey(card.properties || {}, 'taskItem')
 
   return (
     <div

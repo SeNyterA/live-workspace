@@ -7,10 +7,7 @@ import { Fragment, useEffect, useState } from 'react'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
-import {
-  EFieldType,
-  TCardProperties
-} from '../../../services/apis/board.api'
+import { EFieldType, TCardProperties } from '../../../services/apis/board.api'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 
 dayjs.extend(customParseFormat)
@@ -43,32 +40,32 @@ export default function Properties() {
             <Select
               className='first:!mt-0'
               label={property.title}
-              description={property.description}
+              description={property.title}
               placeholder='Pick value'
-              data={property.fieldOption?.map(option => ({
+              data={property.options?.map(option => ({
                 value: option._id,
                 label: option.title
               }))}
               mt='md'
               value={tmpValue[property._id]?.toString()}
               onChange={value => {
-                setTmpValue(old => ({ ...old, [property._id]: value }))
-                updateCard({
-                  url: {
-                    baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                    urlParams: {
-                      boardId: boardId!,
-                      cardId: card?._id!
-                    }
-                  },
-                  method: 'patch',
-                  payload: {
-                    properties: {
-                      ...card?.properties,
-                      [property._id]: value
-                    }
-                  }
-                })
+                // setTmpValue(old => ({ ...old, [property._id]: value }))
+                // updateCard({
+                //   url: {
+                //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
+                //     urlParams: {
+                //       boardId: boardId!,
+                //       cardId: card?._id!
+                //     }
+                //   },
+                //   method: 'patch',
+                //   payload: {
+                //     properties: {
+                //       ...card?.properties,
+                //       [property._id]: value
+                //     }
+                //   }
+                // })
               }}
             />
           )}
@@ -89,7 +86,7 @@ export default function Properties() {
                 <Select
                   className='first:!mt-0'
                   label={property.title}
-                  description={property.description}
+                  description={property.title}
                   placeholder='Pick value'
                   data={data
                     ?.filter(e => !!e.user)
@@ -97,23 +94,23 @@ export default function Properties() {
                   mt='md'
                   value={tmpValue[property._id]?.toString()}
                   onChange={value => {
-                    setTmpValue(old => ({ ...old, [property._id]: value }))
-                    updateCard({
-                      url: {
-                        baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                        urlParams: {
-                          boardId: boardId!,
-                          cardId: card?._id!
-                        }
-                      },
-                      method: 'patch',
-                      payload: {
-                        properties: {
-                          ...card?.properties,
-                          [property._id]: value
-                        }
-                      }
-                    })
+                    // setTmpValue(old => ({ ...old, [property._id]: value }))
+                    // updateCard({
+                    //   url: {
+                    //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
+                    //     urlParams: {
+                    //       boardId: boardId!,
+                    //       cardId: card?._id!
+                    //     }
+                    //   },
+                    //   method: 'patch',
+                    //   payload: {
+                    //     properties: {
+                    //       ...card?.properties,
+                    //       [property._id]: value
+                    //     }
+                    //   }
+                    // })
                   }}
                 />
               )}
@@ -129,27 +126,27 @@ export default function Properties() {
             <TextInput
               className='first:!mt-0'
               label={property.title}
-              description={property.description}
+              description={property.title}
               placeholder='Pick value'
               mt='md'
               value={tmpValue[property._id]?.toString()}
               onBlur={value => {
-                updateCard({
-                  url: {
-                    baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                    urlParams: {
-                      boardId: boardId!,
-                      cardId: card?._id!
-                    }
-                  },
-                  method: 'patch',
-                  payload: {
-                    properties: {
-                      ...card?.properties,
-                      [property._id]: value.target.value
-                    }
-                  }
-                })
+                // updateCard({
+                //   url: {
+                //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
+                //     urlParams: {
+                //       boardId: boardId!,
+                //       cardId: card?._id!
+                //     }
+                //   },
+                //   method: 'patch',
+                //   payload: {
+                //     properties: {
+                //       ...card?.properties,
+                //       [property._id]: value.target.value
+                //     }
+                //   }
+                // })
               }}
               onChange={value => {
                 setTmpValue(old => ({
@@ -164,7 +161,7 @@ export default function Properties() {
             <DateTimePicker
               className='mt-4 first:!mt-0'
               label={property.title}
-              description={property.description}
+              description={property.title}
               {...{ placeholder: 'Pick value' }}
               mt='md'
               value={
@@ -178,22 +175,22 @@ export default function Properties() {
                   [property._id]: value?.toString()
                 }))
 
-                updateCard({
-                  url: {
-                    baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                    urlParams: {
-                      boardId: boardId!,
-                      cardId: card?._id!
-                    }
-                  },
-                  method: 'patch',
-                  payload: {
-                    properties: {
-                      ...card?.properties,
-                      [property._id]: value?.toString()
-                    }
-                  }
-                })
+                // updateCard({
+                //   url: {
+                //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
+                //     urlParams: {
+                //       boardId: boardId!,
+                //       cardId: card?._id!
+                //     }
+                //   },
+                //   method: 'patch',
+                //   payload: {
+                //     properties: {
+                //       ...card?.properties,
+                //       [property._id]: value?.toString()
+                //     }
+                //   }
+                // })
               }}
             />
           )}

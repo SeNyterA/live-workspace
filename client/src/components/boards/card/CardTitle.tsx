@@ -24,18 +24,18 @@ export default function CardTitle() {
       }}
       value={value}
       onBlur={() => {
-        value !== card?.title &&
-          updateCard({
-            url: {
-              baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-              urlParams: {
-                boardId: boardId!,
-                cardId: cardId!
-              }
-            },
-            method: 'patch',
-            payload: { title: value }
-          })
+        // value !== card?.title &&
+        //   updateCard({
+        //     url: {
+        //       baseUrl: '/workspace/boards/:boardId/cards/:cardId',
+        //       urlParams: {
+        //         boardId: boardId!,
+        //         cardId: cardId!
+        //       }
+        //     },
+        //     method: 'patch',
+        //     payload: { title: value }
+        //   })
       }}
       onChange={e => {
         setValue(e.target.value)

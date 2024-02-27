@@ -42,12 +42,12 @@ export function InviteMember() {
   useEffect(() => {
     if (userData)
       dispatch(
-        workspaceActions.addUsers(
-          userData.users.reduce(
+        workspaceActions.updateData({
+          users: userData.users.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {}
           )
-        )
+        })
       )
   }, [userData])
 

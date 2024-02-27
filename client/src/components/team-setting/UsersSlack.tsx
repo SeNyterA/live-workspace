@@ -18,9 +18,9 @@ import {
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
+import { EMemberRole } from '../../new-types/member.d'
 import { useAppSelector } from '../../redux/store'
 import { useSetting } from './TeamSetting'
-import { EMemberRole } from '../../new-types/member.d'
 
 const getEditableRoles = (
   operatorRole?: EMemberRole,
@@ -60,7 +60,7 @@ export function UsersStack() {
           ) || []
     ) || []
 
-    console.log(members)
+  console.log(members)
 
   const rows = useMemo(() => {
     return members.map(({ user, member }) => (

@@ -7,12 +7,6 @@ export enum EMemberRole {
   Member = 'Member'
 }
 
-export enum EMemberStatus {
-  [EMemberRole.Owner] = 2,
-  [EMemberRole.Admin] = 1,
-  [EMemberRole.Member] = 0
-}
-
 export enum EMemberType {
   Team = 'Team',
   Channel = 'Channel',

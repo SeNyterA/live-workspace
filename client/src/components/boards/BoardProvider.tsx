@@ -110,7 +110,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
       trackingId
     })
 
-    if (!!_trackingId) {
+    if (_trackingId) {
       setTrackingId(_trackingId)
     }
   }, [properties, boardId, trackingId])
