@@ -1,10 +1,10 @@
 import { NavLink } from '@mantine/core'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
+import { TWorkspace } from '../../../new-types/workspace'
 import { useAppSelector } from '../../../redux/store'
-import { TGroup } from '../../../types/workspace.type'
 
-export default function GroupItem({ group }: { group: TGroup }) {
+export default function GroupItem({ group }: { group: TWorkspace }) {
   const { groupId } = useAppParams()
   const { switchTo } = useAppControlParams()
   const unreadCount = useAppSelector(

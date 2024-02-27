@@ -1,4 +1,11 @@
-import { ActionIcon, Divider, Image, Input, NavLink, ScrollArea } from '@mantine/core'
+import {
+  ActionIcon,
+  Divider,
+  Image,
+  Input,
+  NavLink,
+  ScrollArea
+} from '@mantine/core'
 import {
   IconHash,
   IconLayoutKanban,
@@ -10,7 +17,6 @@ import {
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import useAppParams from '../../hooks/useAppParams'
-import { EMemberRole } from '../../new-types/member.d'
 import { WorkspaceType } from '../../new-types/workspace.d'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
@@ -42,8 +48,8 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className='flex w-72 flex-col gap-2 py-3'>
-        <div className='px-4'>
+      <div className='flex w-72 flex-col gap-2 px-4 py-3'>
+        <div className=''>
           <p className='text-xl'>{team?.title}</p>
           <p className='text-gray-500'>{team?.description}</p>
           <Image
@@ -51,7 +57,7 @@ export default function Sidebar() {
             className='max-h-32 w-full rounded-lg'
           />
         </div>
-        <div className='flex items-center justify-center gap-2 px-4'>
+        <div className='flex items-center justify-center gap-2'>
           <Input
             className='flex h-[30px] flex-1 items-center rounded bg-gray-100'
             size='sm'
@@ -92,11 +98,17 @@ export default function Sidebar() {
         </div>
 
         <div className='relative flex-1'>
-          <ScrollArea scrollbarSize={6} className='absolute inset-0 px-4'>
+          <ScrollArea
+            scrollbarSize={6}
+            className='absolute inset-0 right-[-12px]'
+            classNames={{
+              viewport: 'pr-3'
+            }}
+          >
             {team && (
               <>
                 <NavLink
-                  className='mb-1 p-1'
+                  className='sticky top-0 z-10 mb-1 bg-white p-1'
                   label='Boards'
                   leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
                   active={path.pathname.includes('board')}
@@ -131,7 +143,7 @@ export default function Sidebar() {
                 </NavLink>
 
                 <NavLink
-                  className='mb-1 p-1'
+                  className='sticky top-0 z-10 mb-1 bg-white p-1'
                   label='Channels'
                   leftSection={<IconHash size='1rem' stroke={1.5} />}
                   active={path.pathname.includes('channel')}
@@ -170,7 +182,7 @@ export default function Sidebar() {
             )}
 
             <NavLink
-              className='my-1 p-1'
+              className='sticky top-0 z-10 mb-1 bg-white p-1'
               label='Groups'
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={!!groupId}
@@ -287,11 +299,6 @@ export default function Sidebar() {
         targetId={teamId!}
         type='team'
       />
-
-      {/* <CreateDirect
-        isOpen={toggle === 'createDirect'}
-        onClose={() => setToggle(undefined)}
-      /> */}
 
       <CreateGroup
         isOpen={toggle === 'createGroup'}

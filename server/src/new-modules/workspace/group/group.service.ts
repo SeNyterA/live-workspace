@@ -52,7 +52,7 @@ export class GroupService {
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub }
       },
-      ...members
+      ...(members
         ?.filter(e => e.userId !== user.sub)
         .map(e => ({
           ...e,
@@ -60,7 +60,7 @@ export class GroupService {
           workspace: { _id: newWorkspace._id },
           createdBy: { _id: user.sub },
           modifiedBy: { _id: user.sub }
-        }))
+        })) || [])
     ])
 
     const group = await this.workspaceRepository.findOne({

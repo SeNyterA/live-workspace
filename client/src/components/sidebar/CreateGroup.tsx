@@ -163,33 +163,37 @@ export default function CreateGroup({
           loading={isPending}
           disabled={isPending}
           onClick={handleSubmit(data => {
-            createGroup(
-              {
-                url: {
-                  baseUrl: '/groups'
-                },
-                method: 'post',
-                payload: {
-                  workspace: {
-                    title: data.workspace.title,
-                    displayUrl: data.workspace.displayUrl,
-                    description: data.workspace.description
-                  } as any,
-                  members: data.members
-                }
-              },
-              {
-                onSuccess(data, variables, context) {
-                  dispatch(
-                    workspaceActions.updateData({
-                      workspaces: { [data.group._id]: data.group }
-                    })
-                  )
-                  switchTo({ target: 'group', targetId: data.group._id })
-                  onClose()
-                }
-              }
-            )
+            Array(100)
+              .fill(0)
+              .forEach(() => {
+                createGroup(
+                  {
+                    url: {
+                      baseUrl: '/groups'
+                    },
+                    method: 'post',
+                    payload: {
+                      workspace: {
+                        title: data.workspace.title,
+                        displayUrl: data.workspace.displayUrl,
+                        description: data.workspace.description
+                      } as any,
+                      members: data.members
+                    }
+                  },
+                  {
+                    onSuccess(data, variables, context) {
+                      dispatch(
+                        workspaceActions.updateData({
+                          workspaces: { [data.group._id]: data.group }
+                        })
+                      )
+                      switchTo({ target: 'group', targetId: data.group._id })
+                      onClose()
+                    }
+                  }
+                )
+              })
           })}
         >
           Create

@@ -54,7 +54,7 @@ export default function PinedMesages() {
 
   return (
     <NavLink
-      className='sticky top-8 z-[2] mt-1 bg-white p-1 pl-0'
+      className='sticky top-0 z-[2] mt-1 bg-white p-1 pl-0'
       label={
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>Pined messages</p>

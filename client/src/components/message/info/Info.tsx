@@ -22,9 +22,10 @@ export default function Info() {
         <div className='flex justify-between px-4'>
           <div>
             <p className='text-base'>{workspace?.title}</p>
-            <p className='text-xs text-gray-500'>
+            <p className='text-xs text-gray-500'>{workspace?.description}</p>
+            {/* <p className='text-xs text-gray-500'>
               id: {channelId || directId || groupId || boardId}
-            </p>
+            </p> */}
           </div>
           <ActionIcon size={30} variant='light' color='gray'>
             <IconSettings size={16} />
