@@ -1,17 +1,6 @@
 version: '3.8'
 
 services:
-  # mongodb:
-  #   container_name: mongodb
-  #   image: mongo:latest
-  #   ports:
-  #     - '27017:27017'
-  #   volumes:
-  #     - 'mongo_data:/data/db'
-  #   command: mongod --bind_ip_all
-  #   networks:
-  #     - live-workspace-network
-
   redis:
     container_name: redis
     image: redis:latest
@@ -20,21 +9,6 @@ services:
     volumes:
       - 'redis_data:/data'
     command: redis-server --notify-keyspace-events KEx
-    networks:
-      - live-workspace-network
-
-  mysql:
-    container_name: mysql
-    image: mysql:latest
-    ports:
-      - '3306:3306'
-    volumes:
-      - 'mysql_data:/var/lib/mysql'
-    environment:
-      MYSQL_ROOT_PASSWORD: yourpassword
-      MYSQL_DATABASE: yourdatabase
-      MYSQL_USER: youruser
-      MYSQL_PASSWORD: yourpassword
     networks:
       - live-workspace-network
 
@@ -52,9 +26,7 @@ services:
     env_file:
       - .env.ec2
     depends_on:
-      # - mongodb
       - redis
-      - mysql
     command: yarn start:dev
     networks:
       - live-workspace-network
