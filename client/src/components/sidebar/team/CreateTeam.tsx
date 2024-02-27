@@ -23,8 +23,8 @@ import { TFile } from '../../../new-types/file'
 import { useAppMutation } from '../../../services/apis/useAppMutation'
 import { TMemberDto } from '../../../types/dto.type'
 import { EMemberRole } from '../../../types/workspace.type'
-import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
+import MemberControl from '../MemberControl'
 
 type TForm = {
   channels?: { title: string }[]
@@ -444,7 +444,30 @@ export default function CreateTeam({
           loading={isPending}
           disabled={isPending}
           onClick={handleSubmit(({ ...data }) => {
-            console.log({ data })
+            console.log(
+              { data },
+              {
+                workspace: {
+                  title: data.title,
+                  avatar: data.avatar,
+                  thumbnail: data.thumbnail,
+                  description: data.description
+                } as any,
+                channels: data.channels?.map(e => ({
+                  title: e.title
+                })) as any[],
+                members: data.members?.map(e => ({
+                  userId: e.userId,
+                  role: e.role
+                })) as any[],
+                board: data.boards?.map(e => ({
+                  title: e.title,
+                  isInitData: e.isInitData
+                })) as any[]
+              }
+            )
+
+            return
             createTeam({
               url: {
                 baseUrl: '/teams'

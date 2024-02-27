@@ -4,7 +4,7 @@ import { Member } from 'src/entities/member.entity'
 import { Message } from 'src/entities/message.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace } from 'src/entities/workspace.entity'
-import { MessageController } from './message.controler'
+import { MessageController } from './message.controller'
 import { MessageService } from './message.service'
 
 @Module({

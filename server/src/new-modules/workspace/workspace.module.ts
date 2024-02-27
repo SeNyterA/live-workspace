@@ -7,13 +7,12 @@ import { Member } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace } from 'src/entities/workspace.entity'
 import { RedisModule } from 'src/modules/redis/redis.module'
-import { BoardController } from './team/board/board.controler'
 import { BoardService } from './team/board/board.service'
 import { TeamController } from './team/team.controler'
-import { WorkspaceController } from './workspace.controler'
-
-import { WorkspaceService } from './workspace.service'
+import { WorkspaceController } from './workspace.controller'
 import { File } from 'src/entities/file.entity'
+import { WorkspaceService } from './workspace.service'
+import { BoardController } from './team/board/board.controller'
 
 @Module({
   imports: [
