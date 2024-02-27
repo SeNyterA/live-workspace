@@ -3,7 +3,6 @@ import { useScrollIntoView } from '@mantine/hooks'
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import useRenderCount from '../../hooks/useRenderCount'
-import { useAppEmitSocket } from '../../services/socket/useAppEmitSocket'
 import { useMessageContent } from './MessageContentProvider'
 import MessageGroup from './MessageGroup'
 
@@ -17,7 +16,7 @@ export default function MessageContent({
   remainingCount?: number
 }) {
   useRenderCount('MessageContent')
-  const { messages, groupedMessages, targetId } = useMessageContent()
+  const { messages, groupedMessages } = useMessageContent()
   const lastMessageIdRef = useRef<string>()
   const loadMoreMessageIdRef = useRef<string>()
   const { scrollableRef } = useScrollIntoView<HTMLDivElement, HTMLDivElement>({
@@ -96,28 +95,6 @@ export default function MessageContent({
   const makeAsReadMessageId = useRef<{
     messageId: string
   }>()
-  const emitSocket = useAppEmitSocket()
-
-  // useEffect(() => {
-  //   if (messages.length > 0) {
-  //     const lastMess = messages[messages.length - 1]
-  //     const _targetId =
-  //       targetId.channelId || targetId.directId || targetId.groupId
-
-  //     if (
-  //       _targetId &&
-  //       lastMess._id !== makeAsReadMessageId.current?.messageId
-  //     ) {
-  //       emitSocket({
-  //         key: 'makeReadMessage',
-  //         messageId: lastMess._id,
-  //         targetId: _targetId
-  //       })
-  //       makeAsReadMessageId.current = { messageId: lastMess._id }
-  //     }
-  //   }
-  // }, [messages])
-  //#endregion
 
   useEffect(() => {
     if (

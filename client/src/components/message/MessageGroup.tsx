@@ -26,7 +26,6 @@ import Watching from '../../redux/Watching'
 import { useAppMutation } from '../../services/apis/useAppMutation'
 import { updateLabelMention } from '../../utils/helper'
 import { groupByFileType } from '../new-message/helper'
-import UserDetailProvider from '../user/UserDetailProvider'
 import { TGroupedMessage } from './MessageContentProvider'
 
 export default function MessageGroup({
@@ -46,7 +45,9 @@ export default function MessageGroup({
     )
   )
 
-  const { mutateAsync: reaction } = useAppMutation('reaction')
+  const { mutateAsync: reactWorkspaceMessage } = useAppMutation(
+    'reactWorkspaceMessage'
+  )
   const { mutateAsync: deleteWorkspaceMessage } = useAppMutation(
     'deleteWorkspaceMessage'
   )
@@ -156,13 +157,20 @@ export default function MessageGroup({
                   <Picker
                     data={data}
                     onEmojiSelect={(data: any) => {
-                      reaction({
+                      console.log({ data })
+
+                      // console.log(String.fromCodePoint(Number('0x1f618')))
+                      reactWorkspaceMessage({
                         url: {
-                          baseUrl: '/workspace/messages/:messageId/reaction',
-                          urlParams: { messageId: message._id }
+                          baseUrl:
+                            '/workspaces/:workspaceId/messages/:messageId/reaction',
+                          urlParams: {
+                            messageId: message._id,
+                            workspaceId: message.targetId
+                          }
                         },
                         method: 'post',
-                        payload: { icon: data.native }
+                        payload: { reaction: data.shortcodes }
                       })
 
                       toogleImojiId(undefined)
@@ -296,18 +304,23 @@ export default function MessageGroup({
                       <span
                         className='cursor-pointer rounded bg-white p-[2px] text-sm hover:ring-1'
                         onClick={() => {
-                          reaction({
+                          reactWorkspaceMessage({
                             url: {
                               baseUrl:
-                                '/workspace/messages/:messageId/reaction',
-                              urlParams: { messageId: message._id }
+                                '/workspaces/:workspaceId/messages/:messageId/reaction',
+                              urlParams: {
+                                messageId: message._id,
+                                workspaceId: message.targetId
+                              }
                             },
                             method: 'post',
-                            payload: { icon: e }
+                            payload: { reaction: e }
                           })
                         }}
                       >
-                        {e} 1
+                        {/* @ts-ignore */}
+                        <em-emoji shortcodes={e}></em-emoji>
+                        <span className='text-gray-500'> 1</span>
                       </span>
                     ))}
                     <Menu
@@ -331,14 +344,17 @@ export default function MessageGroup({
                         <Picker
                           data={data}
                           onEmojiSelect={(data: any) => {
-                            reaction({
+                            reactWorkspaceMessage({
                               url: {
                                 baseUrl:
-                                  '/workspace/messages/:messageId/reaction',
-                                urlParams: { messageId: message._id }
+                                  '/workspaces/:workspaceId/messages/:messageId/reaction',
+                                urlParams: {
+                                  messageId: message._id,
+                                  workspaceId: message.targetId
+                                }
                               },
                               method: 'post',
-                              payload: { icon: data.native }
+                              payload: { reaction: data.native }
                             })
 
                             toogleImojiId(undefined)

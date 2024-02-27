@@ -1,3 +1,4 @@
+import { JSONContent } from 'src/libs/helper'
 import {
   Column,
   Entity,
@@ -10,11 +11,17 @@ import {
 import { BaseEntity } from './base.entity'
 import { File } from './file.entity'
 import { Workspace } from './workspace.entity'
-import { JSONContent } from 'src/libs/helper'
 
 export enum EMessageType {
   Normal = 'N',
   System = 'S'
+}
+
+export enum EMesssageFor {
+  Channel = 'C',
+  Direct = 'D',
+  Group = 'G',
+  Board = 'B'
 }
 
 @Entity()

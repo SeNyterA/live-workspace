@@ -195,18 +195,6 @@ export type ApiMutationType = {
     response: TWorkspace
   }
 
-  reaction: {
-    url: {
-      baseUrl: '/workspace/messages/:messageId/reaction'
-      urlParams: {
-        messageId: string
-      }
-    }
-    method: 'post'
-    payload: { icon: any }
-    response: any
-  }
-
   sendWorkspaceMessage: {
     url: {
       baseUrl: '/workspaces/:workspaceId/messages'
@@ -244,6 +232,19 @@ export type ApiMutationType = {
       }
     }
     method: 'post'
+    response: TMessage
+  }
+
+  reactWorkspaceMessage: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/messages/:messageId/reaction'
+      urlParams: {
+        messageId: string
+        workspaceId: string
+      }
+    }
+    method: 'post'
+    payload: { reaction: any }
     response: TMessage
   }
 

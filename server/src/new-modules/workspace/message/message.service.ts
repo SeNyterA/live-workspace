@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
-import { Message } from 'src/entities/message.entity'
+import { EMesssageFor, Message } from 'src/entities/message.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace } from 'src/entities/workspace.entity'
 import { RedisService } from 'src/modules/redis/redis.service'
@@ -41,16 +41,17 @@ export class MessageService {
     targetId,
     message,
     replyToId,
-    threadId
+    threadId,
+    type = EMesssageFor.Channel
   }: {
     message: Message
     user: TJwtUser
     targetId: string
     replyToId?: string
     threadId?: string
+    type?: EMesssageFor
   }) {
-    console.log(message)
-    this.memberRepository.findOneOrFail({
+    await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
         workspace: { _id: targetId, isAvailable: true },
@@ -74,13 +75,11 @@ export class MessageService {
       }),
       { reload: true }
     )
-    console.log(newMessage)
 
     const messageInserted = await this.messageRepository.findOneOrFail({
       where: { _id: newMessage._id },
       relations: ['attachments']
     })
-    console.log(messageInserted)
 
     this.emitMessage({ message: messageInserted })
 
@@ -98,7 +97,7 @@ export class MessageService {
     size?: number
     user: TJwtUser
   }) {
-    this.memberRepository.findOneOrFail({
+    await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
         workspace: { _id: targetId },
@@ -147,7 +146,13 @@ export class MessageService {
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId }
+        workspace: { _id: targetId, isAvailable: true },
+        isAvailable: true,
+        type: In([
+          EMemberType.Channel,
+          EMemberType.DirectMessage,
+          EMemberType.Group
+        ])
       }
     })
     const message = await this.messageRepository.findOneOrFail({
@@ -173,7 +178,13 @@ export class MessageService {
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId }
+        workspace: { _id: targetId, isAvailable: true },
+        isAvailable: true,
+        type: In([
+          EMemberType.Channel,
+          EMemberType.DirectMessage,
+          EMemberType.Group
+        ])
       }
     })
 
@@ -186,7 +197,7 @@ export class MessageService {
     })
   }
 
-  async reactionMessage({
+  async reactMessage({
     messageId,
     reaction,
     targetId,
@@ -200,7 +211,13 @@ export class MessageService {
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId }
+        workspace: { _id: targetId, isAvailable: true },
+        isAvailable: true,
+        type: In([
+          EMemberType.Channel,
+          EMemberType.DirectMessage,
+          EMemberType.Group
+        ])
       }
     })
 

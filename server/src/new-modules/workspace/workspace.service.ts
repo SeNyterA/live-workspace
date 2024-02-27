@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
 import { Server, Socket } from 'socket.io'
+import { File } from 'src/entities/file.entity'
 import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import {
@@ -13,7 +14,6 @@ import {
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
 import { In, Not, Repository } from 'typeorm'
 import { BoardService } from './team/board/board.service'
-import { File } from 'src/entities/file.entity'
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
   data: Workspace
@@ -484,4 +484,8 @@ export class WorkspaceService {
 
     return files
   }
+
+  //#region Direct
+
+  //#endregion
 }

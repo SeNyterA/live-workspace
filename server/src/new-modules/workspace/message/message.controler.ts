@@ -86,4 +86,19 @@ export class MessageController {
       user
     })
   }
+
+  @Post(':messageId/reaction')
+  reactMessage(
+    @HttpUser() user: TJwtUser,
+    @Param('workspaceId') targetId: string,
+    @Param('messageId') messageId: string,
+    @Body() { reaction }: { reaction: string }
+  ) {
+    return this.messageService.reactMessage({
+      user,
+      messageId,
+      reaction,
+      targetId
+    })
+  }
 }
