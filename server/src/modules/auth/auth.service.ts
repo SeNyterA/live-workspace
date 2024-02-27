@@ -9,8 +9,8 @@ import * as crypto from 'crypto-js'
 import { EFileSourceType, File } from 'src/entities/file.entity'
 import { User } from 'src/entities/user.entity'
 import { Repository } from 'typeorm'
-import { TLoginPayload } from './auth.dto'
 import { MailService } from '../mail/mail.service'
+import { TLoginPayload } from './auth.dto'
 
 export type FirebaseUserTokenData = {
   name: string
@@ -130,8 +130,6 @@ export class AuthService {
           sourceType: EFileSourceType.Link
         })
         await this.fileRepository.save(avatarFile)
-
-        console.log(avatarFile)
 
         await this.userRepository.save({ ...user, avatar: avatarFile })
       }

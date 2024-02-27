@@ -45,9 +45,7 @@ export class AuthGuard implements CanActivate {
         .verifyAsync(token, {
           secret: process.env.JWT_SECRET
         })
-        .catch(err => {
-          console.log(err)
-        })
+        .catch(err => {})
 
       await this.userRepository.findOneOrFail({
         where: { _id: payload.sub }
@@ -55,7 +53,6 @@ export class AuthGuard implements CanActivate {
 
       request['user'] = payload
     } catch {
-      console.log('payload')
       throw new UnauthorizedException()
     }
     return true

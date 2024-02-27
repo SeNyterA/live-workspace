@@ -41,7 +41,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.handshake.auth.token,
         { secret: process.env.JWT_SECRET }
       )
-      console.log(jwtUser)
 
       if (!jwtUser?.sub) throw new Error('Invalid user')
       client.user = jwtUser
@@ -56,7 +55,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       )
     } catch (error) {
       client.disconnect()
-      console.log(error)
     }
   }
 
@@ -70,8 +68,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (userSockets.length) return
       const time = Date.now().toString()
       await this.redisService.redisClient.set(`presence:${userId}`, time)
-    } catch (error) {
-      console.log(error)
-    }
+    } catch (error) {}
   }
 }
