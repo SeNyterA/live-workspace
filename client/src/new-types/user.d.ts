@@ -5,7 +5,7 @@ export type TUser = {
   firebaseId?: string
   userName: string
   email: string
-  nickname?: string
+  nickName?: string
   avatar?: TFile
   createdAt: Date
   updatedAt: Date

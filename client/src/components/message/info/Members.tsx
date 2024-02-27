@@ -69,7 +69,7 @@ export default function Members() {
               withBorder
               zIndex={1}
             >
-              <Avatar src={user?.avatar?.path} size={36} />
+              <Avatar src={user?.avatar?.path} size={32} />
             </Indicator>
 
             <div className='flex flex-1 flex-col justify-center'>

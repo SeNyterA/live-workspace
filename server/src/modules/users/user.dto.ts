@@ -6,7 +6,7 @@ export type TUser = Pick<
   | 'avatar'
   | 'email'
   | 'userName'
-  | 'nickname'
+  | 'nickName'
   | 'firebaseId'
   | 'createdAt'
   | 'updatedAt'
@@ -15,7 +15,7 @@ export type TUser = Pick<
 
 export type TCreateUser = Pick<
   User,
-  'avatar' | 'email' | 'userName' | 'nickname' | 'password'
+  'avatar' | 'email' | 'userName' | 'nickName' | 'password'
 >
 
 export type TUpdateUser = Partial<Omit<TCreateUser, 'password'>>

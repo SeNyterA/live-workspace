@@ -11,6 +11,7 @@ import { WorkspaceModule } from './new-modules/workspace/workspace.module'
 import { RedisModule } from './new-modules/redis/redis.module'
 import { MessageModule } from './new-modules/workspace/message/message.module'
 import { AWSModule } from './new-modules/aws/aws.module'
+import { UserModule } from './new-modules/user/user.module'
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AWSModule } from './new-modules/aws/aws.module'
       synchronize: true
     }),
     TypeOrmModule.forFeature([User]),
+    UserModule,
     AuthModule,
     MailModule,
     MessageModule,

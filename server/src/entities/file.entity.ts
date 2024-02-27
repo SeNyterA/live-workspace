@@ -1,5 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm'
 import { BaseEntity } from './base.entity'
+import { Card } from './board/card.entity'
 import { Message } from './message.entity'
 
 export enum EFileSourceType {
@@ -22,4 +23,10 @@ export class File extends BaseEntity {
     name: 'message_attachment'
   })
   messages: Message[]
+
+  @ManyToMany(() => Card)
+  @JoinTable({
+    name: 'card_attachment'
+  })
+  cards: Card[]
 }

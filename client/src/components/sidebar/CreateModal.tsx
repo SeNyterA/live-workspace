@@ -39,7 +39,7 @@ export default function CreateModal({
       title={<p className='text-lg font-semibold'>Create direct channel</p>}
     >
       <Input
-        placeholder='username, email, nickname ...'
+        placeholder='username, email, nickName ...'
         leftSection={<IconSearch size={16} />}
         value={searchValue}
         onChange={e => setSearchValue(e.target.value)}

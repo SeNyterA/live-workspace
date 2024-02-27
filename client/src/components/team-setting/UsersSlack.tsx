@@ -56,7 +56,7 @@ export function UsersStack() {
             ({ user }) =>
               user?.userName.toLowerCase().includes(search.toLowerCase()) ||
               user?.email.toLowerCase().includes(search.toLowerCase()) ||
-              user?.nickname?.toLowerCase().includes(search.toLowerCase())
+              user?.nickName?.toLowerCase().includes(search.toLowerCase())
           ) || []
     ) || []
 

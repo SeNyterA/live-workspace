@@ -25,7 +25,7 @@ export class User {
   email: string
 
   @Column({ nullable: true })
-  nickname?: string
+  nickName?: string
 
   @Column()
   @Exclude()

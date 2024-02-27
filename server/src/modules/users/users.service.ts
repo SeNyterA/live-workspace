@@ -56,7 +56,7 @@ export class UsersService {
 
     const users = await this.userModel.find({
       $or: [
-        { nickname: { $regex: regex } },
+        { nickName: { $regex: regex } },
         { userName: { $regex: regex } },
         { email: { $regex: regex } }
       ],

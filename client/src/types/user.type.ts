@@ -3,7 +3,7 @@ export type TUser = {
   firebaseId?: string
   userName: string
   email: string
-  nickname?: string
+  nickName?: string
   avatar?: string
   password: string
   createdAt: Date

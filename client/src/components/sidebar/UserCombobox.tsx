@@ -8,8 +8,7 @@ import {
   TextInputProps,
   useCombobox
 } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
@@ -28,26 +27,24 @@ export default function UserCombobox({
 }) {
   const userId = useAppSelector(state => state.auth.userInfo?._id)
   const combobox = useCombobox({
-    onDropdownClose: () => {
-      // setSearchValue('')
-    }
+    onDropdownClose: () => {}
   })
   const dispatch = useDispatch()
   const [searchValue, setSearchValue] = useState('')
-  const [keyword] = useDebouncedValue(searchValue, 200)
   const { data: userData, isLoading } = useAppQuery({
     key: 'findUsersByKeyword',
     url: {
       baseUrl: '/users/by-keyword',
       queryParams: {
-        keyword
+        keyword: searchValue
       }
     },
     options: {
-      queryKey: [keyword],
-      enabled: !!keyword
+      enabled: !!searchValue && searchValue.length > 3
     },
     onSucess(data) {
+      console.log(data)
+      console.log(arrayToObject(data.users, '_id'))
       dispatch(
         workspaceActions.updateData({
           users: arrayToObject(data.users, '_id')
@@ -55,6 +52,7 @@ export default function UserCombobox({
       )
     }
   })
+  console.log({ userData })
 
   return (
     <Combobox

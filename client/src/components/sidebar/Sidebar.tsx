@@ -224,7 +224,7 @@ export default function Sidebar() {
                       return [
                         user?.email,
                         user?.userName,
-                        user?.nickname,
+                        user?.nickName,
                         direct.title
                       ].some(e => e?.includes(searchValue.toLowerCase()))
                     }

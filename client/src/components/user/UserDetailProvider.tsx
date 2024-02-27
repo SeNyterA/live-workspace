@@ -25,7 +25,7 @@ export default function UserDetailProvider({
       <Menu.Dropdown>
         <div className='flex flex-col items-center justify-center p-4 pb-0'>
           <Avatar src={user?.avatar?.path} size={120} />
-          <p className='mt-2 text-base font-semibold'>{user?.nickname}</p>
+          <p className='mt-2 text-base font-semibold'>{user?.nickName}</p>
           <p className='text-sm text-gray-500'>{`@${user?.userName}`}</p>
           <p className='text-sm text-gray-500'>{user?.email}</p>
         </div>

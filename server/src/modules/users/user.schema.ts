@@ -14,7 +14,7 @@ export class User {
   email: string
 
   @Prop()
-  nickname?: string
+  nickName?: string
 
   @Prop()
   avatar?: string

@@ -58,7 +58,7 @@ export class WorkspaceService {
   //#region Workspace
   async createUsersFakeData() {
     const count = await this.userRepository.count()
-    console.log(count)
+
     return await this.userRepository.insert(
       Array(10000)
         .fill(1)
@@ -67,7 +67,7 @@ export class WorkspaceService {
             generateRandomHash(Math.random().toString(), 10) + '@gmail.com',
           userName: generateRandomHash(Math.random().toString(), 10),
           password: crypto.SHA256('123123').toString(),
-          nickname: generateRandomHash(Math.random().toString(), 10),
+          nickName: generateRandomHash(Math.random().toString(), 10),
           isAvailable: true
         }))
     )
@@ -223,22 +223,18 @@ export class WorkspaceService {
 
   async createGroup({
     user,
-    workspace,
-    teamId
+    workspace
   }: {
     workspace: Workspace
     user: TJwtUser
-    teamId: string
   }) {
     const newWorkspace = await this.workspaceRepository.save(
       this.workspaceRepository.create({
         ...workspace,
         type: WorkspaceType.Group,
         displayUrl: generateRandomHash(),
-
         createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
-        parent: { _id: teamId }
+        modifiedBy: { _id: user.sub }
       })
     )
 
@@ -282,11 +278,32 @@ export class WorkspaceService {
 
   async deleteWorkspace({ _id, user }: { user: TJwtUser; _id: string }) {
     await this.memberRepository.findOneOrFail({
-      where: {
-        workspace: { _id },
-        user: { _id: user.sub },
-        role: EMemberRole.Owner
-      }
+      where: [
+        {
+          isAvailable: true,
+          workspace: { _id, isAvailable: true },
+          user: { _id: user.sub, isAvailable: true },
+          role: EMemberRole.Owner
+        },
+        {
+          isAvailable: true,
+          workspace: {
+            _id,
+            isAvailable: true,
+            parent: {
+              isAvailable: true,
+              members: {
+                isAvailable: true,
+                user: {
+                  _id: user.sub,
+                  isAvailable: true
+                },
+                role: EMemberRole.Owner
+              }
+            }
+          }
+        }
+      ]
     })
 
     return this.workspaceRepository.delete(_id)
@@ -345,6 +362,34 @@ export class WorkspaceService {
         socket.rooms.has(memberId) && socket.join(workspaceId)
       })
     })
+  }
+
+  async getWorkspaceFiles({
+    workspaceId,
+    user
+  }: {
+    workspaceId: string
+    user: TJwtUser
+  }) {
+    await this.workspaceRepository.findOneOrFail({
+      where: {
+        _id: workspaceId,
+        members: {
+          user: { _id: user.sub, isAvailable: true },
+          isAvailable: true
+        },
+        isAvailable: true
+      }
+    })
+
+    const files = await this.fileRepository.find({
+      where: {
+        isAvailable: true,
+        messages: [{ target: { _id: workspaceId }, isAvailable: true }]
+      }
+    })
+
+    return files
   }
   //#endregion
 
@@ -433,7 +478,6 @@ export class WorkspaceService {
     // }
 
     const sockets = await this.server.to(member.userId).fetchSockets()
-    console.log(sockets.length)
 
     // if (action === 'create') {
     //   return sockets.forEach(socket => {
@@ -456,34 +500,6 @@ export class WorkspaceService {
     })
   }
   //#endregion
-
-  async getWorkspaceFiles({
-    workspaceId,
-    user
-  }: {
-    workspaceId: string
-    user: TJwtUser
-  }) {
-    await this.workspaceRepository.findOneOrFail({
-      where: {
-        _id: workspaceId,
-        members: {
-          user: { _id: user.sub, isAvailable: true },
-          isAvailable: true
-        },
-        isAvailable: true
-      }
-    })
-
-    const files = await this.fileRepository.find({
-      where: {
-        isAvailable: true,
-        messages: [{ target: { _id: workspaceId }, isAvailable: true }]
-      }
-    })
-
-    return files
-  }
 
   //#region Direct
 

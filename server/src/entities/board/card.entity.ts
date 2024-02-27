@@ -26,7 +26,9 @@ export class Card extends BaseEntity {
   detail: JSONContent
 
   @ManyToMany(() => File)
-  @JoinTable()
+  @JoinTable({
+    name: 'card_attachment'
+  })
   attachments: File[]
 
   @ManyToOne(() => Workspace)

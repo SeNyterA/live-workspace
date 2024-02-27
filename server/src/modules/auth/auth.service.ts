@@ -123,7 +123,7 @@ export class AuthService {
           userName: payload.email.split('@')[0],
           email: payload.email,
           firebaseId: payload.user_id,
-          nickname: payload.name
+          nickName: payload.name
         })
 
         const avatarFile = await this.fileRepository.create({

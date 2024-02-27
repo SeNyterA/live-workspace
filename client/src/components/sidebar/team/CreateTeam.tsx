@@ -189,28 +189,24 @@ const Members = ({ control }: { control: Control<TForm, any> }) => {
         }}
       />
 
-      <div className='relative flex-1'>
-        <ScrollArea className='absolute inset-0 mt-2' scrollbarSize={8}>
-          {fields?.map((member, index) => (
-            <Controller
-              key={member.id}
-              control={control}
-              name={`members.${index}.role`}
-              render={({ field: { value, onChange } }) => (
-                <MemberControl
-                  member={{ ...member, role: value }}
-                  onChange={role => {
-                    onChange(role)
-                  }}
-                  onRemove={() => {
-                    remove(index)
-                  }}
-                />
-              )}
+      {fields?.map((member, index) => (
+        <Controller
+          key={member.id}
+          control={control}
+          name={`members.${index}.role`}
+          render={({ field: { value, onChange } }) => (
+            <MemberControl
+              member={{ ...member, role: value }}
+              onChange={role => {
+                onChange(role)
+              }}
+              onRemove={() => {
+                remove(index)
+              }}
             />
-          ))}
-        </ScrollArea>
-      </div>
+          )}
+        />
+      ))}
     </>
   )
 }
@@ -361,7 +357,8 @@ export default function CreateTeam({
                   <Avatar
                     classNames={{ placeholder: 'rounded-lg' }}
                     src={value?.path}
-                    className='h-8 w-8 rounded-lg'
+                    className='!h-8 !w-8 rounded-lg'
+                    size={32}
                   />
                 </Dropzone>
                 <Input.Description className=''>

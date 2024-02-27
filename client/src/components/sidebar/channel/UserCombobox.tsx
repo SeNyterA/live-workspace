@@ -39,7 +39,7 @@ export default function UserCombobox({
     return Object.values(state.workspace.users).filter(
       user =>
         _userId.includes(user._id) &&
-        [user.email, user.nickname, user.userName].some(
+        [user.email, user.nickName, user.userName].some(
           key => key?.includes(keyword)
         )
     )

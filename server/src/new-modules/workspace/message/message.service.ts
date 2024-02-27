@@ -100,7 +100,7 @@ export class MessageService {
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId },
+        workspace: { _id: targetId, isAvailable: true },
         type: In([
           EMemberType.Channel,
           EMemberType.DirectMessage,
