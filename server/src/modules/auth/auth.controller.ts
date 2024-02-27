@@ -1,8 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { TCreateUser } from 'src/modules/users/user.dto'
 
-import { TJwtUser } from '../workspace/workspace.gateway'
+import { TJwtUser } from '../socket/socket.gateway'
 import { TLoginPayload } from './auth.dto'
 import { Public } from './auth.guard'
 import { AuthService } from './auth.service'
@@ -25,7 +24,7 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  signUp(@Body() signUpDto: TCreateUser) {
+  signUp(@Body() signUpDto: any) {
     return this.authService.signUp(signUpDto)
   }
 

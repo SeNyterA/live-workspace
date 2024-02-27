@@ -1,7 +1,8 @@
 import { Controller, Get, Param } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
+
 import { WorkspaceService } from './workspace.service'
+import { TJwtUser } from '../socket/socket.gateway'
 
 @Controller('workspaces')
 export class WorkspaceController {

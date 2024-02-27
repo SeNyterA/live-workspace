@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { Message } from 'src/entities/message.entity'
-import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { MessageService } from './message.service'
 
 @Controller('workspaces/:workspaceId/messages')

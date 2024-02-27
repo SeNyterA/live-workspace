@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { Workspace } from 'src/entities/workspace.entity'
-import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
 import { BoardService } from './board.service'
 import { Option } from 'src/entities/board/option.entity'
 import { Card } from 'src/entities/board/card.entity'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
 @Controller()
 export class BoardController {

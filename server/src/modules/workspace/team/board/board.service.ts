@@ -1,360 +1,186 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  forwardRef
-} from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { getBoardPermission } from 'src/libs/checkPermistion'
-import { Errors } from 'src/libs/errors'
-import { User } from 'src/modules/users/user.schema'
-import { UsersService } from 'src/modules/users/users.service'
-import { EMemberRole, EMemberType, Member } from '../../member/member.schema'
-import { MemberService } from '../../member/member.service'
-import { MessageService } from '../../message/message.service'
-import { MembersDto } from '../../workspace.dto'
-import { TWorkspaceSocket, WorkspaceService } from '../../workspace.service'
-import { Team } from '../team.schema'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import * as crypto from 'crypto-js'
+import { Server } from 'socket.io'
+import { Card } from 'src/entities/board/card.entity'
+import { Option } from 'src/entities/board/option.entity'
+import { Property } from 'src/entities/board/property.entity'
+import { Member } from 'src/entities/member.entity'
+import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
+import { Repository } from 'typeorm'
 import { TeamService } from '../team.service'
-import { BoardDto } from './board.dto'
-import { Board } from './board.schema'
-import { CardService } from './card/card.service'
-import { PropertyService } from './property/property.service'
+import { generateBoardData } from './board.init'
 
+export const generateRandomHash = (
+  inputString = Math.random().toString()
+): string => {
+  const hash = crypto.SHA256(inputString).toString()
+  const truncatedHash = hash.substring(0, 8)
+  return truncatedHash
+}
+
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 @Injectable()
 export class BoardService {
+  @WebSocketServer()
+  server: Server
   constructor(
-    @InjectModel(Board.name) readonly boardModel: Model<Board>,
-    @InjectModel(Team.name) readonly teamModel: Model<Team>,
-    @InjectModel(Member.name) readonly memberModel: Model<Member>,
-    @InjectModel(User.name) readonly userModel: Model<User>,
+    @InjectRepository(Workspace)
+    private readonly workspaceRepository: Repository<Workspace>,
 
-    readonly memberService: MemberService,
-    @Inject(forwardRef(() => MessageService))
-    readonly messageService: MessageService,
-    @Inject(forwardRef(() => WorkspaceService))
-    readonly workspaceService: WorkspaceService,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
+
+    @InjectRepository(Property)
+    private readonly propertyRepository: Repository<Property>,
+
+    @InjectRepository(Option)
+    private readonly optionRepository: Repository<Option>,
+
+    @InjectRepository(Card)
+    private readonly cardRepository: Repository<Card>,
+
     @Inject(forwardRef(() => TeamService))
-    readonly teamService: TeamService,
-    @Inject(forwardRef(() => UsersService))
-    readonly usersService: UsersService,
-
-    @Inject(forwardRef(() => CardService))
-    readonly cardService: CardService,
-    @Inject(forwardRef(() => PropertyService))
-    readonly propertyService: PropertyService
+    private readonly teamService: TeamService
   ) {}
 
-  async _checkExisting({ boardId }: { boardId: string }): Promise<boolean> {
-    const existingBoard = await this.boardModel.findOne({
-      _id: boardId,
-      isAvailable: true
+  async initBoardData({ boardId }: { boardId: string }) {
+    const { cards, options, properties } = generateBoardData({
+      boardId: boardId
     })
-    if (!existingBoard) {
-      throw new ForbiddenException('Your dont have permission')
-    }
-    return !!existingBoard
+
+    const _properties = await this.propertyRepository.insert(properties)
+    const _options = await this.optionRepository.insert(options)
+    const _cards = await this.cardRepository.insert(cards)
+
+    return { properties: _properties, options: _options, cards: _cards }
   }
 
-  async __getPermisstion({
-    targetId,
-    userId
-  }: {
-    targetId: string
-    userId: string
-  }) {
-    const _member = this.memberService.memberModel.findOne({
-      userId,
-      targetId: targetId,
-      isAvailable: true
-    })
-    const _target = this.boardModel.findOne({
-      _id: targetId,
-      isAvailable: true
-    })
-
-    const [member, board] = await Promise.all([_member, _target])
-
-    return {
-      member,
-      board,
-      permissions: getBoardPermission(
-        !!(_member && _target) ? member.role : undefined
-      )
-    }
-  }
-
-  async getBoardsByUserId(userId: string) {
-    const _members = await this.memberService._getByUserId({
-      userId
-    })
-    const boards = await this.boardModel
-      .find({
-        _id: {
-          $in: _members.map(e => e.targetId.toString())
-        },
-        isAvailable: true
-      })
-      .lean()
-
-    const members = await this.memberService.memberModel
-      .find({
-        targetId: { $in: boards.map(team => team._id.toString()) }
-      })
-      .lean()
-
-    return {
-      boards,
-      members
-    }
-  }
-
-  async getDetalById({ boardId, userId }: { userId: string; boardId: string }) {
-    const { permissions, board } = await this.__getPermisstion({
-      targetId: boardId,
-      userId
-    })
-    if (!permissions.view) {
-      return {
-        code: Errors['User dont has permission to create board'],
-        userId,
-        boardId
-      }
-    }
-
-    const cards = await this.cardService.cardModel
-      .find({
-        boardId
-      })
-      .lean()
-
-    const properties = await this.propertyService.propertyModel
-      .find({
-        boardId
-      })
-      .lean()
-
-    return {
-      board: board.toObject(),
-      cards,
-      properties
-    }
-  }
-
-  async _create({
-    boardDto: { members: membersDto, ...createData },
-    userId,
+  async createBoard({
+    user,
+    workspace,
     teamId
   }: {
-    boardDto: BoardDto
-    userId: string
+    workspace: Workspace
+    user: TJwtUser
     teamId: string
   }) {
-    const { permissions: teamPermissions } =
-      await this.teamService.getPermisstion({
-        targetId: teamId,
-        userId
-      })
-
-    if (!teamPermissions?.createBoard)
-      return {
-        error: {
-          code: Errors['User dont has permission to create board'],
-          userId,
-          teamId
-        }
-      }
-
-    const newBoard = await this.boardModel.create({
-      ...createData,
+    const _board = await this.teamService.createChildWorkspace({
       teamId,
-      createdById: userId,
-      modifiedById: userId
+      type: WorkspaceType.Board,
+      user,
+      workspace
     })
 
-    const {
-      memberAction: { add: addMemberPermission }
-    } = getBoardPermission(EMemberRole.Owner)
-
-    console.log(addMemberPermission)
-
-    const _newMember = [
-      { role: EMemberRole.Owner, userId },
-      ...(membersDto?.filter(e => e.userId !== userId) || [])
-    ].map(async memberDto => {
-      if (!addMemberPermission.includes(memberDto.role)) {
-        return {
-          error: {
-            code: Errors['User dont has permission to add member to channel'],
-            userId,
-            boardId: newBoard._id.toString()
-          }
-        }
-      }
-
-      const user = await this.usersService.userModel.findOne({
-        isAvailable: true,
-        _id: memberDto.userId
-      })
-      if (!user) {
-        return {
-          error: {
-            code: Errors['User not found or disabled'],
-            userId: memberDto.userId
-          }
-        }
-      }
-
-      const newMember = await this.memberModel.create({
-        ...memberDto,
-        targetId: newBoard._id.toString(),
-        path: `${teamId}/${newBoard._id.toString()}`,
-        type: EMemberType.Board,
-        createdById: userId,
-        modifiedById: userId
-      })
-      return {
-        member: newMember,
-        user: user.toJSON()
-      }
+    this.initBoardData({
+      boardId: _board.identifiers[0]._id
     })
 
-    const newMember = await Promise.all(_newMember)
-
-    const validMembers = newMember
-      .filter(entry => !!entry.member)
-      .map(entry => entry.member)
-    const validUsers = newMember
-      .filter(entry => !!entry.user)
-      .map(entry => entry.user)
-    const response: TWorkspaceSocket[] = [
-      {
-        type: 'board',
-        action: 'create',
-        data: newBoard
-      },
-      ...validMembers.map(
-        member =>
-          ({
-            type: 'member',
-            action: 'create',
-            data: member
-          }) as TWorkspaceSocket
-      )
-    ]
-
-    this.workspaceService.workspaces({
-      rooms: validMembers.map(e => e.userId.toString()),
-      workspaces: response
+    return this.workspaceRepository.findOneOrFail({
+      where: { _id: _board.identifiers[0]._id }
     })
-
-    this.workspaceService.users({
-      rooms: validUsers.map(e => e._id.toString()),
-      users: validUsers.map(e => ({ type: 'get', data: e }))
-    })
-
-    return response
   }
 
-  async _addMembers({
-    boardId,
-    payload: { members: membersDto },
-    userId
+  async getBoardById({
+    user,
+    workspaceId
   }: {
-    payload: MembersDto
-    userId: string
-    boardId: string
+    user: TJwtUser
+    workspaceId: string
   }) {
-    const { permissions, board } = await this.__getPermisstion({
-      targetId: boardId,
-      userId
+    const workspace = await this.workspaceRepository.findOneOrFail({
+      where: {
+        _id: workspaceId,
+        members: { user: { _id: user.sub, isAvailable: true } }
+      },
+      relations: ['properties', 'properties.options']
     })
 
-    if (!permissions) {
-      return {
-        error: { code: Errors['User not found on board'], userId, boardId }
-      }
-    }
-
-    const _members = membersDto.map(async memberDto => {
-      if (!permissions?.memberAction?.add?.includes(memberDto.role)) {
-        return {
-          error: {
-            code: Errors['User dont has permission to add member to board'],
-            userId,
-            boardId,
-            targetUserId: memberDto.role
-          }
-        }
-      }
-
-      const user = await this.usersService.userModel.findOne({
-        isAvailable: true,
-        _id: memberDto.userId
-      })
-      if (!user) {
-        return {
-          error: {
-            code: Errors['User not found or disabled'],
-            userId: memberDto.userId
-          }
-        }
-      }
-
-      const teamMember = await this.memberService._checkExisting({
-        targetId: boardId,
-        userId: memberDto.userId
-      })
-      if (!teamMember) {
-        return {
-          error: {
-            code: Errors['User not found on team'],
-            userId: memberDto.userId,
-            teamId: board.teamId.toString()
-          }
-        }
-      }
-
-      const existingMember = await this.memberService.memberModel.findOne({
-        targetId: boardId,
-        userId: memberDto.userId
-      })
-      if (!existingMember) {
-        return {
-          error: {
-            code: Errors['Board member has existing'],
-            userId: memberDto.userId,
-            boardId: boardId
-          }
-        }
-      }
-
-      const newMember = await this.memberModel.create({
-        ...memberDto,
-        targetId: boardId,
-        path: `${teamMember.targetId.toString()}/${boardId}`,
-        type: EMemberType.Board,
-        createdById: userId,
-        modifiedById: userId
-      })
-      return {
-        member: newMember,
-        user: user.toJSON()
+    const cards = await this.cardRepository.find({
+      where: {
+        board: { _id: workspaceId }
       }
     })
-
-    const members = await Promise.all(_members)
-    const socketMembers = members.filter(e => !!e.member).map(e => e.member)
-    this.workspaceService.workspaces({
-      rooms: [boardId, ...socketMembers.map(e => e._id.toString())],
-      workspaces: socketMembers.map(member => ({
-        action: 'create',
-        type: 'member',
-        data: member
-      }))
+    const members = await this.memberRepository.find({
+      where: { workspace: { _id: workspaceId } },
+      relations: ['user']
     })
 
-    return members
+    return { ...workspace, cards, members }
+  }
+
+  async updateOption({
+    boardId,
+    optionId,
+    user,
+    newOption
+  }: {
+    optionId: string
+    user: TJwtUser
+    boardId: string
+    newOption: Option
+  }) {
+    const option = await this.optionRepository.findOneOrFail({
+      where: {
+        _id: optionId,
+        board: {
+          _id: boardId,
+          isAvailable: true,
+          members: { user: { _id: user.sub }, isAvailable: true }
+        }
+      }
+    })
+    const optionUpdate = await this.optionRepository.save({
+      ...option,
+      ...newOption,
+      modifiedBy: { _id: user.sub }
+    })
+
+    this.server
+      .to(boardId)
+      .emit('option', { option: optionUpdate, mode: 'update' })
+
+    return optionUpdate
+  }
+
+  async updateCard({
+    boardId,
+    card,
+    user,
+    cardId
+  }: {
+    user: TJwtUser
+    card: Card
+    boardId: string
+    cardId: string
+  }) {
+    const _card = await this.cardRepository.findOneOrFail({
+      where: {
+        _id: cardId,
+        board: {
+          _id: boardId,
+          isAvailable: true,
+          members: {
+            user: { _id: user.sub, isAvailable: true },
+            isAvailable: true
+          }
+        }
+      }
+    })
+    const cardUpdated = await this.cardRepository.save({
+      ..._card,
+      ...card,
+      modifiedBy: { _id: user.sub }
+    })
+
+    this.server.to(boardId).emit('card', { card: cardUpdated, mode: 'update' })
+
+    return cardUpdated
   }
 }

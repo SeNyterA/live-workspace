@@ -2,34 +2,28 @@ import { Body, Controller, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { Member } from 'src/entities/member.entity'
 import { Workspace } from 'src/entities/workspace.entity'
-import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
-import { TeamService } from './team.service'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
+import { GroupService } from './group.service'
 
-@Controller('teams')
-export class TeamController {
-  constructor(private readonly teamService: TeamService) {}
+@Controller('groups')
+export class GroupController {
+  constructor(private readonly groupService: GroupService) {}
 
   @Post()
-  create(
+  createGroup(
     @HttpUser() user: TJwtUser,
     @Body()
     {
       workspace,
-      channels,
-      boards,
       members
     }: {
       workspace: Workspace
-      channels?: Workspace[]
-      boards?: Workspace[]
       members?: Member[]
     }
   ) {
-    return this.teamService.createTeam({
+    return this.groupService.createGroup({
       user,
       workspace,
-      channels,
-      boards,
       members
     })
   }

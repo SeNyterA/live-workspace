@@ -8,10 +8,9 @@ import { InjectRepository } from '@nestjs/typeorm'
 import * as crypto from 'crypto-js'
 import { EFileSourceType, File } from 'src/entities/file.entity'
 import { User } from 'src/entities/user.entity'
-import { TCreateUser } from 'src/modules/users/user.dto'
 import { Repository } from 'typeorm'
-import { MailService } from '../mail/mail.service'
 import { TLoginPayload } from './auth.dto'
+import { MailService } from '../mail/mail.service'
 
 export type FirebaseUserTokenData = {
   name: string
@@ -147,7 +146,7 @@ export class AuthService {
     }
   }
 
-  async signUp(userDto: TCreateUser) {
+  async signUp(userDto: any) {
     // const existingUser = await this.userRepository.findOne({
     //   where: [{ email: userDto.email }, { userName: userDto.userName }]
     // })

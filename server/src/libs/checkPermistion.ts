@@ -1,4 +1,4 @@
-import { EMemberRole } from 'src/modules/workspace/member/member.schema'
+import { EMemberRole } from 'src/entities/member.entity'
 
 type TPermissionsBase = {
   type: 'channel' | 'group' | 'team' | 'board'

@@ -1,457 +1,217 @@
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import { Server } from 'socket.io'
+import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
 import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  NotFoundException,
-  forwardRef
-} from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { getTeamPermission } from 'src/libs/checkPermistion'
-import { Errors } from 'src/libs/errors'
-import { MailService } from 'src/modules/mail/mail.service'
-import { User } from 'src/modules/users/user.schema'
-import { UsersService } from 'src/modules/users/users.service'
-import { EMemberRole, EMemberType, Member } from '../member/member.schema'
-import { MemberService } from '../member/member.service'
-import { MemberDto } from '../workspace.dto'
-import {
-  TBoardEmit,
-  TWorkspaceSocket,
-  WorkspaceService
-} from '../workspace.service'
+  Workspace,
+  WorkspaceStatus,
+  WorkspaceType
+} from 'src/entities/workspace.entity'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
+import { In, Not, Repository } from 'typeorm'
+import { generateRandomHash } from '../workspace.service'
 import { BoardService } from './board/board.service'
-import { EFieldType } from './board/property/property.schema'
-import { PropertyService } from './board/property/property.service'
 import { ChannelService } from './channel/channel.service'
-import { TTeam, TUpdateTeamPayload, TeamDto } from './team.dto'
-import { Team } from './team.schema'
 
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 @Injectable()
 export class TeamService {
+  @WebSocketServer()
+  server: Server
   constructor(
-    @InjectModel(Team.name) readonly teamModel: Model<Team>,
-    @InjectModel(Member.name) readonly memberModel: Model<Member>,
-    @InjectModel(User.name) readonly userModel: Model<User>,
-    readonly memberService: MemberService,
-    readonly mailService: MailService,
+    @InjectRepository(Workspace)
+    private readonly workspaceRepository: Repository<Workspace>,
 
-    @Inject(forwardRef(() => ChannelService))
-    readonly channelService: ChannelService,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
 
     @Inject(forwardRef(() => BoardService))
     readonly boardService: BoardService,
-    @Inject(forwardRef(() => PropertyService))
-    readonly propertyService: PropertyService,
 
-    @Inject(forwardRef(() => WorkspaceService))
-    readonly workspaceService: WorkspaceService,
-
-    @Inject(forwardRef(() => UsersService))
-    readonly usersService: UsersService
+    @Inject(forwardRef(() => ChannelService))
+    readonly channelService: ChannelService
   ) {}
 
-  async _checkExisting({ teamId }: { teamId: string }) {
-    const existingTeam = await this.teamModel.findOne({
-      _id: teamId,
-      isAvailable: true
-    })
-    if (!existingTeam) {
-      throw new ForbiddenException('Your dont have permission')
-    }
-    return !!existingTeam
-  }
-
-  async getPermisstion({
-    targetId,
-    userId
+  async createTeam({
+    user,
+    workspace,
+    boards,
+    channels,
+    members
   }: {
-    targetId: string
-    userId: string
+    user: TJwtUser
+    workspace: Workspace
+    channels?: Workspace[]
+    boards?: Workspace[]
+    members?: Member[]
   }) {
-    const _member = this.memberService.memberModel.findOne({
-      userId,
-      targetId: targetId,
-      isAvailable: true
-    })
-    const _target = this.teamModel.findOne({
-      _id: targetId,
-      isAvailable: true
-    })
-
-    const [member, target] = await Promise.all([_member, _target])
-
-    if (member && target) {
-      return {
-        permissions: getTeamPermission(member.role),
-        member,
-        target
-      }
-    }
-    return {
-      member,
-      target
-    }
-  }
-
-  async getTeamsByUserId(userId: string) {
-    const _members = await this.memberService._getByUserId({
-      userId
-    })
-
-    const teams = await this.teamModel
-      .find({
-        _id: {
-          $in: _members.map(e => e.targetId.toString())
-        },
-        isAvailable: true
+    const newWorkspace = await this.workspaceRepository.save(
+      this.workspaceRepository.create({
+        ...workspace,
+        type: WorkspaceType.Team,
+        displayUrl: generateRandomHash(),
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
       })
-      .lean()
+    )
 
-    const members = await this.memberService.memberModel
-      .find({
-        targetId: { $in: teams.map(team => team._id.toString()) }
-      })
-      .lean()
+    // const users = await this.userRepository.find({
+    //   take: 99
+    // })
 
-    return {
-      teams,
-      members
-    }
-  }
+    // const _member = await this.memberRepository.insert([
+    //   {
+    //     role: EMemberRole.Owner,
+    //     type: EMemberType.Team,
+    //     modifiedBy: { _id: user.sub },
+    //     createdBy: { _id: user.sub },
+    //     user: { _id: user.sub },
+    //     workspace: newWorkspace
+    //   },
+    //   ...users.map(e => ({
+    //     user: { _id: e._id },
+    //     role: EMemberRole.Member,
+    //     type: EMemberType.Team,
+    //     modifiedBy: { _id: user.sub },
+    //     createdBy: { _id: user.sub },
+    //     workspace: newWorkspace
+    //   }))
+    // ])
 
-  async getTeamById({
-    id,
-    userId
-  }: {
-    id: string
-    userId: string
-  }): Promise<TTeam> {
-    await this.memberService._checkExisting({
-      userId,
-      targetId: id
-    })
-    const team = await this.teamModel.findById({
-      _id: id,
-      isAvailable: true
-    })
-    if (!team) {
-      throw new NotFoundException('Team not found')
-    }
-    return team.toJSON()
-  }
-
-  async _create({
-    teamDto: { channelTitles, members: memberDto, ...teamDto },
-    userId
-  }: {
-    teamDto: TeamDto
-    userId: string
-  }) {
-    const newTeam = (
-      await this.teamModel.create({
-        ...teamDto,
-        createdById: userId,
-        modifiedById: userId
-      })
-    ).toJSON()
-
-    const _membersDto: MemberDto[] = [
-      { role: EMemberRole.Owner, userId },
-      ...(memberDto?.filter(e => e.userId !== userId) || [])
-    ]
-    const _teamMembers = _membersDto?.map(async memberDto => {
-      const user = await this.usersService.userModel.findOne({
-        isAvailable: true,
-        _id: memberDto.userId
-      })
-      if (!user) {
-        return {
-          error: {
-            code: Errors['User not found or disabled'],
-            userId: memberDto.userId
-          }
-        }
-      } else {
-        const newMember = await this.memberModel.create({
-          ...memberDto,
-          targetId: newTeam._id.toString(),
-          path: newTeam._id.toString(),
+    const _member = await this.memberRepository.insert([
+      {
+        user: { _id: user.sub },
+        role: EMemberRole.Owner,
+        type: EMemberType.Team,
+        modifiedBy: { _id: user.sub },
+        createdBy: { _id: user.sub },
+        workspace: newWorkspace
+      },
+      ...members
+        ?.filter(e => e.userId !== user.sub)
+        ?.map(e => ({
+          user: { _id: e.userId },
+          role: e.role,
           type: EMemberType.Team,
-          createdById: userId,
-          modifiedById: userId
-        })
+          modifiedBy: { _id: user.sub },
+          createdBy: { _id: user.sub },
+          workspace: newWorkspace
+        }))
+    ])
 
-        return {
-          member: newMember.toJSON(),
-          user: user.toJSON()
-        }
+    const team = await this.workspaceRepository.findOneOrFail({
+      where: { _id: newWorkspace._id },
+      relations: ['avatar', 'thumbnail']
+    })
+    this.server
+      .to([team._id, ..._member.identifiers.map(e => e._id)])
+      .emit('workspace', { workspace: team })
+
+    boards?.map(boardInfo =>
+      this.boardService.createBoard({
+        user,
+        workspace: {
+          ...boardInfo,
+          parent: { _id: newWorkspace._id } as Workspace,
+          type: WorkspaceType.Board,
+          displayUrl: generateRandomHash(),
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        } as Workspace,
+        teamId: newWorkspace._id
+      })
+    )
+
+    channels?.map(channelInfo =>
+      this.channelService.createChannel({
+        user,
+        workspace: {
+          ...channelInfo,
+          parent: { _id: newWorkspace._id } as Workspace,
+          type: WorkspaceType.Channel,
+          displayUrl: generateRandomHash(),
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        } as Workspace,
+        teamId: newWorkspace._id
+      })
+    )
+
+    return {
+      team
+    }
+  }
+
+  async createChildWorkspace({
+    user,
+    workspace,
+    teamId,
+    type
+  }: {
+    workspace: Workspace
+    user: TJwtUser
+    teamId: string
+    type: WorkspaceType.Board | WorkspaceType.Channel
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        workspace: { _id: teamId, isAvailable: true },
+        user: { _id: user.sub, isAvailable: true },
+        role: In([EMemberRole.Owner, EMemberRole.Admin])
       }
     })
-    const teamMembers = await Promise.all(_teamMembers)
 
-    const validMembers = teamMembers
-      .filter(entry => !!entry.member)
-      .map(entry => entry.member)
-    const validUsers = teamMembers
-      .filter(entry => !!entry.user)
-      .map(entry => entry.user)
-    const response: TWorkspaceSocket[] = [
-      {
-        type: 'team',
-        action: 'create',
-        data: newTeam
-      },
-      ...validMembers.map(
-        member =>
-          ({
-            type: 'member',
-            action: 'create',
-            data: member
-          }) as TWorkspaceSocket
-      )
-    ]
-
-    this.workspaceService.workspaces({
-      rooms: validMembers.map(e => e.userId.toString()),
-      workspaces: response
+    const newWorkspace = await this.workspaceRepository.insert({
+      ...workspace,
+      type: type,
+      displayUrl: generateRandomHash(),
+      status: WorkspaceStatus.Public,
+      createdBy: { _id: user.sub },
+      modifiedBy: { _id: user.sub },
+      parent: { _id: teamId }
     })
 
-    this.workspaceService.users({
-      rooms: validUsers.map(e => e._id.toString()),
-      users: validUsers.map(e => ({ type: 'get', data: e }))
-    })
-
-    //createChannel
-    channelTitles?.map(async channelTitle => {
-      const newChannel = await this.channelService.channelModel.create({
-        title: channelTitle,
-        teamId: newTeam._id.toString(),
-        createdById: userId,
-        modifiedById: userId
-      })
-      const _channelMembers = validMembers.map(async teamMember => {
-        return await this.memberModel.create({
-          userId: teamMember.userId.toString(),
-          targetId: newChannel._id.toString(),
-          role: teamMember.role,
-          path: `${teamMember.targetId.toString()}/${newChannel._id.toString()}`,
-          type: EMemberType.Channel,
-          createdById: userId,
-          modifiedById: userId
-        })
-      })
-      const channelMembers = await Promise.all(_channelMembers)
-
-      this.workspaceService.workspaces({
-        rooms: channelMembers.map(({ userId }) => userId.toString()),
-        workspaces: [
-          { type: 'channel', action: 'create', data: newChannel.toJSON() },
-          ...channelMembers.map(
-            channelMember =>
-              ({
-                type: 'member',
-                action: 'create',
-                data: channelMember
-              }) as TWorkspaceSocket
-          )
-        ]
-      })
-    }) || []
-    ;['Daily tasks'].map(async boardTitle => {
-      const newBoard = await this.boardService.boardModel.create({
-        title: boardTitle,
-        teamId: newTeam._id.toString(),
-        createdById: userId,
-        modifiedById: userId
-      })
-
-      // properties
-      const _properties = [
-        {
-          title: 'Status',
-          fieldType: EFieldType.Select,
-          fieldOption: [
-            {
-              title: 'Pending',
-              color: '#333'
-            },
-            {
-              title: 'In progress',
-              color: '#333'
-            },
-            {
-              title: 'Todo',
-              color: '#333'
-            },
-            {
-              title: 'Merge request',
-              color: '#333'
-            },
-            {
-              title: 'Tesing',
-              color: '#333'
-            },
-            {
-              title: 'Bug',
-              color: '#333'
-            },
-            {
-              title: 'Fixed',
-              color: '#333'
-            },
-            {
-              title: 'Done',
-              color: '#333'
+    const workpsaceMembers =
+      newWorkspace.generatedMaps[0].status === WorkspaceStatus.Public
+        ? await this.memberRepository.find({
+            where: {
+              workspace: { _id: teamId },
+              isAvailable: true,
+              user: { _id: Not(user.sub), isAvailable: true }
             }
-          ]
-        },
-        {
-          title: 'Assignees',
-          fieldType: EFieldType.Assignees
-        },
-        {
-          title: 'Progress',
-          fieldType: EFieldType.String
-        }
-      ].map(
-        async propertyData =>
-          await this.propertyService.propertyModel.create({
-            ...propertyData,
-            boardId: newBoard._id.toString(),
-            createdById: userId,
-            modifiedById: userId
           })
-      )
-      const properties = await Promise.all(_properties)
+        : []
 
-      // members
-      const _boardMembers = validMembers.map(
-        async teamMember =>
-          await this.memberModel.create({
-            userId: teamMember.userId.toString(),
-            targetId: newBoard._id.toString(),
-            role: teamMember.role,
-            path: `${teamMember.targetId.toString()}/${newBoard._id.toString()}`,
-            type: EMemberType.Board,
-            createdById: userId,
-            modifiedById: userId
-          })
-      )
-      const boardMembers = await Promise.all(_boardMembers)
-
-      // workspaces emit
-      this.workspaceService.workspaces({
-        rooms: boardMembers.map(({ userId }) => userId.toString()),
-        workspaces: [
-          { type: 'board', action: 'create', data: newBoard.toJSON() },
-          ...boardMembers.map(
-            boardMember =>
-              ({
-                type: 'member',
-                action: 'create',
-                data: boardMember
-              }) as TWorkspaceSocket
-          )
-        ]
-      })
-
-      // board data emit
-      this.workspaceService.boardEmit({
-        rooms: boardMembers.map(({ userId }) => userId.toString()),
-        boardData: [
-          ...properties.map(
-            property =>
-              ({
-                type: 'property',
-                action: 'create',
-                data: property
-              }) as TBoardEmit
-          )
-        ]
-      })
-    }) || []
-
-    return response
-  }
-
-  async update({
-    id,
-    teamPayload,
-    userId
-  }: {
-    id: string
-    teamPayload: TUpdateTeamPayload
-    userId: string
-  }) {
-    await this.memberService._checkExisting({
-      userId,
-      targetId: id,
-      isAvailable: true,
-      inRoles: [EMemberRole.Owner, EMemberRole.Admin]
-    })
-
-    const team = await this.teamModel.findByIdAndUpdate(
+    const members = await this.memberRepository.insert([
       {
-        _id: id,
-        isAvailable: true
+        role: EMemberRole.Owner,
+        type:
+          type === WorkspaceType.Board
+            ? EMemberType.Board
+            : EMemberType.Channel,
+        user: { _id: user.sub },
+        workspace: { _id: newWorkspace.identifiers[0]._id },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
       },
-      {
-        $set: {
-          ...teamPayload,
-          updatedAt: new Date(),
-          modifiedById: userId
-        }
-      },
-      { new: true }
-    )
-    if (!team) {
-      throw new ForbiddenException('Your dont have permission')
-    }
+      ...workpsaceMembers.map(member => ({
+        role: EMemberRole.Member,
+        type:
+          type === WorkspaceType.Board
+            ? EMemberType.Board
+            : EMemberType.Channel,
+        user: { _id: member.userId },
+        workspace: { _id: newWorkspace.identifiers[0]._id },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      }))
+    ])
 
-    const rooms = [team._id.toString(), userId]
-    this.workspaceService.workspaces({
-      rooms,
-      workspaces: [{ action: 'update', data: team, type: 'team' }]
-    })
-
-    return { team }
-  }
-
-  async delete({
-    id,
-    userId
-  }: {
-    id: string
-    userId: string
-  }): Promise<boolean> {
-    await this.memberService._checkExisting({
-      userId,
-      targetId: id,
-      inRoles: [EMemberRole.Owner]
-    })
-    const team = await this.teamModel.findByIdAndUpdate(
-      {
-        _id: id,
-        isAvailable: true
-      },
-      {
-        $set: {
-          isAvailable: false,
-          updatedAt: new Date(),
-          modifiedById: userId
-        }
-      },
-      { new: true }
-    )
-    if (!team) {
-      throw new ForbiddenException('Your dont have permission')
-    }
-
-    this.workspaceService.workspaces({
-      rooms: [team._id.toString(), userId],
-      workspaces: [{ action: 'delete', type: 'team', data: team }]
-    })
-    return true
+    return newWorkspace
   }
 }

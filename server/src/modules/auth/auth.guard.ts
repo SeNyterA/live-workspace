@@ -9,8 +9,8 @@ import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Request } from 'express'
+import { User } from 'src/entities/user.entity'
 import { Repository } from 'typeorm'
-import { User } from '../users/user.schema'
 
 export const IS_PUBLIC_KEY = 'isPublic'
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
