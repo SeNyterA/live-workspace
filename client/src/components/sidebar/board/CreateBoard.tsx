@@ -5,7 +5,7 @@ import useAppParams from '../../../hooks/useAppParams'
 import {
   ApiMutationType,
   useAppMutation
-} from '../../../services/apis/useAppMutation'
+} from '../../../services/apis/mutations/useAppMutation'
 import { EMemberRole } from '../../../types/workspace.type'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'

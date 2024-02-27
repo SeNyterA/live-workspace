@@ -7,7 +7,7 @@ import {
 } from '@mantine/core'
 import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../hooks/useAppParams'
-import { useAppMutation } from '../../services/apis/useAppMutation'
+import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import { TChannelPayload } from '../../types/workspace.type'
 
 export default function ChannelForm() {

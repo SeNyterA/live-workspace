@@ -1,6 +1,6 @@
 import { Checkbox, Divider, Image, Input, Textarea } from '@mantine/core'
 import useAppParams from '../../../hooks/useAppParams'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { EBlockType, TBlock } from '../../../types/workspace.type'
 import FilesContent from './FilesContent'
 

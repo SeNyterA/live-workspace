@@ -20,11 +20,11 @@ import {
   useForm
 } from 'react-hook-form'
 import { TFile } from '../../../new-types/file'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { TMemberDto } from '../../../types/dto.type'
 import { EMemberRole } from '../../../types/workspace.type'
-import UserCombobox from '../UserCombobox'
 import MemberControl from '../MemberControl'
+import UserCombobox from '../UserCombobox'
 
 type TForm = {
   channels?: { title: string }[]
@@ -254,9 +254,6 @@ export default function CreateTeam({
         body: 'flex flex-col flex-1 overflow-y-hidden'
       }}
     >
-      {/* <FileButton onChange={()=>{}} accept='image/png,image/jpeg'>
-        {props => <Button {...props}>Upload image</Button>}
-      </FileButton */}
       <div className='relative flex-1'>
         <ScrollArea
           scrollbarSize={8}
@@ -444,9 +441,14 @@ export default function CreateTeam({
           loading={isPending}
           disabled={isPending}
           onClick={handleSubmit(({ ...data }) => {
-            console.log(
-              { data },
-              {
+            console.log({ data }, {})
+
+            createTeam({
+              url: {
+                baseUrl: '/teams'
+              },
+              method: 'post',
+              payload: {
                 workspace: {
                   title: data.title,
                   avatar: data.avatar,
@@ -460,27 +462,9 @@ export default function CreateTeam({
                   userId: e.userId,
                   role: e.role
                 })) as any[],
-                board: data.boards?.map(e => ({
-                  title: e.title,
-                  isInitData: e.isInitData
+                boards: data.boards?.map(e => ({
+                  title: e.title
                 })) as any[]
-              }
-            )
-
-            return
-            createTeam({
-              url: {
-                baseUrl: '/teams'
-              },
-              method: 'post',
-              payload: {
-                workspace: {
-                  title: data.title,
-                  avatar: data.avatar,
-                  thumbnail: data.thumbnail,
-                  description: data.description
-                } as any,
-                channels: data.channels?.map(e => ({ title: e.title })) as any[]
               }
             }).then(data => {
               onClose()

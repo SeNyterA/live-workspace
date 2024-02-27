@@ -1,15 +1,20 @@
 import { MutationOptions, useMutation } from '@tanstack/react-query'
 import { AxiosRequestConfig } from 'axios'
-import { TCard, TOption } from '../../new-types/board'
-import { TMessage } from '../../new-types/message'
-import { TWorkspace } from '../../new-types/workspace'
-import { TChannelDto, TGroupDto } from '../../types/dto.type'
-import { TUser } from '../../types/user.type'
-import { EMemberRole, JSONContent, TMember } from '../../types/workspace.type'
-import { TBoardMutionApi } from './board.api'
-import { replaceDynamicValues } from './common'
-import http from './http'
-import { TUploadMutionApi } from './upload.api'
+import { TCard, TOption } from '../../../new-types/board'
+import { TMessage } from '../../../new-types/message'
+import { TWorkspace } from '../../../new-types/workspace'
+import { TChannelDto, TGroupDto } from '../../../types/dto.type'
+import { TUser } from '../../../types/user.type'
+import {
+  EMemberRole,
+  JSONContent,
+  TMember
+} from '../../../types/workspace.type'
+import { TBoardMutionApi } from '../board.api'
+import { replaceDynamicValues } from '../common'
+import http from '../http'
+import { TUploadMutionApi } from '../upload.api'
+import { TGroupMutationApi } from './group'
 
 const objectToFormData = (obj: any): FormData => {
   const formData = new FormData()
@@ -165,21 +170,17 @@ export type ApiMutationType = {
     response: TMessage
   }
 
-  createGroup: {
-    url: {
-      baseUrl: '/workspace/groups'
-    }
-    method: 'post'
-    payload: TGroupDto
-    response: TMessage
-  }
-
   createTeam: {
     url: {
       baseUrl: '/teams'
     }
     method: 'post'
-    payload: { workspace: TWorkspace; channels?: TWorkspace[] }
+    payload: {
+      workspace: TWorkspace
+      channels?: TWorkspace[]
+      boards?: TWorkspace[]
+      members?: TMember[]
+    }
     response: TWorkspace
   }
 
@@ -274,7 +275,8 @@ export type ApiMutationType = {
     response: TCard
   }
 } & TBoardMutionApi &
-  TUploadMutionApi
+  TUploadMutionApi &
+  TGroupMutationApi
 
 export const useAppMutation = <T extends keyof ApiMutationType>(
   _key: T,

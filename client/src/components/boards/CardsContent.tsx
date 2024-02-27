@@ -7,7 +7,7 @@ import useRenderCount from '../../hooks/useRenderCount'
 import { TOption } from '../../new-types/board'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../redux/store'
-import { useAppMutation } from '../../services/apis/useAppMutation'
+import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 

@@ -1,10 +1,13 @@
 import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import useAppControlParams from '../../hooks/useAppControlParams'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
 import {
   ApiMutationType,
   useAppMutation
-} from '../../services/apis/useAppMutation'
+} from '../../services/apis/mutations/useAppMutation'
 import { EMemberRole } from '../../types/workspace.type'
 import MemberControl from './MemberControl'
 import UserCombobox from './UserCombobox'
@@ -22,7 +25,8 @@ export default function CreateGroup({
 }) {
   const { control, handleSubmit, reset } = useForm<TForm>()
   const { mutateAsync: createGroup, isPending } = useAppMutation('createGroup')
-
+  const { switchTo } = useAppControlParams()
+  const dispatch = useDispatch()
   useEffect(() => {
     reset()
   }, [refetchKey])
@@ -45,7 +49,7 @@ export default function CreateGroup({
     >
       <Controller
         control={control}
-        name='title'
+        name='workspace.title'
         render={({ field: { value, onChange } }) => (
           <TextInput
             data-autofocus
@@ -61,7 +65,29 @@ export default function CreateGroup({
 
       <Controller
         control={control}
-        name='description'
+        name='workspace.displayUrl'
+        rules={{
+          required: 'Display name is required'
+        }}
+        render={({ field: { value, onChange }, fieldState }) => (
+          <TextInput
+            data-autofocus
+            withAsterisk
+            label='Dispay url'
+            placeholder='Enter the display url'
+            description='This is the url that will be used to access the team. e.g. .../teams/your-team-name'
+            size='sm'
+            className='mt-2'
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            error={fieldState.error && fieldState.error.message}
+          />
+        )}
+      />
+
+      <Controller
+        control={control}
+        name='workspace.description'
         render={({ field: { value, onChange } }) => (
           <Textarea
             label='Group description'
@@ -129,25 +155,41 @@ export default function CreateGroup({
       />
 
       <div className='mt-2 flex items-center justify-end gap-3'>
-        <Button
-          variant='default'
-          color='red'
-          onClick={onClose}
-          loading={isPending}
-          disabled={isPending}
-        >
+        <Button variant='default' color='red' onClick={onClose}>
           Close
         </Button>
 
         <Button
+          loading={isPending}
+          disabled={isPending}
           onClick={handleSubmit(data => {
-            createGroup({
-              url: {
-                baseUrl: '/workspace/groups'
+            createGroup(
+              {
+                url: {
+                  baseUrl: '/groups'
+                },
+                method: 'post',
+                payload: {
+                  workspace: {
+                    title: data.workspace.title,
+                    displayUrl: data.workspace.displayUrl,
+                    description: data.workspace.description
+                  } as any,
+                  members: data.members
+                }
               },
-              method: 'post',
-              payload: data
-            })
+              {
+                onSuccess(data, variables, context) {
+                  dispatch(
+                    workspaceActions.updateData({
+                      workspaces: { [data.group._id]: data.group }
+                    })
+                  )
+                  switchTo({ target: 'group', targetId: data.group._id })
+                  onClose()
+                }
+              }
+            )
           })}
         >
           Create

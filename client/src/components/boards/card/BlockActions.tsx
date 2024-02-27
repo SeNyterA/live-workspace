@@ -7,7 +7,7 @@ import {
   IconTrash
 } from '@tabler/icons-react'
 import useAppParams from '../../../hooks/useAppParams'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { EBlockType } from '../../../types/workspace.type'
 
 export default function BlockActions() {

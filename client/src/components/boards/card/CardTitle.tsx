@@ -2,7 +2,7 @@ import { TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 
 export default function CardTitle() {
   const { boardId, cardId } = useAppParams()

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
@@ -6,15 +6,12 @@ import { Server } from 'socket.io'
 import { Card } from 'src/entities/board/card.entity'
 import { Option } from 'src/entities/board/option.entity'
 import { Property } from 'src/entities/board/property.entity'
-import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
+import { Member } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
-import {
-  Workspace,
-  WorkspaceStatus,
-  WorkspaceType
-} from 'src/entities/workspace.entity'
+import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/workspace/workspace.gateway'
-import { In, Not, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
+import { TeamService } from '../team.service'
 import { generateBoardData } from './board.init'
 
 export const generateRandomHash = (
@@ -35,9 +32,6 @@ export class BoardService {
   @WebSocketServer()
   server: Server
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-
     @InjectRepository(Workspace)
     private readonly workspaceRepository: Repository<Workspace>,
 
@@ -51,7 +45,10 @@ export class BoardService {
     private readonly optionRepository: Repository<Option>,
 
     @InjectRepository(Card)
-    private readonly cardRepository: Repository<Card>
+    private readonly cardRepository: Repository<Card>,
+
+    @Inject(forwardRef(() => TeamService))
+    private readonly teamService: TeamService
   ) {}
 
   async initBoardData({ boardId }: { boardId: string }) {
@@ -75,61 +72,20 @@ export class BoardService {
     user: TJwtUser
     teamId: string
   }) {
-    await this.memberRepository.findOneOrFail({
-      where: {
-        workspace: { _id: teamId },
-        user: { _id: user.sub },
-        role: In([EMemberRole.Owner, EMemberRole.Admin])
-      }
-    })
-
-    const newWorkspace = await this.workspaceRepository.insert({
-      ...workspace,
+    const _board = await this.teamService.createChildWorkspace({
+      teamId,
       type: WorkspaceType.Board,
-      displayUrl: generateRandomHash(),
-      createdBy: { _id: user.sub },
-      modifiedBy: { _id: user.sub },
-      parent: { _id: teamId }
+      user,
+      workspace
     })
-
-    const workpsaceMembers =
-      newWorkspace.generatedMaps[0].status === WorkspaceStatus.Public
-        ? await this.memberRepository.find({
-            where: {
-              workspace: { _id: teamId },
-              isAvailable: true,
-              user: { _id: Not(user.sub), isAvailable: true }
-            }
-          })
-        : []
-
-    const members = await this.memberRepository.insert([
-      {
-        role: EMemberRole.Owner,
-        type: EMemberType.Board,
-        user: { _id: user.sub },
-        workspace: { _id: newWorkspace.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      },
-      ...workpsaceMembers.map(member => ({
-        role: EMemberRole.Member,
-        type: EMemberType.Board,
-        user: { _id: member.userId },
-        workspace: { _id: newWorkspace.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      }))
-    ])
 
     this.initBoardData({
-      boardId: newWorkspace.identifiers[0]._id
+      boardId: _board.identifiers[0]._id
     })
 
-    return {
-      workspace: newWorkspace,
-      members
-    }
+    return this.workspaceRepository.findOneOrFail({
+      where: { _id: _board.identifiers[0]._id }
+    })
   }
 
   async getBoardById({

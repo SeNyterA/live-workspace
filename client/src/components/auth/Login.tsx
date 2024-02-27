@@ -18,7 +18,7 @@ import { BsGithub, BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
 import { auth, googleProvider } from '../../firebase/firebase'
 import { authActions } from '../../redux/slices/auth.slice'
-import { useAppMutation } from '../../services/apis/useAppMutation'
+import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import { TUser } from '../../types/user.type'
 
 type TAuthForm = Pick<TUser, 'email' | 'password' | 'userName'> & {

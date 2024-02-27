@@ -1,6 +1,6 @@
 import { Button, ScrollArea } from '@mantine/core'
 import useAppParams from '../../../hooks/useAppParams'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { EBlockType, TCard } from '../../../types/workspace.type'
 import Block from './Block'
 import BlockActions from './BlockActions'

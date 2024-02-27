@@ -11,7 +11,7 @@ import {
   EFieldType,
   TCardProperties
 } from '../../../services/apis/board.api'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 
 dayjs.extend(customParseFormat)
 

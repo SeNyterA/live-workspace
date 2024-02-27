@@ -3,16 +3,20 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Card } from 'src/entities/board/card.entity'
 import { Option } from 'src/entities/board/option.entity'
 import { Property } from 'src/entities/board/property.entity'
+import { File } from 'src/entities/file.entity'
 import { Member } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace } from 'src/entities/workspace.entity'
 import { RedisModule } from 'src/modules/redis/redis.module'
-import { BoardService } from './team/board/board.service'
-import { TeamController } from './team/team.controler'
-import { WorkspaceController } from './workspace.controller'
-import { File } from 'src/entities/file.entity'
-import { WorkspaceService } from './workspace.service'
+import { GroupController } from './group/group.controller'
+import { GroupService } from './group/group.service'
 import { BoardController } from './team/board/board.controller'
+import { BoardService } from './team/board/board.service'
+import { ChannelService } from './team/channel/channel.service'
+import { TeamController } from './team/team.controler'
+import { TeamService } from './team/team.service'
+import { WorkspaceController } from './workspace.controller'
+import { WorkspaceService } from './workspace.service'
 
 @Module({
   imports: [
@@ -27,8 +31,19 @@ import { BoardController } from './team/board/board.controller'
     ]),
     RedisModule
   ],
-  controllers: [TeamController, BoardController, WorkspaceController],
-  providers: [WorkspaceService, BoardService],
+  controllers: [
+    WorkspaceController,
+    TeamController,
+    BoardController,
+    GroupController
+  ],
+  providers: [
+    WorkspaceService,
+    TeamService,
+    BoardService,
+    ChannelService,
+    GroupService
+  ],
   exports: [WorkspaceService]
 })
 export class WorkspaceModule {}
