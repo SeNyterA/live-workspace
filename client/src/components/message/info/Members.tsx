@@ -1,7 +1,7 @@
 import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
 import useAppParams from '../../../hooks/useAppParams'
+import { EMemberRole } from '../../../new-types/member.d'
 import { useAppSelector } from '../../../redux/store'
-import { EMemberRole } from '../../../types/workspace.type'
 
 export default function Members() {
   const { boardId, channelId, directId, groupId } = useAppParams()
@@ -29,7 +29,7 @@ export default function Members() {
 
   const enableMembers = members
     ?.filter(({ member, user }) => user?.isAvailable && member?.isAvailable)
-    .sort((a, b) => (a.member.role > b.member.role ? 1 : -1))
+    .sort((a, b) => (a.member.role > b.member.role ? -1 : 1))
 
   const disableMembers = members?.filter(
     ({ member, user }) => !user?.isAvailable || !member?.isAvailable

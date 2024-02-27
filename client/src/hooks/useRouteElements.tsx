@@ -6,9 +6,6 @@ import Login from '../components/auth/Login'
 import Verify from '../components/auth/Verify'
 import BoardContent from '../components/boards/BoardContent'
 import DetailCard from '../components/boards/card/DetailCard'
-import ChannelMessage from '../components/message/ChannelMessage'
-import DirectMessage from '../components/message/DirectMessage'
-import GroupMessage from '../components/message/GroupMessage'
 import MessageContentWrapper from '../components/message/MessageContentWrapper'
 import Layout from '../Layout'
 import { authActions } from '../redux/slices/auth.slice'
@@ -138,13 +135,17 @@ export default function useRouteElements() {
               path: 'group/:groupId',
               element: (
                 <ErrorBoundary fallback={<></>}>
-                  <GroupMessage />
+                  <MessageContentWrapper />
                 </ErrorBoundary>
               )
             },
             {
               path: 'direct-message/:directId',
-              element: <DirectMessage />
+              element: (
+                <ErrorBoundary fallback={<></>}>
+                  <MessageContentWrapper />
+                </ErrorBoundary>
+              )
             }
           ]
         }
