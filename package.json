@@ -4,7 +4,7 @@
   "version": "1.0.1",
   "private": true,
   "scripts": {
-    "start:server:dev": "docker-compose -f _dev.yml up mongodb redis -d && cd server/ && yarn start:dev",
+    "start:server:dev": "docker-compose -f dev.yml up redis -d && cd server/ && yarn start:dev",
     "build:server": "cd server/ && docker build -t senytera/live-workspace-server -f Dockerfile.prod .",
     "build:client": "cd client/ && docker build -t senytera/live-workspace-client -f Dockerfile.prod .",
     "lint": "cd server && yarn lint && cd ../client && yarn lint",
