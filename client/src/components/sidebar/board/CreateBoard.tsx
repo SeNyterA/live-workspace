@@ -1,8 +1,16 @@
-import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
+import {
+  Button,
+  Drawer,
+  Image,
+  ScrollArea,
+  Textarea,
+  TextInput
+} from '@mantine/core'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../../hooks/useAppParams'
 import { EMemberRole } from '../../../new-types/member.d'
+import { useAppSelector } from '../../../redux/store'
 import {
   ApiMutationType,
   useAppMutation
@@ -24,7 +32,7 @@ export default function CreateBoard({
   const { teamId } = useAppParams()
   const { control, handleSubmit, reset } = useForm<TForm>({})
   const { mutateAsync: createBoard, isPending } = useAppMutation('createBoard')
-
+  const team = useAppSelector(state => state.workspace.workspaces[teamId!])
   useEffect(() => {
     reset()
   }, [refetchKey])
@@ -44,7 +52,17 @@ export default function CreateBoard({
         inner: 'p-3',
         body: 'flex flex-col flex-1'
       }}
+      size={400}
     >
+      <div className='mb-3'>
+        <p className='text-base'>{team?.title}</p>
+        <p className='text-sm text-gray-500'>{team?.description}</p>
+        <Image
+          src={team?.thumbnail?.path}
+          className='aspect-video w-full rounded-lg'
+        />
+      </div>
+
       <Controller
         control={control}
         name='workspace.title'

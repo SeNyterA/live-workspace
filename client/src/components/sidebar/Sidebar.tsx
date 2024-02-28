@@ -15,9 +15,11 @@ import {
   IconUsersGroup
 } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import useAppParams from '../../hooks/useAppParams'
 import { WorkspaceType } from '../../new-types/workspace.d'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import TeamSetting from '../team-setting/TeamSetting'
@@ -38,7 +40,7 @@ export type TSideBarToggle =
 
 export default function Sidebar() {
   const { channelId, teamId, boardId, groupId } = useAppParams()
-
+  const dispatch = useDispatch()
   const path = useLocation()
   const [toggle, setToggle] = useState<TSideBarToggle>()
   const team = useAppSelector(state => {
@@ -54,7 +56,7 @@ export default function Sidebar() {
           <p className='text-gray-500'>{team?.description}</p>
           <Image
             src={team?.thumbnail?.path}
-            className='max-h-32 w-full rounded-lg'
+            className='aspect-video w-full rounded-lg'
           />
         </div>
         <div className='flex items-center justify-center gap-2'>
@@ -84,7 +86,14 @@ export default function Sidebar() {
                     variant='transparent'
                     aria-label='Settings'
                     className='h-[30px] w-[30px] bg-gray-100'
-                    onClick={() => setToggle('teamSetting')}
+                    onClick={() =>
+                      dispatch(
+                        workspaceActions.toggleWorkspaceSetting({
+                          settingPosition: 'left',
+                          workspaceSettingId: teamId!
+                        })
+                      )
+                    }
                   >
                     <IconSettings
                       style={{ width: '70%', height: '70%' }}
@@ -113,6 +122,9 @@ export default function Sidebar() {
                   leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
                   active={path.pathname.includes('board')}
                   defaultOpened={!!boardId}
+                  classNames={{
+                    children: 'pl-7'
+                  }}
                 >
                   <Watching
                     watchingFn={state =>

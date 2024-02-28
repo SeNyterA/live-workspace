@@ -52,7 +52,7 @@ export default function UserCombobox({
   useEffect(() => {
     if (userData)
       dispatch(
-        workspaceActions.updateData(
+        workspaceActions.updateWorkspaceStore(
           userData.users.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {}

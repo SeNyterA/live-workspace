@@ -42,7 +42,7 @@ export function InviteMember() {
   useEffect(() => {
     if (userData)
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           users: userData.users.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {}

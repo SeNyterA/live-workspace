@@ -184,7 +184,7 @@ export default function CreateGroup({
                   {
                     onSuccess(data, variables, context) {
                       dispatch(
-                        workspaceActions.updateData({
+                        workspaceActions.updateWorkspaceStore({
                           workspaces: { [data.group._id]: data.group }
                         })
                       )

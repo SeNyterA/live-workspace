@@ -42,7 +42,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     },
     onSucess(data) {
       dispatch(
-        workspaceActions.init({
+        workspaceActions.updateWorkspaceStore({
           workspaces: data.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {}
@@ -60,7 +60,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     },
     onSucess({ members, workspace }) {
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           workspaces: { [workspace._id]: workspace },
           members: arrayToObject(members, '_id'),
           users: arrayToObject(
@@ -79,7 +79,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     key: 'workspace',
     resFunc: ({ workspace }) => {
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           workspaces: { [workspace._id]: workspace }
         })
       )

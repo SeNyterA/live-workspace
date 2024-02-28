@@ -252,6 +252,7 @@ export default function CreateTeam({
         inner: 'p-3',
         body: 'flex flex-col flex-1 overflow-y-hidden'
       }}
+      size={400}
     >
       <div className='relative flex-1'>
         <ScrollArea

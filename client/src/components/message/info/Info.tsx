@@ -1,6 +1,8 @@
 import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconSettings } from '@tabler/icons-react'
+import { useDispatch } from 'react-redux'
 import useAppParams from '../../../hooks/useAppParams'
+import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import Files from './Files'
 import Members from './Members'
@@ -8,6 +10,7 @@ import PinedMesages from './PinedMesages'
 
 export default function Info() {
   const { channelId, directId, groupId, boardId } = useAppParams()
+  const dispatch = useDispatch()
 
   const workspace = useAppSelector(
     state =>
@@ -27,11 +30,24 @@ export default function Info() {
               id: {channelId || directId || groupId || boardId}
             </p> */}
           </div>
-          <ActionIcon size={30} variant='light' color='gray'>
+          <ActionIcon
+            size={30}
+            variant='light'
+            color='gray'
+            onClick={() =>
+              dispatch(
+                workspaceActions.toggleWorkspaceSetting({
+                  settingPosition: 'right',
+                  workspaceSettingId:
+                    channelId || groupId || directId || boardId || ''
+                })
+              )
+            }
+          >
             <IconSettings size={16} />
           </ActionIcon>
         </div>
-        {/* <Divider variant='dashed' className='mx-4 my-2' /> */}
+
         <div className='relative mt-2 flex-1 px-4'>
           <ScrollArea
             className='absolute inset-0 space-y-6 px-4'

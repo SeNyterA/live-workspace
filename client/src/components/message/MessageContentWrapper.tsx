@@ -28,7 +28,7 @@ export default function MessageContentWrapper() {
     key: 'message',
     resFunc: ({ message }) => {
       dispatch(
-        workspaceActions.updateData({ messages: { [message._id]: message } })
+        workspaceActions.updateWorkspaceStore({ messages: { [message._id]: message } })
       )
     }
   })
@@ -97,7 +97,7 @@ export default function MessageContentWrapper() {
                 {
                   onSuccess(message) {
                     dispatch(
-                      workspaceActions.updateData({
+                      workspaceActions.updateWorkspaceStore({
                         messages: { [message._id]: message }
                       })
                     )
@@ -134,7 +134,7 @@ export default function MessageContentWrapper() {
               {
                 onSuccess(message) {
                   dispatch(
-                    workspaceActions.updateData({
+                    workspaceActions.updateWorkspaceStore({
                       messages: { [message._id]: message }
                     })
                   )

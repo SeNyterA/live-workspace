@@ -60,7 +60,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
         extractWorkspace(data)
 
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           cards: arrayToObject(cards || [], '_id'),
           members: arrayToObject(members || [], '_id'),
           options: arrayToObject(options || [], '_id'),
@@ -76,7 +76,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
     key: 'option',
     resFunc(data) {
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           options: {
             [data.option._id]: data.option
           }
@@ -89,7 +89,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
     key: 'card',
     resFunc(data) {
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           cards: { [data.card._id]: data.card }
         })
       )

@@ -7,6 +7,7 @@ import Verify from '../components/auth/Verify'
 import BoardContent from '../components/boards/BoardContent'
 import DetailCard from '../components/boards/card/DetailCard'
 import MessageContentWrapper from '../components/message/MessageContentWrapper'
+import WorkspaceSetting from '../components/workspace-setting/WorkspaceSetting'
 import Layout from '../Layout'
 import { authActions } from '../redux/slices/auth.slice'
 import { useAppSelector } from '../redux/store'
@@ -92,6 +93,7 @@ export default function useRouteElements() {
             <ErrorBoundary fallback={<></>}>
               <Layout>
                 <Outlet />
+                <WorkspaceSetting />
               </Layout>
             </ErrorBoundary>
           ),

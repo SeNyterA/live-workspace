@@ -125,7 +125,7 @@ export default function CardsContent() {
 
                   const { newOption, oldOption } = data
                   dispatch(
-                    workspaceActions.updateData({
+                    workspaceActions.updateWorkspaceStore({
                       options: { [newOption._id]: newOption }
                     })
                   )
@@ -149,7 +149,7 @@ export default function CardsContent() {
                     {
                       onError: error => {
                         dispatch(
-                          workspaceActions.updateData({
+                          workspaceActions.updateWorkspaceStore({
                             options: { [oldOption._id]: oldOption }
                           })
                         )
@@ -166,7 +166,7 @@ export default function CardsContent() {
                   if (!data) return
                   const { newCard, oldCard } = data
                   dispatch(
-                    workspaceActions.updateData({
+                    workspaceActions.updateWorkspaceStore({
                       cards: { [newCard._id]: newCard }
                     })
                   )
@@ -186,13 +186,13 @@ export default function CardsContent() {
                         if (data._id) {
                           // toogleCard({ cardId: data._id })
                           dispatch(
-                            workspaceActions.updateData({ [data._id]: data })
+                            workspaceActions.updateWorkspaceStore({ [data._id]: data })
                           )
                         }
                       },
                       onError: () => {
                         dispatch(
-                          workspaceActions.updateData({
+                          workspaceActions.updateWorkspaceStore({
                             cards: { [oldCard._id]: oldCard }
                           })
                         )

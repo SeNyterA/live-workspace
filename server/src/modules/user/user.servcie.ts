@@ -44,8 +44,8 @@ export class UserService {
         { isAvailable: true, email: Like(`%${keyword}%`) },
         { isAvailable: true, nickName: Like(`%${keyword}%`) }
       ],
-      skip: 0,
-      take: 10
+      skip,
+      take
     })
 
     return { users }

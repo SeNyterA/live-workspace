@@ -4,8 +4,8 @@ import useAppParams from '../../../hooks/useAppParams'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
 
 export default function Files() {
-  const { channelId, groupId, directId } = useAppParams()
-  const workspaceId = channelId || groupId || directId
+  const { channelId, groupId, directId, boardId } = useAppParams()
+  const workspaceId = channelId || groupId || directId || boardId
 
   const { isPending, data: workspaceFiles } = useAppQuery({
     key: 'workspaceFiles',

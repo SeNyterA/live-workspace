@@ -4,11 +4,13 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
 import { File } from './file.entity'
+import { Member } from './member.entity'
 
 @Entity()
 export class User {
@@ -43,4 +45,7 @@ export class User {
   @OneToOne(() => File)
   @JoinColumn({ name: 'avatarId' })
   avatar: File
+
+  @OneToMany(() => Member, member => member.user)
+  members: Member[]
 }

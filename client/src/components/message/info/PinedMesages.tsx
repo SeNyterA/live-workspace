@@ -38,7 +38,7 @@ export default function PinedMesages() {
     },
     onSucess(messages) {
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           messages: messages.reduce(
             (acc, cur) => ({ ...acc, [cur._id]: cur }),
             {}

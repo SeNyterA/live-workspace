@@ -28,11 +28,12 @@ type TWorkpsaceStore = {
   messages: TMessages
   userReadedMessages: TUserReadedMessages
   unreadCount: TUnreadCounts
-
   cards: TCards
   properties: TProperties
   options: TOptions
   propertiesTracking: TpropertiesTracking
+  workspaceSettingId?: string
+  settingPosition?: 'left' | 'right'
 }
 
 const initialState: TWorkpsaceStore = {
@@ -52,50 +53,27 @@ const workspaceSlice = createSlice({
   initialState,
   reducers: {
     reset: () => initialState,
-    init: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
-      return assign(state, action.payload)
-    },
 
-    updateData: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
+    updateWorkspaceStore: (
+      state,
+      action: PayloadAction<Partial<Omit<TWorkpsaceStore, 'workspaceSetting'>>>
+    ) => {
       Object.keys(action.payload).forEach(key => {
         assign((state as any)[key] as any, (action.payload as any)[key])
       })
-    }
+    },
 
-    // addProperties: (state, action: PayloadAction<TProperties>) => {
-    //   assign(state.properties, action.payload)
-    // },
-    // updatePropertyOptions: (
-    //   state,
-    //   action: PayloadAction<{
-    //     propertyId: string
-    //     fieldOption: TOption[]
-    //   }>
-    // ) => {
-    //   const property = state.properties[action.payload.propertyId]
-    //   if (!property) return
-    //   property.fieldOption = action.payload.fieldOption
-    // },
-    // toogleUserReadedMessage: (
-    //   state,
-    //   action: PayloadAction<{
-    //     userId: string
-    //     targetId: string
-    //     messageId: string
-    //   }>
-    // ) => {
-    //   const { messageId, targetId, userId } = action.payload
-    //   state.userReadedMessages[`${targetId}_${userId}`] = messageId
-    // },
-    // setUnreadCounts: (state, action: PayloadAction<TUnreadCounts>) => {
-    //   assign(state.unreadCount, action.payload)
-    // },
-    // setPropertiesTracking: (
-    //   state,
-    //   action: PayloadAction<TpropertiesTracking>
-    // ) => {
-    //   assign(state.propertiesTracking, action.payload)
-    // }
+    toggleWorkspaceSetting: (
+      state,
+      action: PayloadAction<{
+        workspaceSettingId?: string
+        settingPosition?: 'left' | 'right'
+      }>
+    ) => {
+      state.workspaceSettingId = action.payload.workspaceSettingId
+      if (action.payload.settingPosition)
+        state.settingPosition = action.payload.settingPosition
+    }
   }
 })
 

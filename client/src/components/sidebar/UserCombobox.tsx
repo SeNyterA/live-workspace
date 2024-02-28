@@ -46,7 +46,7 @@ export default function UserCombobox({
       console.log(data)
       console.log(arrayToObject(data.users, '_id'))
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           users: arrayToObject(data.users, '_id')
         })
       )

@@ -63,7 +63,7 @@ export default function MessageContentProvider({
     },
     onSucess({ messages, remainingCount }) {
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           messages: messages.reduce(
             (pre, next) => ({
               ...pre,
@@ -91,7 +91,7 @@ export default function MessageContentProvider({
       const __members = _members.map(e => e.member)
 
       dispatch(
-        workspaceActions.updateData({
+        workspaceActions.updateWorkspaceStore({
           workspaces: { [workspace._id]: workspace },
           members: __members.reduce(
             (pre, next) => ({
