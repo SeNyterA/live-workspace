@@ -89,7 +89,7 @@ export default function CardsContent() {
   useRenderCount('CardsContent')
   const { trackingId, boardId } = useBoard()
   const { toogleCard } = useAppControlParams()
-  const { mutateAsync: createCard } = useAppMutation('createCard')
+  // const { mutateAsync: createCard } = useAppMutation('createCard')
   const { mutateAsync: updateOption } = useAppMutation('updateOption')
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
   const dispatch = useDispatch()
@@ -236,26 +236,26 @@ export default function CardsContent() {
                                   aria-label='Settings'
                                   className='h-[30px] w-[30px] bg-gray-100 text-gray-600'
                                   onClick={() => {
-                                    const timeStamp =
-                                      new Date().getMilliseconds()
-                                    createCard({
-                                      url: {
-                                        baseUrl:
-                                          '/workspace/boards/:boardId/cards',
-                                        urlParams: { boardId: boardId! }
-                                      },
-                                      method: 'post',
-                                      payload: {
-                                        title: 'anything bro' + timeStamp,
-                                        properties: {
-                                          [propertyRoot._id]: option._id
-                                        }
-                                      }
-                                    }).then(data => {
-                                      if (data.data?._id) {
-                                        toogleCard({ cardId: data.data._id })
-                                      }
-                                    })
+                                    // const timeStamp =
+                                    //   new Date().getMilliseconds()
+                                    // createCard({
+                                    //   url: {
+                                    //     baseUrl:
+                                    //       '/workspace/boards/:boardId/cards',
+                                    //     urlParams: { boardId: boardId! }
+                                    //   },
+                                    //   method: 'post',
+                                    //   payload: {
+                                    //     title: 'anything bro' + timeStamp,
+                                    //     properties: {
+                                    //       [propertyRoot._id]: option._id
+                                    //     }
+                                    //   }
+                                    // }).then(data => {
+                                    //   if (data.data?._id) {
+                                    //     toogleCard({ cardId: data.data._id })
+                                    //   }
+                                    // })
                                   }}
                                 >
                                   <IconPlus size={16} stroke={1.5} />

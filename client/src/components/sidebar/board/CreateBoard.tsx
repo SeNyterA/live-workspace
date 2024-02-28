@@ -2,11 +2,11 @@ import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../../hooks/useAppParams'
+import { EMemberRole } from '../../../new-types/member.d'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../../services/apis/mutations/useAppMutation'
-import { EMemberRole } from '../../../types/workspace.type'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
 
@@ -47,7 +47,7 @@ export default function CreateBoard({
     >
       <Controller
         control={control}
-        name='title'
+        name='workspace.title'
         render={({ field: { value, onChange } }) => (
           <TextInput
             data-autofocus
@@ -63,7 +63,7 @@ export default function CreateBoard({
 
       <Controller
         control={control}
-        name='description'
+        name='workspace.description'
         render={({ field: { value, onChange } }) => (
           <Textarea
             label='Board Description'
@@ -142,7 +142,7 @@ export default function CreateBoard({
             if (data && teamId)
               createBoard({
                 url: {
-                  baseUrl: '/workspace/teams/:teamId/boards',
+                  baseUrl: '/teams/:teamId/boards',
                   urlParams: {
                     teamId
                   }

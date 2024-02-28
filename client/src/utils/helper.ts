@@ -1,6 +1,6 @@
 import { JSONContent } from '@tiptap/react'
 import { TOption, TProperty } from '../new-types/board'
-import { TMember } from '../new-types/member'
+import { TMember } from '../new-types/member.d'
 import { TWorkspace } from '../new-types/workspace'
 import { getAppValue } from '../redux/store'
 

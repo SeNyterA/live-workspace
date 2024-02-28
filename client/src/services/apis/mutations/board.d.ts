@@ -1,10 +1,10 @@
 import { TMember } from '../../../new-types/member.d'
 import { TWorkspace } from '../../../new-types/workspace'
 
-export type TChannelMutationApi = {
-  createChannel: {
+export type TBoardlMutationApi = {
+  createBoard: {
     url: {
-      baseUrl: '/teams/:teamId/channels'
+      baseUrl: '/teams/:teamId/boards'
       urlParams: {
         teamId: string
       }

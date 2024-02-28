@@ -2,11 +2,11 @@ import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../../hooks/useAppParams'
+import { EMemberRole } from '../../../new-types/member.d'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../../services/apis/mutations/useAppMutation'
-import { EMemberRole } from '../../../types/workspace.type'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
 
@@ -48,7 +48,7 @@ export default function CreateChannel({
     >
       <Controller
         control={control}
-        name='title'
+        name='workspace.title'
         render={({ field: { value, onChange } }) => (
           <TextInput
             data-autofocus
@@ -64,7 +64,7 @@ export default function CreateChannel({
 
       <Controller
         control={control}
-        name='description'
+        name='workspace.description'
         render={({ field: { value, onChange } }) => (
           <Textarea
             label='Channel Description'
@@ -143,7 +143,7 @@ export default function CreateChannel({
             if (data && teamId)
               createChannel({
                 url: {
-                  baseUrl: '/workspace/teams/:teamId/channels',
+                  baseUrl: '/teams/:teamId/channels',
                   urlParams: {
                     teamId
                   }

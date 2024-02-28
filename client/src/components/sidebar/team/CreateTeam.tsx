@@ -20,9 +20,8 @@ import {
   useForm
 } from 'react-hook-form'
 import { TFile } from '../../../new-types/file'
+import { EMemberRole, TMember } from '../../../new-types/member.d'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { TMemberDto } from '../../../types/dto.type'
-import { EMemberRole } from '../../../types/workspace.type'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
 
@@ -34,7 +33,7 @@ type TForm = {
   avatar?: TFile
   title: string
   description?: string
-  members?: TMemberDto[]
+  members?: TMember[]
   dispayName: string
 }
 
@@ -176,7 +175,7 @@ const Members = ({ control }: { control: Control<TForm, any> }) => {
             append({
               userId,
               role: EMemberRole.Member
-            })
+            } as any)
           } else {
             remove(idx)
           }

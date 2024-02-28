@@ -1,15 +1,14 @@
 import { ActionIcon, Avatar, Select } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
+import { EMemberRole, TMember } from '../../new-types/member.d'
 import { useAppSelector } from '../../redux/store'
-import { TMemberDto } from '../../types/dto.type'
-import { EMemberRole } from '../../types/workspace.type'
 
 const MemberControl = ({
   member,
   onChange,
   onRemove
 }: {
-  member: TMemberDto
+  member: TMember
   onChange?: (role: EMemberRole) => void
   onRemove?: () => void
 }) => {

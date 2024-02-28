@@ -1,11 +1,9 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { TFile } from '../../new-types/file'
-import { TMember } from '../../new-types/member'
+import { TMember } from '../../new-types/member.d'
 import { TMessage } from '../../new-types/message'
 import { TUser } from '../../new-types/user'
 import { TWorkspace } from '../../new-types/workspace'
-import { TDirect } from '../../types/workspace.type'
-import { TBoardQueryApi } from './board.api'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
@@ -146,22 +144,6 @@ type ApiQueryType = {
     }
   }
 
-  findDirectInfo: {
-    url: {
-      baseUrl: '/workspace/direct-messages'
-      queryParams: {
-        directId?: string
-        targetEmail?: string
-        targetId?: string
-        targetUserName?: string
-      }
-    }
-    response: {
-      users: TUser[]
-      direct: TDirect
-    }
-  }
-
   usersReadedMessage: {
     url: {
       baseUrl: '/workspace/usersReadedMessage/:targetId'
@@ -177,7 +159,7 @@ type ApiQueryType = {
     }
     response: { [targetId: string]: number }
   }
-} & TBoardQueryApi
+}
 
 export const useAppQuery = <T extends keyof ApiQueryType>({
   url,

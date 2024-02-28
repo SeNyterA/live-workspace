@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assign } from 'lodash'
 import { TCard, TOption, TProperty } from '../../new-types/board'
-import { TMember } from '../../new-types/member'
+import { TMember } from '../../new-types/member.d'
 import { TMessage } from '../../new-types/message'
 import { TUser } from '../../new-types/user'
 import { TWorkspace } from '../../new-types/workspace'

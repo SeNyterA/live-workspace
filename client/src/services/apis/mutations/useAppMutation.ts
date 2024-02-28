@@ -1,19 +1,16 @@
 import { MutationOptions, useMutation } from '@tanstack/react-query'
+import { JSONContent } from '@tiptap/react'
 import { AxiosRequestConfig } from 'axios'
 import { TCard, TOption } from '../../../new-types/board'
+import { EMemberRole, TMember } from '../../../new-types/member.d'
 import { TMessage } from '../../../new-types/message'
 import { TUser } from '../../../new-types/user'
 import { TWorkspace } from '../../../new-types/workspace'
-import { TChannelDto } from '../../../types/dto.type'
-import {
-  EMemberRole,
-  JSONContent,
-  TMember
-} from '../../../types/workspace.type'
-import { TBoardMutionApi } from '../board.api'
 import { replaceDynamicValues } from '../common'
 import http from '../http'
 import { TUploadMutionApi } from '../upload.api'
+import { TBoardlMutationApi } from './board'
+import { TChannelMutationApi } from './channel'
 import { TGroupMutationApi } from './group'
 
 const objectToFormData = (obj: any): FormData => {
@@ -184,18 +181,6 @@ export type ApiMutationType = {
     response: TWorkspace
   }
 
-  createChannel: {
-    url: {
-      baseUrl: '/workspace/teams/:teamId/channels'
-      urlParams: {
-        teamId: string
-      }
-    }
-    method: 'post'
-    payload: TChannelDto
-    response: TWorkspace
-  }
-
   sendWorkspaceMessage: {
     url: {
       baseUrl: '/workspaces/:workspaceId/messages'
@@ -274,9 +259,10 @@ export type ApiMutationType = {
     payload: { card: TCard }
     response: TCard
   }
-} & TBoardMutionApi &
+} & TChannelMutationApi &
   TUploadMutionApi &
-  TGroupMutationApi
+  TGroupMutationApi &
+  TBoardlMutationApi
 
 export const useAppMutation = <T extends keyof ApiMutationType>(
   _key: T,

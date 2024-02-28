@@ -3,12 +3,12 @@ import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../hooks/useAppControlParams'
+import { EMemberRole } from '../../new-types/member.d'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../services/apis/mutations/useAppMutation'
-import { EMemberRole } from '../../types/workspace.type'
 import MemberControl from './MemberControl'
 import UserCombobox from './UserCombobox'
 

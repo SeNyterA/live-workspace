@@ -1,7 +1,7 @@
 import { Divider, Modal, NavLink } from '@mantine/core'
 import { IconInfoHexagon, IconMessage } from '@tabler/icons-react'
 import { createContext, useContext, useState } from 'react'
-import { TMember } from '../../new-types/member'
+import { TMember } from '../../new-types/member.d'
 import { useAppSelector } from '../../redux/store'
 import EditInfo from './EditInfo'
 import MembersManager from './MembersManager'

@@ -183,10 +183,10 @@ export default function Properties() {
                     // })
                   }}
                   onChange={value => {
-                    setTmpValue(old => ({
-                      ...old,
-                      [property._id]: value.target.value
-                    }))
+                    // setTmpValue(old => ({
+                    //   ...old,
+                    //   [property._id]: value.target.value
+                    // }))
                   }}
                 />
               )}
@@ -204,10 +204,10 @@ export default function Properties() {
                       : undefined
                   }
                   onChange={value => {
-                    setTmpValue(old => ({
-                      ...old,
-                      [property._id]: value?.toString()
-                    }))
+                    // setTmpValue(old => ({
+                    //   ...old,
+                    //   [property._id]: value?.toString()
+                    // }))
 
                     // updateCard({
                     //   url: {

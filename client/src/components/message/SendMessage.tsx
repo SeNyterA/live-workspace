@@ -7,7 +7,12 @@ import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
-import { BubbleMenu, ReactRenderer, useEditor } from '@tiptap/react'
+import {
+  BubbleMenu,
+  JSONContent,
+  ReactRenderer,
+  useEditor
+} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
 import tippy from 'tippy.js'
@@ -15,7 +20,6 @@ import useTyping from '../../hooks/useTyping'
 import { TFile } from '../../new-types/file'
 import { getAppValue } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
-import { JSONContent } from '../../types/workspace.type'
 import MentionList from '../message/MentionList'
 import { formatFileName } from '../new-message/helper'
 import Typing from './Typing'
