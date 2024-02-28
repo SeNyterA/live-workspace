@@ -229,7 +229,7 @@ export default function CardsContent() {
                               {...dragProvided.dragHandleProps}
                               className='sticky top-0 bg-white pt-1'
                             >
-                              <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-gray-100 px-2 ring-1 ring-blue-300'>
+                              <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-gray-100 px-2 ring-1 ring-gray-300'>
                                 <span>{option.title}</span>
                                 <ActionIcon
                                   variant='transparent'

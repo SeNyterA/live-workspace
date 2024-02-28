@@ -36,6 +36,4 @@ networks:
     driver: bridge
 
 volumes:
-  mongo_data:
   redis_data:
-  mysql_data:

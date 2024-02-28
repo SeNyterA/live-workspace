@@ -6,6 +6,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToOne,
   RelationId
 } from 'typeorm'
 import { BaseEntity } from '../base.entity'
@@ -24,6 +25,10 @@ export class Card extends BaseEntity {
 
   @Column({ type: 'json' })
   detail: JSONContent
+
+  @OneToOne(() => File, { nullable: true })
+  @JoinColumn({ name: 'thumbnail' })
+  thumbnail?: File
 
   @ManyToMany(() => File)
   @JoinTable({

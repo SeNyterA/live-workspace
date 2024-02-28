@@ -82,9 +82,10 @@ export class BoardService {
       boardId: _board.identifiers[0]._id
     })
 
-    return this.workspaceRepository.findOneOrFail({
+    const board = await this.workspaceRepository.findOneOrFail({
       where: { _id: _board.identifiers[0]._id }
     })
+    return { workspace: board }
   }
 
   async getBoardById({
@@ -163,6 +164,7 @@ export class BoardService {
     const _card = await this.cardRepository.findOneOrFail({
       where: {
         _id: cardId,
+        isAvailable: true,
         board: {
           _id: boardId,
           isAvailable: true,
@@ -181,6 +183,8 @@ export class BoardService {
 
     this.server.to(boardId).emit('card', { card: cardUpdated, mode: 'update' })
 
-    return cardUpdated
+    return {
+      card: cardUpdated
+    }
   }
 }

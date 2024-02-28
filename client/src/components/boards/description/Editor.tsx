@@ -103,7 +103,7 @@ export default function Editor() {
         //   editor={editor}
         //   tippyOptions={{ arrow: true, placement: 'bottom-start' }}
         // >
-        <RichTextEditor.Toolbar sticky className='gap-2 border-none'>
+        <RichTextEditor.Toolbar sticky className='gap-2 border-none py-3'>
           <RichTextEditor.ControlsGroup>
             <RichTextEditor.Bold />
             <RichTextEditor.Italic />
@@ -150,6 +150,14 @@ export default function Editor() {
                 </ActionIcon>
               )}
             </FileButton>
+
+            <ActionIcon
+              onClick={() => {
+                editor.chain().focus().toggleTaskList().run()
+              }}
+            >
+              Tasklist
+            </ActionIcon>
           </RichTextEditor.ControlsGroup>
 
           <RichTextEditor.ControlsGroup>
