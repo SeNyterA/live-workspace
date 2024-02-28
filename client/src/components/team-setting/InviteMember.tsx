@@ -42,12 +42,12 @@ export function InviteMember() {
   useEffect(() => {
     if (userData)
       dispatch(
-        workspaceActions.addUsers(
-          userData.users.reduce(
+        workspaceActions.updateData({
+          users: userData.users.reduce(
             (pre, next) => ({ ...pre, [next._id]: next }),
             {}
           )
-        )
+        })
       )
   }, [userData])
 
@@ -67,7 +67,7 @@ export function InviteMember() {
               color='yellow'
               withBorder
             >
-              <Avatar src={user?.avatar} size={36} />
+              <Avatar src={user?.avatar?.path} size={36} />
             </Indicator>
 
             <div className='flex flex-1 flex-col justify-center'>

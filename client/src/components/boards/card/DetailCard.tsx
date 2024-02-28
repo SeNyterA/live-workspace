@@ -1,18 +1,9 @@
-import { Divider, Modal, ScrollArea } from '@mantine/core'
-import { useEffect } from 'react'
+import { Modal, ScrollArea } from '@mantine/core'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
-import {
-  TMessages,
-  workspaceActions
-} from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
-import { useAppQuery } from '../../../services/apis/useAppQuery'
 import { useAppEmitSocket } from '../../../services/socket/useAppEmitSocket'
-import { groupMessages } from '../../message/MessageContentProvider'
-import MessageGroup from '../../message/MessageGroup'
 import SendMessage from '../../message/SendMessage'
 import Editor from '../description/Editor'
 import CardTitle from './CardTitle'
@@ -24,75 +15,9 @@ export default function DetailCard() {
   const card = useAppSelector(state =>
     Object.values(state.workspace.cards).find(e => e._id === cardId)
   )
-  const cardMessages = useAppSelector(state =>
-    Object.values(state.workspace.messages).filter(
-      e => e.replyRootId === cardId
-    )
-  )
 
   const dispatch = useDispatch()
   const socketEmit = useAppEmitSocket()
-
-  const { data: cardMessagesApi } = useAppQuery({
-    key: 'cardMessages',
-    url: {
-      baseUrl: '/workspace/boards/:boardId/cards/:cardId/messages',
-      urlParams: {
-        boardId: card?.boardId!,
-        cardId: card?._id!
-      }
-    },
-    options: {
-      queryKey: [card?.boardId, card?._id],
-      enabled: !!card?.boardId && !!card?._id
-    }
-  })
-
-  useEffect(() => {
-    dispatch(
-      workspaceActions.addMessages(
-        cardMessagesApi?.messages?.reduce(
-          (pre, next) => ({ ...pre, [next._id]: next }),
-          {} as TMessages
-        ) || {}
-      )
-    )
-  }, [cardMessagesApi])
-
-  const { mutateAsync: createChannelMessage } = useAppMutation(
-    'createCardMessage',
-    {
-      mutationOptions: {
-        onError(error, variables, context) {
-          console.log('onError', {
-            error,
-            variables,
-            context
-          })
-        },
-        onMutate(variables) {
-          console.log('onMutate', {
-            variables
-          })
-        },
-        onSettled(data, error, variables, context) {
-          console.log('onSettled', {
-            data,
-            error,
-            variables,
-            context
-          })
-        },
-        onSuccess(data, variables, context) {
-          console.log('onSuccess', {
-            data,
-            variables,
-            context
-          })
-        }
-      }
-    }
-  )
 
   return (
     <>
@@ -117,62 +42,23 @@ export default function DetailCard() {
           }}
         >
           <div className='flex h-full gap-4'>
-            <div className='relative w-80'>
-              <Properties />
+            <Properties />
+
+            <div className='relative flex flex-1 flex-col overflow-hidden rounded-lg bg-white'>
+              <ScrollArea className='absolute inset-0' scrollbarSize={6}>
+                <Editor />
+              </ScrollArea>
             </div>
 
-            <div className='flex flex-1 flex-col rounded-lg bg-white'>
-              <div className='relative flex-1 text-sm'>
-                <ScrollArea className='absolute inset-0' scrollbarSize={6}>
-                  <Editor />
-                  <Divider className='mx-4 my-4' />
-
-                  <div className='px-2'>
-                    {groupMessages(cardMessages || []).map(groupMessage => (
-                      <MessageGroup
-                        key={groupMessage.messages[0]._id}
-                        messageGroup={groupMessage}
-                      />
-                    ))}
-                    <SendMessage
-                      targetId={card._id}
-                      createMessage={async ({ files, value }) => {
-                        if (!card._id) return
-                        await createChannelMessage(
-                          {
-                            url: {
-                              baseUrl:
-                                '/workspace/boards/:boardId/cards/:cardId/messages',
-                              urlParams: {
-                                boardId: card.boardId,
-                                cardId: card._id
-                              }
-                            },
-                            method: 'post',
-                            payload: {
-                              attachments: files,
-                              content: value
-                            }
-                          },
-                          {
-                            onSuccess(message) {
-                              dispatch(
-                                workspaceActions.addMessages({
-                                  [message._id]: message
-                                })
-                              )
-                              socketEmit({
-                                key: 'stopTyping',
-                                targetId: card._id
-                              })
-                            }
-                          }
-                        )
-                      }}
-                    />
-                  </div>
-                </ScrollArea>
-              </div>
+            <div className='relative flex-1 rounded-lg bg-white p-3 px-2'>
+              <ScrollArea scrollbarSize={8} className='absolute inset-0'>
+                <div className='h-[1000px]'></div>
+                <SendMessage
+                  classNames={{ rootWrapper: 'sticky bottom-0' }}
+                  targetId={card._id}
+                  createMessage={async ({ files, value }) => {}}
+                />
+              </ScrollArea>
             </div>
           </div>
         </Modal>

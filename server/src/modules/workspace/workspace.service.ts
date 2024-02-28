@@ -1,373 +1,353 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { Socket } from 'socket.io'
-import { RedisService } from 'src/modules/redis/redis.service'
-import { User } from '../users/user.schema'
-import { DirectMessage } from './direct-message/direct-message.schema'
-import { DirectMessageService } from './direct-message/direct-message.service'
-import { Group } from './group/group.schema'
-import { GroupService } from './group/group.service'
-import { Member } from './member/member.schema'
-import { MemberService } from './member/member.service'
-import { Message } from './message/message.schema'
-import { Board } from './team/board/board.schema'
-import { BoardService } from './team/board/board.service'
-import { Card } from './team/board/card/card.schema'
-import { Property } from './team/board/property/property.schema'
-import { Channel } from './team/channel/channel.schema'
-import { ChannelService } from './team/channel/channel.service'
-import { Team } from './team/team.schema'
-import { TeamService } from './team/team.service'
-import { WorkspaceGateway } from './workspace.gateway'
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import * as crypto from 'crypto-js'
+import { Server, Socket } from 'socket.io'
+import { File } from 'src/entities/file.entity'
+import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
+import { User } from 'src/entities/user.entity'
+import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 
+import { In, Repository } from 'typeorm'
+import { TJwtUser } from '../socket/socket.gateway'
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
-} & (
-  | { data: Channel; type: 'channel' }
-  | { data: Board; type: 'board' }
-  | { data: Team; type: 'team' }
-  | { data: DirectMessage; type: 'direct' }
-  | { data: Group; type: 'group' }
-  | { data: Member; type: 'member' }
-)
+  data: Workspace
+}
 
-export type TBoardEmit = {
+export type TMemberEmit = {
   action: 'create' | 'update' | 'delete'
-} & ({ data: Property; type: 'property' } | { data: Card; type: 'card' })
+  member: Member
+}
 
+export const generateRandomHash = (
+  inputString = Math.random().toString(),
+  length = 8
+): string => {
+  const hash = crypto.SHA256(inputString).toString()
+  const truncatedHash = hash.substring(0, length)
+  return truncatedHash
+}
+
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 @Injectable()
 export class WorkspaceService {
+  @WebSocketServer()
+  server: Server
   constructor(
-    private readonly memberService: MemberService,
-    @Inject(forwardRef(() => TeamService))
-    private readonly teamService: TeamService,
-    @Inject(forwardRef(() => ChannelService))
-    private readonly channelSerivce: ChannelService,
-    @Inject(forwardRef(() => BoardService))
-    private readonly boardService: BoardService,
-    @Inject(forwardRef(() => GroupService))
-    private readonly groupService: GroupService,
-    @Inject(forwardRef(() => DirectMessageService))
-    private readonly directService: DirectMessageService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Workspace)
+    private readonly workspaceRepository: Repository<Workspace>,
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
+    @InjectRepository(File)
+    private readonly fileRepository: Repository<File>
+  ) {}
 
-    @InjectModel(Member.name) private readonly memberModel: Model<Member>,
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+  //#region Workspace
+  async createUsersFakeData() {
+    const count = await this.userRepository.count()
 
-    private readonly redisService: RedisService,
-
-    @Inject(forwardRef(() => WorkspaceGateway))
-    private readonly socketService: WorkspaceGateway
-  ) {
-    this.listenToExpiredKeys()
+    return await this.userRepository.insert(
+      Array(10000)
+        .fill(1)
+        .map(() => ({
+          email:
+            generateRandomHash(Math.random().toString(), 10) + '@gmail.com',
+          userName: generateRandomHash(Math.random().toString(), 10),
+          password: crypto.SHA256('123123').toString(),
+          nickName: generateRandomHash(Math.random().toString(), 10),
+          isAvailable: true
+        }))
+    )
   }
 
-  private async listenToExpiredKeys() {
-    await this.redisService.subRedis.psubscribe(`*:expired`)
-    await this.redisService.subRedis.on(
-      'pmessage',
-      async (pattern, channel, key) => {
-        const [type] = key.split(':')
+  async createGroup({
+    user,
+    workspace
+  }: {
+    workspace: Workspace
+    user: TJwtUser
+  }) {
+    const newWorkspace = await this.workspaceRepository.save(
+      this.workspaceRepository.create({
+        ...workspace,
+        type: WorkspaceType.Group,
+        displayUrl: generateRandomHash(),
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      })
+    )
 
-        switch (type) {
-          case 'typing':
-            const [type, targetId, userId] = key.split(':')
-            this.toggleTyping({ targetId, userId, type: 0 })
-        }
+    const member = await this.memberRepository.save(
+      this.memberRepository.create({
+        role: EMemberRole.Owner,
+        type: EMemberType.Group,
+
+        user: { _id: user.sub },
+        workspace: { _id: newWorkspace._id },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      })
+    )
+
+    return {
+      workspace: newWorkspace,
+      member
+    }
+  }
+
+  async updateWorkspace({
+    _id,
+    user,
+    workspace
+  }: {
+    user: TJwtUser
+    _id: string
+    workspace: Workspace
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        workspace: { _id },
+        user: { _id: user.sub },
+        role: In([EMemberRole.Owner, EMemberRole.Admin])
       }
-    )
+    })
+
+    return this.workspaceRepository.update(_id, workspace)
   }
 
-  private async getKeysByPattern(pattern: string): Promise<string[]> {
-    return new Promise<string[]>((resolve, reject) => {
-      this.redisService.redisClient.keys(pattern, (err, keys) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(keys)
+  async deleteWorkspace({ _id, user }: { user: TJwtUser; _id: string }) {
+    await this.memberRepository.findOneOrFail({
+      where: [
+        {
+          isAvailable: true,
+          workspace: { _id, isAvailable: true },
+          user: { _id: user.sub, isAvailable: true },
+          role: EMemberRole.Owner
+        },
+        {
+          isAvailable: true,
+          workspace: {
+            _id,
+            isAvailable: true,
+            parent: {
+              isAvailable: true,
+              members: {
+                isAvailable: true,
+                user: {
+                  _id: user.sub,
+                  isAvailable: true
+                },
+                role: EMemberRole.Owner
+              }
+            }
+          }
         }
+      ]
+    })
+
+    return this.workspaceRepository.delete(_id)
+  }
+
+  async getAllWorkspace({ user }: { user: TJwtUser }) {
+    const workspaces = await this.workspaceRepository.find({
+      where: { members: { user: { _id: user.sub, isAvailable: true } } },
+      relations: ['avatar', 'thumbnail']
+    })
+
+    return workspaces
+  }
+
+  async getWorkspaceById({
+    workspaceId,
+    user
+  }: {
+    user: TJwtUser
+    workspaceId: string
+  }) {
+    const workspace = await this.workspaceRepository.findOneOrFail({
+      where: {
+        _id: workspaceId,
+        members: { user: { _id: user.sub, isAvailable: true } }
+      },
+      relations: ['avatar', 'thumbnail']
+    })
+
+    const members = await this.memberRepository.find({
+      where: { workspace: { _id: workspaceId } },
+      relations: ['user']
+    })
+
+    return { workspace, members }
+  }
+
+  async subscribeToWorkspaces({
+    user,
+    client
+  }: {
+    user: TJwtUser
+    client: Socket
+  }) {
+    const members = await this.memberRepository.find({
+      where: { user: { _id: user.sub, isAvailable: true } }
+    })
+
+    client.join([...members.map(member => member.targetId), user.sub])
+  }
+
+  async subscribeToWorkspace(workspaceId: string, membersId: string[]) {
+    const sockets = await this.server.fetchSockets()
+    membersId.forEach(memberId => {
+      sockets.forEach(socket => {
+        socket.rooms.has(memberId) && socket.join(workspaceId)
       })
     })
   }
 
-  async subscribeAllRooms(userId: string, client: Socket) {
-    const members = await this.memberModel
-      .find({
-        userId,
+  async getWorkspaceFiles({
+    workspaceId,
+    user
+  }: {
+    workspaceId: string
+    user: TJwtUser
+  }) {
+    await this.workspaceRepository.findOneOrFail({
+      where: {
+        _id: workspaceId,
+        members: {
+          user: { _id: user.sub, isAvailable: true },
+          isAvailable: true
+        },
         isAvailable: true
-      })
-      .lean()
-    const directs = await this.directService.directMessageModel.find({
-      isAvailable: true,
-      userIds: { $in: [userId] }
+      }
     })
 
-    const rooms = [
-      ...members.map(member => member.targetId.toString()),
-      ...directs.map(direct => direct._id.toString()),
-      userId
-    ]
+    const files = await this.fileRepository.find({
+      where: {
+        isAvailable: true,
+        messages: [{ target: { _id: workspaceId }, isAvailable: true }]
+      }
+    })
 
-    client.join(rooms)
+    return files
   }
+  //#endregion
 
-  //#region Typing
-  async startTyping(userId: string, targetId: string) {
-    await this.toggleTyping({ targetId, userId, type: 1 })
-    await this.redisService.redisClient.set(
-      `typing:${targetId}:${userId}`,
-      '',
-      'EX',
-      3
-    )
-  }
-
-  async stopTyping(userId: string, targetId: string) {
-    await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
-    this.toggleTyping({ targetId, userId, type: 0 })
-  }
-
-  async toggleTyping({
-    targetId,
-    type,
-    userId
+  //#region  Member
+  async addMembers({
+    membersDto,
+    user,
+    workspaceId
   }: {
-    targetId: string
-    userId: string
-    type: 0 | 1
+    membersDto: Member[]
+    user: TJwtUser
+    workspaceId: string
   }) {
-    this.socketService.server.to([targetId]).emit('typing', {
-      userId,
-      targetId,
-      type
-    })
-  }
-  //#endregion
-
-  //#region Unread unread:userId:target
-  async _incrementUnread(userId: string, targetId: string) {
-    const unreadCount = await this.redisService.redisClient.get(
-      `unread:${userId}:${targetId}`
-    )
-
-    await this.redisService.redisClient.set(
-      `unread:${userId}:${targetId}`,
-      Number(unreadCount) + 1
-    )
-
-    await this.socketService.server.to([userId]).emit('unReadCount', {
-      count: Number(unreadCount) + 1,
-      targetId
-    })
-  }
-
-  async _markAsRead(userId: string, targetId: string) {
-    const unreadCount = await this.redisService.redisClient.get(
-      `unread:${userId}:${targetId}`
-    )
-    if (Number(unreadCount) > 0) {
-      this.redisService.redisClient.del(`unread:${userId}:${targetId}`)
-      this.socketService.server
-        .to([userId])
-        .emit('unReadCount', { targetId, count: 0 })
-    }
-  }
-
-  async getAllUnreadData(
-    userId: string
-  ): Promise<{ [key: string]: string | null | number }> {
-    const pattern = `unread:${userId}:*`
-    const keys = await this.getKeysByPattern(pattern)
-
-    if (keys.length === 0) {
-      return {}
-    }
-
-    const unreadData: { [key: string]: string | null | number } = {}
-    const values = await Promise.all(
-      keys.map(key => this.redisService.redisClient.get(key))
-    )
-
-    keys.forEach((key, index) => {
-      const [, , targetId] = key.split(':')
-      unreadData[targetId] = Number(values[index])
+    const operator = await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub },
+        workspace: { _id: workspaceId },
+        role: In([EMemberRole.Owner, EMemberRole.Admin])
+      }
     })
 
-    return unreadData
-  }
-  //#endregion
-
-  //#region message readed read:targetId:userId:messageId
-  async markMessageAsRead(userId: string, targetId: string, messageId: string) {
-    const key = `read:${targetId}:${userId}`
-
-    const _messageId = await this.redisService.redisClient.get(key)
-
-    if (_messageId !== messageId) {
-      this.redisService.redisClient.set(key, messageId)
-
-      this.socketService.server
-        .to([targetId])
-        .emit('userReadedMessage', `${targetId}:${userId}:${messageId}`)
-      this._markAsRead(userId, targetId)
-    }
-  }
-
-  async getReadMessagesForTarget(targetId: string): Promise<string[]> {
-    const key = `read:${targetId}:*`
-    const keys = await this.getKeysByPattern(key)
-
-    const res = await Promise.all(
-      keys.map(async key => {
-        const messageId = await this.redisService.redisClient.get(key)
-        return `${key}:${messageId}`.replace('read:', '')
+    if (operator.role === EMemberRole.Owner) {
+      membersDto.forEach(member => {
+        this.memberRepository.save({
+          ...member,
+          workspace: { _id: workspaceId },
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        })
       })
-    )
-
-    return res
-  }
-  //#endregion
-
-  //#region Presence
-  async getUsersPresence(
-    usersId: string[]
-  ): Promise<{ [userId: string]: string }> {
-    const usersPresence: { [userId: string]: string } = {}
-    for (const userId of usersId) {
-      const status = await this.redisService.redisClient.get(
-        `presence:${userId}`
-      )
-      usersPresence[userId] = status
     }
 
-    return usersPresence
+    if (operator.role === EMemberRole.Admin) {
+      membersDto.forEach(member => {
+        this.memberRepository.save({
+          ...member,
+          role:
+            member.role === EMemberRole.Owner ? EMemberRole.Admin : member.role,
+          workspace: { _id: workspaceId },
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        })
+      })
+    }
+  }
+
+  async workpsaceMembers({
+    user,
+    workspaceId
+  }: {
+    user: TJwtUser
+    workspaceId: string
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        workspace: { _id: workspaceId },
+        user: { _id: user.sub, isAvailable: true }
+      }
+    })
+
+    const members = await this.memberRepository.find({
+      where: { workspace: { _id: workspaceId, isAvailable: true } },
+      relations: ['user']
+    })
+
+    return members
   }
   //#endregion
 
-  async message({
-    rooms,
-    data
+  //#region SocketEmit
+  async workspaceEmit({
+    workspaces,
+    rooms
   }: {
+    workspaces: TWorkspaceSocket
     rooms: string[]
-    data: {
-      message: Message
-      action: 'create' | 'update' | 'delete' | 'rection'
-    }
   }) {
-    await this.socketService.server.to(rooms).emit('message', data)
-  }
-
-  async workspaces({
-    rooms,
-    workspaces
-  }: {
-    rooms: string[]
-    workspaces: TWorkspaceSocket[]
-  }) {
-    const members = workspaces.filter(
-      e => e.type === 'member' && ['create', 'delele'].includes(e.action)
-    )
-    if (members) {
-      const sockets = await this.socketService.server.fetchSockets()
-      members.forEach(member => {
-        if (member.type === 'member' && member.action === 'create') {
-          sockets
-            .filter(e => e.rooms.has(member.data.userId))
-            .forEach(_socket => _socket.join(member.data.targetId))
-        }
-        if (member.type === 'member' && member.action === 'delete') {
-          sockets
-            .filter(e => e.rooms.has(member.data.userId))
-            .forEach(_socket => _socket.leave(member.data.targetId))
-        }
-      })
-    }
-
-    const directs = workspaces.filter(
-      e => e.type === 'direct' && e.action === 'create'
-    )
-    if (directs) {
-      const sockets = await this.socketService.server.fetchSockets()
-      directs.forEach(direct => {
-        if (direct.type === 'direct' && direct.action === 'create') {
-          sockets
-            .filter(e => direct.data.userIds.some(_e => e.rooms.has(_e)))
-            .forEach(_socket => _socket.join(direct.data._id))
-        }
-      })
-    }
-
-    await this.socketService.server.to(rooms).emit('workspaces', {
+    await this.server.to(rooms).emit('workspaces', {
       workspaces
     })
   }
 
-  async boardEmit({
-    rooms,
-    boardData
-  }: {
-    rooms: string[]
-    boardData: TBoardEmit[]
-  }) {
-    await this.socketService.server.to(rooms).emit('boardData', {
-      boardData
+  async memberEmit({ member, action }: TMemberEmit) {
+    // if (action === 'update') {
+    //   return this.server.to(member._id).emit('member', { member })
+    // }
+
+    const sockets = await this.server.to(member.userId).fetchSockets()
+
+    // if (action === 'create') {
+    //   return sockets.forEach(socket => {
+    //     socket.rooms.has(member.userId) && socket.join(member.targetId)
+    //   })
+    // }
+
+    // if (action === 'delete') {
+    //   return sockets.forEach(socket => {
+    //     socket.rooms.has(member.userId) && socket.leave(member.targetId)
+    //   })
+    // }
+  }
+
+  async membersEmit({ members }: { members: TMemberEmit[] }) {
+    const usersId = members.map(e => e.member.userId)
+
+    await this.server.emit('members', {
+      members
     })
   }
+  //#endregion
 
-  async users({
-    rooms,
-    users
-  }: {
-    rooms: string[]
-    users: {
-      data: User
-      type: 'get' | 'update'
-    }[]
-  }) {
-    await this.socketService.server.to(rooms).emit('users', {
-      users
-    })
-  }
+  //#region Direct
 
-  async getWorkspaceData(userId: string) {
-    const _teams = this.teamService.getTeamsByUserId(userId)
-    const _channels = this.channelSerivce.getChannelsByUserId(userId)
-    const _groups = this.groupService.getGroupsByUserId(userId)
-    const _directs = this.directService.getDirectsByUserId(userId)
-    const _boards = this.boardService.getBoardsByUserId(userId)
-
-    const [teams, channels, groups, directs, boards] = await Promise.all([
-      _teams,
-      _channels,
-      _groups,
-      _directs,
-      _boards
-    ])
-
-    const userIds = Array.from(
-      new Set([
-        ...teams.members.map(e => e.userId.toString()),
-        ...channels.members.map(e => e.userId.toString()),
-        ...groups.members.map(e => e.userId.toString()),
-        ...boards.members.map(e => e.userId.toString()),
-        ...directs.directUserId
-      ])
-    )
-
-    const users = await this.userModel
-      .find({
-        _id: { $in: userIds }
-      })
-      .lean()
-
-    return {
-      teams,
-      channels,
-      groups,
-      directs,
-      userIds,
-      boards,
-      users
-    }
-  }
+  //#endregion
 }

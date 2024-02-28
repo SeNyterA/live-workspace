@@ -2,7 +2,7 @@ import { TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
-import { useAppMutation } from '../../../services/apis/useAppMutation'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 
 export default function CardTitle() {
   const { boardId, cardId } = useAppParams()
@@ -24,18 +24,18 @@ export default function CardTitle() {
       }}
       value={value}
       onBlur={() => {
-        value !== card?.title &&
-          updateCard({
-            url: {
-              baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-              urlParams: {
-                boardId: boardId!,
-                cardId: cardId!
-              }
-            },
-            method: 'patch',
-            payload: { title: value }
-          })
+        // value !== card?.title &&
+        //   updateCard({
+        //     url: {
+        //       baseUrl: '/workspace/boards/:boardId/cards/:cardId',
+        //       urlParams: {
+        //         boardId: boardId!,
+        //         cardId: cardId!
+        //       }
+        //     },
+        //     method: 'patch',
+        //     payload: { title: value }
+        //   })
       }}
       onChange={e => {
         setValue(e.target.value)

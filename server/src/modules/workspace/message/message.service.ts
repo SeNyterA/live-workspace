@@ -1,347 +1,311 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException
-} from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { JSONContent } from 'src/libs/helper'
-import { DirectMessageService } from '../direct-message/direct-message.service'
-import { MemberService } from '../member/member.service'
-import { WorkspaceService } from './../workspace.service'
-import { EMessageFor, EMessageType, Message } from './message.schema'
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import { Server } from 'socket.io'
+import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
+import { EMesssageFor, Message } from 'src/entities/message.entity'
+import { RedisService } from 'src/modules/redis/redis.service'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
+import { In, LessThan, Repository } from 'typeorm'
 
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 @Injectable()
 export class MessageService {
+  @WebSocketServer()
+  server: Server
+
   constructor(
-    @InjectModel(Message.name)
-    readonly messageModel: Model<Message>,
-    private readonly directMessageService: DirectMessageService,
-    private readonly memberService: MemberService,
-    private readonly workspaceService: WorkspaceService
+    @InjectRepository(Member)
+    private readonly memberRepository: Repository<Member>,
+    @InjectRepository(Message)
+    private readonly messageRepository: Repository<Message>,
+    private readonly redisService: RedisService
   ) {}
 
-  async _makeUnreadCount(targetId: string, mentionIds?: string[]) {
-    const members = await this.memberService.memberModel
-      .find({
-        targetId,
-        isAvailable: true
-      })
-      .lean()
-
-    await members.map(member => {
-      this.workspaceService._incrementUnread(
-        member.userId.toString(),
-        member.targetId.toString()
-      )
-    })
+  async emitMessage({ message }: { message: Message }) {
+    this.server.to([message.targetId]).emit('message', { message })
   }
 
-  async _createForDirect({
+  async createMessage({
+    user,
     targetId,
-    userId,
-    messagePayload
+    message,
+    replyToId,
+    threadId,
+    type = EMesssageFor.Channel
   }: {
-    userId: string
+    message: Message
+    user: TJwtUser
     targetId: string
-    messagePayload: { content: string }
+    replyToId?: string
+    threadId?: string
+    type?: EMesssageFor
   }) {
-    const { direct: directMessage, isNew } =
-      await this.directMessageService._getOrCreateDirectMessage({
-        targetId,
-        userId
-      })
-
-    const newMess = await this.messageModel.create({
-      messageReferenceId: directMessage._id.toString(),
-      createdById: userId,
-      modifiedById: userId,
-      content: messagePayload.content,
-      messageFor: EMessageFor.Direct,
-      messageType: EMessageType.Normal
-    })
-
-    if (isNew) {
-      this.workspaceService.workspaces({
-        rooms: [
-          ...directMessage.userIds.map(e => e.toString()),
-          directMessage._id.toString()
-        ],
-        workspaces: [{ action: 'create', type: 'direct', data: directMessage }]
-      })
-    }
-
-    this.workspaceService.message({
-      rooms: [targetId, userId, directMessage._id.toString()],
-      data: {
-        action: 'create',
-        message: newMess
+    await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub, isAvailable: true },
+        workspace: { _id: targetId, isAvailable: true },
+        isAvailable: true,
+        type: In([
+          EMemberType.Channel,
+          EMemberType.DirectMessage,
+          EMemberType.Group
+        ])
       }
     })
-    directMessage.userIds.map(userId =>
-      this.workspaceService._incrementUnread(
-        userId.toString(),
-        directMessage._id.toString()
-      )
+
+    const newMessage = await this.messageRepository.save(
+      this.messageRepository.create({
+        ...message,
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub },
+        target: { _id: targetId },
+        replyTo: replyToId ? { _id: replyToId } : undefined,
+        thread: threadId ? { _id: threadId } : undefined
+      }),
+      { reload: true }
     )
 
-    return newMess.toJSON()
+    const messageInserted = await this.messageRepository.findOneOrFail({
+      where: { _id: newMessage._id },
+      relations: ['attachments']
+    })
+
+    this.emitMessage({ message: messageInserted })
+
+    return messageInserted
   }
 
-  async _createForChannel({
-    channelId,
-    userId,
-    messagePayload
-  }: {
-    userId: string
-    channelId: string
-    messagePayload: { content: JSONContent; attachments?: string[] }
-  }) {
-    await this.memberService._checkExisting({
-      userId,
-      targetId: channelId
-    })
-
-    const newMess = await this.messageModel.create({
-      messageReferenceId: channelId,
-      createdById: userId,
-      modifiedById: userId,
-      messageFor: EMessageFor.Channel,
-      messageType: EMessageType.Normal,
-      ...messagePayload
-    })
-
-    this.workspaceService.message({
-      rooms: [channelId],
-      data: {
-        action: 'create',
-        message: newMess
-      }
-    })
-    this._makeUnreadCount(channelId)
-
-    return newMess.toJSON()
-  }
-
-  async _createForGroup({
-    groupId,
-    userId,
-    messagePayload
-  }: {
-    userId: string
-    groupId: string
-    messagePayload: { content: string }
-  }) {
-    await this.memberService._checkExisting({
-      userId,
-      targetId: groupId
-    })
-
-    const newMess = await this.messageModel.create({
-      messageReferenceId: groupId,
-      createdById: userId,
-      modifiedById: userId,
-      content: messagePayload.content,
-      messageFor: EMessageFor.Group,
-      messageType: EMessageType.Normal
-    })
-
-    this.workspaceService.message({
-      rooms: [groupId],
-      data: {
-        action: 'create',
-        message: newMess
-      }
-    })
-
-    this._makeUnreadCount(groupId)
-    return newMess.toJSON()
-  }
-
-  async _createForCard({
+  async getMessages({
     targetId,
-    userId,
-    messagePayload,
-    boardId
+    size,
+    fromId,
+    user
   }: {
-    userId: string
     targetId: string
-    messagePayload: { content: string }
-    boardId: string
-  }) {
-    await this.memberService._checkExisting({
-      userId,
-      targetId: boardId
-    })
-
-    const newMess = await this.messageModel.create({
-      messageReferenceId: boardId,
-      createdById: userId,
-      modifiedById: userId,
-      content: messagePayload.content,
-      messageFor: EMessageFor.Card,
-      messageType: EMessageType.Normal,
-      replyRootId: targetId
-    })
-
-    this.workspaceService.message({
-      rooms: [boardId],
-      data: {
-        action: 'create',
-        message: newMess
-      }
-    })
-
-    this._makeUnreadCount(targetId)
-    return newMess.toJSON()
-  }
-
-  async _editMessage({
-    messageId,
-    userId
-  }: {
-    userId: string
-    messageId: string
-  }) {
-    const message = await this.messageModel.findOne({
-      _id: messageId,
-      createdById: userId,
-      isAvailable: true
-    })
-
-    if (!message) {
-      throw new NotFoundException('Message not found')
-    }
-
-    if (message.messageType === EMessageType.System) {
-      throw new ForbiddenException('Cannot edit system message')
-    }
-
-    switch (message.messageFor) {
-      case EMessageFor.Direct: {
-        break
-      }
-      default: {
-        this.memberService._checkExisting({
-          userId,
-          targetId: message._id.toString()
-        })
-      }
-    }
-
-    return 'editmess'
-  }
-
-  async _getMessages({
-    messageReferenceId,
-    userId,
-    messgaeFor,
-    pageSize = 100,
-    fromId
-  }: {
-    userId: string
-    messageReferenceId: string
-    messgaeFor: EMessageFor
     fromId?: string
-    pageSize?: number
+    size?: number
+    user: TJwtUser
   }) {
-    let _messageReferenceId = messageReferenceId
-
-    switch (messgaeFor) {
-      case EMessageFor.Channel:
-      case EMessageFor.Group: {
-        await this.memberService._checkExisting({
-          targetId: messageReferenceId,
-          userId
-        })
-        break
+    await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub, isAvailable: true },
+        workspace: { _id: targetId, isAvailable: true },
+        type: In([
+          EMemberType.Channel,
+          EMemberType.DirectMessage,
+          EMemberType.Group
+        ])
       }
-      case EMessageFor.Direct: {
-        const directMess = await this.directMessageService._checkExisting({
-          targetId: messageReferenceId,
-          userId
-        })
-        _messageReferenceId = directMess._id.toString()
-        break
+    })
+
+    const totalMessages = await this.messageRepository.count({
+      where: {
+        target: { _id: targetId },
+        isAvailable: true
       }
-    }
+    })
 
-    const messages = await this.messageModel
-      .find({
-        messageReferenceId: _messageReferenceId,
+    const messages = await this.messageRepository.find({
+      where: {
+        target: { _id: targetId },
         isAvailable: true,
-        ...(fromId && { _id: { $lt: fromId } })
-      })
-      .sort({ createdAt: -1 })
-      .limit(pageSize)
+        _id: fromId ? LessThan(fromId) : undefined
+      },
+      order: {
+        createdAt: 'DESC'
+      },
+      take: Number(size),
+      relations: ['attachments']
+    })
 
-    const remainingCount = await this.messageModel
-      .find({
-        messageReferenceId: _messageReferenceId,
-        isAvailable: true,
-        ...(fromId && { _id: { $lt: fromId } })
-      })
-      .countDocuments()
+    const remainingCount = totalMessages - messages.length
 
-    return {
-      messages,
-      remainingCount: remainingCount - messages.length
-    }
+    return { messages, remainingCount }
   }
 
-  async reaction({
-    payload: { icon },
+  async pinMessage({
+    user,
     messageId,
+    targetId
+  }: {
+    user: TJwtUser
+    messageId: string
+    targetId: string
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub, isAvailable: true },
+        workspace: { _id: targetId, isAvailable: true },
+        isAvailable: true,
+        type: In([
+          EMemberType.Channel,
+          EMemberType.DirectMessage,
+          EMemberType.Group
+        ])
+      }
+    })
+    const message = await this.messageRepository.findOneOrFail({
+      where: {
+        _id: messageId,
+        target: { _id: targetId }
+      }
+    })
+    message.isPinned = !message.isPinned
+    message.modifiedBy = { _id: user.sub } as any
+    const newMessage = await this.messageRepository.save(message)
+    this.emitMessage({ message: newMessage })
+    return newMessage
+  }
+
+  async getPinedMessages({
+    targetId,
+    user
+  }: {
+    user: TJwtUser
+    targetId: string
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub, isAvailable: true },
+        workspace: { _id: targetId, isAvailable: true },
+        isAvailable: true,
+        type: In([
+          EMemberType.Channel,
+          EMemberType.DirectMessage,
+          EMemberType.Group
+        ])
+      }
+    })
+
+    return this.messageRepository.find({
+      where: {
+        target: { _id: targetId, isAvailable: true },
+        isPinned: true,
+        isAvailable: true
+      }
+    })
+  }
+
+  async reactMessage({
+    messageId,
+    reaction,
+    targetId,
+    user
+  }: {
+    user: TJwtUser
+    messageId: string
+    targetId: string
+    reaction: string
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub, isAvailable: true },
+        workspace: { _id: targetId, isAvailable: true },
+        isAvailable: true,
+        type: In([
+          EMemberType.Channel,
+          EMemberType.DirectMessage,
+          EMemberType.Group
+        ])
+      }
+    })
+
+    const message = await this.messageRepository.findOneOrFail({
+      where: {
+        _id: messageId,
+        target: { _id: targetId }
+      }
+    })
+    message.reactions = message.reactions || {}
+
+    if (message.reactions[user.sub] === reaction) {
+      delete message.reactions[user.sub]
+    } else {
+      message.reactions[user.sub] = reaction
+    }
+
+    return this.messageRepository.save(message)
+  }
+
+  async deleteMessage({
+    messageId,
+    user,
+    targetId
+  }: {
+    messageId: string
+    user: TJwtUser
+    targetId: string
+  }) {
+    const message = await this.messageRepository.findOneOrFail({
+      where: [
+        {
+          _id: messageId,
+          createdBy: { _id: user.sub },
+          target: {
+            _id: targetId,
+            members: {
+              _id: user.sub,
+              isAvailable: true
+            }
+          }
+        },
+        {
+          _id: messageId,
+          target: {
+            _id: targetId,
+            members: {
+              _id: user.sub,
+              isAvailable: true,
+              role: In([EMemberRole.Admin, EMemberRole.Owner])
+            }
+          }
+        }
+      ]
+    })
+
+    message.isAvailable = false
+    message.modifiedBy._id = user.sub
+
+    const messageUpdated = await this.messageRepository.save(message)
+    this.emitMessage({ message: messageUpdated })
+    return messageUpdated
+  }
+
+  //#region Typing
+  async startTyping(userId: string, targetId: string) {
+    await this.toggleTyping({ targetId, userId, type: 1 })
+    await this.redisService.redisClient.set(
+      `typing:${targetId}:${userId}`,
+      '',
+      'EX',
+      3
+    )
+  }
+
+  async stopTyping(userId: string, targetId: string) {
+    await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
+    this.toggleTyping({ targetId, userId, type: 0 })
+  }
+
+  async toggleTyping({
+    targetId,
+    type,
     userId
   }: {
+    targetId: string
     userId: string
-    messageId: string
-    payload: { icon: string }
+    type: 0 | 1
   }) {
-    const message = await this.messageModel.findOne({
-      _id: messageId,
-      isAvailable: true
+    this.server.to([targetId]).emit('typing', {
+      userId,
+      targetId,
+      type
     })
-
-    if (!message) {
-      return {
-        error: {
-          code: 1000,
-          message: 'message not found'
-        }
-      }
-    }
-
-    const existingMember = await this.memberService._checkExisting({
-      targetId: message.messageReferenceId.toString(),
-      userId
-    })
-
-    if (!existingMember) {
-      return {
-        error: {
-          code: 1000,
-          message: 'user not permission'
-        }
-      }
-    }
-
-    if (message.reactions[userId] === icon) {
-      delete message.reactions[userId]
-    } else {
-      message.reactions[userId] = icon
-    }
-
-    await message.save()
-
-    this.workspaceService.message({
-      rooms: [message.messageReferenceId.toString()],
-      data: {
-        action: 'rection',
-        message: message
-      }
-    })
-
-    return { data: message.toJSON() }
   }
+  //#endregion
 }

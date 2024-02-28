@@ -1,38 +1,8 @@
 import { useEffect } from 'react'
-import { TUser } from '../../types/user.type'
-import {
-  TBoard,
-  TCard,
-  TChannel,
-  TDirect,
-  TGroup,
-  TMember,
-  TMessage,
-  TProperty,
-  TTeam
-} from '../../types/workspace.type'
+import { TCard, TOption } from '../../new-types/board'
+import { TMessage } from '../../new-types/message'
+import { TWorkspace } from '../../new-types/workspace'
 import { useSocketContext } from './SocketProvider'
-
-export type TWorkspaceSocket = {
-  action?: 'create' | 'update' | 'delete'
-} & (
-  | { data: TChannel; type: 'channel' }
-  | { data: TBoard; type: 'board' }
-  | { data: TTeam; type: 'team' }
-  | { data: TDirect; type: 'direct' }
-  | { data: TGroup; type: 'group' }
-  | { data: TMember; type: 'member' }
-  | { data: TUser; type: 'user' }
-)
-
-export type TDetailBoard = {
-  action: 'create' | 'update' | 'delete'
-} & ({ data: TProperty; type: 'property' } | { data: TCard; type: 'card' })
-
-export type TUserSocket = {
-  data: TUser
-  type: 'get' | 'update'
-}
 
 export type ApiSocketType = {
   message: {
@@ -54,21 +24,9 @@ export type ApiSocketType = {
     response: string
   }
 
-  workspaces: {
+  workspace: {
     response: {
-      workspaces: TWorkspaceSocket[]
-    }
-  }
-
-  boardData: {
-    response: {
-      boardData: TDetailBoard[]
-    }
-  }
-
-  users: {
-    response: {
-      users: TUserSocket[]
+      workspace: TWorkspace
     }
   }
 
@@ -76,6 +34,19 @@ export type ApiSocketType = {
     response: {
       count: number
       targetId: string
+    }
+  }
+
+  option: {
+    response: {
+      option: TOption
+      mode: 'create' | 'update' | 'delete'
+    }
+  }
+  card: {
+    response: {
+      card: TCard
+      mode: 'create' | 'update' | 'delete'
     }
   }
 }

@@ -20,11 +20,6 @@ export class MailService {
     subject: string
     text: string
   }): Promise<void> {
-    console.log({
-      subject,
-      text,
-      to
-    })
     await this.transporter.sendMail({
       from: process.env.MAIL_USER,
       subject,

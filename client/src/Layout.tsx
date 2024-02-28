@@ -1,31 +1,24 @@
 import { Divider, LoadingOverlay } from '@mantine/core'
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import AppHeader from './components/layouts/AppHeader'
 import Sidebar from './components/sidebar/Sidebar'
 import TeamList from './components/sidebar/team/TeamList'
-import { TMembers, workspaceActions } from './redux/slices/workspace.slice'
+import useAppParams from './hooks/useAppParams'
+import { workspaceActions } from './redux/slices/workspace.slice'
 import { useAppQuery } from './services/apis/useAppQuery'
 import { useAppOnSocket } from './services/socket/useAppOnSocket'
-import { EMessageFor } from './types/workspace.type'
+import { arrayToObject } from './utils/helper'
 
 export type TThread = {
   threadId: string
   targetId: string
   replyId?: string
-  targetType: EMessageFor
 }
 
 type TLayoutContext = {
   thread?: TThread
   updateThread: (thread?: TThread) => void
-
   openInfo?: boolean
   toggleInfo: (info: boolean) => void
 }
@@ -40,133 +33,55 @@ export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
   const [thread, setThread] = useState<TThread>()
   const [openInfo, toggleInfo] = useState(false)
+  const { boardId, channelId, directId, groupId, teamId } = useAppParams()
 
-  const { data: workspaceData, isPending } = useAppQuery({
+  const { data: workspaces, isPending } = useAppQuery({
+    key: 'workspaces',
+    url: {
+      baseUrl: '/workspaces'
+    },
+    onSucess(data) {
+      dispatch(
+        workspaceActions.init({
+          workspaces: data.reduce(
+            (pre, next) => ({ ...pre, [next._id]: next }),
+            {}
+          )
+        })
+      )
+    }
+  })
+
+  useAppQuery({
     key: 'workspace',
     url: {
-      baseUrl: '/workspace'
+      baseUrl: '/workspaces/:workspaceId',
+      urlParams: { workspaceId: teamId! }
+    },
+    onSucess({ members, workspace }) {
+      dispatch(
+        workspaceActions.updateData({
+          workspaces: { [workspace._id]: workspace },
+          members: arrayToObject(members, '_id'),
+          users: arrayToObject(
+            members.map(e => e.user),
+            '_id'
+          )
+        })
+      )
     },
     options: {
-      queryKey: ['/workspace']
+      enabled: !!teamId
     }
   })
-  useEffect(() => {
-    if (workspaceData) {
-      const members = [
-        ...(workspaceData?.channels.members || []),
-        ...(workspaceData?.teams.members || []),
-        ...(workspaceData?.groups.members || []),
-        ...(workspaceData?.boards.members || [])
-      ].reduce((pre, next) => ({ ...pre, [next._id]: next }), {} as TMembers)
 
+  useAppOnSocket({
+    key: 'workspace',
+    resFunc: ({ workspace }) => {
       dispatch(
         workspaceActions.updateData({
-          teams: workspaceData?.teams.teams.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          channels: workspaceData?.channels.channels.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          boards: workspaceData?.boards.boards.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          directs: workspaceData?.directs.directs.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          groups: workspaceData?.groups.groups.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-
-          users: workspaceData?.users.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          ),
-          members
+          workspaces: { [workspace._id]: workspace }
         })
-      )
-    }
-  }, [dispatch, workspaceData])
-
-  const { data: unReadCountData } = useAppQuery({
-    key: 'getUnreadCounts',
-    url: {
-      baseUrl: 'workspace/getUnreadCounts'
-    }
-  })
-  useEffect(() => {
-    if (unReadCountData) {
-      dispatch(workspaceActions.setUnreadCounts(unReadCountData))
-    }
-  }, [dispatch, unReadCountData])
-
-  useAppOnSocket({
-    key: 'workspaces',
-    resFunc: ({ workspaces }) => {
-      const teams = workspaces.filter(e => e.type === 'team')
-      const channels = workspaces.filter(e => e.type === 'channel')
-      const boards = workspaces.filter(e => e.type === 'board')
-      const directs = workspaces.filter(e => e.type === 'direct')
-      const groups = workspaces.filter(e => e.type === 'group')
-      const members = workspaces.filter(e => e.type === 'member')
-      const users = workspaces.filter(e => e.type === 'user')
-
-      dispatch(
-        workspaceActions.updateData({
-          teams: teams.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          channels: channels.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          boards: boards.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          groups: groups.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          directs: directs.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          members: members.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          ),
-          users: users.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          )
-        })
-      )
-    }
-  })
-
-  useAppOnSocket({
-    key: 'unReadCount',
-    resFunc: ({ count, targetId }) => {
-      dispatch(workspaceActions.setUnreadCounts({ [targetId]: count }))
-    }
-  })
-
-  useAppOnSocket({
-    key: 'users',
-    resFunc: ({ users }) => {
-      dispatch(
-        workspaceActions.addUsers(
-          users.reduce(
-            (pre, next) => ({ ...pre, [next.data._id]: next.data }),
-            {}
-          )
-        )
       )
     }
   })

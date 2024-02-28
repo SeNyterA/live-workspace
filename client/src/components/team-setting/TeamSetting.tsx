@@ -1,8 +1,8 @@
 import { Divider, Modal, NavLink } from '@mantine/core'
 import { IconInfoHexagon, IconMessage } from '@tabler/icons-react'
 import { createContext, useContext, useState } from 'react'
+import { TMember } from '../../new-types/member.d'
 import { useAppSelector } from '../../redux/store'
-import { TMember } from '../../types/workspace.type'
 import EditInfo from './EditInfo'
 import MembersManager from './MembersManager'
 
@@ -11,7 +11,7 @@ type TSetting = {
   type: 'team' | 'channel' | 'group' | 'board'
   operatorMember?: TMember
   userSelected?: string
-  setUserSelected?: React.Dispatch<React.SetStateAction<string | undefined>>
+  setUserSelected: React.Dispatch<React.SetStateAction<string | undefined>>
 }
 
 const settingContext = createContext<TSetting>({
@@ -29,16 +29,10 @@ export default function TeamSetting({
 }: {
   isOpen: boolean
   onClose: () => void
-} & TSetting) {
+} & Pick<TSetting, 'type' | 'targetId'>) {
   const [mode, setMode] = useState<'info' | 'members'>('info')
   const [userSelected, setUserSelected] = useState<string>()
-  const target = useAppSelector(
-    e =>
-      e.workspace.teams[targetId!] ||
-      e.workspace.channels[targetId!] ||
-      e.workspace.groups[targetId!] ||
-      e.workspace.boards[targetId!]
-  )
+  const target = useAppSelector(state => state.workspace.workspaces[targetId])
 
   const operatorMember = useAppSelector(state =>
     Object.values(state.workspace.members).find(

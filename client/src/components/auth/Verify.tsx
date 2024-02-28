@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import useAppQueryParams from '../../hooks/useAppQueryParams'
-import { useAppMutation } from '../../services/apis/useAppMutation'
+import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 
 export default function Verify() {
   const { token } = useAppQueryParams<{ token: string }>()

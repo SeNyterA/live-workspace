@@ -2,7 +2,7 @@ import { ActionIcon, Avatar, Menu } from '@mantine/core'
 import { IconMessageCircle } from '@tabler/icons-react'
 import { ReactNode } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
-import { TUser } from '../../types/user.type'
+import { TUser } from '../../new-types/user'
 
 export default function UserDetailProvider({
   children,
@@ -24,8 +24,8 @@ export default function UserDetailProvider({
       </Menu.Target>
       <Menu.Dropdown>
         <div className='flex flex-col items-center justify-center p-4 pb-0'>
-          <Avatar src={user?.avatar} size={120} />
-          <p className='mt-2 text-base font-semibold'>{user?.nickname}</p>
+          <Avatar src={user?.avatar?.path} size={120} />
+          <p className='mt-2 text-base font-semibold'>{user?.nickName}</p>
           <p className='text-sm text-gray-500'>{`@${user?.userName}`}</p>
           <p className='text-sm text-gray-500'>{user?.email}</p>
         </div>

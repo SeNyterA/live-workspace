@@ -1,15 +1,9 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { TUser } from '../../types/user.type'
-import {
-  TBoard,
-  TChannel,
-  TDirect,
-  TGroup,
-  TMember,
-  TMessage,
-  TTeam
-} from '../../types/workspace.type'
-import { TBoardQueryApi } from './board.api'
+import { TFile } from '../../new-types/file'
+import { TMember } from '../../new-types/member.d'
+import { TMessage } from '../../new-types/message'
+import { TUser } from '../../new-types/user'
+import { TWorkspace } from '../../new-types/workspace'
 import { replaceDynamicValues } from './common'
 import http from './http'
 
@@ -50,31 +44,39 @@ type ApiQueryType = {
   //workspace
   workspace: {
     url: {
-      baseUrl: '/workspace'
+      baseUrl: '/workspaces/:workspaceId'
+      urlParams: {
+        workspaceId: string
+      }
     }
-    response: {
-      teams: {
-        teams: TTeam[]
-        members: TMember[]
-      }
-      channels: {
-        channels: TChannel[]
-        members: TMember[]
-      }
-      boards: {
-        boards: TBoard[]
-        members: TMember[]
-      }
-      groups: {
-        groups: TGroup[]
-        members: TMember[]
-      }
-      directs: {
-        directs: TDirect[]
-        directUserId: string[]
-      }
-      users: TUser[]
+    response: { workspace: TWorkspace; members: TMember[] }
+  }
+
+  workspaces: {
+    url: {
+      baseUrl: '/workspaces'
     }
+    response: TWorkspace[]
+  }
+
+  workspaceFiles: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/files'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    response: TFile[]
+  }
+
+  board: {
+    url: {
+      baseUrl: '/boards/:boardId'
+      urlParams: {
+        boardId: string
+      }
+    }
+    response: TWorkspace
   }
 
   targetMembers: {
@@ -93,11 +95,11 @@ type ApiQueryType = {
     }
   }
 
-  channelMessages: {
+  workpsaceMessages: {
     url: {
-      baseUrl: '/workspace/channels/:channelId/messages'
+      baseUrl: 'workspaces/:workspaceId/messages'
       urlParams: {
-        channelId: string
+        workspaceId: string
       }
     }
     response: {
@@ -106,34 +108,14 @@ type ApiQueryType = {
     }
   }
 
-  groupMessages: {
+  workpsacePinedMessages: {
     url: {
-      baseUrl: '/workspace/groups/:groupId/messages'
+      baseUrl: 'workspaces/:workspaceId/messages/pined'
       urlParams: {
-        groupId: string
+        workspaceId: string
       }
     }
-    response: {
-      messages: TMessage[]
-      remainingCount: number
-    }
-  }
-
-  directMessages: {
-    url: {
-      baseUrl: '/workspace/direct-messages/:targetId/messages'
-      urlParams: {
-        targetId: string
-      }
-      queryParams?: {
-        formId?: string
-        pageSize?: number
-      }
-    }
-    response: {
-      messages: TMessage[]
-      remainingCount: number
-    }
+    response: TMessage[]
   }
 
   findUsersByKeyword: {
@@ -162,22 +144,6 @@ type ApiQueryType = {
     }
   }
 
-  findDirectInfo: {
-    url: {
-      baseUrl: '/workspace/direct-messages'
-      queryParams: {
-        directId?: string
-        targetEmail?: string
-        targetId?: string
-        targetUserName?: string
-      }
-    }
-    response: {
-      users: TUser[]
-      direct: TDirect
-    }
-  }
-
   usersReadedMessage: {
     url: {
       baseUrl: '/workspace/usersReadedMessage/:targetId'
@@ -193,13 +159,18 @@ type ApiQueryType = {
     }
     response: { [targetId: string]: number }
   }
-} & TBoardQueryApi
+}
 
 export const useAppQuery = <T extends keyof ApiQueryType>({
   url,
-  options
+  options,
+  onSucess
 }: Omit<ApiQueryType[T], 'response'> & { key: T } & {
-  options?: Omit<UseQueryOptions<ApiQueryType[T]['response']>, 'queryFn'>
+  options?: Omit<
+    UseQueryOptions<ApiQueryType[T]['response']>,
+    'queryFn' | 'queryKey'
+  > & { queryKey?: string[] | string }
+  onSucess?: (data: ApiQueryType[T]['response']) => void
 }) => {
   const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
 
@@ -216,7 +187,7 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
       const response = await http.get(urlApi, {
         params: (url as any)?.queryParams
       })
-
+      onSucess && onSucess(response.data)
       return response.data
     }
   })

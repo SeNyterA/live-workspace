@@ -18,7 +18,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { useEffect } from 'react'
 import useAppParams from '../../../hooks/useAppParams.js'
 import { useAppSelector } from '../../../redux/store.js'
-import { useAppMutation } from '../../../services/apis/useAppMutation.js'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation.js'
 import suggestion from '../../message/suggestion.js'
 import './CodeBlock.scss'
 import './Mention.scss'
@@ -77,25 +77,23 @@ export default function Editor() {
       if (!boardId) return
       if (!cardId) return
 
-      updateCard({
-        url: {
-          baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-          urlParams: {
-            boardId,
-            cardId
-          }
-        },
-        method: 'patch',
-        payload: { data: editor.getJSON() }
-      })
+      // updateCard({
+      //   url: {
+      //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
+      //     urlParams: {
+      //       boardId,
+      //       cardId
+      //     }
+      //   },
+      //   method: 'patch',
+      //   payload: { data: editor.getJSON() }
+      // })
     }
   })
 
   useEffect(() => {
-    if (!card) return
-    if (!card.data) return
-    if (!editor) return
-    editor.chain().setContent(card.data).run()
+    if (!card || !editor || !card.detail) return
+    editor.chain().setContent(card.detail).run()
   }, [card, editor])
 
   return (
@@ -105,7 +103,7 @@ export default function Editor() {
         //   editor={editor}
         //   tippyOptions={{ arrow: true, placement: 'bottom-start' }}
         // >
-        <RichTextEditor.Toolbar sticky className='gap-2 border-none'>
+        <RichTextEditor.Toolbar sticky className='gap-2 border-none py-3'>
           <RichTextEditor.ControlsGroup>
             <RichTextEditor.Bold />
             <RichTextEditor.Italic />
@@ -133,7 +131,7 @@ export default function Editor() {
                   payload: { file }
                 })
                   .then(data => {
-                    editor.chain().focus().setImage({ src: data.url }).run()
+                    editor.chain().focus().setImage({ src: data.path }).run()
                   })
                   .catch(error => {
                     console.error('File upload failed', error)
@@ -152,6 +150,14 @@ export default function Editor() {
                 </ActionIcon>
               )}
             </FileButton>
+
+            <ActionIcon
+              onClick={() => {
+                editor.chain().focus().toggleTaskList().run()
+              }}
+            >
+              Tasklist
+            </ActionIcon>
           </RichTextEditor.ControlsGroup>
 
           <RichTextEditor.ControlsGroup>

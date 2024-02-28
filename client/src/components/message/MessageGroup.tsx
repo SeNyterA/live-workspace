@@ -20,13 +20,12 @@ import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useEffect, useState } from 'react'
 import { useLayout } from '../../Layout'
+import { EMessageType } from '../../new-types/message.d'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { useAppMutation } from '../../services/apis/useAppMutation'
-import { EMessageType } from '../../types/workspace.type'
+import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import { updateLabelMention } from '../../utils/helper'
 import { groupByFileType } from '../new-message/helper'
-import UserDetailProvider from '../user/UserDetailProvider'
 import { TGroupedMessage } from './MessageContentProvider'
 
 export default function MessageGroup({
@@ -46,12 +45,22 @@ export default function MessageGroup({
     )
   )
 
-  const { mutateAsync: reaction } = useAppMutation('reaction')
-  const isOwner = useAppSelector(
-    state =>
-      state.auth.userInfo?._id === messageGroup.userId &&
-      messageGroup.type === EMessageType.Normal
+  const { mutateAsync: reactWorkspaceMessage } = useAppMutation(
+    'reactWorkspaceMessage'
   )
+  const { mutateAsync: deleteWorkspaceMessage } = useAppMutation(
+    'deleteWorkspaceMessage'
+  )
+  const { mutateAsync: pinWorkspaceMessage } = useAppMutation(
+    'pinWorkspaceMessage'
+  )
+
+  const isOwner = useAppSelector(state => {
+    return (
+      state.auth.userInfo?._id === messageGroup.userId &&
+      messageGroup.messages[0].type === EMessageType.Normal
+    )
+  })
 
   useEffect(() => {
     if (!scrollableRef?.current) return
@@ -65,15 +74,19 @@ export default function MessageGroup({
       } ${classNames?.wrapper}`}
     >
       {!isOwner && (
-        <UserDetailProvider user={createdByUser}>
-          <Avatar src={createdByUser?.avatar} />
-        </UserDetailProvider>
+        // <UserDetailProvider user={createdByUser}>
+        <Avatar
+          src={createdByUser?.avatar?.path}
+          size={32}
+          className='ring-1 ring-offset-1'
+        />
+        // </UserDetailProvider>
       )}
 
       <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
         {!isOwner && (
           <p className='font-medium'>
-            {messageGroup.type === EMessageType.System
+            {messageGroup.messages[0].type === EMessageType.System
               ? EMessageType.System
               : createdByUser?.userName}
           </p>
@@ -85,7 +98,9 @@ export default function MessageGroup({
           )}
         </p>
         {messageGroup.messages.map(message => {
-          const { images } = groupByFileType(message.attachments || [])
+          const { images } = groupByFileType(
+            message.attachments?.map(e => e.path) || []
+          )
 
           return (
             <div
@@ -94,11 +109,10 @@ export default function MessageGroup({
                 isOwner && 'items-end'
               }`}
             >
-              {!!message.replyToMessageId && (
+              {!!message.replyToId && (
                 <Watching
                   watchingFn={state => ({
-                    replyMessage:
-                      state.workspace.messages[message.replyToMessageId!],
+                    replyMessage: state.workspace.messages[message.replyToId!],
                     user: state.workspace.users[message.createdById!]
                   })}
                 >
@@ -143,13 +157,20 @@ export default function MessageGroup({
                   <Picker
                     data={data}
                     onEmojiSelect={(data: any) => {
-                      reaction({
+                      console.log({ data })
+
+                      // console.log(String.fromCodePoint(Number('0x1f618')))
+                      reactWorkspaceMessage({
                         url: {
-                          baseUrl: '/workspace/messages/:messageId/reaction',
-                          urlParams: { messageId: message._id }
+                          baseUrl:
+                            '/workspaces/:workspaceId/messages/:messageId/reaction',
+                          urlParams: {
+                            messageId: message._id,
+                            workspaceId: message.targetId
+                          }
                         },
                         method: 'post',
-                        payload: { icon: data.native }
+                        payload: { reaction: data.shortcodes }
                       })
 
                       toogleImojiId(undefined)
@@ -160,7 +181,7 @@ export default function MessageGroup({
 
               <div
                 className={`group relative w-fit rounded bg-gray-100 p-1 ${
-                  message.replyRootId && 'cursor-pointer'
+                  message.replyToId && 'cursor-pointer'
                 }`}
                 key={message._id}
               >
@@ -189,6 +210,19 @@ export default function MessageGroup({
                   <ActionIcon
                     variant='light'
                     className='text-gray-600 hover:text-gray-800'
+                    onClick={() => {
+                      pinWorkspaceMessage({
+                        method: 'post',
+                        url: {
+                          baseUrl:
+                            '/workspaces/:workspaceId/messages/:messageId/pin',
+                          urlParams: {
+                            messageId: message._id,
+                            workspaceId: message.targetId
+                          }
+                        }
+                      })
+                    }}
                   >
                     <IconPin size={18} />
                   </ActionIcon>
@@ -198,9 +232,8 @@ export default function MessageGroup({
                     className='text-gray-600 hover:text-gray-800'
                     onClick={() => {
                       updateThread({
-                        targetId: message.messageReferenceId,
-                        targetType: message.messageFor,
-                        threadId: message.replyRootId || message._id
+                        targetId: message.targetId,
+                        threadId: message.threadId || message._id
                       })
                     }}
                   >
@@ -212,9 +245,9 @@ export default function MessageGroup({
                     className='text-gray-600 hover:text-gray-800'
                     onClick={() => {
                       updateThread({
-                        targetId: message.messageReferenceId,
-                        targetType: message.messageFor,
-                        threadId: message.replyRootId || message._id
+                        targetId: message.targetId,
+                        threadId: message.threadId || message._id,
+                        replyId: message._id
                       })
                     }}
                   >
@@ -223,6 +256,19 @@ export default function MessageGroup({
                   <ActionIcon
                     variant='light'
                     className='text-gray-600 hover:text-gray-800'
+                    onClick={() => {
+                      deleteWorkspaceMessage({
+                        method: 'delete',
+                        url: {
+                          baseUrl:
+                            '/workspaces/:workspaceId/messages/:messageId',
+                          urlParams: {
+                            messageId: message._id,
+                            workspaceId: message.targetId
+                          }
+                        }
+                      })
+                    }}
                   >
                     <IconTrash size={18} />
                   </ActionIcon>
@@ -258,18 +304,23 @@ export default function MessageGroup({
                       <span
                         className='cursor-pointer rounded bg-white p-[2px] text-sm hover:ring-1'
                         onClick={() => {
-                          reaction({
+                          reactWorkspaceMessage({
                             url: {
                               baseUrl:
-                                '/workspace/messages/:messageId/reaction',
-                              urlParams: { messageId: message._id }
+                                '/workspaces/:workspaceId/messages/:messageId/reaction',
+                              urlParams: {
+                                messageId: message._id,
+                                workspaceId: message.targetId
+                              }
                             },
                             method: 'post',
-                            payload: { icon: e }
+                            payload: { reaction: e }
                           })
                         }}
                       >
-                        {e} 1
+                        {/* @ts-ignore */}
+                        <em-emoji shortcodes={e}></em-emoji>
+                        <span className='text-gray-500'> 1</span>
                       </span>
                     ))}
                     <Menu
@@ -293,14 +344,17 @@ export default function MessageGroup({
                         <Picker
                           data={data}
                           onEmojiSelect={(data: any) => {
-                            reaction({
+                            reactWorkspaceMessage({
                               url: {
                                 baseUrl:
-                                  '/workspace/messages/:messageId/reaction',
-                                urlParams: { messageId: message._id }
+                                  '/workspaces/:workspaceId/messages/:messageId/reaction',
+                                urlParams: {
+                                  messageId: message._id,
+                                  workspaceId: message.targetId
+                                }
                               },
                               method: 'post',
-                              payload: { icon: data.native }
+                              payload: { reaction: data.native }
                             })
 
                             toogleImojiId(undefined)

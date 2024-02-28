@@ -18,8 +18,8 @@ import {
 } from '@tabler/icons-react'
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
+import { EMemberRole } from '../../new-types/member.d'
 import { useAppSelector } from '../../redux/store'
-import { EMemberRole } from '../../types/workspace.type'
 import { useSetting } from './TeamSetting'
 
 const getEditableRoles = (
@@ -56,9 +56,11 @@ export function UsersStack() {
             ({ user }) =>
               user?.userName.toLowerCase().includes(search.toLowerCase()) ||
               user?.email.toLowerCase().includes(search.toLowerCase()) ||
-              user?.nickname?.toLowerCase().includes(search.toLowerCase())
+              user?.nickName?.toLowerCase().includes(search.toLowerCase())
           ) || []
     ) || []
+
+  console.log(members)
 
   const rows = useMemo(() => {
     return members.map(({ user, member }) => (
@@ -76,7 +78,7 @@ export function UsersStack() {
               color='yellow'
               withBorder
             >
-              <Avatar src={user?.avatar} size={36} />
+              <Avatar src={user?.avatar?.path} size={36} />
             </Indicator>
 
             <div className='flex flex-1 flex-col justify-center'>

@@ -1,3 +1,5 @@
+import { TFile } from '../../new-types/file'
+
 export type TUploadMutionApi = {
   uploadFile: {
     url: {
@@ -6,6 +8,6 @@ export type TUploadMutionApi = {
     method: 'post'
     payload: { file: File }
     isFormData: true
-    response: { url: string }
+    response: TFile
   }
 }

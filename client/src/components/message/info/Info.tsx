@@ -1,35 +1,33 @@
 import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconSettings } from '@tabler/icons-react'
-import { useState } from 'react'
-import TeamSetting from '../../team-setting/TeamSetting'
-import { useMessageInfo } from './InfoProvier'
+import useAppParams from '../../../hooks/useAppParams'
+import { useAppSelector } from '../../../redux/store'
+import Files from './Files'
 import Members from './Members'
 import PinedMesages from './PinedMesages'
 
 export default function Info() {
-  const {
-    title,
-    targetId: { channelId, directId, groupId, boardId }
-  } = useMessageInfo()
+  const { channelId, directId, groupId, boardId } = useAppParams()
 
-  const [openSeting, setOpenSetting] = useState(false)
+  const workspace = useAppSelector(
+    state =>
+      state.workspace.workspaces[
+        channelId || groupId || directId || boardId || ''
+      ]
+  )
 
   return (
     <>
       <div className='flex w-80 flex-col py-3'>
         <div className='flex justify-between px-4'>
           <div>
-            <p className='text-base'>{title}</p>
-            <p className='text-xs text-gray-500'>
+            <p className='text-base'>{workspace?.title}</p>
+            <p className='text-xs text-gray-500'>{workspace?.description}</p>
+            {/* <p className='text-xs text-gray-500'>
               id: {channelId || directId || groupId || boardId}
-            </p>
+            </p> */}
           </div>
-          <ActionIcon
-            size={30}
-            variant='light'
-            color='gray'
-            onClick={() => setOpenSetting(true)}
-          >
+          <ActionIcon size={30} variant='light' color='gray'>
             <IconSettings size={16} />
           </ActionIcon>
         </div>
@@ -40,17 +38,11 @@ export default function Info() {
             scrollbarSize={8}
           >
             <Members />
-            <PinedMesages />
+            {!!(channelId || groupId || directId) && <PinedMesages />}
+            <Files />
           </ScrollArea>
         </div>
       </div>
-
-      {/* <TeamSetting
-        type='channel'
-        isOpen={openSeting}
-        onClose={() => setOpenSetting(false)}
-        targetId={channelId || directId || groupId || boardId || ''}
-      /> */}
     </>
   )
 }

@@ -7,14 +7,19 @@ import Mention from '@tiptap/extension-mention'
 import Placeholder from '@tiptap/extension-placeholder'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
-import { BubbleMenu, ReactRenderer, useEditor } from '@tiptap/react'
+import {
+  BubbleMenu,
+  JSONContent,
+  ReactRenderer,
+  useEditor
+} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
 import tippy from 'tippy.js'
 import useTyping from '../../hooks/useTyping'
+import { TFile } from '../../new-types/file'
 import { getAppValue } from '../../redux/store'
-import { useAppMutation } from '../../services/apis/useAppMutation'
-import { JSONContent } from '../../types/workspace.type'
+import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import MentionList from '../message/MentionList'
 import { formatFileName } from '../new-message/helper'
 import Typing from './Typing'
@@ -26,7 +31,7 @@ type TSendMessage = {
     value
   }: {
     value?: JSONContent
-    files: string[]
+    files: TFile[]
   }) => void
   classNames?: {
     editorWrapper?: string
@@ -40,7 +45,7 @@ export default function SendMessage({
   classNames,
   createMessage
 }: TSendMessage) {
-  const [files, setFiles] = useState<string[]>([])
+  const [files, setFiles] = useState<TFile[]>([])
 
   const typing = useTyping()
 
@@ -55,7 +60,7 @@ export default function SendMessage({
     editor?.commands.focus()
   }
 
-  const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
+  const { mutateAsync: uploadFile, isPending } = useAppMutation('uploadFile', {
     config: {
       headers: {
         'Content-Type': undefined
@@ -77,7 +82,7 @@ export default function SendMessage({
         payload: { file }
       })
         .then(data => {
-          setFiles(files => [...files, data.url])
+          setFiles(files => [...files, data])
         })
         .catch(error => {
           console.error('File upload failed', error)
@@ -122,7 +127,7 @@ export default function SendMessage({
               ?.filter(item =>
                 item.userName.toLowerCase().startsWith(query.toLowerCase())
               )
-              .slice(0, 100)
+              .slice(0, 5)
           },
 
           render: () => {
@@ -147,7 +152,7 @@ export default function SendMessage({
                   showOnCreate: true,
                   interactive: true,
                   trigger: 'manual',
-                  placement: 'bottom-start'
+                  placement: 'auto-start'
                 })
               },
 
@@ -237,7 +242,7 @@ export default function SendMessage({
         <div className='flex items-center justify-end gap-1 px-2 pb-2'>
           {files.map(file => (
             <Badge
-              key={file}
+              key={file._id}
               variant='transparent'
               className='h-[26px] rounded bg-gray-100'
               rightSection={
@@ -250,7 +255,7 @@ export default function SendMessage({
                 ></IconX>
               }
             >
-              {formatFileName(file)}
+              {formatFileName(file.path)}
             </Badge>
           ))}
           <FileButton
@@ -259,9 +264,15 @@ export default function SendMessage({
               uploadFiles(files)
             }}
             accept='image/png,image/jpeg'
+            disabled={isPending}
           >
             {props => (
-              <Button size='compact-sm' variant='white' {...props}>
+              <Button
+                size='compact-sm'
+                variant='white'
+                {...props}
+                loading={isPending}
+              >
                 <IconPaperclip size={16} />
               </Button>
             )}

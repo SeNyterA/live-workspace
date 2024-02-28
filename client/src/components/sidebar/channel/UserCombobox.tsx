@@ -39,7 +39,7 @@ export default function UserCombobox({
     return Object.values(state.workspace.users).filter(
       user =>
         _userId.includes(user._id) &&
-        [user.email, user.nickname, user.userName].some(
+        [user.email, user.nickName, user.userName].some(
           key => key?.includes(keyword)
         )
     )
@@ -82,7 +82,7 @@ export default function UserCombobox({
                       className='mt-3 flex flex-1 items-center gap-2 first:mt-0'
                       key={item._id}
                     >
-                      <Avatar src={item.avatar} />
+                      <Avatar src={item.avatar?.path} />
                       <div className='flex flex-1 flex-col justify-center'>
                         <p className='font-medium leading-5'>{item.userName}</p>
                         <p className='text-xs leading-3 text-gray-500'>

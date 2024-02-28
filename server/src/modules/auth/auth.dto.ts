@@ -1,4 +1,4 @@
-import { TUser } from 'src/modules/users/user.dto'
+import { User } from 'src/entities/user.entity'
 
 export type TLoginPayload = {
   userNameOrEmail: string
@@ -6,6 +6,6 @@ export type TLoginPayload = {
 }
 
 export type TLoginResponse = {
-  user: TUser
+  user: User
   token: string
 }

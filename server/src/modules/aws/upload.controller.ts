@@ -6,23 +6,35 @@ import {
   UseInterceptors
 } from '@nestjs/common'
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
+import { InjectRepository } from '@nestjs/typeorm'
 import { MulterFile } from 'multer'
 import slugify from 'slugify'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from '../workspace/workspace.gateway'
+import { File } from 'src/entities/file.entity'
+import { User } from 'src/entities/user.entity'
+import { Repository } from 'typeorm'
+import { TJwtUser } from '../socket/socket.gateway'
 import { AWSConfigService } from './aws.config'
 
 @Controller('')
 export class UploadController {
-  constructor(private readonly awsConfigService: AWSConfigService) {}
+  constructor(
+    private readonly awsConfigService: AWSConfigService,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
+    @InjectRepository(File)
+    private readonly fileRepository: Repository<File>
+  ) {}
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @UploadedFile() file: MulterFile,
+    @UploadedFile() fileRaw: MulterFile,
     @HttpUser() user: TJwtUser
   ) {
-    const { originalname, buffer, mimetype } = file
+    const { originalname, buffer, mimetype } = fileRaw
     const timestamp = new Date().getTime()
     const fileName = `${timestamp}_${user.sub}_${slugify(originalname, {
       lower: true,
@@ -42,9 +54,16 @@ export class UploadController {
       })
       .promise()
 
-    return {
-      url: uploadResult.Location
-    }
+    const createdFile = await this.fileRepository.insert({
+      size: fileRaw.size,
+      createdBy: { _id: user.sub },
+      modifiedBy: { _id: user.sub },
+      path: uploadResult.Location
+    })
+
+    return await this.fileRepository.findOne({
+      where: { _id: createdFile.identifiers[0]._id }
+    })
   }
 
   @Post('uploads')

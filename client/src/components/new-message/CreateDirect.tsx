@@ -46,7 +46,7 @@
 //       <Select
 //         label='Group member'
 //         description='Description for the direct'
-//         placeholder='Username, email, nickname...'
+//         placeholder='Username, email, nickName...'
 //         leftSection={<IconSearch size={16} />}
 //         limit={10}
 //         searchable

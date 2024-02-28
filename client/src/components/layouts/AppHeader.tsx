@@ -20,8 +20,12 @@ export default function AppHeader() {
 
       <Menu shadow='md' width={200} position='bottom-end' withArrow>
         <Menu.Target>
-          <ActionIcon className='flex h-fit w-fit items-center justify-center rounded-full p-0 ring-1' variant='light' size='md'>
-            <Avatar src={user?.avatar} size={32} />
+          <ActionIcon
+            className='flex h-fit w-fit items-center justify-center rounded-full p-0 ring-1'
+            variant='light'
+            size='md'
+          >
+            <Avatar src={user?.avatar?.path} size={32} />
           </ActionIcon>
         </Menu.Target>
 

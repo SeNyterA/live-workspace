@@ -1,12 +1,20 @@
 import { ActionIcon, Input, Select } from '@mantine/core'
 import { IconFilter, IconSearch } from '@tabler/icons-react'
 import { useAppSelector } from '../../redux/store'
-import { EFieldType } from '../../services/apis/board.api'
 import { useBoard } from './BoardProvider'
+import { EFieldType } from '../../new-types/board.d'
 
 export default function BoardHeader() {
-  const { trackingId, setTrackingId, sortBy, setSortBy, board, boardId } =
-    useBoard()
+  const {
+    trackingId,
+    setTrackingId,
+    sortBy,
+    setSortBy,
+    board,
+    boardId,
+    setSearchValue,
+    searchValue
+  } = useBoard()
 
   const propertiesChecking = useAppSelector(state =>
     Object.values(state.workspace.properties).filter(
@@ -19,7 +27,6 @@ export default function BoardHeader() {
   return (
     <>
       <p className='flex-1 text-base font-medium'>{board?.title}</p>
-
       <label className='flex cursor-pointer items-center justify-center gap-1 rounded'>
         <p className='ml-1'>Group by:</p>
         <Select
@@ -67,6 +74,8 @@ export default function BoardHeader() {
         classNames={{
           input: 'bg-transparent border-none min-h-[20px] h-[20px]'
         }}
+        value={searchValue}
+        onChange={e => setSearchValue(e.currentTarget.value)}
       />
 
       <ActionIcon

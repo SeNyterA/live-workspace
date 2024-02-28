@@ -39,7 +39,7 @@ export default function CreateModal({
       title={<p className='text-lg font-semibold'>Create direct channel</p>}
     >
       <Input
-        placeholder='username, email, nickname ...'
+        placeholder='username, email, nickName ...'
         leftSection={<IconSearch size={16} />}
         value={searchValue}
         onChange={e => setSearchValue(e.target.value)}
@@ -52,7 +52,7 @@ export default function CreateModal({
         <ScrollArea className='absolute inset-0' scrollbarSize={8}>
           {data?.users.map(user => (
             <div className='mt-3 flex flex-1 gap-2 first:mt-0' key={user._id}>
-              <Avatar src={user.avatar} />
+              <Avatar src={user.avatar?.path} />
               <div className='flex flex-1 flex-col justify-center'>
                 <p className='font-medium leading-5'>{user.userName}</p>
                 <p className='text-xs leading-3 text-gray-500'>{user.email}</p>

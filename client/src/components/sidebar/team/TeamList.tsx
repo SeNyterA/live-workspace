@@ -3,12 +3,19 @@ import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
+// import { WorkspaceType } from '../../../new-types/workspace'
 import { useAppSelector } from '../../../redux/store'
 import CreateTeam from './CreateTeam'
 
 export default function TeamList() {
-  const teams =
-    useAppSelector(state => Object.values(state.workspace.teams)) || []
+  const teams = useAppSelector(state =>
+    Object.values(state.workspace.workspaces)
+      .filter(team => team.type === 'Team')
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      )
+  )
 
   const { switchTeam } = useAppControlParams()
   const { teamId } = useAppParams()
@@ -34,11 +41,13 @@ export default function TeamList() {
             scrollbarSize={6}
             classNames={{ viewport: 'py-1 teamlist-viewport' }}
           >
-            {teams.map(team => (
+            {teams?.map(team => (
               <ActionIcon
                 key={team._id}
-                className={`mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${
-                  teamId === team._id ? 'ring-[1.5px]' : ''
+                className={`relative mx-auto mt-2 flex h-fit w-fit items-center justify-center p-0 first:mt-0 ${
+                  teamId === team._id
+                    ? 'rounded-full ring-1 ring-offset-2'
+                    : 'rounded-full '
                 }`}
                 variant='light'
                 size='md'
@@ -46,7 +55,12 @@ export default function TeamList() {
                   switchTeam({ teamId: team._id })
                 }}
               >
-                <Avatar size={32} />
+                <Avatar
+                  radius='sm'
+                  size={32}
+                  className={teamId === team._id ? 'rounded' : ''}
+                  src={team.avatar?.path}
+                />
               </ActionIcon>
             ))}
           </ScrollArea>
