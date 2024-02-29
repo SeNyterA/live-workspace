@@ -1,7 +1,9 @@
 import {
   Button,
   Drawer,
+  Group,
   Image,
+  Radio,
   ScrollArea,
   Textarea,
   TextInput
@@ -147,6 +149,35 @@ export default function CreateBoard({
           </>
         )}
       />
+
+      <Radio.Group
+        name='favoriteFramework'
+        label='Select your favorite framework/library'
+        description='This is anonymous'
+        withAsterisk
+        className='mt-4'
+      >
+        <Group mt='xs'>
+          <Radio
+            value='private'
+            label='Private'
+            classNames={{
+              body: 'flex gap-1 flex-row-reverse',
+              description: 'mt-0'
+            }}
+            description='Only members can access'
+          />
+          <Radio
+            value='public'
+            label='Public'
+            classNames={{
+              body: 'flex gap-1 flex-row-reverse',
+              description: 'mt-0'
+            }}
+            description='Anyone can access'
+          />
+        </Group>
+      </Radio.Group>
 
       <div className='mt-2 flex items-center justify-end gap-3'>
         <Button variant='default' color='red'>

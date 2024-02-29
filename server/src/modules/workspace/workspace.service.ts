@@ -4,7 +4,12 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
 import { Server, Socket } from 'socket.io'
 import { File } from 'src/entities/file.entity'
-import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
+import {
+  EMemberRole,
+  EMemberType,
+  Member,
+  RoleWeights
+} from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 
@@ -27,6 +32,22 @@ export const generateRandomHash = (
   const hash = crypto.SHA256(inputString).toString()
   const truncatedHash = hash.substring(0, length)
   return truncatedHash
+}
+
+const checkPermission = async ({
+  operatorRole,
+  targetRole = EMemberRole.Member
+}: {
+  operatorRole: EMemberRole
+  targetRole?: EMemberRole
+}) => {
+  if (
+    RoleWeights[operatorRole] >= RoleWeights[targetRole] &&
+    RoleWeights[operatorRole] > RoleWeights[EMemberRole.Member]
+  ) {
+    return true
+  }
+  return false
 }
 
 @WebSocketGateway({
@@ -103,23 +124,38 @@ export class WorkspaceService {
   }
 
   async updateWorkspace({
-    _id,
+    workspaceId,
     user,
     workspace
   }: {
     user: TJwtUser
-    _id: string
+    workspaceId: string
     workspace: Workspace
   }) {
-    await this.memberRepository.findOneOrFail({
+    const _workspace = await this.workspaceRepository.findOneOrFail({
       where: {
-        workspace: { _id },
-        user: { _id: user.sub },
-        role: In([EMemberRole.Owner, EMemberRole.Admin])
+        _id: workspaceId,
+        members: {
+          user: { _id: user.sub },
+          role: In([EMemberRole.Owner, EMemberRole.Admin])
+        }
       }
     })
 
-    return this.workspaceRepository.update(_id, workspace)
+    await this.workspaceRepository.save({
+      ..._workspace,
+      modifiedBy: { _id: user.sub },
+      ...workspace
+    })
+    const workspaceUpdated = await this.workspaceRepository.findOneOrFail({
+      where: { _id: workspaceId },
+      relations: ['avatar', 'thumbnail']
+    })
+
+    this.server
+      .to(workspaceId)
+      .emit('workspace', { workspace: workspaceUpdated })
+    return { workspace: workspaceUpdated }
   }
 
   async deleteWorkspace({ _id, user }: { user: TJwtUser; _id: string }) {
@@ -280,6 +316,100 @@ export class WorkspaceService {
         })
       })
     }
+  }
+
+  async addMember({
+    member,
+    user,
+    workspaceId
+  }: {
+    member: Member
+    user: TJwtUser
+    workspaceId: string
+  }) {
+    const operator = await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub },
+        workspace: { _id: workspaceId },
+        role: In([EMemberRole.Owner, EMemberRole.Admin])
+      }
+    })
+
+    if (operator.role === EMemberRole.Owner) {
+      this.memberRepository.save({
+        ...member,
+        workspace: { _id: workspaceId },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      })
+    }
+
+    if (operator.role === EMemberRole.Admin) {
+      this.memberRepository.save({
+        ...member,
+        role:
+          member.role === EMemberRole.Owner ? EMemberRole.Admin : member.role,
+        workspace: { _id: workspaceId },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      })
+    }
+  }
+
+  async editMember({
+    member,
+    user,
+    workspaceId,
+    memberId
+  }: {
+    member: Member
+    user: TJwtUser
+    workspaceId: string
+    memberId: string
+  }) {
+    const operator = await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub },
+        workspace: { _id: workspaceId, isAvailable: true },
+        role: In([EMemberRole.Owner, EMemberRole.Admin])
+      }
+    })
+
+    const target = await this.memberRepository.findOneOrFail({
+      where: {
+        _id: memberId,
+        user: { isAvailable: true },
+        workspace: { _id: workspaceId, isAvailable: true }
+      }
+    })
+
+    if (
+      !checkPermission({
+        operatorRole: operator.role,
+        targetRole: target.role
+      }) ||
+      !checkPermission({ operatorRole: operator.role, targetRole: member.role })
+    ) {
+      throw new Error('Permission denied')
+    }
+
+    await this.memberRepository.save({
+      ...target,
+      ...member,
+      modifiedBy: { _id: user.sub }
+    })
+
+    const memberUpdated = await this.memberRepository.findOneOrFail({
+      where: { _id: target._id },
+      relations: ['user']
+    })
+
+    this.server.to(workspaceId).emit('member', {
+      member: memberUpdated,
+      action: 'update'
+    })
+
+    return { member: memberUpdated }
   }
 
   async workpsaceMembers({

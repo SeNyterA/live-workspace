@@ -21,13 +21,14 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
+import { WorkspaceType } from '../../types'
 import BoardItem from './board/BoardItem'
 import CreateBoard from './board/CreateBoard'
 import ChannelItem from './channel/ChannelItem'
 import CreateChannel from './channel/CreateChannel'
 import CreateGroup from './CreateGroup'
+import CreateWorkspaceChild from './CreateWorkspaceChild'
 import GroupItem from './group/GroupItem'
-import { WorkspaceType } from '../../types'
 
 export type TSideBarToggle =
   | 'createBoard'
@@ -52,7 +53,7 @@ export default function Sidebar() {
       <div className='flex w-72 flex-col gap-2 px-4 py-3'>
         <div className=''>
           <p className='text-xl'>{team?.title}</p>
-          <p className='text-gray-500'>{team?.description}</p>
+          <p className='line-clamp-3 text-gray-500'>{team?.description}</p>
           <Image
             src={team?.thumbnail?.path}
             className='aspect-video w-full rounded-lg'
@@ -246,6 +247,11 @@ export default function Sidebar() {
         isOpen={toggle === 'createBoard'}
         onClose={() => setToggle(undefined)}
         refetchKey={toggle}
+      />
+
+      <CreateWorkspaceChild
+        isOpen={toggle === 'createBoard'}
+        onClose={() => setToggle(undefined)}
       />
     </>
   )

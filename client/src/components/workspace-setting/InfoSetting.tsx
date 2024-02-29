@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Button,
   Group,
   Input,
   Loader,
@@ -13,23 +14,143 @@ import { useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import { WorkspaceType } from '../../types'
 
-export default function InfoSetting() {
+const Title = () => {
+  const workspace = useAppSelector(
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+
+  const { mutateAsync: updateWorkspace, isPending } =
+    useAppMutation('updateWorkspace')
+
+  return (
+    <TextInput
+      data-autofocus
+      withAsterisk
+      disabled={isPending}
+      label={`${workspace?.type} name`}
+      placeholder='Enter the team name'
+      size='sm'
+      className='mt-4'
+      defaultValue={workspace?.title}
+      key={workspace?.title}
+      onBlur={e =>
+        e.target.value !== workspace?.title &&
+        updateWorkspace({
+          method: 'patch',
+          url: {
+            baseUrl: `workspaces/:workspaceId`,
+            urlParams: { workspaceId: workspace?._id! }
+          },
+          payload: { workspace: { title: e.target.value } as any }
+        })
+      }
+      rightSection={isPending && <Loader size={14} />}
+    />
+  )
+}
+
+const Description = () => {
+  const workspace = useAppSelector(
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+
+  const { mutateAsync: updateWorkspace, isPending } =
+    useAppMutation('updateWorkspace')
+
+  return (
+    <Textarea
+      placeholder='Enter a description...'
+      className='mt-4'
+      defaultValue={workspace?.description}
+      key={workspace?.description}
+      data-autofocus
+      withAsterisk
+      disabled={isPending}
+      label={`${workspace?.type} description`}
+      size='sm'
+      onBlur={e =>
+        e.target.value !== workspace?.description &&
+        updateWorkspace({
+          method: 'patch',
+          url: {
+            baseUrl: `workspaces/:workspaceId`,
+            urlParams: { workspaceId: workspace?._id! }
+          },
+          payload: { workspace: { description: e.target.value } as any }
+        })
+      }
+      rightSection={isPending && <Loader size={14} />}
+    />
+  )
+}
+
+const DisplayUrl = () => {
+  const workspace = useAppSelector(
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+
+  const { mutateAsync: updateWorkspace, isPending } =
+    useAppMutation('updateWorkspace')
+
+  return (
+    <TextInput
+      data-autofocus
+      withAsterisk
+      label='Dispay url'
+      placeholder='Enter the display url'
+      description='This is the url that will be used to access the team. e.g. .../teams/your-team-name'
+      size='sm'
+      className='mt-4'
+      defaultValue={workspace?.displayUrl}
+      disabled={isPending}
+      key={workspace?.displayUrl}
+      onBlur={e =>
+        e.target.value !== workspace?.displayUrl &&
+        updateWorkspace({
+          method: 'patch',
+          url: {
+            baseUrl: `workspaces/:workspaceId`,
+            urlParams: { workspaceId: workspace?._id! }
+          },
+          payload: { workspace: { displayUrl: e.target.value } as any }
+        })
+      }
+      rightSection={isPending && <Loader size={14} />}
+    />
+  )
+}
+
+const Thunmbnail = () => {
+  const workspace = useAppSelector(
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+  const { mutateAsync: updateWorkspace, isPending } =
+    useAppMutation('updateWorkspace')
+
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
     config: {
       headers: {
         'Content-Type': undefined
       }
+    },
+    mutationOptions: {
+      onSuccess(data, variables, context) {
+        updateWorkspace({
+          method: 'patch',
+          url: {
+            baseUrl: `workspaces/:workspaceId`,
+            urlParams: {
+              workspaceId: workspace?._id!
+            }
+          },
+          payload: { workspace: { thumbnail: data } as any }
+        })
+      }
     }
   })
 
-  const workspace = useAppSelector(
-    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
-  )
   return (
-    <ScrollArea
-      className='absolute inset-0 right-[-12px] pr-3'
-      scrollbarSize={8}
-    >
+    <>
       <Dropzone
         onDrop={files =>
           uploadFile(
@@ -63,10 +184,44 @@ export default function InfoSetting() {
           Team thumbnail
         </Avatar>
       </Dropzone>
-      <Input.Description className=''>
+      <Input.Description className='mt-1'>
         This image is used for thumbnail
       </Input.Description>
+    </>
+  )
+}
 
+const WorkspaceAvatar = () => {
+  const workspace = useAppSelector(
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+  const { mutateAsync: updateWorkspace, isPending } =
+    useAppMutation('updateWorkspace')
+
+  const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
+    config: {
+      headers: {
+        'Content-Type': undefined
+      }
+    },
+    mutationOptions: {
+      onSuccess(data, variables, context) {
+        updateWorkspace({
+          method: 'patch',
+          url: {
+            baseUrl: `workspaces/:workspaceId`,
+            urlParams: {
+              workspaceId: workspace?._id!
+            }
+          },
+          payload: { workspace: { avatar: data } as any }
+        })
+      }
+    }
+  })
+
+  return (
+    <>
       <Dropzone
         onDrop={files =>
           uploadFile(
@@ -117,43 +272,52 @@ export default function InfoSetting() {
       <Input.Description className=''>
         This image is used for avatar
       </Input.Description>
+    </>
+  )
+}
 
-      <TextInput
-        data-autofocus
-        withAsterisk
-        label='Team Name'
-        placeholder='Enter the team name'
-        size='sm'
-        className='mt-4'
-        defaultValue={workspace?.title}
-        key={workspace?.title}
-        onChange={e => console.log(e.target.value)}
-        rightSection={<Loader size={14} />}
-      />
+export default function InfoSetting() {
+  const { mutateAsync: updateWorkspace, isPending } =
+    useAppMutation('updateWorkspace')
 
-      <TextInput
-        data-autofocus
-        withAsterisk
-        label='Dispay url'
-        placeholder='Enter the display url'
-        description='This is the url that will be used to access the team. e.g. .../teams/your-team-name'
-        size='sm'
-        className='mt-4'
-        defaultValue={workspace?.displayUrl}
-        key={workspace?.displayUrl}
-        onChange={e => console.log(e.target.value)}
-        rightSection={<Loader size={14} />}
-      />
+  const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
+    config: {
+      headers: {
+        'Content-Type': undefined
+      }
+    },
+    mutationOptions: {
+      onSuccess(data, variables, context) {
+        updateWorkspace({
+          method: 'patch',
+          url: {
+            baseUrl: `workspaces/:workspaceId`,
+            urlParams: { workspaceId: workspace?._id! }
+          },
+          payload: { workspace: { thumbnail: data } as any }
+        })
+      }
+    }
+  })
 
-      <Textarea
-        label='Team Description'
-        placeholder='Enter a description for the team...'
-        className='mt-4'
-        defaultValue={workspace?.description}
-        key={workspace?.description}
-        onChange={e => console.log(e.target.value)}
-        rightSection={<Loader size={14} />}
-      />
+  const workspace = useAppSelector(
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+
+  return (
+    <ScrollArea
+      className='absolute inset-0 right-[-12px] pr-3'
+      scrollbarSize={8}
+    >
+      <Thunmbnail />
+
+      <WorkspaceAvatar />
+
+      <Title />
+
+      <DisplayUrl />
+
+      <Description />
 
       {[WorkspaceType.Board, WorkspaceType.Channel].includes(
         workspace?.type!

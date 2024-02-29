@@ -1,8 +1,8 @@
 import { JSONContent } from '@tiptap/react'
-import { TOption, TProperty } from '../types/board'
-import { TMember } from '../types/member'
-import { TWorkspace } from '../types/workspace'
 import { getAppValue } from '../redux/store'
+import { EMemberRole, RoleWeights, TMember } from '../types'
+import { TOption, TProperty } from '../types/board'
+import { TWorkspace } from '../types/workspace'
 
 export const cleanObj = <T extends Record<string, any>>(
   params: T
@@ -122,4 +122,34 @@ export const arrayToObject = <
     },
     {} as { [key: string]: T }
   )
+}
+
+export const hasPermissionToOperate = ({
+  operatorRole,
+  targetRole = EMemberRole.Member
+}: {
+  operatorRole: EMemberRole
+  targetRole?: EMemberRole
+}) => {
+  if (
+    RoleWeights[operatorRole] >= RoleWeights[targetRole] &&
+    RoleWeights[operatorRole] > RoleWeights[EMemberRole.Member]
+  ) {
+    return {
+      operatorRole,
+      targetRole,
+      enabled: true,
+      operatorWeight: RoleWeights[operatorRole],
+      targetRoleWeight: RoleWeights[targetRole]
+    }
+  }
+  return { operatorRole, targetRole, enabled: false }
+}
+
+export const parseMember = (_member: TMember) => {
+  const { user, ...member } = _member
+  return {
+    member,
+    user
+  }
 }

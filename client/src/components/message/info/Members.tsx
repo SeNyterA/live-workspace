@@ -41,9 +41,9 @@ export default function Members() {
       label={
         <div className='flex items-center justify-between'>
           Members
-          {members?.length && (
+          {members?.length! > 0 && (
             <Badge variant='light' color='gray'>
-              {members.length}
+              {members!.length}
             </Badge>
           )}
         </div>
@@ -57,7 +57,7 @@ export default function Members() {
       {!!enableMembers?.length &&
         enableMembers?.map(({ member, user }) => (
           <div
-            className='mt-2 flex max-w-full flex-1 items-center gap-1 first:mt-0'
+            className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
             key={user?._id}
           >
             <Indicator

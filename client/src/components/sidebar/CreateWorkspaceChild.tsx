@@ -1,17 +1,15 @@
 import {
-  ActionIcon,
   Avatar,
   Button,
-  Checkbox,
   Drawer,
+  Group,
   Input,
+  Radio,
   ScrollArea,
   Textarea,
   TextInput
 } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-import { IconHash, IconX } from '@tabler/icons-react'
-import { useEffect } from 'react'
 import {
   Control,
   Controller,
@@ -19,144 +17,17 @@ import {
   useFieldArray,
   useForm
 } from 'react-hook-form'
-import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { EMemberRole, TFile, TMember } from '../../../types'
-import MemberControl from '../MemberControl'
-import UserCombobox from '../UserCombobox'
+import {
+  ApiMutationType,
+  useAppMutation
+} from '../../services/apis/mutations/useAppMutation'
+import { EMemberRole, WorkspaceType } from '../../types'
+import MemberControl from './MemberControl'
+import UserCombobox from './UserCombobox'
 
-type TForm = {
-  channels?: { title: string }[]
-  boards?: { title: string; isInitData: boolean }[]
-  displayUrl: string
-  thumbnail?: TFile
-  avatar?: TFile
-  title: string
-  description?: string
-  members?: TMember[]
-  dispayName: string
-}
-
-const Channels = ({ control }: { control: Control<TForm, any> }) => {
-  const { append, fields, remove } = useFieldArray({
-    control,
-    name: 'channels'
-  })
-
-  return (
-    <Checkbox.Group
-      label='Init channels'
-      description='Members will be added when created.'
-      className='mt-2'
-    >
-      {fields?.map((_, index) => (
-        <Controller
-          key={_.id}
-          control={control}
-          name={`channels.${index}.title`}
-          rules={{
-            required: 'Channel name is required'
-          }}
-          render={({ field: { value, onChange }, fieldState }) => (
-            <TextInput
-              className='mt-2 flex-1'
-              value={value}
-              onChange={onChange}
-              placeholder='General'
-              leftSection={<IconHash size={16} />}
-              rightSection={
-                <ActionIcon
-                  variant='transparent'
-                  className='bg-gray-100'
-                  onClick={() => remove(index)}
-                >
-                  <IconX size={16} />
-                </ActionIcon>
-              }
-              classNames={{
-                input: 'border border-dashed'
-              }}
-              error={fieldState.error && fieldState.error.message}
-            />
-          )}
-        />
-      ))}
-      <div className='mt-2 flex justify-end'>
-        <Button
-          size='sm'
-          variant='light'
-          onClick={() => {
-            append({
-              title: ''
-            })
-          }}
-        >
-          Add Channel
-        </Button>
-      </div>
-    </Checkbox.Group>
-  )
-}
-
-const Boards = ({ control }: { control: Control<TForm, any> }) => {
-  const { append, fields, remove } = useFieldArray({
-    control,
-    name: 'boards'
-  })
-
-  return (
-    <Checkbox.Group
-      label='Init boards'
-      description='Members will be added when created.'
-      className='mt-2'
-    >
-      {fields?.map((_, index) => (
-        <>
-          <Controller
-            key={_.id}
-            control={control}
-            name={`boards.${index}.title`}
-            rules={{
-              required: 'Channel name is required'
-            }}
-            render={({ field: { value, onChange }, fieldState }) => (
-              <TextInput
-                className='mt-2 flex-1'
-                value={value}
-                onChange={onChange}
-                placeholder='General'
-                leftSection={<IconHash size={16} />}
-                rightSection={
-                  <ActionIcon
-                    variant='transparent'
-                    className='bg-gray-100'
-                    onClick={() => remove(index)}
-                  >
-                    <IconX size={16} />
-                  </ActionIcon>
-                }
-                classNames={{
-                  input: 'border border-dashed'
-                }}
-                error={fieldState.error && fieldState.error.message}
-              />
-            )}
-          />
-        </>
-      ))}
-      <div className='mt-2 flex justify-end'>
-        <Button
-          size='sm'
-          variant='light'
-          onClick={() => {
-            append({ isInitData: true, title: '' })
-          }}
-        >
-          Add board
-        </Button>
-      </div>
-    </Checkbox.Group>
-  )
-}
+type TForm =
+  | ApiMutationType['createBoard']['payload']
+  | ApiMutationType['createChannel']['payload']
 
 const Members = ({ control }: { control: Control<TForm, any> }) => {
   const { append, fields, remove } = useFieldArray({
@@ -209,20 +80,20 @@ const Members = ({ control }: { control: Control<TForm, any> }) => {
   )
 }
 
-export default function CreateTeam({
+export default function CreateWorkspaceChild({
   onClose,
   isOpen,
-  defaultValues
+  defaultValues,
+  type
 }: {
   isOpen: boolean
   onClose: () => void
-  refetchKey?: string
   defaultValues?: DefaultValues<TForm>
+  type: WorkspaceType
 }) {
   const { control, handleSubmit, reset, setValue } = useForm<TForm>({
     defaultValues
   })
-  const { mutateAsync: createTeam, isPending } = useAppMutation('createTeam')
 
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
     config: {
@@ -231,10 +102,6 @@ export default function CreateTeam({
       }
     }
   })
-
-  useEffect(() => {
-    isOpen && reset(defaultValues)
-  }, [isOpen])
 
   return (
     <Drawer
@@ -260,7 +127,7 @@ export default function CreateTeam({
         >
           <Controller
             control={control}
-            name='thumbnail'
+            name='workspace.thumbnail'
             render={({ field: { value, onChange } }) => (
               <>
                 <Dropzone
@@ -276,7 +143,7 @@ export default function CreateTeam({
                       },
                       {
                         onSuccess(data, variables, context) {
-                          setValue('thumbnail', data)
+                          setValue('workspace.thumbnail', data)
                         }
                       }
                     )
@@ -305,7 +172,7 @@ export default function CreateTeam({
 
           <Controller
             control={control}
-            name='avatar'
+            name='workspace.avatar'
             render={({ field: { value, onChange } }) => (
               <>
                 <Dropzone
@@ -321,7 +188,7 @@ export default function CreateTeam({
                       },
                       {
                         onSuccess(data, variables, context) {
-                          setValue('avatar', data)
+                          setValue('workspace.avatar', data)
                         }
                       }
                     )
@@ -366,7 +233,7 @@ export default function CreateTeam({
 
           <Controller
             control={control}
-            name='title'
+            name='workspace.title'
             rules={{
               required: 'Team name is required'
             }}
@@ -376,7 +243,6 @@ export default function CreateTeam({
                 withAsterisk
                 label='Team Name'
                 placeholder='Enter the team name'
-                // description='Leave it blank to use the default name...'
                 size='sm'
                 className='mt-2'
                 value={value}
@@ -388,7 +254,7 @@ export default function CreateTeam({
 
           <Controller
             control={control}
-            name='dispayName'
+            name='workspace.displayUrl'
             rules={{
               required: 'Display name is required'
             }}
@@ -410,11 +276,10 @@ export default function CreateTeam({
 
           <Controller
             control={control}
-            name='description'
+            name='workspace.description'
             render={({ field: { value, onChange } }) => (
               <Textarea
                 label='Team Description'
-                // description='Description for the team'
                 placeholder='Enter a description for the team...'
                 className='mt-2'
                 value={value}
@@ -423,9 +288,34 @@ export default function CreateTeam({
             )}
           />
 
-          <Channels control={control} />
-
-          <Boards control={control} />
+          <Radio.Group
+            name='favoriteFramework'
+            label='Select your favorite framework/library'
+            description='This is anonymous'
+            withAsterisk
+            className='mt-4'
+          >
+            <Group mt='xs'>
+              <Radio
+                value='private'
+                label='Private'
+                classNames={{
+                  body: 'flex gap-1 flex-row-reverse',
+                  description: 'mt-0'
+                }}
+                description='Only members can access'
+              />
+              <Radio
+                value='public'
+                label='Public'
+                classNames={{
+                  body: 'flex gap-1 flex-row-reverse',
+                  description: 'mt-0'
+                }}
+                description='Invite all team members to join'
+              />
+            </Group>
+          </Radio.Group>
 
           <Members control={control} />
         </ScrollArea>
@@ -437,37 +327,10 @@ export default function CreateTeam({
         </Button>
 
         <Button
-          loading={isPending}
-          disabled={isPending}
+          // loading={isPending}
+          // disabled={isPending}
           onClick={handleSubmit(({ ...data }) => {
             console.log({ data }, {})
-
-            createTeam({
-              url: {
-                baseUrl: '/teams'
-              },
-              method: 'post',
-              payload: {
-                workspace: {
-                  title: data.title,
-                  avatar: data.avatar,
-                  thumbnail: data.thumbnail,
-                  description: data.description
-                } as any,
-                channels: data.channels?.map(e => ({
-                  title: e.title
-                })) as any[],
-                members: data.members?.map(e => ({
-                  userId: e.userId,
-                  role: e.role
-                })) as any[],
-                boards: data.boards?.map(e => ({
-                  title: e.title
-                })) as any[]
-              }
-            }).then(data => {
-              onClose()
-            })
           })}
         >
           Create

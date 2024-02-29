@@ -40,7 +40,7 @@ export default function MessageContentWrapper() {
     <MessageContentProvider>
       <div className='flex flex-1'>
         <div className='flex flex-1 flex-col'>
-          <div className='flex h-12 items-center gap-3 px-4'>
+          <div className='flex h-12 items-center gap-2 px-4'>
             <p className='flex-1 text-lg'>{workspace?.title}</p>
             <Input
               size='sm'
@@ -54,7 +54,8 @@ export default function MessageContentWrapper() {
 
             <ActionIcon
               variant='light'
-              className='h-[30px] w-[30px] bg-gray-100'
+              size={30}
+              className='bg-gray-100'
               onClick={() => setOpenInfo(e => !e)}
             >
               <IconChevronRight

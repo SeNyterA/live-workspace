@@ -10,6 +10,12 @@ export enum EMemberRole {
   Member = 'Member'
 }
 
+export const RoleWeights: { [role in EMemberRole]: number } = {
+  [EMemberRole.Member]: 1,
+  [EMemberRole.Admin]: 10,
+  [EMemberRole.Owner]: 100
+}
+
 export enum EMemberType {
   Team = 'Team',
   Channel = 'Channel',

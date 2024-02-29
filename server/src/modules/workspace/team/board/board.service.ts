@@ -100,7 +100,7 @@ export class BoardService {
         _id: workspaceId,
         members: { user: { _id: user.sub, isAvailable: true } }
       },
-      relations: ['properties', 'properties.options']
+      relations: ['properties', 'properties.options', 'avatar', 'thumbnail']
     })
 
     const cards = await this.cardRepository.find({

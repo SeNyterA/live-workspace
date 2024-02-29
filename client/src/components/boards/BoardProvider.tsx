@@ -190,11 +190,8 @@ const checkTrackingId = ({
     return _trackingId
   }
 
-  _trackingId = properties.find(e =>
-    [EFieldType.Assignees, EFieldType.People, EFieldType.Select].includes(
-      e.fieldType
-    )
-  )?._id
+  _trackingId = properties.find(e => [EFieldType.Select].includes(e.fieldType))
+    ?._id
 
   if (_trackingId) {
     lsActions.setTrackingId(boardId, _trackingId)

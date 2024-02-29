@@ -12,6 +12,7 @@ import { TUploadMutionApi } from '../upload.api'
 import { TBoardlMutationApi } from './board'
 import { TChannelMutationApi } from './channel'
 import { TGroupMutationApi } from './group'
+import { TWorkspaceMutationApi } from './worksapce'
 
 const objectToFormData = (obj: any): FormData => {
   const formData = new FormData()
@@ -259,10 +260,24 @@ export type ApiMutationType = {
     payload: { card: TCard }
     response: TCard
   }
+
+  editWorkspaceMember: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/members/:memberId'
+      urlParams: {
+        workspaceId: string
+        memberId: string
+      }
+    }
+    method: 'patch'
+    payload: { member: TMember }
+    response: { member: TMember }
+  }
 } & TChannelMutationApi &
   TUploadMutionApi &
   TGroupMutationApi &
-  TBoardlMutationApi
+  TBoardlMutationApi &
+  TWorkspaceMutationApi
 
 export const useAppMutation = <T extends keyof ApiMutationType>(
   _key: T,

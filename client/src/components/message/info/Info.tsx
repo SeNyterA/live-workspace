@@ -1,4 +1,4 @@
-import { ActionIcon, ScrollArea } from '@mantine/core'
+import { ActionIcon, Avatar, Image, ScrollArea } from '@mantine/core'
 import { IconSettings } from '@tabler/icons-react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../../hooks/useAppParams'
@@ -19,17 +19,21 @@ export default function Info() {
       ]
   )
 
+  console.log({ workspace })
+
   return (
     <>
-      <div className='flex w-80 flex-col py-3'>
-        <div className='flex justify-between px-4'>
-          <div>
-            <p className='text-base'>{workspace?.title}</p>
-            <p className='text-xs text-gray-500'>{workspace?.description}</p>
-            {/* <p className='text-xs text-gray-500'>
-              id: {channelId || directId || groupId || boardId}
-            </p> */}
-          </div>
+      <div className='flex w-80 flex-col px-4 py-3'>
+        <div className='flex items-center justify-between gap-2 pb-1'>
+          {workspace?.avatar?.path && (
+            <Avatar
+              src={workspace?.avatar?.path}
+              size={28}
+              className='rounded'
+            />
+          )}
+
+          <p className='flex-1 text-base font-semibold'>{workspace?.title}</p>
           <ActionIcon
             size={30}
             variant='light'
@@ -47,12 +51,19 @@ export default function Info() {
             <IconSettings size={16} />
           </ActionIcon>
         </div>
+        {workspace?.description && (
+          <p className='text-gray-500'>{workspace?.description}</p>
+        )}
 
-        <div className='relative mt-2 flex-1 px-4'>
-          <ScrollArea
-            className='absolute inset-0 space-y-6 px-4'
-            scrollbarSize={8}
-          >
+        {workspace?.thumbnail?.path && (
+          <Image
+            src={workspace?.thumbnail?.path}
+            className='aspect-video w-full rounded-lg'
+          />
+        )}
+
+        <div className='relative mt-2 flex-1'>
+          <ScrollArea className='absolute inset-0 space-y-6' scrollbarSize={8}>
             <Members />
             {!!(channelId || groupId || directId) && <PinedMesages />}
             <Files />

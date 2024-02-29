@@ -7,15 +7,25 @@ import {
   Select,
   TextInput
 } from '@mantine/core'
-import { IconSearch, IconSend } from '@tabler/icons-react'
+import { IconPlus, IconSearch } from '@tabler/icons-react'
 import { memo, useState } from 'react'
-import { useAppSelector } from '../../redux/store'
+import { useDispatch } from 'react-redux'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
+import { getAppValue, useAppSelector } from '../../redux/store'
+import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import { useAppQuery } from '../../services/apis/useAppQuery'
-import { EMemberRole, TMember, TUser } from '../../types'
+import {
+  EMemberRole,
+  RoleWeights,
+  TMember,
+  TUser,
+  WorkspaceType
+} from '../../types'
+import { hasPermissionToOperate, parseMember } from '../../utils/helper'
 
 const User = memo(({ user }: { user: TUser }) => {
   return (
-    <div className='mt-2 flex max-w-full flex-1 items-center gap-2 first:mt-0'>
+    <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
       <Avatar src={user?.avatar?.path} size={32} />
 
       <div className='flex flex-1 flex-col justify-center pt-1'>
@@ -27,22 +37,51 @@ const User = memo(({ user }: { user: TUser }) => {
         </p>
       </div>
       <Button
-        size='xs'
         variant='outline'
         color='gray'
         className='h-[30px] min-h-[30px] border-none border-gray-100 bg-gray-100'
       >
-        Invite
-        <IconSend className='ml-2' size={16} />
+        Add
+        <IconPlus className='ml-2' size={16} />
       </Button>
     </div>
   )
 })
 
 const Member = memo(({ member, user }: { member: TMember; user: TUser }) => {
+  const dispatch = useDispatch()
+  const { mutateAsync: editWorkspaceMember, isPending } = useAppMutation(
+    'editWorkspaceMember',
+    {
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          const { member, user } = parseMember(data.member)
+          dispatch(
+            workspaceActions.updateWorkspaceStore({
+              members: { [member._id]: member },
+              users: { [user!._id]: user! }
+            })
+          )
+        }
+      }
+    }
+  )
+
+  const { enabled, operatorWeight } = hasPermissionToOperate({
+    operatorRole:
+      getAppValue(
+        state =>
+          Object.values(state.workspace.members).find(
+            e =>
+              e.userId === state.auth.userInfo?._id &&
+              e.targetId === state.workspace.workspaceSettingId
+          )?.role
+      ) || EMemberRole.Member,
+    targetRole: member.role
+  })
   return (
     <>
-      <div className='mt-2 flex max-w-full flex-1 items-center gap-2 first:mt-0'>
+      <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
         <Indicator
           inline
           size={16}
@@ -65,23 +104,58 @@ const Member = memo(({ member, user }: { member: TMember; user: TUser }) => {
         </div>
 
         <Select
+          disabled={!enabled || isPending}
+          rightSection={isPending && <Loader size={12} />}
           classNames={{
             input:
               'border-gray-100 border-none bg-gray-100 min-h-[30px] h-[30px]',
             dropdown: 'pr-2'
           }}
           className='w-28'
-          data={Object.values(EMemberRole)}
+          data={[
+            { label: EMemberRole.Member, value: EMemberRole.Member },
+            {
+              label: EMemberRole.Admin,
+              value: EMemberRole.Admin,
+              disabled: (operatorWeight || 0) < RoleWeights[EMemberRole.Admin]
+            },
+            {
+              label: EMemberRole.Owner,
+              value: EMemberRole.Owner,
+              disabled: (operatorWeight || 0) < RoleWeights[EMemberRole.Owner]
+            }
+          ]}
           value={member.role}
-          onChange={() => {}}
+          onChange={role => {
+            editWorkspaceMember({
+              url: {
+                baseUrl: '/workspaces/:workspaceId/members/:memberId',
+                urlParams: {
+                  workspaceId: member.targetId,
+                  memberId: member._id
+                }
+              },
+              method: 'patch',
+              payload: {
+                member: {
+                  role: role
+                } as any
+              }
+            })
+          }}
         />
       </div>
     </>
   )
 })
 
-export default function MembersSetting() {
+export default function MembersSetting({
+  wokrspaceType
+}: {
+  wokrspaceType?: WorkspaceType
+}) {
   const [searchValue, setSearchValue] = useState('')
+  const [validUsers, setValidUsers] = useState<TUser[]>([])
   const members = useAppSelector(state =>
     Object.values(state.workspace.members)
       .filter(member => member.targetId === state.workspace.workspaceSettingId)
@@ -90,14 +164,14 @@ export default function MembersSetting() {
         user: state.workspace.users[member.userId]
       }))
       .filter(
-        ({ member, user }) =>
+        ({ user }) =>
           user.userName.includes(searchValue) ||
           user.email.includes(searchValue) ||
           user.nickName?.includes(searchValue)
       )
   )
 
-  const { data, isPending, isLoading } = useAppQuery({
+  const { isLoading } = useAppQuery({
     key: 'findUsersByKeyword',
     url: {
       baseUrl: '/users/by-keyword',
@@ -105,6 +179,23 @@ export default function MembersSetting() {
     },
     options: {
       enabled: searchValue.length > 2
+    },
+    onSucess({ users }) {
+      const workspace = getAppValue(
+        state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+      )
+
+      if (!workspace?.parentId) {
+        const members =
+          getAppValue(state =>
+            Object.values(state.workspace.members).filter(
+              member => member.targetId === state.workspace.workspaceSettingId
+            )
+          ) || []
+        const userIds = members.map(member => member.userId)
+        const validUser = users.filter(user => !userIds.includes(user._id))
+        setValidUsers(validUser)
+      }
     }
   })
 
@@ -115,7 +206,7 @@ export default function MembersSetting() {
     >
       <TextInput
         label='Search'
-        description='Search by name, username, email...'
+        description='Search by name, username, email. Atleast 3 characters required'
         placeholder='senytera'
         className='sticky top-0 z-[300] mt-4 bg-white'
         leftSection={<IconSearch size={16} />}
@@ -124,10 +215,12 @@ export default function MembersSetting() {
         rightSection={isLoading && <Loader size={12} />}
       />
 
-      {!!data?.users?.length && (
+      {validUsers.length > 0 && (
         <>
           <p className='mt-4 font-semibold'>Users</p>
-          {data?.users.map(user => <User user={user} key={user._id} />)}
+          {validUsers.map(user => (
+            <User user={user} key={user._id} />
+          ))}
         </>
       )}
 
