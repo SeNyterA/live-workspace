@@ -9,10 +9,9 @@ import {
 } from '@mantine/core'
 import { IconSearch, IconSend } from '@tabler/icons-react'
 import { memo, useState } from 'react'
-import { EMemberRole, TMember } from '../../new-types/member.d'
-import { TUser } from '../../new-types/user.d'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
+import { EMemberRole, TMember, TUser } from '../../types'
 
 const User = memo(({ user }: { user: TUser }) => {
   return (
@@ -128,9 +127,7 @@ export default function MembersSetting() {
       {!!data?.users?.length && (
         <>
           <p className='mt-4 font-semibold'>Users</p>
-          {data?.users.map((user: TUser) => (
-            <User user={user} key={user._id} />
-          ))}
+          {data?.users.map(user => <User user={user} key={user._id} />)}
         </>
       )}
 

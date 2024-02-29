@@ -20,13 +20,13 @@ import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useEffect, useState } from 'react'
 import { useLayout } from '../../Layout'
-import { EMessageType } from '../../new-types/message.d'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import { updateLabelMention } from '../../utils/helper'
 import { groupByFileType } from '../new-message/helper'
 import { TGroupedMessage } from './MessageContentProvider'
+import { EMessageType } from '../../types'
 
 export default function MessageGroup({
   messageGroup,

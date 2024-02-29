@@ -19,9 +19,8 @@ import {
   useFieldArray,
   useForm
 } from 'react-hook-form'
-import { TFile } from '../../../new-types/file'
-import { EMemberRole, TMember } from '../../../new-types/member.d'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
+import { TFile, TMember } from '../../../types'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
 

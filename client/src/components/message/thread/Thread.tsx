@@ -10,13 +10,13 @@ import StarterKit from '@tiptap/starter-kit'
 import DOMPurify from 'dompurify'
 import { Fragment } from 'react'
 import { TThread, useLayout } from '../../../Layout'
-import { TFile } from '../../../new-types/file'
 import { useAppSelector } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
 import { updateLabelMention } from '../../../utils/helper'
 import { groupMessages } from '../MessageContentProvider'
 import MessageGroup from '../MessageGroup'
 import SendMessage from '../SendMessage'
+import { TFile } from '../../../types'
 
 export default function Thread({
   createMessage

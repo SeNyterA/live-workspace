@@ -2,7 +2,7 @@ import { ActionIcon, Avatar, Menu } from '@mantine/core'
 import { IconMessageCircle } from '@tabler/icons-react'
 import { ReactNode } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
-import { TUser } from '../../new-types/user'
+import { TUser } from '../../types'
 
 export default function UserDetailProvider({
   children,

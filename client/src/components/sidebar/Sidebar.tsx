@@ -18,17 +18,16 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import useAppParams from '../../hooks/useAppParams'
-import { WorkspaceType } from '../../new-types/workspace.d'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import TeamSetting from '../team-setting/TeamSetting'
 import BoardItem from './board/BoardItem'
 import CreateBoard from './board/CreateBoard'
 import ChannelItem from './channel/ChannelItem'
 import CreateChannel from './channel/CreateChannel'
 import CreateGroup from './CreateGroup'
 import GroupItem from './group/GroupItem'
+import { WorkspaceType } from '../../types'
 
 export type TSideBarToggle =
   | 'createBoard'
@@ -119,11 +118,12 @@ export default function Sidebar() {
                 <NavLink
                   className='sticky top-0 z-10 mb-1 bg-white p-1'
                   label='Boards'
-                  leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
+                  leftSection={<IconLayoutKanban size={20} stroke={1.5} />}
                   active={path.pathname.includes('board')}
                   defaultOpened={!!boardId}
                   classNames={{
-                    children: 'pl-7'
+                    children: 'pl-6',
+                    section: 'mr-1'
                   }}
                 >
                   <Watching
@@ -229,13 +229,6 @@ export default function Sidebar() {
           </ScrollArea>
         </div>
       </div>
-
-      <TeamSetting
-        isOpen={toggle === 'teamSetting'}
-        onClose={() => setToggle(undefined)}
-        targetId={teamId!}
-        type='team'
-      />
 
       <CreateGroup
         isOpen={toggle === 'createGroup'}

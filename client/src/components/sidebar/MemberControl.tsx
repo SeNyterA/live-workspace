@@ -1,7 +1,7 @@
 import { ActionIcon, Avatar, Select } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
-import { EMemberRole, TMember } from '../../new-types/member.d'
 import { useAppSelector } from '../../redux/store'
+import { EMemberRole } from '../../types'
 
 const MemberControl = ({
   member,

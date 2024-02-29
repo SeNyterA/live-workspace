@@ -17,9 +17,9 @@ import { Controller, useForm } from 'react-hook-form'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
 import { auth, googleProvider } from '../../firebase/firebase'
-import { TUser } from '../../new-types/user'
 import { authActions } from '../../redux/slices/auth.slice'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
+import { TUser } from '../../types/index.type'
 
 type TAuthForm = Pick<TUser, 'email' | 'userName'> & {
   terms: boolean

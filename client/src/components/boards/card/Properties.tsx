@@ -8,22 +8,9 @@ import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
+import { EFieldType } from '../../../types'
 
 dayjs.extend(customParseFormat)
-
-export enum EFieldType {
-  Date = 'Date',
-  Number = 'Number',
-  String = 'String',
-  People = 'People',
-  MultiPeople = 'MultiPeople',
-  Select = 'Select',
-  MultiSelect = 'MultiSelect',
-  Link = 'Link',
-  Email = 'Email',
-  Assignees = 'Assignees',
-  DueDate = 'DueDate'
-}
 
 export default function Properties() {
   const { boardId, cardId } = useAppParams()
@@ -208,7 +195,6 @@ export default function Properties() {
                     //   ...old,
                     //   [property._id]: value?.toString()
                     // }))
-
                     // updateCard({
                     //   url: {
                     //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',

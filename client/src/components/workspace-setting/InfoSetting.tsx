@@ -9,9 +9,9 @@ import {
   TextInput
 } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
-import { WorkspaceType } from '../../new-types/workspace.d'
 import { useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
+import { WorkspaceType } from '../../types'
 
 export default function InfoSetting() {
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
@@ -23,8 +23,7 @@ export default function InfoSetting() {
   })
 
   const workspace = useAppSelector(
-    state =>
-      state.workspace.workspaces[state.workspace.workspaceSetting?.workspaceId!]
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
   return (
     <ScrollArea

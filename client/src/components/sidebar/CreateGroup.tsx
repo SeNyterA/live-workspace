@@ -3,7 +3,6 @@ import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../hooks/useAppControlParams'
-import { EMemberRole } from '../../new-types/member.d'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import {
   ApiMutationType,
@@ -11,6 +10,7 @@ import {
 } from '../../services/apis/mutations/useAppMutation'
 import MemberControl from './MemberControl'
 import UserCombobox from './UserCombobox'
+import { EMemberRole } from '../../types'
 
 type TForm = ApiMutationType['createGroup']['payload']
 

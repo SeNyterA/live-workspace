@@ -1,7 +1,7 @@
 import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
 import useAppParams from '../../../hooks/useAppParams'
-import { EMemberRole } from '../../../new-types/member.d'
 import { useAppSelector } from '../../../redux/store'
+import { EMemberRole } from '../../../types'
 
 export default function Members() {
   const { boardId, channelId, directId, groupId } = useAppParams()

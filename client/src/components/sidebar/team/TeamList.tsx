@@ -3,7 +3,6 @@ import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
-// import { WorkspaceType } from '../../../new-types/workspace'
 import { useAppSelector } from '../../../redux/store'
 import CreateTeam from './CreateTeam'
 

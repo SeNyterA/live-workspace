@@ -8,7 +8,7 @@ import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 
-import { In, Repository } from 'typeorm'
+import { Brackets, In, Repository } from 'typeorm'
 import { TJwtUser } from '../socket/socket.gateway'
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
@@ -302,6 +302,71 @@ export class WorkspaceService {
     })
 
     return members
+  }
+
+  async findPotentialMembers({
+    keyword,
+    skip,
+    take,
+    workspaceId
+  }: {
+    keyword: string
+    skip: number
+    take: number
+    workspaceId: string
+  }) {
+    const workspace = await this.workspaceRepository.findOneOrFail({
+      where: { _id: workspaceId, isAvailable: true }
+    })
+
+    let users
+
+    if (workspace.parentId) {
+      users = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoin('user.members', 'member')
+        .where('user.isAvailable = :isAvailable', { isAvailable: true })
+        .andWhere('member.workspaceId = :parentId', {
+          parentId: workspace.parentId
+        })
+        .andWhere('member.workspaceId != :workspaceId', {
+          workspaceId: workspace._id
+        })
+        .andWhere(
+          new Brackets(qb => {
+            qb.where('user.userName LIKE :keyword', { keyword: `%${keyword}%` })
+              .orWhere('user.email LIKE :keyword', { keyword: `%${keyword}%` })
+              .orWhere('user.nickName LIKE :keyword', {
+                keyword: `%${keyword}%`
+              })
+          })
+        )
+        .skip(skip)
+        .take(take)
+        .getMany()
+    } else {
+      users = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoin('user.members', 'member')
+        .where('user.isAvailable = :isAvailable', { isAvailable: true })
+        .andWhere('member.workspaceId != :workspaceId', {
+          workspaceId: workspace._id
+        })
+        .andWhere(
+          new Brackets(qb => {
+            qb.where('user.userName LIKE :keyword', { keyword: `%${keyword}%` })
+              .orWhere('user.email LIKE :keyword', { keyword: `%${keyword}%` })
+              .orWhere('user.nickName LIKE :keyword', {
+                keyword: `%${keyword}%`
+              })
+          })
+        )
+        .skip(skip)
+        .take(take)
+        .getMany()
+    }
+
+    return users
   }
   //#endregion
 

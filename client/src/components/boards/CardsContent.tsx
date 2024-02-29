@@ -4,10 +4,10 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useRenderCount from '../../hooks/useRenderCount'
-import { TOption } from '../../new-types/board'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
+import { TOption } from '../../types'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
@@ -186,7 +186,9 @@ export default function CardsContent() {
                         if (data._id) {
                           // toogleCard({ cardId: data._id })
                           dispatch(
-                            workspaceActions.updateWorkspaceStore({ [data._id]: data })
+                            workspaceActions.updateWorkspaceStore({
+                              [data._id]: data
+                            })
                           )
                         }
                       },

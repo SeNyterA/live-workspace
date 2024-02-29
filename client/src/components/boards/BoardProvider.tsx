@@ -7,12 +7,11 @@ import {
 } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
-import { EFieldType, TProperty } from '../../new-types/board.d'
-import { TWorkspace } from '../../new-types/workspace'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
+import { EFieldType, TProperty, TWorkspace } from '../../types'
 import { lsActions } from '../../utils/auth'
 import { arrayToObject, extractWorkspace } from '../../utils/helper'
 

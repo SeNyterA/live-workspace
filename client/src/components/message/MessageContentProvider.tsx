@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useContext } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
-import { TMessage } from '../../new-types/message'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
+import { TMessage } from '../../types'
 
 export type TGroupedMessage = {
   userId: string

@@ -1,7 +1,7 @@
 import { JSONContent } from '@tiptap/react'
-import { TOption, TProperty } from '../new-types/board'
-import { TMember } from '../new-types/member.d'
-import { TWorkspace } from '../new-types/workspace'
+import { TOption, TProperty } from '../types/board'
+import { TMember } from '../types/member'
+import { TWorkspace } from '../types/workspace'
 import { getAppValue } from '../redux/store'
 
 export const cleanObj = <T extends Record<string, any>>(

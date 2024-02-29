@@ -1,4 +1,4 @@
-import { TUser } from '../new-types/user'
+import { TUser } from '../types/user'
 
 export const LocalStorageEventTarget = new EventTarget()
 

@@ -9,12 +9,12 @@ import {
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import useAppParams from '../../../hooks/useAppParams'
-import { EMemberRole } from '../../../new-types/member.d'
 import { useAppSelector } from '../../../redux/store'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../../services/apis/mutations/useAppMutation'
+import { EMemberRole } from '../../../types'
 import MemberControl from '../MemberControl'
 import UserCombobox from '../UserCombobox'
 

@@ -1,8 +1,8 @@
 import { Avatar, NavLink } from '@mantine/core'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
-import { TWorkspace } from '../../../new-types/workspace'
 import { useAppSelector } from '../../../redux/store'
+import { TWorkspace } from '../../../types'
 
 export default function BoardItem({ board }: { board: TWorkspace }) {
   const { boardId } = useAppParams()

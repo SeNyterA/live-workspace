@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { TCard, TOption } from '../../new-types/board'
-import { TMessage } from '../../new-types/message'
-import { TWorkspace } from '../../new-types/workspace'
+import { TCard, TOption } from '../../types/board'
+import { TMessage } from '../../types/message'
+import { TWorkspace } from '../../types/workspace'
 import { useSocketContext } from './SocketProvider'
 
 export type ApiSocketType = {
