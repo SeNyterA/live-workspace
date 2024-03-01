@@ -28,7 +28,9 @@ export default function MessageContentWrapper() {
     key: 'message',
     resFunc: ({ message }) => {
       dispatch(
-        workspaceActions.updateWorkspaceStore({ messages: { [message._id]: message } })
+        workspaceActions.updateWorkspaceStore({
+          messages: { [message._id]: message }
+        })
       )
     }
   })
@@ -91,6 +93,7 @@ export default function MessageContentWrapper() {
                   payload: {
                     message: {
                       content: value,
+
                       attachments: files
                     } as any
                   }
@@ -127,9 +130,9 @@ export default function MessageContentWrapper() {
                 payload: {
                   message: {
                     content: value
-                  } as any,
-                  threadId: thread.threadId,
-                  replyToId: thread.replyId
+                  } as any
+                  // threadId: thread.threadId,
+                  // replyToId: thread.replyId
                 }
               },
               {

@@ -39,7 +39,7 @@ export type TSideBarToggle =
   | 'createGroup'
 
 export default function Sidebar() {
-  const { channelId, teamId, boardId, groupId } = useAppParams()
+  const { channelId, teamId, boardId, groupId, directId } = useAppParams()
   const dispatch = useDispatch()
   const path = useLocation()
   const [toggle, setToggle] = useState<TSideBarToggle>()
@@ -51,14 +51,18 @@ export default function Sidebar() {
   return (
     <>
       <div className='flex w-72 flex-col gap-2 px-4 py-3'>
-        <div className=''>
-          <p className='text-xl'>{team?.title}</p>
-          <p className='line-clamp-3 text-gray-500'>{team?.description}</p>
+        <p className='text-xl'>{!!team ? team?.title : 'Personal'}</p>
+        <p className='line-clamp-3 text-gray-500'>
+          {!!team ? team?.description : 'Wellcome to workspace'}
+        </p>
+
+        {!!team?.thumbnail?.path && (
           <Image
             src={team?.thumbnail?.path}
             className='aspect-video w-full rounded-lg'
           />
-        </div>
+        )}
+
         <div className='flex items-center justify-center gap-2'>
           <Input
             className='flex h-[30px] flex-1 items-center rounded bg-gray-100'
@@ -227,6 +231,40 @@ export default function Sidebar() {
                 }}
               />
             </NavLink>
+
+            <NavLink
+              className='sticky top-0 z-10 mb-1 bg-white p-1'
+              label='Drirects'
+              leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
+              active={!!directId}
+              defaultOpened={!!directId}
+              classNames={{ children: 'w-full' }}
+            >
+              <Watching
+                watchingFn={state =>
+                  Object.values(state.workspace.workspaces).filter(
+                    e => e.type === WorkspaceType.DirectMessage
+                  )
+                }
+              >
+                {groups => (
+                  <>
+                    {groups?.map(item => (
+                      <GroupItem key={item._id} group={item} />
+                    ))}
+                  </>
+                )}
+              </Watching>
+
+              <NavLink
+                className='mb-2 p-1 pl-3 opacity-70'
+                label={`Create group`}
+                rightSection={<IconPlus size={14} />}
+                onClick={() => {
+                  setToggle('createGroup')
+                }}
+              />
+            </NavLink>
           </ScrollArea>
         </div>
       </div>
@@ -252,6 +290,7 @@ export default function Sidebar() {
       <CreateWorkspaceChild
         isOpen={toggle === 'createBoard'}
         onClose={() => setToggle(undefined)}
+        type={WorkspaceType.Board}
       />
     </>
   )

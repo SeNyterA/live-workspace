@@ -29,6 +29,9 @@ export class Message extends BaseEntity {
   @Column({ type: 'enum', enum: EMessageType, default: EMessageType.Normal })
   type: EMessageType
 
+  @Column({ type: 'enum', enum: EMesssageFor })
+  for: EMesssageFor
+
   @Column({ type: 'json' })
   content: JSONContent
 

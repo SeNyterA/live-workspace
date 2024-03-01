@@ -21,8 +21,6 @@ export class MessageController {
     @HttpUser() user: TJwtUser,
     @Body()
     payload: {
-      replyToId?: string
-      threadId?: string
       message: Message
     },
     @Param('workspaceId') targetId: string

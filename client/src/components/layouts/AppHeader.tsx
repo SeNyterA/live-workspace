@@ -13,6 +13,7 @@ import { lsActions } from '../../utils/auth'
 
 export default function AppHeader() {
   const user = useAppSelector(state => state.auth.userInfo)
+  console.log({user})
   return (
     <div className='flex h-12 items-center gap-3 px-3'>
       <p className='text-xl font-semibold'>Live workspace - Senytera</p>

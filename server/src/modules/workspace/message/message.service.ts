@@ -4,6 +4,7 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
 import { EMesssageFor, Message } from 'src/entities/message.entity'
+import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { In, LessThan, Repository } from 'typeorm'
@@ -23,6 +24,8 @@ export class MessageService {
     private readonly memberRepository: Repository<Member>,
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
+    @InjectRepository(Workspace)
+    private readonly workspaceRepository: Repository<Workspace>,
     private readonly redisService: RedisService
   ) {}
 
@@ -33,41 +36,55 @@ export class MessageService {
   async createMessage({
     user,
     targetId,
-    message,
-    replyToId,
-    threadId,
-    type = EMesssageFor.Channel
+    message
   }: {
     message: Message
     user: TJwtUser
     targetId: string
-    replyToId?: string
-    threadId?: string
-    type?: EMesssageFor
   }) {
+    // const direct = (
+    //   await this.workspaceRepository.find({
+    //     where: {
+    //       type: WorkspaceType.DirectMessage,
+    //       isAvailable: true,
+    //       members: {
+    //         user: { _id: In([targetId, user.sub]), isAvailable: true },
+    //         isAvailable: true
+    //       }
+    //     },
+    //     relations: ['members']
+    //   })
+    // ).find(
+    //   workspace =>
+    //     workspace.members.length === 2 &&
+    //     workspace.members.every(
+    //       member => member.userId === user.sub || member.userId === targetId
+    //     )
+    // )
+
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId, isAvailable: true },
-        isAvailable: true,
-        type: In([
-          EMemberType.Channel,
-          EMemberType.DirectMessage,
-          EMemberType.Group
-        ])
+        workspace: {
+          _id: targetId,
+          isAvailable: true,
+          type: In([
+            WorkspaceType.DirectMessage,
+            WorkspaceType.Group,
+            WorkspaceType.Channel
+          ])
+        },
+        isAvailable: true
       }
     })
 
     const newMessage = await this.messageRepository.save(
       this.messageRepository.create({
         ...message,
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub },
         target: { _id: targetId },
-        replyTo: replyToId ? { _id: replyToId } : undefined,
-        thread: threadId ? { _id: threadId } : undefined
-      }),
-      { reload: true }
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      })
     )
 
     const messageInserted = await this.messageRepository.findOneOrFail({

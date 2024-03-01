@@ -192,8 +192,6 @@ export type ApiMutationType = {
     method: 'post'
     payload: {
       message: TMessage
-      replyToId?: string
-      threadId?: string
     }
     response: TMessage
   }

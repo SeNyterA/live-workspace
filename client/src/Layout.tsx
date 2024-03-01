@@ -71,7 +71,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       )
     },
     options: {
-      enabled: !!teamId
+      enabled: !!teamId && teamId !== 'personal'
     }
   })
 
