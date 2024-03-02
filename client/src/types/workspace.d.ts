@@ -12,6 +12,11 @@ export enum WorkspaceType {
   Team = 'Team'
 }
 
+export enum WorkspaceStatus {
+  Private = 'Private',
+  Public = 'Public'
+}
+
 export type TWorkspace = TBase & {
   title: string
   description: string
@@ -21,6 +26,7 @@ export type TWorkspace = TBase & {
   type: WorkspaceType
   parent: Workspace
   parentId: string
+  status: WorkspaceStatus
 
   members?: TMember[]
   messages?: TMessage[]

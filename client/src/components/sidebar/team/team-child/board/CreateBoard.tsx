@@ -1,18 +1,28 @@
-import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
+import {
+  Button,
+  Drawer,
+  Group,
+  Image,
+  Radio,
+  ScrollArea,
+  Textarea,
+  TextInput
+} from '@mantine/core'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import useAppParams from '../../../hooks/useAppParams'
+import useAppParams from '../../../../../hooks/useAppParams'
+import { useAppSelector } from '../../../../../redux/store'
 import {
   ApiMutationType,
   useAppMutation
-} from '../../../services/apis/mutations/useAppMutation'
-import MemberControl from '../MemberControl'
-import UserCombobox from '../UserCombobox'
-import { EMemberRole } from '../../../types'
+} from '../../../../../services/apis/mutations/useAppMutation'
+import { EMemberRole } from '../../../../../types'
+import MemberControl from '../../../MemberControl'
+import UserCombobox from '../../../UserCombobox'
 
-type TForm = ApiMutationType['createChannel']['payload']
+type TForm = ApiMutationType['createBoard']['payload']
 
-export default function CreateChannel({
+export default function CreateBoard({
   onClose,
   isOpen,
   refetchKey
@@ -23,9 +33,8 @@ export default function CreateChannel({
 }) {
   const { teamId } = useAppParams()
   const { control, handleSubmit, reset } = useForm<TForm>({})
-  const { mutateAsync: createChannel, isPending } =
-    useAppMutation('createChannel')
-
+  const { mutateAsync: createBoard, isPending } = useAppMutation('createBoard')
+  const team = useAppSelector(state => state.workspace.workspaces[teamId!])
   useEffect(() => {
     reset()
   }, [refetchKey])
@@ -34,7 +43,7 @@ export default function CreateChannel({
     <Drawer
       onClose={onClose}
       opened={isOpen}
-      title={<p className='text-lg font-semibold'>Create Channel</p>}
+      title={<p className='text-lg font-semibold'>Create board</p>}
       overlayProps={{
         color: '#000',
         backgroundOpacity: 0.2,
@@ -45,15 +54,25 @@ export default function CreateChannel({
         inner: 'p-3',
         body: 'flex flex-col flex-1'
       }}
+      size={400}
     >
+      <div className='mb-3'>
+        <p className='text-base'>{team?.title}</p>
+        <p className='text-sm text-gray-500'>{team?.description}</p>
+        <Image
+          src={team?.thumbnail?.path}
+          className='aspect-video w-full rounded-lg'
+        />
+      </div>
+
       <Controller
         control={control}
         name='workspace.title'
         render={({ field: { value, onChange } }) => (
           <TextInput
             data-autofocus
-            label='Channel Name'
-            placeholder='Enter the channel name'
+            label='Board Name'
+            placeholder='Enter the board name'
             description='Leave it blank to use the default name...'
             size='sm'
             value={value}
@@ -67,9 +86,9 @@ export default function CreateChannel({
         name='workspace.description'
         render={({ field: { value, onChange } }) => (
           <Textarea
-            label='Channel Description'
-            description='Description for the channel'
-            placeholder='Enter a description for the channel...'
+            label='Board Description'
+            description='Description for the board'
+            placeholder='Enter a description for the board...'
             className='mt-2'
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -100,7 +119,7 @@ export default function CreateChannel({
               }}
               textInputProps={{
                 label: 'Add Members',
-                description: 'Type to search and add members to the channel',
+                description: 'Type to search and add members to the board',
                 placeholder: 'Search and select members...',
                 className: 'mt-2'
               }}
@@ -131,6 +150,35 @@ export default function CreateChannel({
         )}
       />
 
+      <Radio.Group
+        name='favoriteFramework'
+        label='Select your favorite framework/library'
+        description='This is anonymous'
+        withAsterisk
+        className='mt-4'
+      >
+        <Group mt='xs'>
+          <Radio
+            value='private'
+            label='Private'
+            classNames={{
+              body: 'flex gap-1 flex-row-reverse',
+              description: 'mt-0'
+            }}
+            description='Only members can access'
+          />
+          <Radio
+            value='public'
+            label='Public'
+            classNames={{
+              body: 'flex gap-1 flex-row-reverse',
+              description: 'mt-0'
+            }}
+            description='Anyone can access'
+          />
+        </Group>
+      </Radio.Group>
+
       <div className='mt-2 flex items-center justify-end gap-3'>
         <Button variant='default' color='red'>
           Close
@@ -141,9 +189,9 @@ export default function CreateChannel({
           disabled={isPending}
           onClick={handleSubmit(data => {
             if (data && teamId)
-              createChannel({
+              createBoard({
                 url: {
-                  baseUrl: '/teams/:teamId/channels',
+                  baseUrl: '/teams/:teamId/boards',
                   urlParams: {
                     teamId
                   }

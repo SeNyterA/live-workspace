@@ -9,7 +9,7 @@ import {
   WorkspaceType
 } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
-import { In, Not, Repository } from 'typeorm'
+import { In, Like, Not, Repository } from 'typeorm'
 import { generateRandomHash } from '../workspace.service'
 import { BoardService } from './board/board.service'
 import { ChannelService } from './channel/channel.service'
@@ -59,29 +59,6 @@ export class TeamService {
         modifiedBy: { _id: user.sub }
       })
     )
-
-    // const users = await this.userRepository.find({
-    //   take: 99
-    // })
-
-    // const _member = await this.memberRepository.insert([
-    //   {
-    //     role: EMemberRole.Owner,
-    //     type: EMemberType.Team,
-    //     modifiedBy: { _id: user.sub },
-    //     createdBy: { _id: user.sub },
-    //     user: { _id: user.sub },
-    //     workspace: newWorkspace
-    //   },
-    //   ...users.map(e => ({
-    //     user: { _id: e._id },
-    //     role: EMemberRole.Member,
-    //     type: EMemberType.Team,
-    //     modifiedBy: { _id: user.sub },
-    //     createdBy: { _id: user.sub },
-    //     workspace: newWorkspace
-    //   }))
-    // ])
 
     const _member = await this.memberRepository.insert([
       {
@@ -213,5 +190,33 @@ export class TeamService {
     ])
 
     return newWorkspace
+  }
+
+  async findTeamMemberByKeyword({
+    keyword,
+    skip,
+    take,
+    teamId
+  }: {
+    keyword: string
+    skip: number
+    take: number
+    teamId: string
+  }) {
+    const members = await this.memberRepository.find({
+      where: {
+        workspace: { _id: teamId },
+        user: [
+          { isAvailable: true, userName: Like(`%${keyword}%`) },
+          { isAvailable: true, email: Like(`%${keyword}%`) },
+          { isAvailable: true, nickName: Like(`%${keyword}%`) }
+        ]
+      },
+      skip,
+      take,
+      relations: ['user']
+    })
+
+    return { members }
   }
 }

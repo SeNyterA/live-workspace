@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
+import { Member } from 'src/entities/member.entity'
+import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
-import { Repository } from 'typeorm'
-import { generateRandomHash } from '../workspace.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
+import { In, Repository } from 'typeorm'
 
 @WebSocketGateway({
   cors: {
@@ -14,64 +14,65 @@ import { TJwtUser } from 'src/modules/socket/socket.gateway'
   }
 })
 @Injectable()
-export class GroupService {
+export class DirectService {
   @WebSocketServer()
   server: Server
   constructor(
     @InjectRepository(Workspace)
     private readonly workspaceRepository: Repository<Workspace>,
     @InjectRepository(Member)
-    private readonly memberRepository: Repository<Member>
+    private readonly memberRepository: Repository<Member>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
 
-  async createGroup({
+  async createDirect({
     user,
     workspace,
-    members
+    userTargetId
   }: {
     workspace: Workspace
     user: TJwtUser
-    members?: Member[]
+    userTargetId: string
   }) {
-    const newWorkspace = await this.workspaceRepository.save(
-      this.workspaceRepository.create({
-        ...workspace,
-        type: WorkspaceType.Group,
-        displayUrl: generateRandomHash(),
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
+    const direct = (
+      await this.workspaceRepository.find({
+        where: {
+          type: WorkspaceType.Direct,
+          isAvailable: true,
+          members: {
+            user: { _id: In([userTargetId, user.sub]), isAvailable: true },
+            isAvailable: true
+          }
+        },
+        relations: ['members', 'members.user']
       })
+    ).find(
+      workspace =>
+        workspace.members.length === 2 &&
+        workspace.members.every(member =>
+          [user.sub, userTargetId].includes(member._id)
+        )
     )
 
-    const _members = await this.memberRepository.insert([
-      {
-        role: EMemberRole.Owner,
-        type: EMemberType.Group,
-        user: { _id: user.sub },
-        workspace: { _id: newWorkspace._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      },
-      ...(members
-        ?.filter(e => e.userId !== user.sub)
-        .map(e => ({
-          ...e,
-          user: { _id: e.userId },
-          workspace: { _id: newWorkspace._id },
-          createdBy: { _id: user.sub },
-          modifiedBy: { _id: user.sub }
-        })) || [])
-    ])
+    if (direct) return { direct }
 
-    const group = await this.workspaceRepository.findOne({
-      where: { _id: newWorkspace._id }
+    const users = await this.userRepository.find({
+      where: {
+        isAvailable: true,
+        _id: In([user.sub, userTargetId])
+      }
     })
-    this.server
-      .to(_members.identifiers.map(e => e._id))
-      .emit('workspace', { workspace: group })
 
-    return {
-      group
-    }
+    if (users.length !== 2) throw new NotFoundException()
+    const newDirect = this.workspaceRepository.insert({
+      ...workspace,
+      type: WorkspaceType.Direct,
+      createdBy: { _id: user.sub },
+      members: users.map(_user => ({
+        user: _user,
+        createdBy: { _id: user.sub }
+      }))
+    })
   }
 }

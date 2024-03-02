@@ -22,12 +22,10 @@ import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { WorkspaceType } from '../../types'
-import BoardItem from './board/BoardItem'
-import CreateBoard from './board/CreateBoard'
-import ChannelItem from './channel/ChannelItem'
-import CreateChannel from './channel/CreateChannel'
+import BoardItem from './team/team-child/board/BoardItem'
+import ChannelItem from './team/team-child/channel/ChannelItem'
 import CreateGroup from './CreateGroup'
-import CreateWorkspaceChild from './CreateWorkspaceChild'
+import CreateTeamChild from './team/team-child/CreateTeamChild'
 import GroupItem from './group/GroupItem'
 
 export type TSideBarToggle =
@@ -275,7 +273,7 @@ export default function Sidebar() {
         refetchKey={toggle}
       />
 
-      <CreateChannel
+      {/* <CreateChannel
         isOpen={toggle === 'createChannel'}
         onClose={() => setToggle(undefined)}
         refetchKey={toggle}
@@ -285,10 +283,10 @@ export default function Sidebar() {
         isOpen={toggle === 'createBoard'}
         onClose={() => setToggle(undefined)}
         refetchKey={toggle}
-      />
+      /> */}
 
-      <CreateWorkspaceChild
-        isOpen={toggle === 'createBoard'}
+      <CreateTeamChild
+        isOpen={toggle === 'createBoard' || toggle === 'createChannel'}
         onClose={() => setToggle(undefined)}
         type={WorkspaceType.Board}
       />

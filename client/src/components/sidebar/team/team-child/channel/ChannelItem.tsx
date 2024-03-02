@@ -1,8 +1,8 @@
 import { NavLink } from '@mantine/core'
-import useAppControlParams from '../../../hooks/useAppControlParams'
-import useAppParams from '../../../hooks/useAppParams'
-import { useAppSelector } from '../../../redux/store'
-import { TWorkspace } from '../../../types'
+import useAppControlParams from '../../../../../hooks/useAppControlParams'
+import useAppParams from '../../../../../hooks/useAppParams'
+import { useAppSelector } from '../../../../../redux/store'
+import { TWorkspace } from '../../../../../types'
 
 export default function ChannelItem({ channel }: { channel: TWorkspace }) {
   const { channelId } = useAppParams()

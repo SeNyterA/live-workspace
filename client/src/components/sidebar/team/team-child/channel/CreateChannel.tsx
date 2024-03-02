@@ -1,28 +1,18 @@
-import {
-  Button,
-  Drawer,
-  Group,
-  Image,
-  Radio,
-  ScrollArea,
-  Textarea,
-  TextInput
-} from '@mantine/core'
+import { Button, Drawer, ScrollArea, Textarea, TextInput } from '@mantine/core'
 import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import useAppParams from '../../../hooks/useAppParams'
-import { useAppSelector } from '../../../redux/store'
+import useAppParams from '../../../../../hooks/useAppParams'
 import {
   ApiMutationType,
   useAppMutation
-} from '../../../services/apis/mutations/useAppMutation'
-import { EMemberRole } from '../../../types'
-import MemberControl from '../MemberControl'
-import UserCombobox from '../UserCombobox'
+} from '../../../../../services/apis/mutations/useAppMutation'
+import MemberControl from '../../../MemberControl'
+import UserCombobox from '../../../UserCombobox'
+import { EMemberRole } from '../../../../../types'
 
-type TForm = ApiMutationType['createBoard']['payload']
+type TForm = ApiMutationType['createChannel']['payload']
 
-export default function CreateBoard({
+export default function CreateChannel({
   onClose,
   isOpen,
   refetchKey
@@ -33,8 +23,9 @@ export default function CreateBoard({
 }) {
   const { teamId } = useAppParams()
   const { control, handleSubmit, reset } = useForm<TForm>({})
-  const { mutateAsync: createBoard, isPending } = useAppMutation('createBoard')
-  const team = useAppSelector(state => state.workspace.workspaces[teamId!])
+  const { mutateAsync: createChannel, isPending } =
+    useAppMutation('createChannel')
+
   useEffect(() => {
     reset()
   }, [refetchKey])
@@ -43,7 +34,7 @@ export default function CreateBoard({
     <Drawer
       onClose={onClose}
       opened={isOpen}
-      title={<p className='text-lg font-semibold'>Create board</p>}
+      title={<p className='text-lg font-semibold'>Create Channel</p>}
       overlayProps={{
         color: '#000',
         backgroundOpacity: 0.2,
@@ -54,25 +45,15 @@ export default function CreateBoard({
         inner: 'p-3',
         body: 'flex flex-col flex-1'
       }}
-      size={400}
     >
-      <div className='mb-3'>
-        <p className='text-base'>{team?.title}</p>
-        <p className='text-sm text-gray-500'>{team?.description}</p>
-        <Image
-          src={team?.thumbnail?.path}
-          className='aspect-video w-full rounded-lg'
-        />
-      </div>
-
       <Controller
         control={control}
         name='workspace.title'
         render={({ field: { value, onChange } }) => (
           <TextInput
             data-autofocus
-            label='Board Name'
-            placeholder='Enter the board name'
+            label='Channel Name'
+            placeholder='Enter the channel name'
             description='Leave it blank to use the default name...'
             size='sm'
             value={value}
@@ -86,9 +67,9 @@ export default function CreateBoard({
         name='workspace.description'
         render={({ field: { value, onChange } }) => (
           <Textarea
-            label='Board Description'
-            description='Description for the board'
-            placeholder='Enter a description for the board...'
+            label='Channel Description'
+            description='Description for the channel'
+            placeholder='Enter a description for the channel...'
             className='mt-2'
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -119,7 +100,7 @@ export default function CreateBoard({
               }}
               textInputProps={{
                 label: 'Add Members',
-                description: 'Type to search and add members to the board',
+                description: 'Type to search and add members to the channel',
                 placeholder: 'Search and select members...',
                 className: 'mt-2'
               }}
@@ -150,35 +131,6 @@ export default function CreateBoard({
         )}
       />
 
-      <Radio.Group
-        name='favoriteFramework'
-        label='Select your favorite framework/library'
-        description='This is anonymous'
-        withAsterisk
-        className='mt-4'
-      >
-        <Group mt='xs'>
-          <Radio
-            value='private'
-            label='Private'
-            classNames={{
-              body: 'flex gap-1 flex-row-reverse',
-              description: 'mt-0'
-            }}
-            description='Only members can access'
-          />
-          <Radio
-            value='public'
-            label='Public'
-            classNames={{
-              body: 'flex gap-1 flex-row-reverse',
-              description: 'mt-0'
-            }}
-            description='Anyone can access'
-          />
-        </Group>
-      </Radio.Group>
-
       <div className='mt-2 flex items-center justify-end gap-3'>
         <Button variant='default' color='red'>
           Close
@@ -189,9 +141,9 @@ export default function CreateBoard({
           disabled={isPending}
           onClick={handleSubmit(data => {
             if (data && teamId)
-              createBoard({
+              createChannel({
                 url: {
-                  baseUrl: '/teams/:teamId/boards',
+                  baseUrl: '/teams/:teamId/channels',
                   urlParams: {
                     teamId
                   }

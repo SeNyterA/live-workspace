@@ -11,9 +11,9 @@ import {
 import { useDebouncedValue } from '@mantine/hooks'
 import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { workspaceActions } from '../../../redux/slices/workspace.slice'
-import { useAppSelector } from '../../../redux/store'
-import { useAppQuery } from '../../../services/apis/useAppQuery'
+import { workspaceActions } from '../../../../../redux/slices/workspace.slice'
+import { useAppSelector } from '../../../../../redux/store'
+import { useAppQuery } from '../../../../../services/apis/useAppQuery'
 import './userCombobox.module.css'
 
 export default function UserCombobox({

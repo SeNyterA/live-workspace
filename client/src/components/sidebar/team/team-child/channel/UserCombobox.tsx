@@ -9,8 +9,8 @@ import {
 } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { useState } from 'react'
-import useAppParams from '../../../hooks/useAppParams'
-import { useAppSelector } from '../../../redux/store'
+import useAppParams from '../../../../../hooks/useAppParams'
+import { useAppSelector } from '../../../../../redux/store'
 import './userCombobox.module.css'
 
 export default function UserCombobox({

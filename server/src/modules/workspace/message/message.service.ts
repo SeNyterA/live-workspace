@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
-import { EMesssageFor, Message } from 'src/entities/message.entity'
+import { Message } from 'src/entities/message.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
@@ -42,26 +42,6 @@ export class MessageService {
     user: TJwtUser
     targetId: string
   }) {
-    // const direct = (
-    //   await this.workspaceRepository.find({
-    //     where: {
-    //       type: WorkspaceType.DirectMessage,
-    //       isAvailable: true,
-    //       members: {
-    //         user: { _id: In([targetId, user.sub]), isAvailable: true },
-    //         isAvailable: true
-    //       }
-    //     },
-    //     relations: ['members']
-    //   })
-    // ).find(
-    //   workspace =>
-    //     workspace.members.length === 2 &&
-    //     workspace.members.every(
-    //       member => member.userId === user.sub || member.userId === targetId
-    //     )
-    // )
-
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
@@ -69,7 +49,7 @@ export class MessageService {
           _id: targetId,
           isAvailable: true,
           type: In([
-            WorkspaceType.DirectMessage,
+            WorkspaceType.Direct,
             WorkspaceType.Group,
             WorkspaceType.Channel
           ])
@@ -246,7 +226,16 @@ export class MessageService {
       message.reactions[user.sub] = reaction
     }
 
-    return this.messageRepository.save(message)
+    await this.messageRepository.save(message)
+
+    const messageUpdated = await this.messageRepository.findOneOrFail({
+      where: { _id: messageId },
+      relations: ['attachments']
+    })
+
+    this.emitMessage({ message: messageUpdated })
+
+    return { message: messageUpdated }
   }
 
   async deleteMessage({

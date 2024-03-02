@@ -18,7 +18,7 @@ export enum WorkspaceType {
   Channel = 'Channel',
   Board = 'Board',
   Group = 'Group',
-  DirectMessage = 'DirectMessage',
+  Direct = 'DirectMessage',
   Team = 'Team'
 }
 

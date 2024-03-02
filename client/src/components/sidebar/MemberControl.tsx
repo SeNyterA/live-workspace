@@ -1,7 +1,8 @@
 import { ActionIcon, Avatar, Select } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
+import { memo } from 'react'
 import { useAppSelector } from '../../redux/store'
-import { EMemberRole } from '../../types'
+import { EMemberRole, TMember } from '../../types'
 
 const MemberControl = ({
   member,
@@ -46,4 +47,4 @@ const MemberControl = ({
   )
 }
 
-export default MemberControl
+export default memo(MemberControl)
