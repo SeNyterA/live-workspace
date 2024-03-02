@@ -23,8 +23,10 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { EWorkspaceStatus, TWorkspace, WorkspaceType } from '../../types'
-import CreateWorkspace from '../workspace/create/CreateWorkspace'
+import { TWorkspace, WorkspaceType } from '../../types'
+import CreateWorkspace, {
+  getDefaultValue
+} from '../workspace/create/CreateWorkspace'
 
 function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
   const { channelId } = useAppParams()
@@ -173,7 +175,7 @@ export default function Sidebar() {
                   <NavLink
                     className='mb-2 p-1 pl-3 opacity-70'
                     label={`Create board`}
-                    rightSection={<IconPlus size={16} stroke={1.5}/>}
+                    rightSection={<IconPlus size={16} stroke={1.5} />}
                     onClick={() => {
                       setToggle(WorkspaceType.Board)
                     }}
@@ -208,7 +210,7 @@ export default function Sidebar() {
                   <NavLink
                     className='mb-2 p-1 pl-3 opacity-70'
                     label={`Create channel`}
-                    rightSection={<IconPlus size={16} stroke={1.5}/>}
+                    rightSection={<IconPlus size={16} stroke={1.5} />}
                     onClick={() => {
                       setToggle(WorkspaceType.Channel)
                     }}
@@ -246,7 +248,7 @@ export default function Sidebar() {
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'
                 label={`Create group`}
-                rightSection={<IconPlus size={16} stroke={1.5}/>}
+                rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {
                   setToggle(WorkspaceType.Group)
                 }}
@@ -280,7 +282,7 @@ export default function Sidebar() {
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'
                 label={`Create direct`}
-                rightSection={<IconPlus size={16} stroke={1.5}/>}
+                rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {
                   setToggle(WorkspaceType.DirectMessage)
                 }}
@@ -308,12 +310,8 @@ export default function Sidebar() {
         position={'left'}
       >
         <CreateWorkspace
-          defaultValues={{
-            workspace: {
-              type: WorkspaceType.Channel,
-              status: EWorkspaceStatus.Public
-            } as any
-          }}
+          defaultValues={getDefaultValue(toggle!) as any}
+          onClose={() => setToggle(undefined)}
         />
       </Drawer>
     </>

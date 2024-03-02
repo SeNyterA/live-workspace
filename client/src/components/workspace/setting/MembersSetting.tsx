@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Badge,
   Button,
   Indicator,
   Loader,
@@ -224,7 +225,12 @@ export default function MembersSetting({
         </>
       )}
 
-      <p className='mt-4 font-semibold'>Channel members</p>
+      <div className='mt-4 flex justify-between font-semibold'>
+        Channel members
+        <Badge variant='light' color='gray'>
+          {members!.length}
+        </Badge>
+      </div>
       {!!members?.length &&
         members?.map(({ member, user }) => (
           <Member member={member} user={user} key={member._id} />

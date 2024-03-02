@@ -98,6 +98,7 @@ export default function TeamList() {
         position={'left'}
       >
         <CreateWorkspace
+          onClose={() => toggleDrawer(false)}
           defaultValues={{
             workspace: {
               type: WorkspaceType.Team

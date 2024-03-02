@@ -65,27 +65,27 @@ export class BoardService {
   async createBoard({
     user,
     workspace,
-    teamId
+    teamId,
+    members
   }: {
     workspace: Workspace
     user: TJwtUser
     teamId: string
+    members?: Member[]
   }) {
-    const _board = await this.teamService.createChildWorkspace({
+    const board = await this.teamService.createChildWorkspace({
       teamId,
       type: WorkspaceType.Board,
       user,
-      workspace
+      workspace,
+      members
     })
 
     this.initBoardData({
-      boardId: _board.identifiers[0]._id
+      boardId: board._id
     })
 
-    const board = await this.workspaceRepository.findOneOrFail({
-      where: { _id: _board.identifiers[0]._id }
-    })
-    return { workspace: board }
+    return { board: board }
   }
 
   async getBoardById({

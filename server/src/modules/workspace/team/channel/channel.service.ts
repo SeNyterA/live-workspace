@@ -2,10 +2,11 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
+import { Member } from 'src/entities/member.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { Repository } from 'typeorm'
 import { TeamService } from '../team.service'
-import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
 @WebSocketGateway({
   cors: {
@@ -27,21 +28,22 @@ export class ChannelService {
   async createChannel({
     user,
     workspace,
-    teamId
+    teamId,
+    members
   }: {
     workspace: Workspace
     user: TJwtUser
     teamId: string
+    members?: Member[]
   }) {
-    const _channel = await this.teamService.createChildWorkspace({
+    const channel = await this.teamService.createChildWorkspace({
       user,
       workspace,
       teamId,
-      type: WorkspaceType.Channel
+      type: WorkspaceType.Channel,
+      members
     })
 
-    return this.workspaceRepository.findOneOrFail({
-      where: { _id: _channel.identifiers[0]._id }
-    })
+    return { channel }
   }
 }

@@ -5,7 +5,7 @@ import {
   ApiMutationType,
   useAppMutation
 } from '../../../services/apis/mutations/useAppMutation'
-import { WorkspaceType } from '../../../types'
+import { EWorkspaceStatus, WorkspaceType } from '../../../types'
 import CreateWorkspaceInfo from './CreateWorkspaceInfo'
 import Members from './Members'
 import { TeamUsers } from './TeamUsers'
@@ -19,19 +19,80 @@ export type TCreateWorkspaceForm =
 export const useCreateWorkspaceForm = () => {
   return useFormContext<TCreateWorkspaceForm>()
 }
+
+export const getDefaultValue = (type: WorkspaceType) => {
+  if (type === WorkspaceType.Channel) {
+    return {
+      workspace: {
+        type,
+        status: EWorkspaceStatus.Public
+      }
+    }
+  }
+  if (type === WorkspaceType.Board) {
+    return {
+      workspace: {
+        type,
+        status: EWorkspaceStatus.Public
+      }
+    }
+  }
+  if (type === WorkspaceType.Group) {
+    return {
+      workspace: {
+        type
+      }
+    }
+  }
+  if (type === WorkspaceType.Team) {
+    return {
+      workspace: {
+        type
+      },
+      channels: [{ title: 'General' }, { title: 'Topic' }],
+      boards: [{ title: 'Tasks' }, { title: 'Daily report' }]
+    }
+  }
+}
 export default function CreateWorkspace({
-  defaultValues
+  defaultValues,
+  onClose
 }: {
-  defaultValues: TCreateWorkspaceForm
+  defaultValues?: TCreateWorkspaceForm
+  onClose: () => void
 }) {
   const form = useForm<TCreateWorkspaceForm>({ defaultValues })
-  const workspaceType = defaultValues.workspace.type
+  const workspaceType = defaultValues?.workspace.type
   const { teamId } = useAppParams()
 
-  const { mutateAsync: createBoard } = useAppMutation('createBoard')
-  const { mutateAsync: createChannel } = useAppMutation('createChannel')
-  const { mutateAsync: createGroup } = useAppMutation('createGroup')
-  const { mutateAsync: createTeam } = useAppMutation('createTeam')
+  const { mutateAsync: createBoard } = useAppMutation('createBoard', {
+    mutationOptions: {
+      onSuccess: () => {
+        onClose && onClose()
+      }
+    }
+  })
+  const { mutateAsync: createChannel } = useAppMutation('createChannel', {
+    mutationOptions: {
+      onSuccess: () => {
+        onClose && onClose()
+      }
+    }
+  })
+  const { mutateAsync: createGroup } = useAppMutation('createGroup', {
+    mutationOptions: {
+      onSuccess: () => {
+        onClose && onClose()
+      }
+    }
+  })
+  const { mutateAsync: createTeam } = useAppMutation('createTeam', {
+    mutationOptions: {
+      onSuccess: () => {
+        onClose && onClose()
+      }
+    }
+  })
 
   return (
     <FormProvider {...form}>
@@ -60,7 +121,7 @@ export default function CreateWorkspace({
             scrollbarSize={8}
           >
             {[WorkspaceType.Channel, WorkspaceType.Board].includes(
-              workspaceType
+              workspaceType!
             ) ? (
               <TeamUsers />
             ) : (

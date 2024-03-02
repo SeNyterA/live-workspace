@@ -25,7 +25,8 @@ export default function CreateWorkspaceInfo() {
         render={({ field: { value, onChange } }) => (
           <>
             <Dropzone
-              onDrop={files =>
+              onDrop={files => {
+                console.log({ files })
                 uploadFile(
                   {
                     method: 'post',
@@ -41,10 +42,10 @@ export default function CreateWorkspaceInfo() {
                     }
                   }
                 )
-              }
+              }}
               multiple={false}
               onReject={files => console.log('rejected files', files)}
-              maxSize={3 * 1024 * 2}
+              maxSize={3 * 1024 * 1024}
               accept={IMAGE_MIME_TYPE}
               className='mt-4 w-full'
             >
@@ -89,7 +90,7 @@ export default function CreateWorkspaceInfo() {
               }
               multiple={false}
               onReject={files => console.log('rejected files', files)}
-              maxSize={3 * 1024 * 2}
+              maxSize={3 * 1024 * 1024}
               accept={IMAGE_MIME_TYPE}
               className='mt-4'
               classNames={{

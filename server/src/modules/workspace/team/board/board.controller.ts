@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { Card } from 'src/entities/board/card.entity'
+import { Member } from 'src/entities/member.entity'
 import { Workspace } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { BoardService } from './board.service'
@@ -13,12 +14,13 @@ export class BoardController {
   createBoard(
     @HttpUser() user: TJwtUser,
     @Param('teamId') teamId: string,
-    @Body() { workspace }: { workspace: Workspace }
+    @Body() { workspace, members }: { workspace: Workspace; members?: Member[] }
   ) {
     return this.boardService.createBoard({
       user,
       workspace,
-      teamId
+      teamId,
+      members
     })
   }
 

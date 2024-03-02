@@ -17,6 +17,7 @@ import { TeamController } from './team/team.controler'
 import { TeamService } from './team/team.service'
 import { WorkspaceController } from './workspace.controller'
 import { WorkspaceService } from './workspace.service'
+import { ChannelController } from './team/channel/channel.controller'
 
 @Module({
   imports: [
@@ -35,14 +36,16 @@ import { WorkspaceService } from './workspace.service'
     WorkspaceController,
     TeamController,
     BoardController,
-    GroupController
+    GroupController,
+    ChannelController
   ],
   providers: [
     WorkspaceService,
     TeamService,
     BoardService,
     ChannelService,
-    GroupService
+    GroupService,
+    ChannelService
   ],
   exports: [WorkspaceService]
 })

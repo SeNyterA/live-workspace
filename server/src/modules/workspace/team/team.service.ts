@@ -50,6 +50,13 @@ export class TeamService {
     boards?: Workspace[]
     members?: Member[]
   }) {
+    console.log({
+      user,
+      workspace,
+      boards,
+      channels,
+      members
+    })
     const newWorkspace = await this.workspaceRepository.save(
       this.workspaceRepository.create({
         ...workspace,
@@ -60,7 +67,7 @@ export class TeamService {
       })
     )
 
-    const _member = await this.memberRepository.insert([
+    await this.memberRepository.insert([
       {
         user: { _id: user.sub },
         role: EMemberRole.Owner,
@@ -79,12 +86,14 @@ export class TeamService {
         }))
     ])
 
-    const team = await this.workspaceRepository.findOneOrFail({
-      where: { _id: newWorkspace._id },
-      relations: ['avatar', 'thumbnail']
-    })
+    const { members: _members, ...team } =
+      await this.workspaceRepository.findOneOrFail({
+        where: { _id: newWorkspace._id },
+        relations: ['avatar', 'thumbnail', 'members']
+      })
+
     this.server
-      .to([team._id, ..._member.identifiers.map(e => e._id)])
+      .to(_members.map(e => e.userId))
       .emit('workspace', { workspace: team })
 
     boards?.map(boardInfo =>
@@ -152,69 +161,47 @@ export class TeamService {
       parent: { _id: teamId }
     })
 
-    if (workspace.status === WorkspaceStatus.Public) {
-      const workpsaceMembers =
-        newWorkspace.generatedMaps[0].status === WorkspaceStatus.Public
-          ? await this.memberRepository.find({
-              where: {
-                workspace: { _id: teamId },
-                isAvailable: true,
-                user: { _id: Not(user.sub), isAvailable: true }
-              }
-            })
-          : []
-
-      await this.memberRepository.insert([
-        {
-          role: EMemberRole.Owner,
-          user: { _id: user.sub },
-          workspace: { _id: newWorkspace.identifiers[0]._id },
-          createdBy: { _id: user.sub },
-          modifiedBy: { _id: user.sub }
-        },
-        ...workpsaceMembers.map(member => ({
+    const teamMembers = await this.memberRepository.find({
+      where: {
+        workspace: { _id: teamId, isAvailable: true },
+        user: { _id: Not(user.sub), isAvailable: true },
+        isAvailable: true
+      }
+    })
+    await this.memberRepository.insert([
+      {
+        role: EMemberRole.Owner,
+        user: { _id: user.sub },
+        workspace: { _id: newWorkspace.identifiers[0]._id },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      },
+      ...teamMembers
+        .filter(member =>
+          workspace.status === WorkspaceStatus.Public
+            ? true
+            : members.map(e => e.userId).includes(member.userId)
+        )
+        .map(member => ({
           role: EMemberRole.Member,
           user: { _id: member.userId },
           workspace: { _id: newWorkspace.identifiers[0]._id },
           createdBy: { _id: user.sub },
           modifiedBy: { _id: user.sub }
         }))
-      ])
+    ])
 
-      return newWorkspace
-    } else {
-      const teamMembers = await this.memberRepository.find({
-        where: {
-          workspace: { _id: teamId },
-          isAvailable: true,
-          user: {
-            _id: In(
-              members.filter(e => e.userId !== user.sub).map(e => e.userId)
-            ),
-            isAvailable: true
-          }
-        }
+    const { members: _members, ...childWorkspace } =
+      await this.workspaceRepository.findOneOrFail({
+        where: { _id: newWorkspace.identifiers[0]._id },
+        relations: ['avatar', 'thumbnail', 'members']
       })
 
-      await this.memberRepository.insert([
-        {
-          role: EMemberRole.Owner,
-          user: { _id: user.sub },
-          workspace: { _id: newWorkspace.identifiers[0]._id },
-          createdBy: { _id: user.sub },
-          modifiedBy: { _id: user.sub }
-        },
-        ...teamMembers.map(member => ({
-          role: member.role || EMemberRole.Member,
-          user: { _id: member.userId },
-          workspace: { _id: newWorkspace.identifiers[0]._id },
-          createdBy: { _id: user.sub },
-          modifiedBy: { _id: user.sub }
-        }))
-      ])
+    this.server
+      .to(_members.map(e => e.userId))
+      .emit('workspace', { workspace: childWorkspace })
 
-      return newWorkspace
-    }
+    return { ...childWorkspace }
   }
 
   async findTeamMemberByKeyword({
