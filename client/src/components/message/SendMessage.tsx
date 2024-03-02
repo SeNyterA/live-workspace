@@ -20,7 +20,6 @@ import useTyping from '../../hooks/useTyping'
 import { getAppValue } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
 import MentionList from '../message/MentionList'
-import { formatFileName } from '../new-message/helper'
 import Typing from './Typing'
 import { TFile } from '../../types'
 
@@ -255,7 +254,7 @@ export default function SendMessage({
                 ></IconX>
               }
             >
-              {formatFileName(file.path)}
+              {/* {formatFileName(file.path)} */}
             </Badge>
           ))}
           <FileButton

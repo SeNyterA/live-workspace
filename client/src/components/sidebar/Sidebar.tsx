@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Divider,
+  Drawer,
   Image,
   Input,
   NavLink,
@@ -17,30 +18,53 @@ import {
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
+import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { WorkspaceType } from '../../types'
-import BoardItem from './team/team-child/board/BoardItem'
-import ChannelItem from './team/team-child/channel/ChannelItem'
-import CreateGroup from './CreateGroup'
-import CreateTeamChild from './team/team-child/CreateTeamChild'
-import GroupItem from './group/GroupItem'
+import { EWorkspaceStatus, TWorkspace, WorkspaceType } from '../../types'
+import CreateWorkspace from '../create-workspace/CreateWorkspace'
 
-export type TSideBarToggle =
-  | 'createBoard'
-  | 'createChannel'
-  | 'createGroup'
-  | 'teamSetting'
-  | 'createDirect'
-  | 'createGroup'
+function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
+  const { channelId } = useAppParams()
+  const unreadCount = useAppSelector(
+    state => state.workspace.unreadCount[workspace._id]
+  )
+  const { switchTo } = useAppControlParams()
+
+  return (
+    <NavLink
+      classNames={{ label: 'truncate max-w-[220px] block flex-1' }}
+      className='p-1 pl-3'
+      label={
+        <div className='flex items-center gap-2'>
+          <span className='flex-1 truncate'>
+            {workspace.title || workspace._id}
+          </span>
+          {unreadCount && (
+            <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center text-xs leading-4 text-gray-800'>
+              {unreadCount}
+            </span>
+          )}
+        </div>
+      }
+      active={channelId === workspace._id}
+      onClick={() => {
+        switchTo({
+          target: 'channel',
+          targetId: workspace._id
+        })
+      }}
+    />
+  )
+}
 
 export default function Sidebar() {
   const { channelId, teamId, boardId, groupId, directId } = useAppParams()
   const dispatch = useDispatch()
   const path = useLocation()
-  const [toggle, setToggle] = useState<TSideBarToggle>()
+  const [toggle, setToggle] = useState<WorkspaceType>()
   const team = useAppSelector(state => {
     return Object.values(state.workspace.workspaces).find(e => e._id === teamId)
   })
@@ -141,7 +165,7 @@ export default function Sidebar() {
                     {boards => (
                       <>
                         {boards?.map(item => (
-                          <BoardItem board={item} key={item._id} />
+                          <WorkspaceNav workspace={item} key={item._id} />
                         ))}
                       </>
                     )}
@@ -152,7 +176,7 @@ export default function Sidebar() {
                     label={`Create board`}
                     rightSection={<IconPlus size={14} />}
                     onClick={() => {
-                      setToggle('createBoard')
+                      setToggle(WorkspaceType.Board)
                     }}
                   />
                 </NavLink>
@@ -176,7 +200,7 @@ export default function Sidebar() {
                     {channels => (
                       <>
                         {channels?.map(item => (
-                          <ChannelItem channel={item} key={item._id} />
+                          <WorkspaceNav workspace={item} key={item._id} />
                         ))}
                       </>
                     )}
@@ -187,7 +211,7 @@ export default function Sidebar() {
                     label={`Create channel`}
                     rightSection={<IconPlus size={14} />}
                     onClick={() => {
-                      setToggle('createChannel')
+                      setToggle(WorkspaceType.Channel)
                     }}
                   />
                 </NavLink>
@@ -214,7 +238,7 @@ export default function Sidebar() {
                 {groups => (
                   <>
                     {groups?.map(item => (
-                      <GroupItem key={item._id} group={item} />
+                      <WorkspaceNav workspace={item} key={item._id} />
                     ))}
                   </>
                 )}
@@ -225,7 +249,7 @@ export default function Sidebar() {
                 label={`Create group`}
                 rightSection={<IconPlus size={14} />}
                 onClick={() => {
-                  setToggle('createGroup')
+                  setToggle(WorkspaceType.Group)
                 }}
               />
             </NavLink>
@@ -245,10 +269,10 @@ export default function Sidebar() {
                   )
                 }
               >
-                {groups => (
+                {directs => (
                   <>
-                    {groups?.map(item => (
-                      <GroupItem key={item._id} group={item} />
+                    {directs?.map(item => (
+                      <WorkspaceNav workspace={item} key={item._id} />
                     ))}
                   </>
                 )}
@@ -256,10 +280,10 @@ export default function Sidebar() {
 
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'
-                label={`Create group`}
+                label={`Create direct`}
                 rightSection={<IconPlus size={14} />}
                 onClick={() => {
-                  setToggle('createGroup')
+                  setToggle(WorkspaceType.DirectMessage)
                 }}
               />
             </NavLink>
@@ -267,29 +291,32 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <CreateGroup
-        isOpen={toggle === 'createGroup'}
+      <Drawer
         onClose={() => setToggle(undefined)}
-        refetchKey={toggle}
-      />
-
-      {/* <CreateChannel
-        isOpen={toggle === 'createChannel'}
-        onClose={() => setToggle(undefined)}
-        refetchKey={toggle}
-      />
-
-      <CreateBoard
-        isOpen={toggle === 'createBoard'}
-        onClose={() => setToggle(undefined)}
-        refetchKey={toggle}
-      /> */}
-
-      <CreateTeamChild
-        isOpen={toggle === 'createBoard' || toggle === 'createChannel'}
-        onClose={() => setToggle(undefined)}
-        type={WorkspaceType.Board}
-      />
+        opened={!!toggle}
+        title={<p className='text-lg font-semibold'>Create {toggle}</p>}
+        overlayProps={{
+          color: '#000',
+          backgroundOpacity: 0.2,
+          blur: 0.5
+        }}
+        classNames={{
+          content: 'rounded-lg flex flex-col',
+          inner: 'p-3',
+          body: 'flex flex-col flex-1 relative text-sm'
+        }}
+        size={400}
+        position={'left'}
+      >
+        <CreateWorkspace
+          defaultValues={{
+            workspace: {
+              type: WorkspaceType.Channel,
+              status: EWorkspaceStatus.Public
+            } as any
+          }}
+        />
+      </Drawer>
     </>
   )
 }

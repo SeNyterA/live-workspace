@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux'
 import { auth, googleProvider } from '../../firebase/firebase'
 import { authActions } from '../../redux/slices/auth.slice'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
-import { TUser } from '../../types/index.type'
+import { TUser } from '../../types'
 
 type TAuthForm = Pick<TUser, 'email' | 'userName'> & {
   terms: boolean

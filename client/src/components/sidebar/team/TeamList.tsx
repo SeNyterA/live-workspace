@@ -1,10 +1,11 @@
-import { ActionIcon, Avatar, Divider, ScrollArea } from '@mantine/core'
+import { ActionIcon, Avatar, Divider, Drawer, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
-import CreateTeam from './CreateTeam'
+import { WorkspaceType } from '../../../types'
+import CreateWorkspace from '../../create-workspace/CreateWorkspace'
 
 export default function TeamList() {
   const teams = useAppSelector(state =>
@@ -79,13 +80,33 @@ export default function TeamList() {
         </ActionIcon>
       </div>
 
-      <CreateTeam
-        isOpen={openDrawer}
+      <Drawer
         onClose={() => toggleDrawer(false)}
-        defaultValues={{
-          channels: [{ title: 'Genaral' }, { title: 'Topic' }]
+        opened={openDrawer}
+        title={<p className='text-lg font-semibold'>Create team</p>}
+        overlayProps={{
+          color: '#000',
+          backgroundOpacity: 0.2,
+          blur: 0.5
         }}
-      />
+        classNames={{
+          content: 'rounded-lg flex flex-col',
+          inner: 'p-3',
+          body: 'flex flex-col flex-1 relative text-sm'
+        }}
+        size={400}
+        position={'left'}
+      >
+        <CreateWorkspace
+          defaultValues={{
+            workspace: {
+              type: WorkspaceType.Team
+            } as any,
+            channels: [{ title: 'General' }, { title: 'Topic' }] as any,
+            boards: [{ title: 'Task' }] as any
+          }}
+        />
+      </Drawer>
     </>
   )
 }

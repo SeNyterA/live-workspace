@@ -64,7 +64,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           workspaces: { [workspace._id]: workspace },
           members: arrayToObject(members, '_id'),
           users: arrayToObject(
-            members.map(e => e.user),
+            members.map(e => e.user!),
             '_id'
           )
         })

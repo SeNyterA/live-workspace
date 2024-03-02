@@ -128,9 +128,11 @@ export class TeamService {
     user,
     workspace,
     teamId,
-    type
+    type,
+    members
   }: {
     workspace: Workspace
+    members?: Member[]
     user: TJwtUser
     teamId: string
     type: WorkspaceType.Board | WorkspaceType.Channel
@@ -147,7 +149,6 @@ export class TeamService {
       ...workspace,
       type: type,
       displayUrl: generateRandomHash(),
-      status: WorkspaceStatus.Public,
       createdBy: { _id: user.sub },
       modifiedBy: { _id: user.sub },
       parent: { _id: teamId }
@@ -164,7 +165,7 @@ export class TeamService {
           })
         : []
 
-    const members = await this.memberRepository.insert([
+    await this.memberRepository.insert([
       {
         role: EMemberRole.Owner,
         type:

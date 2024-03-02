@@ -1,6 +1,5 @@
 import {
   Avatar,
-  Button,
   Group,
   Input,
   Loader,
@@ -12,7 +11,7 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
-import { WorkspaceType } from '../../types'
+import { EWorkspaceStatus } from '../../types'
 
 const Title = () => {
   const workspace = useAppSelector(
@@ -24,7 +23,7 @@ const Title = () => {
 
   return (
     <TextInput
-      data-autofocus
+      // data-autofocus
       withAsterisk
       disabled={isPending}
       label={`${workspace?.type} name`}
@@ -63,7 +62,7 @@ const Description = () => {
       className='mt-4'
       defaultValue={workspace?.description}
       key={workspace?.description}
-      data-autofocus
+      // data-autofocus
       withAsterisk
       disabled={isPending}
       label={`${workspace?.type} description`}
@@ -94,7 +93,7 @@ const DisplayUrl = () => {
 
   return (
     <TextInput
-      data-autofocus
+      // data-autofocus
       withAsterisk
       label='Dispay url'
       placeholder='Enter the display url'
@@ -188,6 +187,46 @@ const Thunmbnail = () => {
         This image is used for thumbnail
       </Input.Description>
     </>
+  )
+}
+
+const WorkspaceStatus = () => {
+  const workspace = useAppSelector(
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+  const { mutateAsync: updateWorkspace, isPending } =
+    useAppMutation('updateWorkspace')
+
+  return (
+    <Radio.Group
+      name='status'
+      label='Select the status for this workspace'
+      description='This will determine who can access this workspace'
+      withAsterisk
+      className='mt-4'
+      value={workspace?.status}
+    >
+      <Group mt='xs'>
+        <Radio
+          value={EWorkspaceStatus.Private}
+          label='Active'
+          classNames={{
+            body: 'flex gap-1 flex-row-reverse',
+            description: 'mt-0'
+          }}
+          description='Only members can access. Users added to the team will not be added to this workspace or its members automatically.'
+        />
+        <Radio
+          value={EWorkspaceStatus.Public}
+          label='Inactive'
+          classNames={{
+            body: 'flex gap-1 flex-row-reverse',
+            description: 'mt-0'
+          }}
+          description='Anyone can access. Users added to the team will also be added to this workspace automatically.'
+        />
+      </Group>
+    </Radio.Group>
   )
 }
 
@@ -319,38 +358,7 @@ export default function InfoSetting() {
 
       <Description />
 
-      {[WorkspaceType.Board, WorkspaceType.Channel].includes(
-        workspace?.type!
-      ) && (
-        <Radio.Group
-          name='favoriteFramework'
-          label='Select your favorite framework/library'
-          description='This is anonymous'
-          withAsterisk
-          className='mt-4'
-        >
-          <Group mt='xs'>
-            <Radio
-              value='private'
-              label='Private'
-              classNames={{
-                body: 'flex gap-1 flex-row-reverse',
-                description: 'mt-0'
-              }}
-              description='Only members can access'
-            />
-            <Radio
-              value='public'
-              label='Public'
-              classNames={{
-                body: 'flex gap-1 flex-row-reverse',
-                description: 'mt-0'
-              }}
-              description='Anyone can access'
-            />
-          </Group>
-        </Radio.Group>
-      )}
+      <WorkspaceStatus />
     </ScrollArea>
   )
 }

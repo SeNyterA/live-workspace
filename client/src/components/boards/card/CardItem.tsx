@@ -1,10 +1,11 @@
 import { Image } from '@mantine/core'
 import { IconCheckbox } from '@tabler/icons-react'
+import { memo } from 'react'
 import useAppControlParams from '../../../hooks/useAppControlParams'
 import { TCard } from '../../../types'
 import { getItemsWithMatchingKey } from '../../../utils/helper'
 
-export default function CardItem({ card }: { card: TCard }) {
+function CardItem({ card }: { card: TCard }) {
   const { toogleCard } = useAppControlParams()
   const checkboxes = getItemsWithMatchingKey(card.properties || {}, 'taskItem')
 
@@ -42,3 +43,5 @@ export default function CardItem({ card }: { card: TCard }) {
     </div>
   )
 }
+
+export default memo(CardItem)

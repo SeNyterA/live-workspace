@@ -8,15 +8,19 @@ import {
   TextInputProps,
   useCombobox
 } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { Controller, useFieldArray } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { workspaceActions } from '../../../../../redux/slices/workspace.slice'
-import { useAppSelector } from '../../../../../redux/store'
-import { useAppQuery } from '../../../../../services/apis/useAppQuery'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
+import { useAppSelector } from '../../redux/store'
+import { useAppQuery } from '../../services/apis/useAppQuery'
+import { EMemberRole } from '../../types'
+import { arrayToObject } from '../../utils/helper'
+import { useCreateWorkspaceForm } from './CreateWorkspace'
+import MemberControl from './MemberControl'
 import './userCombobox.module.css'
 
-export default function UserCombobox({
+function UserCombobox({
   usersSelectedId = [],
   onPick,
   textInputProps
@@ -24,42 +28,35 @@ export default function UserCombobox({
   usersSelectedId?: string[]
   onPick?: (userId: string) => void
   textInputProps?: TextInputProps
-  targetId: string
 }) {
   const userId = useAppSelector(state => state.auth.userInfo?._id)
   const combobox = useCombobox({
-    onDropdownClose: () => {
-      // setSearchValue('')
-    }
+    onDropdownClose: () => {}
   })
   const dispatch = useDispatch()
   const [searchValue, setSearchValue] = useState('')
-  const [keyword] = useDebouncedValue(searchValue, 200)
   const { data: userData, isLoading } = useAppQuery({
     key: 'findUsersByKeyword',
     url: {
       baseUrl: '/users/by-keyword',
       queryParams: {
-        keyword
+        keyword: searchValue
       }
     },
     options: {
-      queryKey: [keyword],
-      enabled: !!keyword
+      enabled: !!searchValue && searchValue.length > 3
+    },
+    onSucess(data) {
+      console.log(data)
+      console.log(arrayToObject(data.users, '_id'))
+      dispatch(
+        workspaceActions.updateWorkspaceStore({
+          users: arrayToObject(data.users, '_id')
+        })
+      )
     }
   })
-
-  useEffect(() => {
-    if (userData)
-      dispatch(
-        workspaceActions.updateWorkspaceStore(
-          userData.users.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          )
-        )
-      )
-  }, [userData])
+  console.log({ userData })
 
   return (
     <Combobox
@@ -68,6 +65,7 @@ export default function UserCombobox({
         // combobox.closeDropdown()
       }}
       store={combobox}
+      position='top-start'
     >
       <Combobox.Target>
         <TextInput
@@ -119,3 +117,56 @@ export default function UserCombobox({
     </Combobox>
   )
 }
+
+const Members = () => {
+  const { control } = useCreateWorkspaceForm()
+  const { append, fields, remove } = useFieldArray({
+    control,
+    name: 'members'
+  })
+
+  return (
+    <>
+      <UserCombobox
+        usersSelectedId={fields?.map(e => e.userId) || []}
+        onPick={userId => {
+          const idx = fields?.findIndex(e => e.userId === userId)
+          if (idx < 0) {
+            append({
+              userId,
+              role: EMemberRole.Member
+            } as any)
+          } else {
+            remove(idx)
+          }
+        }}
+        textInputProps={{
+          label: 'Add Members',
+          description: 'Type to search and add members to the team',
+          placeholder: 'Search and select members...',
+          className: 'mt-2'
+        }}
+      />
+
+      {fields?.map((member, index) => (
+        <Controller
+          key={member.id}
+          control={control}
+          name={`members.${index}.role`}
+          render={({ field: { value, onChange } }) => (
+            <MemberControl
+              member={{ ...member, role: value }}
+              onChange={role => {
+                onChange(role)
+              }}
+              onRemove={() => {
+                remove(index)
+              }}
+            />
+          )}
+        />
+      ))}
+    </>
+  )
+}
+export default Members
