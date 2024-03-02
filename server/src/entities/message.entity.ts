@@ -29,7 +29,7 @@ export class Message extends BaseEntity {
   @Column({ type: 'enum', enum: EMessageType, default: EMessageType.Normal })
   type: EMessageType
 
-  @Column({ type: 'enum', enum: EMesssageFor })
+  @Column({ type: 'enum', enum: EMesssageFor, default: EMesssageFor.Channel })
   for: EMesssageFor
 
   @Column({ type: 'json' })

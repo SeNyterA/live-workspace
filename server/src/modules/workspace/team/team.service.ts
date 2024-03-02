@@ -180,7 +180,7 @@ export class TeamService {
         .filter(member =>
           workspace.status === WorkspaceStatus.Public
             ? true
-            : members.map(e => e.userId).includes(member.userId)
+            : members?.map(e => e.userId).includes(member.userId) || []
         )
         .map(member => ({
           role: EMemberRole.Member,
