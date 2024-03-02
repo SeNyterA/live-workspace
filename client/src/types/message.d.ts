@@ -19,7 +19,7 @@ export type TMessage = TBase & {
   reactions: {
     [userId: string]: string
   }
-  for:EMesssageFor
+  for: EMesssageFor
   isPinned: boolean
   attachments?: TFile[]
   targetId: string

@@ -24,7 +24,7 @@ import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { EWorkspaceStatus, TWorkspace, WorkspaceType } from '../../types'
-import CreateWorkspace from '../create-workspace/CreateWorkspace'
+import CreateWorkspace from '../workspace/create/CreateWorkspace'
 
 function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
   const { channelId } = useAppParams()
@@ -73,9 +73,9 @@ export default function Sidebar() {
   return (
     <>
       <div className='flex w-72 flex-col gap-2 px-4 py-3'>
-        <p className='text-xl'>{!!team ? team?.title : 'Personal'}</p>
+        <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
         <p className='line-clamp-3 text-gray-500'>
-          {!!team ? team?.description : 'Wellcome to workspace'}
+          {team ? team?.description : 'Wellcome to workspace'}
         </p>
 
         {!!team?.thumbnail?.path && (
