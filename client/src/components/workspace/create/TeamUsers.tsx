@@ -146,18 +146,22 @@ export const TeamUsers = memo(() => {
                 <Radio
                   value={EWorkspaceStatus.Private}
                   label='Private'
+                  labelPosition='right'
                   classNames={{
-                    body: 'flex gap-1 flex-row-reverse',
-                    description: 'mt-0'
+                    body: 'flex gap-1',
+                    description: 'mt-0',
+                    inner: 'order-[0]'
                   }}
                   description='Only members can access'
                 />
                 <Radio
                   value={EWorkspaceStatus.Public}
                   label='Public'
+                  labelPosition='right'
                   classNames={{
-                    body: 'flex gap-1 flex-row-reverse',
-                    description: 'mt-0'
+                    body: 'flex gap-1',
+                    description: 'mt-0',
+                    inner: 'order-[0]'
                   }}
                   description='Invite all team members to join'
                 />

@@ -4,12 +4,7 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
 import { Server, Socket } from 'socket.io'
 import { File } from 'src/entities/file.entity'
-import {
-  EMemberRole,
-  EMemberType,
-  Member,
-  RoleWeights
-} from 'src/entities/member.entity'
+import { EMemberRole, Member, RoleWeights } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 
@@ -108,7 +103,6 @@ export class WorkspaceService {
     const member = await this.memberRepository.save(
       this.memberRepository.create({
         role: EMemberRole.Owner,
-        type: EMemberType.Group,
 
         user: { _id: user.sub },
         workspace: { _id: newWorkspace._id },

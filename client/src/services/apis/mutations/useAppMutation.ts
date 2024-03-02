@@ -177,6 +177,7 @@ export type ApiMutationType = {
       workspace: TWorkspace
       channels?: TWorkspace[]
       boards?: TWorkspace[]
+      members?: TMember[]
     }
     response: TWorkspace
   }

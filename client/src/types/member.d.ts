@@ -7,14 +7,6 @@ export enum EMemberRole {
   Member = 'Member'
 }
 
-export enum EMemberType {
-  Team = 'Team',
-  Channel = 'Channel',
-  Board = 'Board',
-  Group = 'Group',
-  DirectMessage = 'DirectMessage'
-}
-
 export type TMember = TBase & {
   role: EMemberRole
   type: EMemberType

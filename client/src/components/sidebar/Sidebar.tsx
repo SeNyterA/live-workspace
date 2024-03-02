@@ -52,7 +52,7 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
       active={channelId === workspace._id}
       onClick={() => {
         switchTo({
-          target: 'channel',
+          target: workspace.type as any,
           targetId: workspace._id
         })
       }}
@@ -90,7 +90,7 @@ export default function Sidebar() {
             className='flex h-[30px] flex-1 items-center rounded bg-gray-100'
             size='sm'
             placeholder='Search on workspace'
-            leftSection={<IconSearch size={14} />}
+            leftSection={<IconSearch size={16} />}
             classNames={{
               input: 'bg-transparent border-none min-h-[20px] h-[20px]'
             }}
@@ -145,12 +145,11 @@ export default function Sidebar() {
                 <NavLink
                   className='sticky top-0 z-10 mb-1 bg-white p-1'
                   label='Boards'
-                  leftSection={<IconLayoutKanban size={20} stroke={1.5} />}
+                  leftSection={<IconLayoutKanban size={16} stroke={1.5} />}
                   active={path.pathname.includes('board')}
                   defaultOpened={!!boardId}
                   classNames={{
-                    children: 'pl-6',
-                    section: 'mr-1'
+                    children: 'pl-6'
                   }}
                 >
                   <Watching
@@ -174,7 +173,7 @@ export default function Sidebar() {
                   <NavLink
                     className='mb-2 p-1 pl-3 opacity-70'
                     label={`Create board`}
-                    rightSection={<IconPlus size={14} />}
+                    rightSection={<IconPlus size={16} stroke={1.5}/>}
                     onClick={() => {
                       setToggle(WorkspaceType.Board)
                     }}
@@ -209,7 +208,7 @@ export default function Sidebar() {
                   <NavLink
                     className='mb-2 p-1 pl-3 opacity-70'
                     label={`Create channel`}
-                    rightSection={<IconPlus size={14} />}
+                    rightSection={<IconPlus size={16} stroke={1.5}/>}
                     onClick={() => {
                       setToggle(WorkspaceType.Channel)
                     }}
@@ -247,7 +246,7 @@ export default function Sidebar() {
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'
                 label={`Create group`}
-                rightSection={<IconPlus size={14} />}
+                rightSection={<IconPlus size={16} stroke={1.5}/>}
                 onClick={() => {
                   setToggle(WorkspaceType.Group)
                 }}
@@ -281,7 +280,7 @@ export default function Sidebar() {
               <NavLink
                 className='mb-2 p-1 pl-3 opacity-70'
                 label={`Create direct`}
-                rightSection={<IconPlus size={14} />}
+                rightSection={<IconPlus size={16} stroke={1.5}/>}
                 onClick={() => {
                   setToggle(WorkspaceType.DirectMessage)
                 }}

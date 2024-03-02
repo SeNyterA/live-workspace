@@ -2,7 +2,7 @@ import { ActionIcon, Avatar, Menu } from '@mantine/core'
 import { IconMessageCircle } from '@tabler/icons-react'
 import { ReactNode } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
-import { TUser } from '../../types'
+import { TUser, WorkspaceType } from '../../types'
 
 export default function UserDetailProvider({
   children,
@@ -34,7 +34,10 @@ export default function UserDetailProvider({
           leftSection={<IconMessageCircle size={14} />}
           onClick={() => {
             if (!user?._id) return
-            switchTo({ target: 'direct-message', targetId: user._id })
+            switchTo({
+              target: WorkspaceType.DirectMessage,
+              targetId: user._id
+            })
           }}
         >
           Messages

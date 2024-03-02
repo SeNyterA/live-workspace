@@ -2,7 +2,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
+import { EMemberRole, Member } from 'src/entities/member.entity'
 import {
   Workspace,
   WorkspaceStatus,
@@ -64,7 +64,6 @@ export class TeamService {
       {
         user: { _id: user.sub },
         role: EMemberRole.Owner,
-        type: EMemberType.Team,
         modifiedBy: { _id: user.sub },
         createdBy: { _id: user.sub },
         workspace: newWorkspace
@@ -74,7 +73,6 @@ export class TeamService {
         ?.map(e => ({
           user: { _id: e.userId },
           role: e.role,
-          type: EMemberType.Team,
           modifiedBy: { _id: user.sub },
           createdBy: { _id: user.sub },
           workspace: newWorkspace
@@ -154,43 +152,69 @@ export class TeamService {
       parent: { _id: teamId }
     })
 
-    const workpsaceMembers =
-      newWorkspace.generatedMaps[0].status === WorkspaceStatus.Public
-        ? await this.memberRepository.find({
-            where: {
-              workspace: { _id: teamId },
-              isAvailable: true,
-              user: { _id: Not(user.sub), isAvailable: true }
-            }
-          })
-        : []
+    if (workspace.status === WorkspaceStatus.Public) {
+      const workpsaceMembers =
+        newWorkspace.generatedMaps[0].status === WorkspaceStatus.Public
+          ? await this.memberRepository.find({
+              where: {
+                workspace: { _id: teamId },
+                isAvailable: true,
+                user: { _id: Not(user.sub), isAvailable: true }
+              }
+            })
+          : []
 
-    await this.memberRepository.insert([
-      {
-        role: EMemberRole.Owner,
-        type:
-          type === WorkspaceType.Board
-            ? EMemberType.Board
-            : EMemberType.Channel,
-        user: { _id: user.sub },
-        workspace: { _id: newWorkspace.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      },
-      ...workpsaceMembers.map(member => ({
-        role: EMemberRole.Member,
-        type:
-          type === WorkspaceType.Board
-            ? EMemberType.Board
-            : EMemberType.Channel,
-        user: { _id: member.userId },
-        workspace: { _id: newWorkspace.identifiers[0]._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      }))
-    ])
+      await this.memberRepository.insert([
+        {
+          role: EMemberRole.Owner,
+          user: { _id: user.sub },
+          workspace: { _id: newWorkspace.identifiers[0]._id },
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        },
+        ...workpsaceMembers.map(member => ({
+          role: EMemberRole.Member,
+          user: { _id: member.userId },
+          workspace: { _id: newWorkspace.identifiers[0]._id },
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        }))
+      ])
 
-    return newWorkspace
+      return newWorkspace
+    } else {
+      const teamMembers = await this.memberRepository.find({
+        where: {
+          workspace: { _id: teamId },
+          isAvailable: true,
+          user: {
+            _id: In(
+              members.filter(e => e.userId !== user.sub).map(e => e.userId)
+            ),
+            isAvailable: true
+          }
+        }
+      })
+
+      await this.memberRepository.insert([
+        {
+          role: EMemberRole.Owner,
+          user: { _id: user.sub },
+          workspace: { _id: newWorkspace.identifiers[0]._id },
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        },
+        ...teamMembers.map(member => ({
+          role: member.role || EMemberRole.Member,
+          user: { _id: member.userId },
+          workspace: { _id: newWorkspace.identifiers[0]._id },
+          createdBy: { _id: user.sub },
+          modifiedBy: { _id: user.sub }
+        }))
+      ])
+
+      return newWorkspace
+    }
   }
 
   async findTeamMemberByKeyword({

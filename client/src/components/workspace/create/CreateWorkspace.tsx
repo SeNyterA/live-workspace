@@ -1,6 +1,10 @@
 import { Button, ScrollArea, Tabs } from '@mantine/core'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { ApiMutationType } from '../../../services/apis/mutations/useAppMutation'
+import useAppParams from '../../../hooks/useAppParams'
+import {
+  ApiMutationType,
+  useAppMutation
+} from '../../../services/apis/mutations/useAppMutation'
 import { WorkspaceType } from '../../../types'
 import CreateWorkspaceInfo from './CreateWorkspaceInfo'
 import Members from './Members'
@@ -22,6 +26,12 @@ export default function CreateWorkspace({
 }) {
   const form = useForm<TCreateWorkspaceForm>({ defaultValues })
   const workspaceType = defaultValues.workspace.type
+  const { teamId } = useAppParams()
+
+  const { mutateAsync: createBoard } = useAppMutation('createBoard')
+  const { mutateAsync: createChannel } = useAppMutation('createChannel')
+  const { mutateAsync: createGroup } = useAppMutation('createGroup')
+  const { mutateAsync: createTeam } = useAppMutation('createTeam')
 
   return (
     <FormProvider {...form}>
@@ -68,6 +78,76 @@ export default function CreateWorkspace({
         <Button
           onClick={form.handleSubmit(({ ...data }) => {
             console.log({ data })
+
+            if (workspaceType === WorkspaceType.Team) {
+              const _data = data as ApiMutationType['createTeam']['payload']
+              createTeam({
+                url: {
+                  baseUrl: '/teams'
+                },
+                method: 'post',
+                payload: {
+                  workspace: {
+                    ...data.workspace,
+                    type: workspaceType
+                  },
+                  boards: _data?.boards,
+                  channels: _data?.channels,
+                  members: _data.members
+                }
+              })
+            }
+
+            if (workspaceType === WorkspaceType.Board) {
+              createBoard({
+                url: {
+                  baseUrl: '/teams/:teamId/boards',
+                  urlParams: {
+                    teamId: teamId!
+                  }
+                },
+                method: 'post',
+                payload: {
+                  workspace: {
+                    ...data.workspace,
+                    type: workspaceType
+                  }
+                }
+              })
+            }
+            if (workspaceType === WorkspaceType.Channel) {
+              createChannel({
+                url: {
+                  baseUrl: '/teams/:teamId/channels',
+                  urlParams: {
+                    teamId: teamId!
+                  }
+                },
+                method: 'post',
+                payload: {
+                  workspace: {
+                    ...data.workspace,
+                    type: workspaceType
+                  }
+                }
+              })
+            }
+
+            if (workspaceType === WorkspaceType.Group) {
+              createGroup({
+                url: {
+                  baseUrl: '/groups'
+                },
+                method: 'post',
+                payload: {
+                  workspace: {
+                    ...data.workspace,
+                    type: workspaceType
+                  },
+                  members: data.members
+                }
+              })
+            }
           })}
         >
           Create

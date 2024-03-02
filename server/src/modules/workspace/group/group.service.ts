@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
+import { EMemberRole, Member } from 'src/entities/member.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 import { Repository } from 'typeorm'
 import { generateRandomHash } from '../workspace.service'
@@ -46,7 +46,6 @@ export class GroupService {
     const _members = await this.memberRepository.insert([
       {
         role: EMemberRole.Owner,
-        type: EMemberType.Group,
         user: { _id: user.sub },
         workspace: { _id: newWorkspace._id },
         createdBy: { _id: user.sub },

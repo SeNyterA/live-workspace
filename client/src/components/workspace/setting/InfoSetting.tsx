@@ -210,18 +210,22 @@ const WorkspaceStatus = () => {
         <Radio
           value={EWorkspaceStatus.Private}
           label='Active'
+          labelPosition='right'
           classNames={{
-            body: 'flex gap-1 flex-row-reverse',
-            description: 'mt-0'
+            body: 'flex gap-1',
+            description: 'mt-0',
+            inner: 'order-[0]'
           }}
           description='Only members can access. Users added to the team will not be added to this workspace or its members automatically.'
         />
         <Radio
           value={EWorkspaceStatus.Public}
           label='Inactive'
+          labelPosition='right'
           classNames={{
-            body: 'flex gap-1 flex-row-reverse',
-            description: 'mt-0'
+            body: 'flex gap-1',
+            description: 'mt-0',
+            inner: 'order-[0]'
           }}
           description='Anyone can access. Users added to the team will also be added to this workspace automatically.'
         />

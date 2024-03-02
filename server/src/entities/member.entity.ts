@@ -16,21 +16,10 @@ export const RoleWeights: { [role in EMemberRole]: number } = {
   [EMemberRole.Owner]: 100
 }
 
-export enum EMemberType {
-  Team = 'Team',
-  Channel = 'Channel',
-  Board = 'Board',
-  Group = 'Group',
-  DirectMessage = 'DirectMessage'
-}
-
 @Entity()
 export class Member extends BaseEntity {
   @Column({ type: 'enum', enum: EMemberRole, default: EMemberRole.Member })
   role: EMemberRole
-
-  @Column({ type: 'enum', enum: EMemberType })
-  type: EMemberType
 
   @Column()
   path: string

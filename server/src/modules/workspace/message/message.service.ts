@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberRole, EMemberType, Member } from 'src/entities/member.entity'
+import { EMemberRole, Member } from 'src/entities/member.entity'
 import { Message } from 'src/entities/message.entity'
-import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
+import { WorkspaceType } from 'src/entities/workspace.entity'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { In, LessThan, Repository } from 'typeorm'
@@ -24,8 +24,6 @@ export class MessageService {
     private readonly memberRepository: Repository<Member>,
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
-    @InjectRepository(Workspace)
-    private readonly workspaceRepository: Repository<Workspace>,
     private readonly redisService: RedisService
   ) {}
 
@@ -91,12 +89,15 @@ export class MessageService {
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId, isAvailable: true },
-        type: In([
-          EMemberType.Channel,
-          EMemberType.DirectMessage,
-          EMemberType.Group
-        ])
+        workspace: {
+          _id: targetId,
+          isAvailable: true,
+          type: In([
+            WorkspaceType.Direct,
+            WorkspaceType.Group,
+            WorkspaceType.Channel
+          ])
+        }
       }
     })
 
@@ -137,13 +138,16 @@ export class MessageService {
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId, isAvailable: true },
-        isAvailable: true,
-        type: In([
-          EMemberType.Channel,
-          EMemberType.DirectMessage,
-          EMemberType.Group
-        ])
+        workspace: {
+          _id: targetId,
+          isAvailable: true,
+          type: In([
+            WorkspaceType.Direct,
+            WorkspaceType.Group,
+            WorkspaceType.Channel
+          ])
+        },
+        isAvailable: true
       }
     })
     const message = await this.messageRepository.findOneOrFail({
@@ -169,13 +173,16 @@ export class MessageService {
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId, isAvailable: true },
-        isAvailable: true,
-        type: In([
-          EMemberType.Channel,
-          EMemberType.DirectMessage,
-          EMemberType.Group
-        ])
+        workspace: {
+          _id: targetId,
+          isAvailable: true,
+          type: In([
+            WorkspaceType.Direct,
+            WorkspaceType.Group,
+            WorkspaceType.Channel
+          ])
+        },
+        isAvailable: true
       }
     })
 
@@ -202,13 +209,16 @@ export class MessageService {
     await this.memberRepository.findOneOrFail({
       where: {
         user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: targetId, isAvailable: true },
-        isAvailable: true,
-        type: In([
-          EMemberType.Channel,
-          EMemberType.DirectMessage,
-          EMemberType.Group
-        ])
+        workspace: {
+          _id: targetId,
+          isAvailable: true,
+          type: In([
+            WorkspaceType.Direct,
+            WorkspaceType.Group,
+            WorkspaceType.Channel
+          ])
+        },
+        isAvailable: true
       }
     })
 
