@@ -114,8 +114,6 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
     }
   }, [properties, boardId, trackingId])
 
-  console.log({ trackingId })
-
   return (
     <boardContext.Provider
       value={{
@@ -129,7 +127,6 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
           setSortBy(value)
         },
         setTrackingId: value => {
-          console.log({ value })
           if (
             properties?.find(
               e =>

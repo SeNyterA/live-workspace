@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
+import { getAppValue } from '../redux/store'
 import { WorkspaceType } from '../types'
+import { lsActions } from '../utils/auth'
 import useAppParams from './useAppParams'
 
 const urlParser = {
@@ -12,7 +14,7 @@ const urlParser = {
 export default function useAppControlParams() {
   const navigate = useNavigate()
 
-  const { teamId, directId, boardId } = useAppParams()
+  const { teamId, directId, boardId, channelId, groupId } = useAppParams()
 
   return {
     switchTo: ({
@@ -25,17 +27,51 @@ export default function useAppControlParams() {
         | WorkspaceType.Channel
         | WorkspaceType.Group
         | WorkspaceType.DirectMessage
-    }) =>
-      navigate(
-        `/team/${teamId || 'personal'}/${urlParser[target]}/${targetId}`
-      ),
+    }) => {
+      lsActions.setTeamChild(teamId!, targetId)
+      navigate(`/team/${teamId || 'personal'}/${urlParser[target]}/${targetId}`)
+    },
 
     switchTeam: ({ teamId }: { teamId: string }) => {
-      navigate(
-        `/team/${teamId || 'personal'}${
-          directId ? `/direct-message/${directId}` : ''
-        }`
-      )
+      lsActions.setCurentTeam(teamId)
+
+      const getChildUrl = () => {
+        if (directId) {
+          lsActions.setTeamChild(teamId, directId)
+          return `/direct-message/${directId}`
+        }
+        if (groupId) {
+          lsActions.setTeamChild(teamId, groupId)
+          return `/group/${groupId}`
+        }
+
+        const teamChild = getAppValue(
+          state => state.workspace.workspaces[lsActions.getTeamChild(teamId)!]
+        )
+        if (!!teamChild) {
+          lsActions.setTeamChild(teamId, teamChild._id)
+          return `/${urlParser[teamChild.type as keyof typeof urlParser]}/${
+            teamChild._id
+          }`
+        } else {
+          const teamChild = getAppValue(state =>
+            Object.values(state.workspace.workspaces).find(
+              e => e.parentId === teamId
+            )
+          )
+
+          if (teamChild) {
+            lsActions.setTeamChild(teamId, teamChild._id)
+            return `/${urlParser[teamChild.type as keyof typeof urlParser]}/${
+              teamChild._id
+            }`
+          }
+        }
+
+        return ''
+      }
+
+      navigate(`/team/${teamId || 'personal'}${getChildUrl()}`)
     },
     toogleCard: ({
       teamId: _teamId,

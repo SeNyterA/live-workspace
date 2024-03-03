@@ -157,8 +157,6 @@ export default function MessageGroup({
                   <Picker
                     data={data}
                     onEmojiSelect={(data: any) => {
-                      console.log({ data })
-
                       // console.log(String.fromCodePoint(Number('0x1f618')))
                       reactWorkspaceMessage({
                         url: {

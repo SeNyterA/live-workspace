@@ -56,7 +56,6 @@ const getOptionWithNewOrder = ({
       }
     }
   } catch (error) {
-    console.log(error)
     return
   }
 }

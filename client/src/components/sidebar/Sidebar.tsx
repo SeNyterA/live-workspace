@@ -29,7 +29,7 @@ import CreateWorkspace, {
 } from '../workspace/create/CreateWorkspace'
 
 function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
-  const { channelId } = useAppParams()
+  const { channelId, groupId, directId, boardId } = useAppParams()
   const unreadCount = useAppSelector(
     state => state.workspace.unreadCount[workspace._id]
   )
@@ -51,7 +51,7 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
           )}
         </div>
       }
-      active={channelId === workspace._id}
+      active={[channelId, groupId, directId, boardId].includes(workspace._id)}
       onClick={() => {
         switchTo({
           target: workspace.type as any,
@@ -99,7 +99,7 @@ export default function Sidebar() {
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
           />
-          
+
           <ActionIcon
             size={30}
             variant='light'

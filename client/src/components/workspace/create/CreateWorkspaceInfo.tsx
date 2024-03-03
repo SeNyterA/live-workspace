@@ -26,7 +26,6 @@ export default function CreateWorkspaceInfo() {
           <>
             <Dropzone
               onDrop={files => {
-                console.log({ files })
                 uploadFile(
                   {
                     method: 'post',

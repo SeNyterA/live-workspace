@@ -138,8 +138,6 @@ export default function CreateWorkspace({
 
         <Button
           onClick={form.handleSubmit(({ ...data }) => {
-            console.log({ data })
-
             if (workspaceType === WorkspaceType.Team) {
               const _data = data as ApiMutationType['createTeam']['payload']
               createTeam({

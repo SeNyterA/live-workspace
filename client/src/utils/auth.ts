@@ -39,5 +39,13 @@ export const lsActions = {
 
   getSortBy: (key: string) => localStorage.getItem(key + '_sortBy'),
   setSortBy: (key: string, value: string) =>
-    localStorage.setItem(key + '_sortBy', value)
+    localStorage.setItem(key + '_sortBy', value),
+
+  getTeamChild: (key: string) =>
+    localStorage.getItem(key) as string | undefined,
+  setTeamChild: (key: string, value: string) =>
+    localStorage.setItem(key, value),
+  getCurentTeam: () =>
+    localStorage.getItem('currentTeam') as string | undefined,
+  setCurentTeam: (teamId: string) => localStorage.setItem('currentTeam', teamId)
 }

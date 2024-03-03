@@ -69,18 +69,11 @@ export default function MessageContentWrapper() {
           </div>
           <Divider variant='dashed' />
 
-          <MessageContent
-            key={workspaceId}
-            loadMore={loadFromId => {
-              console.log('loadmore', loadFromId)
-            }}
-          />
+          <MessageContent key={workspaceId} loadMore={loadFromId => {}} />
 
           <SendMessage
             targetId={channelId || ''}
             createMessage={({ files, value }) => {
-              console.log({ value, files })
-
               sendWorkspaceMessage(
                 {
                   url: {

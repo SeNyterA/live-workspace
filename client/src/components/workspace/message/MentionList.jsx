@@ -5,8 +5,6 @@ import './MentionList.scss'
 export default forwardRef((props, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
-  console.log({ first: props.items })
-
   const selectItem = index => {
     const item = props.items[index]
     if (item) {

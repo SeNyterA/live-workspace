@@ -78,7 +78,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   useAppOnSocket({
     key: 'workspace',
     resFunc: ({ workspace }) => {
-      console.log({workspace})
       dispatch(
         workspaceActions.updateWorkspaceStore({
           workspaces: { [workspace._id]: workspace }

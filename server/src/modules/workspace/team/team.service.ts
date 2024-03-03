@@ -50,13 +50,6 @@ export class TeamService {
     boards?: Workspace[]
     members?: Member[]
   }) {
-    console.log({
-      user,
-      workspace,
-      boards,
-      channels,
-      members
-    })
     const newWorkspace = await this.workspaceRepository.save(
       this.workspaceRepository.create({
         ...workspace,

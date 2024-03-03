@@ -47,8 +47,6 @@ function UserCombobox({
       enabled: !!searchValue && searchValue.length > 3
     },
     onSucess(data) {
-      console.log(data)
-      console.log(arrayToObject(data.users, '_id'))
       dispatch(
         workspaceActions.updateWorkspaceStore({
           users: arrayToObject(data.users, '_id')
@@ -56,7 +54,6 @@ function UserCombobox({
       )
     }
   })
-  console.log({ userData })
 
   return (
     <Combobox
