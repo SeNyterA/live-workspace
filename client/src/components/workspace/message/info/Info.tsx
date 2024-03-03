@@ -61,7 +61,10 @@ export default function Info() {
         )}
 
         <div className='relative mt-2 flex-1'>
-          <ScrollArea className='absolute inset-0 space-y-6' scrollbarSize={8}>
+          <ScrollArea
+            className='absolute inset-0 right-[-12px] pr-3'
+            scrollbarSize={8}
+          >
             <Members />
             {!!(channelId || groupId || directId) && <PinedMesages />}
             <Files />

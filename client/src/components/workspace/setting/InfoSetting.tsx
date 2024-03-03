@@ -11,9 +11,9 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { EWorkspaceStatus } from '../../../types'
+import { EMemberRole, EWorkspaceStatus, WorkspaceType } from '../../../types'
 
-const Title = () => {
+const Title = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
@@ -25,7 +25,7 @@ const Title = () => {
     <TextInput
       // data-autofocus
       withAsterisk
-      disabled={isPending}
+      disabled={isPending || isDisabled}
       label={`${workspace?.type} name`}
       placeholder='Enter the team name'
       size='sm'
@@ -48,7 +48,7 @@ const Title = () => {
   )
 }
 
-const Description = () => {
+const Description = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
@@ -64,7 +64,7 @@ const Description = () => {
       key={workspace?.description}
       // data-autofocus
       withAsterisk
-      disabled={isPending}
+      disabled={isPending || isDisabled}
       label={`${workspace?.type} description`}
       size='sm'
       onBlur={e =>
@@ -83,7 +83,7 @@ const Description = () => {
   )
 }
 
-const DisplayUrl = () => {
+const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
@@ -101,7 +101,7 @@ const DisplayUrl = () => {
       size='sm'
       className='mt-4'
       defaultValue={workspace?.displayUrl}
-      disabled={isPending}
+      disabled={isPending || isDisabled}
       key={workspace?.displayUrl}
       onBlur={e =>
         e.target.value !== workspace?.displayUrl &&
@@ -119,34 +119,37 @@ const DisplayUrl = () => {
   )
 }
 
-const Thunmbnail = () => {
+const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
   const { mutateAsync: updateWorkspace, isPending } =
     useAppMutation('updateWorkspace')
 
-  const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
-    config: {
-      headers: {
-        'Content-Type': undefined
-      }
-    },
-    mutationOptions: {
-      onSuccess(data, variables, context) {
-        updateWorkspace({
-          method: 'patch',
-          url: {
-            baseUrl: `workspaces/:workspaceId`,
-            urlParams: {
-              workspaceId: workspace?._id!
-            }
-          },
-          payload: { workspace: { thumbnail: data } as any }
-        })
+  const { mutateAsync: uploadFile, isPending: uploadPending } = useAppMutation(
+    'uploadFile',
+    {
+      config: {
+        headers: {
+          'Content-Type': undefined
+        }
+      },
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          updateWorkspace({
+            method: 'patch',
+            url: {
+              baseUrl: `workspaces/:workspaceId`,
+              urlParams: {
+                workspaceId: workspace?._id!
+              }
+            },
+            payload: { workspace: { thumbnail: data } as any }
+          })
+        }
       }
     }
-  })
+  )
 
   return (
     <>
@@ -173,6 +176,7 @@ const Thunmbnail = () => {
         maxSize={3 * 1024 * 1024}
         accept={IMAGE_MIME_TYPE}
         className='mt-4 w-full'
+        disabled={isPending || isDisabled || uploadPending}
       >
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
@@ -190,7 +194,7 @@ const Thunmbnail = () => {
   )
 }
 
-const WorkspaceStatus = () => {
+const WorkspaceStatus = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
@@ -205,50 +209,7 @@ const WorkspaceStatus = () => {
       withAsterisk
       className='mt-4'
       value={workspace?.status}
-    >
-      <Group mt='xs'>
-        <Radio
-          value={EWorkspaceStatus.Private}
-          label='Active'
-          labelPosition='right'
-          classNames={{
-            body: 'flex gap-1',
-            description: 'mt-0',
-            inner: 'order-[0]'
-          }}
-          description='Only members can access. Users added to the team will not be added to this workspace or its members automatically.'
-        />
-        <Radio
-          value={EWorkspaceStatus.Public}
-          label='Inactive'
-          labelPosition='right'
-          classNames={{
-            body: 'flex gap-1',
-            description: 'mt-0',
-            inner: 'order-[0]'
-          }}
-          description='Anyone can access. Users added to the team will also be added to this workspace automatically.'
-        />
-      </Group>
-    </Radio.Group>
-  )
-}
-
-const WorkspaceAvatar = () => {
-  const workspace = useAppSelector(
-    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
-  )
-  const { mutateAsync: updateWorkspace, isPending } =
-    useAppMutation('updateWorkspace')
-
-  const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
-    config: {
-      headers: {
-        'Content-Type': undefined
-      }
-    },
-    mutationOptions: {
-      onSuccess(data, variables, context) {
+      onChange={value =>
         updateWorkspace({
           method: 'patch',
           url: {
@@ -257,11 +218,71 @@ const WorkspaceAvatar = () => {
               workspaceId: workspace?._id!
             }
           },
-          payload: { workspace: { avatar: data } as any }
+          payload: { workspace: { status: value } as any }
         })
       }
+    >
+      <Group mt='xs'>
+        <Radio
+          value={EWorkspaceStatus.Private}
+          label={EWorkspaceStatus.Private}
+          labelPosition='right'
+          classNames={{
+            body: 'flex gap-1',
+            description: 'mt-0',
+            inner: 'order-[0]'
+          }}
+          description='Members are added manually.'
+          disabled={isPending || isDisabled}
+        />
+        <Radio
+          value={EWorkspaceStatus.Public}
+          label={EWorkspaceStatus.Public}
+          labelPosition='right'
+          classNames={{
+            body: 'flex gap-1',
+            description: 'mt-0',
+            inner: 'order-[0]'
+          }}
+          description='Members are added automatically.'
+          disabled={isPending || isDisabled}
+        />
+      </Group>
+    </Radio.Group>
+  )
+}
+
+const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
+  const workspace = useAppSelector(
+    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+  const { mutateAsync: updateWorkspace, isPending } =
+    useAppMutation('updateWorkspace')
+
+  const { mutateAsync: uploadFile, isPending: uploadPending } = useAppMutation(
+    'uploadFile',
+    {
+      config: {
+        headers: {
+          'Content-Type': undefined
+        }
+      },
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          updateWorkspace({
+            method: 'patch',
+            url: {
+              baseUrl: `workspaces/:workspaceId`,
+              urlParams: {
+                workspaceId: workspace?._id!
+              }
+            },
+            payload: { workspace: { avatar: data } as any }
+          })
+        }
+      }
     }
-  })
+  )
 
   return (
     <>
@@ -289,6 +310,7 @@ const WorkspaceAvatar = () => {
         classNames={{
           inner: 'flex gap-2'
         }}
+        disabled={isPending || isDisabled || uploadPending}
       >
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
@@ -320,31 +342,15 @@ const WorkspaceAvatar = () => {
 }
 
 export default function InfoSetting() {
-  const { mutateAsync: updateWorkspace, isPending } =
-    useAppMutation('updateWorkspace')
-
-  const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
-    config: {
-      headers: {
-        'Content-Type': undefined
-      }
-    },
-    mutationOptions: {
-      onSuccess(data, variables, context) {
-        updateWorkspace({
-          method: 'patch',
-          url: {
-            baseUrl: `workspaces/:workspaceId`,
-            urlParams: { workspaceId: workspace?._id! }
-          },
-          payload: { workspace: { thumbnail: data } as any }
-        })
-      }
-    }
-  })
-
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  )
+  const enabled = useAppSelector(state =>
+    Object.values(state.workspace.members).find(
+      member =>
+        member.userId === state.auth.userInfo?._id &&
+        [EMemberRole.Owner, EMemberRole.Admin].includes(member.role)
+    )
   )
 
   return (
@@ -352,17 +358,19 @@ export default function InfoSetting() {
       className='absolute inset-0 right-[-12px] pr-3'
       scrollbarSize={8}
     >
-      <Thunmbnail />
+      <Thunmbnail isDisabled={!enabled} />
 
-      <WorkspaceAvatar />
+      <WorkspaceAvatar isDisabled={!enabled} />
 
-      <Title />
+      <Title isDisabled={!enabled} />
 
-      <DisplayUrl />
+      <DisplayUrl isDisabled={!enabled} />
 
-      <Description />
+      <Description isDisabled={!enabled} />
 
-      <WorkspaceStatus />
+      {[WorkspaceType.Board, WorkspaceType.Channel].includes(
+        workspace?.type as WorkspaceType
+      ) && <WorkspaceStatus isDisabled={!enabled} />}
     </ScrollArea>
   )
 }
