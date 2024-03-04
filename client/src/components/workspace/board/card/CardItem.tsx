@@ -7,7 +7,7 @@ import { getItemsWithMatchingKey } from '../../../../utils/helper'
 
 function CardItem({ card }: { card: TCard }) {
   const { toogleCard } = useAppControlParams()
-  const checkboxes = getItemsWithMatchingKey(card.properties || {}, 'taskItem')
+  const checkboxes = getItemsWithMatchingKey(card.detail || {}, 'taskItem')
 
   return (
     <div

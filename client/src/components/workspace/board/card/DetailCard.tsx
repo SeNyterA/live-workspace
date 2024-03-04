@@ -18,7 +18,7 @@ export default function DetailCard() {
 
   const dispatch = useDispatch()
   const socketEmit = useAppEmitSocket()
-
+console.log({card})
   return (
     <>
       {!!cardId && !!card && (

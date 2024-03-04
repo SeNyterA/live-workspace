@@ -77,17 +77,17 @@ export default function Editor() {
       if (!boardId) return
       if (!cardId) return
 
-      // updateCard({
-      //   url: {
-      //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-      //     urlParams: {
-      //       boardId,
-      //       cardId
-      //     }
-      //   },
-      //   method: 'patch',
-      //   payload: { data: editor.getJSON() }
-      // })
+      updateCard({
+        url: {
+          baseUrl: 'boards/:boardId/cards/:cardId',
+          urlParams: {
+            boardId,
+            cardId
+          }
+        },
+        method: 'patch',
+        payload: { card: { detail: editor.getJSON() } as any }
+      })
     }
   })
 
