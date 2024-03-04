@@ -23,17 +23,17 @@ export enum WorkspaceType {
 }
 
 export enum WorkspaceStatus {
-  Private = 'Private',
-  Public = 'Public'
+  Private = 'C',
+  Public = 'O'
 }
 
 @Entity()
 export class Workspace extends BaseEntity {
-  @Column()
+  @Column({ nullable: false })
   title: string
 
-  @Column()
-  description: string
+  @Column({ nullable: true })
+  description?: string
 
   @OneToOne(() => File, { nullable: true })
   @JoinColumn({ name: 'avatar' })
@@ -43,34 +43,40 @@ export class Workspace extends BaseEntity {
   @JoinColumn({ name: 'thumbnail' })
   thumbnail?: File
 
-  @Column()
-  displayUrl: string
+  @Column({ nullable: true, unique: true })
+  displayUrl?: string
 
-  @Column({ type: 'enum', enum: WorkspaceType, default: WorkspaceType.Team })
+  @Column({
+    type: 'enum',
+    enum: WorkspaceType,
+    default: WorkspaceType.Team,
+    nullable: false
+  })
   type: WorkspaceType
 
   @Column({
     type: 'enum',
     enum: WorkspaceStatus,
-    default: WorkspaceStatus.Public
+    default: WorkspaceStatus.Public,
+    nullable: false
   })
   status: WorkspaceStatus
 
-  @ManyToOne(() => Workspace, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Workspace, { onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'parentId' })
-  parent: Workspace
+  parent?: Workspace
   @RelationId((workspace: Workspace) => workspace.parent)
-  parentId: string
+  parentId?: string
 
-  @OneToMany(() => Member, member => member.workspace)
+  @OneToMany(() => Member, member => member.workspace, { nullable: true })
   members?: Member[]
 
-  @OneToMany(() => Message, message => message.target)
+  @OneToMany(() => Message, message => message.target, { nullable: true })
   messages?: Message[]
 
-  @OneToMany(() => Property, property => property.board)
+  @OneToMany(() => Property, property => property.board, { nullable: true })
   properties?: Property[]
 
-  @OneToMany(() => Card, card => card.board)
+  @OneToMany(() => Card, card => card.board, { nullable: true })
   cards?: Card[]
 }

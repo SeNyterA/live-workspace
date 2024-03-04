@@ -25,6 +25,7 @@ import {
 import { hasPermissionToOperate, parseMember } from '../../../utils/helper'
 
 const User = memo(({ user }: { user: TUser }) => {
+  const { mutateAsync, isPending } = useAppMutation('addWorkspaceMember')
   return (
     <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
       <Avatar src={user?.avatar?.path} size={32} />
@@ -41,6 +42,27 @@ const User = memo(({ user }: { user: TUser }) => {
         variant='outline'
         color='gray'
         className='h-[30px] min-h-[30px] border-none border-gray-100 bg-gray-100'
+        disabled={isPending}
+        loading={isPending}
+        onClick={() =>
+          mutateAsync({
+            url: {
+              baseUrl: '/workspaces/:workspaceId/members',
+              urlParams: {
+                workspaceId: getAppValue(
+                  state => state.workspace.workspaceSettingId
+                )!
+              }
+            },
+            method: 'post',
+            payload: {
+              member: {
+                userId: user._id,
+                role: EMemberRole.Member
+              } as any
+            }
+          })
+        }
       >
         Add
         <IconPlus className='ml-2' size={16} />

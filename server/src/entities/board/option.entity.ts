@@ -5,22 +5,22 @@ import { Property } from './property.entity'
 
 @Entity()
 export class Option extends BaseEntity {
-  @Column()
+  @Column({ nullable: false })
   title: string
 
-  @Column()
-  color: string
+  @Column({ nullable: true })
+  color?: string
 
-  @Column('float')
-  order: number
+  @Column('float', { nullable: true })
+  order?: number
 
-  @ManyToOne(() => Property)
+  @ManyToOne(() => Property, { nullable: false })
   @JoinColumn({ name: 'propertyId' })
   property: Property
   @RelationId((option: Option) => option.property)
   propertyId: string
 
-  @ManyToOne(() => Workspace)
+  @ManyToOne(() => Workspace, { nullable: false })
   @JoinColumn({ name: 'boardId' })
   board: Workspace
   @RelationId((option: Option) => option.board)

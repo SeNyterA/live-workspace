@@ -9,24 +9,29 @@ export enum EFileSourceType {
 }
 @Entity()
 export class File extends BaseEntity {
-  @Column()
+  @Column({ nullable: false })
   path: string
 
-  @Column({ type: 'float' })
+  @Column({ type: 'float', nullable: true })
   size?: number
 
-  @Column({ type: 'enum', enum: EFileSourceType, default: EFileSourceType.AWS })
+  @Column({
+    type: 'enum',
+    enum: EFileSourceType,
+    default: EFileSourceType.AWS,
+    nullable: false
+  })
   sourceType: EFileSourceType
 
-  @ManyToMany(() => Message)
+  @ManyToMany(() => Message, { nullable: true })
   @JoinTable({
     name: 'message_attachment'
   })
-  messages: Message[]
+  messages?: Message[]
 
-  @ManyToMany(() => Card)
+  @ManyToMany(() => Card, { nullable: true })
   @JoinTable({
     name: 'card_attachment'
   })
-  cards: Card[]
+  cards?: Card[]
 }

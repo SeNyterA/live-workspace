@@ -20,32 +20,31 @@ export class User {
   @Column({ nullable: true })
   firebaseId?: string
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   userName: string
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   email: string
 
   @Column({ nullable: true })
   nickName?: string
 
-  @Column()
-  @Exclude()
-  password: string
+  @Column({ nullable: true })
+  password?: string
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: false })
   createdAt: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ nullable: false })
   updatedAt: Date
 
-  @Column({ default: true })
+  @Column({ default: true, nullable: false })
   isAvailable: boolean
 
-  @OneToOne(() => File)
+  @OneToOne(() => File, { nullable: true })
   @JoinColumn({ name: 'avatarId' })
-  avatar: File
+  avatar?: File
 
-  @OneToMany(() => Member, member => member.user)
-  members: Member[]
+  @OneToMany(() => Member, member => member.user, { nullable: true })
+  members?: Member[]
 }

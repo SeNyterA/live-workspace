@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Login from '../components/auth/Login'
 import Verify from '../components/auth/Verify'
+import LandingPage from '../components/landing/LandingPage'
 import Layout from '../components/layout/Layout'
 import BoardContent from '../components/workspace/board/BoardContent'
 import DetailCard from '../components/workspace/board/card/DetailCard'
@@ -58,11 +59,7 @@ export default function useRouteElements() {
       children: [
         {
           path: '/',
-          element: (
-            <div className='flex h-screen w-screen items-center justify-center'>
-              Lading page
-            </div>
-          )
+          element: <LandingPage />
         },
         {
           path: 'auth/login',

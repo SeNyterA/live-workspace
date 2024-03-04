@@ -18,30 +18,27 @@ export class Card extends BaseEntity {
   @Column({ default: '' })
   title: string
 
-  @Column({ type: 'json' })
-  properties: {
+  @Column({ type: 'json', nullable: true })
+  properties?: {
     [key: string]: string | string[] | undefined
   }
 
-  @Column({ type: 'json' })
-  detail: JSONContent
+  @Column({ type: 'json', nullable: true })
+  detail?: JSONContent
 
   @OneToOne(() => File, { nullable: true })
   @JoinColumn({ name: 'thumbnail' })
   thumbnail?: File
 
-  @ManyToMany(() => File)
+  @ManyToMany(() => File, { nullable: true })
   @JoinTable({
     name: 'card_attachment'
   })
-  attachments: File[]
+  attachments?: File[]
 
-  @ManyToOne(() => Workspace)
+  @ManyToOne(() => Workspace, { nullable: false })
   @JoinColumn({ name: 'boardId' })
   board: Workspace
-
-  @ManyToOne(() => Workspace)
-  @JoinColumn({ name: 'boardId' })
   @RelationId((card: Card) => card.board)
   boardId: string
 }

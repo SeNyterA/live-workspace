@@ -143,7 +143,7 @@ export default function Editor() {
                 <ActionIcon
                   size={26}
                   variant='default'
-                  className='rounded-l-none'
+                  className=''
                   onClick={onClick}
                 >
                   <IconPhotoPlus size={16} />
@@ -152,11 +152,14 @@ export default function Editor() {
             </FileButton>
 
             <ActionIcon
+              size={26}
+              variant='default'
+              className='rounded-l-none'
               onClick={() => {
                 editor.chain().focus().toggleTaskList().run()
               }}
             >
-              Tasklist
+              <IconPhotoPlus size={16} />
             </ActionIcon>
           </RichTextEditor.ControlsGroup>
 

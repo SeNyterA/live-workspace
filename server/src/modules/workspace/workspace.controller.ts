@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common'
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 
+import { Member } from 'src/entities/member.entity'
 import { Workspace } from 'src/entities/workspace.entity'
 import { TJwtUser } from '../socket/socket.gateway'
 import { WorkspaceService } from './workspace.service'
-import { Member } from 'src/entities/member.entity'
 
 @Controller('workspaces')
 export class WorkspaceController {
@@ -51,5 +51,14 @@ export class WorkspaceController {
       member,
       memberId
     })
+  }
+
+  @Post(':id/members')
+  addMembers(
+    @HttpUser() user: TJwtUser,
+    @Body() { member }: { member: Member },
+    @Param('id') workspaceId: string
+  ) {
+    return this.workspaceService.addMember({ user, member, workspaceId })
   }
 }

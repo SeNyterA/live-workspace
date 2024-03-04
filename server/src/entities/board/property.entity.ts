@@ -26,21 +26,21 @@ export enum EFieldType {
 
 @Entity()
 export class Property extends BaseEntity {
-  @Column({ default: '' })
+  @Column({ nullable: false })
   title: string
 
-  @Column({ type: 'enum', enum: EFieldType })
+  @Column({ type: 'enum', enum: EFieldType, nullable: false })
   fieldType: EFieldType
 
-  @Column('float')
-  order: number
+  @Column('float', { nullable: true })
+  order?: number
 
-  @ManyToOne(() => Workspace)
+  @ManyToOne(() => Workspace, { nullable: false })
   @JoinColumn({ name: 'boardId' })
   board: Workspace
   @RelationId((property: Property) => property.board)
   boardId: string
 
-  @OneToMany(() => Option, option => option.property)
-  options: Option[]
+  @OneToMany(() => Option, option => option.property, { nullable: true })
+  options?: Option[]
 }

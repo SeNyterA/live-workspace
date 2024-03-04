@@ -14,26 +14,24 @@ export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   _id: string
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'createdById' })
-  @Exclude()
-  createdBy: User
+  createdBy?: User
   @RelationId((baseEntity: BaseEntity) => baseEntity.createdBy)
-  createdById: string
+  createdById?: string
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'modifiedById' })
-  @Exclude()
-  modifiedBy: User
+  modifiedBy?: User
   @RelationId((baseEntity: BaseEntity) => baseEntity.modifiedBy)
-  modifiedById: string
+  modifiedById?: string
 
-  @CreateDateColumn()
+  @CreateDateColumn({ nullable: false })
   createdAt: Date
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ nullable: false })
   updatedAt: Date
 
-  @Column({ default: true })
+  @Column({ default: true, nullable: false })
   isAvailable: boolean
 }

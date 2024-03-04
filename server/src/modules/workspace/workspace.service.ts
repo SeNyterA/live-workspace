@@ -329,25 +329,23 @@ export class WorkspaceService {
       }
     })
 
-    if (operator.role === EMemberRole.Owner) {
-      this.memberRepository.save({
-        ...member,
-        workspace: { _id: workspaceId },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      })
+    if (
+      !checkPermission({
+        operatorRole: operator.role,
+        targetRole: member.role
+      }) ||
+      !checkPermission({ operatorRole: operator.role, targetRole: member.role })
+    ) {
+      throw new Error('Permission denied')
     }
 
-    if (operator.role === EMemberRole.Admin) {
-      this.memberRepository.save({
-        ...member,
-        role:
-          member.role === EMemberRole.Owner ? EMemberRole.Admin : member.role,
-        workspace: { _id: workspaceId },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      })
-    }
+    this.memberRepository.save({
+      ...member,
+      userId: member.userId,
+      workspace: { _id: workspaceId },
+      createdBy: { _id: user.sub },
+      modifiedBy: { _id: user.sub }
+    })
   }
 
   async editMember({

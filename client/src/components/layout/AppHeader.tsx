@@ -1,13 +1,5 @@
-import { ActionIcon, Avatar, Input, Menu, rem, Text } from '@mantine/core'
-import {
-  IconArrowsLeftRight,
-  IconBrandGithub,
-  IconMessageCircle,
-  IconPhoto,
-  IconSearch,
-  IconSettings,
-  IconTrash
-} from '@tabler/icons-react'
+import { ActionIcon, Avatar, Menu, rem } from '@mantine/core'
+import { IconArrowsLeftRight, IconTrash } from '@tabler/icons-react'
 import { useAppSelector } from '../../redux/store'
 import { lsActions } from '../../utils/auth'
 
@@ -31,7 +23,13 @@ export default function AppHeader() {
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Label>Application</Menu.Label>
+          <div className='p-3 flex items-center flex-col justify-center'>
+            <Avatar src={user?.avatar?.path} size={100} />
+            <p className='mt-2 text-lg font-semibold'>{user?.userName}</p>
+            <p className='text-sm text-gray-500'>{user?.email}</p>
+          </div>
+
+          {/* <Menu.Label>Application</Menu.Label>
           <Menu.Item
             leftSection={
               <IconSettings style={{ width: rem(14), height: rem(14) }} />
@@ -66,10 +64,10 @@ export default function AppHeader() {
             Search
           </Menu.Item>
 
+          <Menu.Divider /> */}
           <Menu.Divider />
-
-          <Menu.Label>Danger zone</Menu.Label>
-          <Menu.Item
+          {/* <Menu.Label>Danger zone</Menu.Label> */}
+          {/* <Menu.Item
             leftSection={
               <IconArrowsLeftRight
                 style={{ width: rem(14), height: rem(14) }}
@@ -77,7 +75,7 @@ export default function AppHeader() {
             }
           >
             Transfer my data
-          </Menu.Item>
+          </Menu.Item> */}
           <Menu.Item
             color='red'
             leftSection={

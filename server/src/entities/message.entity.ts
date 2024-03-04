@@ -17,53 +17,48 @@ export enum EMessageType {
   System = 'S'
 }
 
-export enum EMesssageFor {
-  Channel = 'C',
-  Direct = 'D',
-  Group = 'G',
-  Board = 'B'
-}
-
 @Entity()
 export class Message extends BaseEntity {
-  @Column({ type: 'enum', enum: EMessageType, default: EMessageType.Normal })
+  @Column({
+    type: 'enum',
+    enum: EMessageType,
+    default: EMessageType.Normal,
+    nullable: false
+  })
   type: EMessageType
 
-  @Column({ type: 'enum', enum: EMesssageFor, default: EMesssageFor.Channel })
-  for: EMesssageFor
+  @Column({ type: 'json', nullable: true })
+  content?: JSONContent
 
-  @Column({ type: 'json' })
-  content: JSONContent
-
-  @Column({ type: 'json' })
-  reactions: {
+  @Column({ type: 'json', nullable: true })
+  reactions?: {
     [userId: string]: string
   }
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'boolean', default: false, nullable: false })
   isPinned: boolean
 
-  @ManyToMany(() => File)
+  @ManyToMany(() => File, { nullable: true })
   @JoinTable({
     name: 'message_attachment'
   })
-  attachments: File[]
+  attachments?: File[]
 
-  @ManyToOne(() => Workspace)
+  @ManyToOne(() => Workspace, { nullable: false })
   @JoinColumn({ name: 'targetId' })
   target: Workspace
   @RelationId((message: Message) => message.target)
   targetId: string
 
-  @ManyToOne(() => Message)
+  @ManyToOne(() => Message, { nullable: true })
   @JoinColumn({ name: 'replyToId' })
   replyTo?: Message
   @RelationId((message: Message) => message.replyTo)
-  replyToId: string
+  replyToId?: string
 
-  @ManyToOne(() => Message)
+  @ManyToOne(() => Message, { nullable: true })
   @JoinColumn({ name: 'threadId' })
   thread?: Message
   @RelationId((message: Message) => message.thread)
-  threadId: string
+  threadId?: string
 }

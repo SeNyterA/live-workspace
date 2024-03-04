@@ -271,6 +271,18 @@ export type ApiMutationType = {
     payload: { member: TMember }
     response: { member: TMember }
   }
+
+  addWorkspaceMember: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/members'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    method: 'post'
+    payload: { member: TMember }
+    response: { member: TMember }
+  }
 } & TChannelMutationApi &
   TUploadMutionApi &
   TGroupMutationApi &
