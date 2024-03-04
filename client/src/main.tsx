@@ -5,22 +5,25 @@ import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
-import './i18/i18n.ts'
 import './index.css'
+import { I18nextProvider } from 'react-i18next'
+import i18n from './locales/i18.ts'
 import store from './redux/store.ts'
 
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <MantineProvider>
-          <App />
-        </MantineProvider>
-      </BrowserRouter>
+  <I18nextProvider i18n={i18n}>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <MantineProvider>
+            <App />
+          </MantineProvider>
+        </BrowserRouter>
 
-      {/* <ReactQueryDevtools initialIsOpen /> */}
-    </QueryClientProvider>
-  </Provider>
+        {/* <ReactQueryDevtools initialIsOpen /> */}
+      </QueryClientProvider>
+    </Provider>
+  </I18nextProvider>
 )

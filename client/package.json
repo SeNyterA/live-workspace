@@ -71,6 +71,7 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@types/dompurify": "^3.0.5",
     "@types/emoji-mart": "^3.0.14",
+    "@types/i18next": "^13.0.0",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",

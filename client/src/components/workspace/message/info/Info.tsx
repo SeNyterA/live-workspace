@@ -1,5 +1,6 @@
 import { ActionIcon, Avatar, Image, ScrollArea } from '@mantine/core'
 import { IconSettings } from '@tabler/icons-react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../../../hooks/useAppParams'
 import { workspaceActions } from '../../../../redux/slices/workspace.slice'
@@ -19,6 +20,8 @@ export default function Info() {
       ]
   )
 
+  const { t } = useTranslation(['ns1', 'ns2'])
+  console.log(t('setting.name', { name: workspace?.title }))
   return (
     <>
       <div className='flex w-80 flex-col px-4 py-3'>
