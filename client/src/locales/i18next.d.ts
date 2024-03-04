@@ -1,7 +1,7 @@
 // import the original type declarations
 import 'i18next'
 // import all namespaces (for the default language, only)
-import ns1 from './en/ns1.json'
+import ns1 from './en/ns1'
 import ns2 from './en/ns2.json'
 
 declare module 'i18next' {
