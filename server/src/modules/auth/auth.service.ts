@@ -75,6 +75,7 @@ export class AuthService {
   }
 
   private async _generateUserCredentials(user: User): Promise<string> {
+    console.log(user)
     const payload = {
       email: user.email,
       userName: user.userName,

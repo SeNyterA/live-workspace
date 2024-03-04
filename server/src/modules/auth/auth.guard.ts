@@ -47,6 +47,8 @@ export class AuthGuard implements CanActivate {
         })
         .catch(err => {})
 
+      console.log(payload)
+
       await this.userRepository.findOneOrFail({
         where: { _id: payload.sub, isAvailable: true }
       })

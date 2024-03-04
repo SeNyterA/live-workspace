@@ -341,7 +341,8 @@ export class WorkspaceService {
 
     this.memberRepository.save({
       ...member,
-      userId: member.userId,
+
+      user: { _id: member.userId },
       workspace: { _id: workspaceId },
       createdBy: { _id: user.sub },
       modifiedBy: { _id: user.sub }
