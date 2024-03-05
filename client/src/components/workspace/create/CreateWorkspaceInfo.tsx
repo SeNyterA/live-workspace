@@ -2,7 +2,7 @@ import { Avatar, Input, Textarea, TextInput } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { Controller } from 'react-hook-form'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { WorkspaceType } from '../../../types'
+import { EWorkspaceType } from '../../../types'
 import { useCreateWorkspaceForm } from './CreateWorkspace'
 import TeamChild from './TeamChild'
 
@@ -182,7 +182,7 @@ export default function CreateWorkspaceInfo() {
         )}
       />
 
-      {workspaceType === WorkspaceType.Team && (
+      {workspaceType === EWorkspaceType.Team && (
         <>
           <TeamChild name='channels' />
           <TeamChild name='boards' />

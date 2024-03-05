@@ -11,7 +11,7 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { EMemberRole, EWorkspaceStatus, WorkspaceType } from '../../../types'
+import { EMemberRole, EWorkspaceStatus, EWorkspaceType } from '../../../types'
 
 const Title = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
@@ -368,8 +368,8 @@ export default function InfoSetting() {
 
       <Description isDisabled={!enabled} />
 
-      {[WorkspaceType.Board, WorkspaceType.Channel].includes(
-        workspace?.type as WorkspaceType
+      {[EWorkspaceType.Board, EWorkspaceType.Channel].includes(
+        workspace?.type as EWorkspaceType
       ) && <WorkspaceStatus isDisabled={!enabled} />}
     </ScrollArea>
   )

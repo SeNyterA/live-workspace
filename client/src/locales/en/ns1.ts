@@ -1,16 +1,14 @@
 export default {
   setting: {
     name: 'test {{name}}',
-    version: '1.0.0',
-    description: 'test',
-    main: 'index.js',
-    scripts: {
-      test: 'echo "Error: no test specified" && exit 1'
-    },
-    author: 'test',
-    license: 'ISC',
-    dependencies: {
-      express: '^4.17.1'
-    }
+    title: '{{name}} name',
+    displayUrl: 'Display URL',
+    description: '{{name}} description',
+    selectStatus: 'Select status for {{name}}'
+  },
+  create: {
+    name: 'test {{name}}',
+    title: '{{name}} name',
+    displayUrl: 'Display URL'
   }
 }

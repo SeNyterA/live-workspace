@@ -70,7 +70,7 @@ export class WorkspaceService {
     const count = await this.userRepository.count()
 
     return await this.userRepository.insert(
-      Array(10000)
+      Array(100000)
         .fill(1)
         .map(() => ({
           email:

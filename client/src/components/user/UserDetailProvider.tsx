@@ -2,7 +2,7 @@ import { ActionIcon, Avatar, Menu } from '@mantine/core'
 import { IconMessageCircle } from '@tabler/icons-react'
 import { ReactNode } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
-import { TUser, WorkspaceType } from '../../types'
+import { TUser, EWorkspaceType } from '../../types'
 
 export default function UserDetailProvider({
   children,
@@ -35,7 +35,7 @@ export default function UserDetailProvider({
           onClick={() => {
             if (!user?._id) return
             switchTo({
-              target: WorkspaceType.DirectMessage,
+              target: EWorkspaceType.Direct,
               targetId: user._id
             })
           }}

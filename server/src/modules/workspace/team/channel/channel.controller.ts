@@ -13,12 +13,13 @@ export class ChannelController {
   createChannel(
     @HttpUser() user: TJwtUser,
     @Param('teamId') teamId: string,
-    @Body() { workspace }: { workspace: Workspace; members: Member[] }
+    @Body() { workspace, members }: { workspace: Workspace; members: Member[] }
   ) {
     return this.channelService.createChannel({
       user,
       teamId,
-      workspace
+      workspace,
+      members
     })
   }
 }

@@ -18,13 +18,13 @@ export enum WorkspaceType {
   Channel = 'Channel',
   Board = 'Board',
   Group = 'Group',
-  Direct = 'DirectMessage',
+  Direct = 'Direct',
   Team = 'Team'
 }
 
 export enum WorkspaceStatus {
-  Private = 'C',
-  Public = 'O'
+  Private = 'Private',
+  Public = 'Public'
 }
 
 @Entity()

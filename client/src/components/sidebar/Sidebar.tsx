@@ -23,7 +23,7 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { TWorkspace, WorkspaceType } from '../../types'
+import { TWorkspace, EWorkspaceType } from '../../types'
 import CreateWorkspace, {
   getDefaultValue
 } from '../workspace/create/CreateWorkspace'
@@ -66,7 +66,7 @@ export default function Sidebar() {
   const { channelId, teamId, boardId, groupId, directId } = useAppParams()
   const dispatch = useDispatch()
   const path = useLocation()
-  const [toggle, setToggle] = useState<WorkspaceType>()
+  const [toggle, setToggle] = useState<EWorkspaceType>()
   const team = useAppSelector(state => {
     return Object.values(state.workspace.workspaces).find(e => e._id === teamId)
   })
@@ -141,7 +141,7 @@ export default function Sidebar() {
                     watchingFn={state =>
                       Object.values(state.workspace.workspaces).filter(
                         e =>
-                          e.type === WorkspaceType.Board &&
+                          e.type === EWorkspaceType.Board &&
                           e.parentId === teamId
                       )
                     }
@@ -160,7 +160,7 @@ export default function Sidebar() {
                     label={`Create board`}
                     rightSection={<IconPlus size={16} stroke={1.5} />}
                     onClick={() => {
-                      setToggle(WorkspaceType.Board)
+                      setToggle(EWorkspaceType.Board)
                     }}
                   />
                 </NavLink>
@@ -176,7 +176,7 @@ export default function Sidebar() {
                     watchingFn={state =>
                       Object.values(state.workspace.workspaces).filter(
                         e =>
-                          e.type === WorkspaceType.Channel &&
+                          e.type === EWorkspaceType.Channel &&
                           e.parentId === teamId
                       )
                     }
@@ -195,7 +195,7 @@ export default function Sidebar() {
                     label={`Create channel`}
                     rightSection={<IconPlus size={16} stroke={1.5} />}
                     onClick={() => {
-                      setToggle(WorkspaceType.Channel)
+                      setToggle(EWorkspaceType.Channel)
                     }}
                   />
                 </NavLink>
@@ -215,7 +215,7 @@ export default function Sidebar() {
               <Watching
                 watchingFn={state =>
                   Object.values(state.workspace.workspaces).filter(
-                    e => e.type === WorkspaceType.Group
+                    e => e.type === EWorkspaceType.Group
                   )
                 }
               >
@@ -233,7 +233,7 @@ export default function Sidebar() {
                 label={`Create group`}
                 rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {
-                  setToggle(WorkspaceType.Group)
+                  setToggle(EWorkspaceType.Group)
                 }}
               />
             </NavLink>
@@ -249,7 +249,7 @@ export default function Sidebar() {
               <Watching
                 watchingFn={state =>
                   Object.values(state.workspace.workspaces).filter(
-                    e => e.type === WorkspaceType.DirectMessage
+                    e => e.type === EWorkspaceType.Direct
                   )
                 }
               >
@@ -267,7 +267,7 @@ export default function Sidebar() {
                 label={`Create direct`}
                 rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {
-                  setToggle(WorkspaceType.DirectMessage)
+                  setToggle(EWorkspaceType.Direct)
                 }}
               />
             </NavLink>

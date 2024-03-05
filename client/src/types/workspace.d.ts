@@ -4,11 +4,11 @@ import { TFile } from './file'
 import { TMember } from './member'
 import { TMessage } from './message'
 
-export enum WorkspaceType {
+export enum EWorkspaceType {
   Channel = 'Channel',
   Board = 'Board',
   Group = 'Group',
-  DirectMessage = 'DirectMessage',
+  Direct = 'Direct',
   Team = 'Team'
 }
 
@@ -23,7 +23,7 @@ export type TWorkspace = TBase & {
   avatar?: TFile
   thumbnail?: TFile
   displayUrl: string
-  type: WorkspaceType
+  type: EWorkspaceType
   parent: Workspace
   parentId: string
   status: EWorkspaceStatus

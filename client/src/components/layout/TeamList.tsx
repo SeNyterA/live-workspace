@@ -4,7 +4,7 @@ import { useState } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
-import { WorkspaceType } from '../../types'
+import { EWorkspaceType } from '../../types'
 import CreateWorkspace from '../workspace/create/CreateWorkspace'
 
 export default function TeamList() {
@@ -101,7 +101,7 @@ export default function TeamList() {
           onClose={() => toggleDrawer(false)}
           defaultValues={{
             workspace: {
-              type: WorkspaceType.Team
+              type: EWorkspaceType.Team
             } as any,
             channels: [{ title: 'General' }, { title: 'Topic' }] as any,
             boards: [{ title: 'Task' }] as any

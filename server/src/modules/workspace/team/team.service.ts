@@ -154,6 +154,8 @@ export class TeamService {
       parent: { _id: teamId }
     })
 
+    console.log(newWorkspace.generatedMaps[0], workspace)
+
     const teamMembers = await this.memberRepository.find({
       where: {
         workspace: { _id: teamId, isAvailable: true },
@@ -173,7 +175,7 @@ export class TeamService {
         .filter(member =>
           workspace.status === WorkspaceStatus.Public
             ? true
-            : members?.map(e => e.userId).includes(member.userId) || []
+            : members?.map(e => e.userId).includes(member.userId)
         )
         .map(member => ({
           role: EMemberRole.Member,

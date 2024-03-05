@@ -20,7 +20,7 @@ import {
   RoleWeights,
   TMember,
   TUser,
-  WorkspaceType
+  EWorkspaceType
 } from '../../../types'
 import { hasPermissionToOperate, parseMember } from '../../../utils/helper'
 
@@ -175,7 +175,7 @@ const Member = memo(({ member, user }: { member: TMember; user: TUser }) => {
 export default function MembersSetting({
   wokrspaceType
 }: {
-  wokrspaceType?: WorkspaceType
+  wokrspaceType?: EWorkspaceType
 }) {
   const [searchValue, setSearchValue] = useState('')
   const [validUsers, setValidUsers] = useState<TUser[]>([])

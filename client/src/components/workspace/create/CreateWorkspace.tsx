@@ -5,7 +5,7 @@ import {
   ApiMutationType,
   useAppMutation
 } from '../../../services/apis/mutations/useAppMutation'
-import { EWorkspaceStatus, WorkspaceType } from '../../../types'
+import { EWorkspaceStatus, EWorkspaceType } from '../../../types'
 import CreateWorkspaceInfo from './CreateWorkspaceInfo'
 import Members from './Members'
 import { TeamUsers } from './TeamUsers'
@@ -20,8 +20,8 @@ export const useCreateWorkspaceForm = () => {
   return useFormContext<TCreateWorkspaceForm>()
 }
 
-export const getDefaultValue = (type: WorkspaceType) => {
-  if (type === WorkspaceType.Channel) {
+export const getDefaultValue = (type: EWorkspaceType) => {
+  if (type === EWorkspaceType.Channel) {
     return {
       workspace: {
         type,
@@ -29,7 +29,7 @@ export const getDefaultValue = (type: WorkspaceType) => {
       }
     }
   }
-  if (type === WorkspaceType.Board) {
+  if (type === EWorkspaceType.Board) {
     return {
       workspace: {
         type,
@@ -37,14 +37,14 @@ export const getDefaultValue = (type: WorkspaceType) => {
       }
     }
   }
-  if (type === WorkspaceType.Group) {
+  if (type === EWorkspaceType.Group) {
     return {
       workspace: {
         type
       }
     }
   }
-  if (type === WorkspaceType.Team) {
+  if (type === EWorkspaceType.Team) {
     return {
       workspace: {
         type
@@ -120,7 +120,7 @@ export default function CreateWorkspace({
             className='absolute inset-0 right-[-12px] pr-3'
             scrollbarSize={8}
           >
-            {[WorkspaceType.Channel, WorkspaceType.Board].includes(
+            {[EWorkspaceType.Channel, EWorkspaceType.Board].includes(
               workspaceType!
             ) ? (
               <TeamUsers />
@@ -138,7 +138,8 @@ export default function CreateWorkspace({
 
         <Button
           onClick={form.handleSubmit(({ ...data }) => {
-            if (workspaceType === WorkspaceType.Team) {
+            console.log({ data })
+            if (workspaceType === EWorkspaceType.Team) {
               const _data = data as ApiMutationType['createTeam']['payload']
               createTeam({
                 url: {
@@ -150,14 +151,15 @@ export default function CreateWorkspace({
                     ...data.workspace,
                     type: workspaceType
                   },
-                  boards: _data?.boards,
-                  channels: _data?.channels,
+                  boards: _data.boards,
+                  channels: _data.channels,
                   members: _data.members
                 }
               })
             }
 
-            if (workspaceType === WorkspaceType.Board) {
+            if (workspaceType === EWorkspaceType.Board) {
+              const _data = data as ApiMutationType['createBoard']['payload']
               createBoard({
                 url: {
                   baseUrl: '/teams/:teamId/boards',
@@ -170,11 +172,13 @@ export default function CreateWorkspace({
                   workspace: {
                     ...data.workspace,
                     type: workspaceType
-                  }
+                  },
+                  members: _data.members
                 }
               })
             }
-            if (workspaceType === WorkspaceType.Channel) {
+            if (workspaceType === EWorkspaceType.Channel) {
+              const _data = data as ApiMutationType['createChannel']['payload']
               createChannel({
                 url: {
                   baseUrl: '/teams/:teamId/channels',
@@ -187,12 +191,13 @@ export default function CreateWorkspace({
                   workspace: {
                     ...data.workspace,
                     type: workspaceType
-                  }
+                  },
+                  members: _data.members
                 }
               })
             }
 
-            if (workspaceType === WorkspaceType.Group) {
+            if (workspaceType === EWorkspaceType.Group) {
               createGroup({
                 url: {
                   baseUrl: '/groups'

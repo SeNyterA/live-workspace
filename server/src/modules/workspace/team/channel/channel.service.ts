@@ -36,6 +36,7 @@ export class ChannelService {
     teamId: string
     members?: Member[]
   }) {
+    console.log(members)
     const channel = await this.teamService.createChildWorkspace({
       user,
       workspace,

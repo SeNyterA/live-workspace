@@ -22,6 +22,7 @@ export default function Info() {
 
   const { t } = useTranslation(['ns1', 'ns2'])
   console.log(t('setting.name', { name: workspace?.title }))
+
   return (
     <>
       <div className='flex w-80 flex-col px-4 py-3'>

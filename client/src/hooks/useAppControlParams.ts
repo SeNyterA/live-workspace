@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import { getAppValue } from '../redux/store'
-import { WorkspaceType } from '../types'
+import { EWorkspaceType } from '../types'
 import { lsActions } from '../utils/auth'
 import useAppParams from './useAppParams'
 
 const urlParser = {
-  [WorkspaceType.Board]: 'board',
-  [WorkspaceType.Channel]: 'channel',
-  [WorkspaceType.Group]: 'group',
-  [WorkspaceType.DirectMessage]: 'direct-message'
+  [EWorkspaceType.Board]: 'board',
+  [EWorkspaceType.Channel]: 'channel',
+  [EWorkspaceType.Group]: 'group',
+  [EWorkspaceType.Direct]: 'direct-message'
 }
 
 export default function useAppControlParams() {
@@ -23,10 +23,10 @@ export default function useAppControlParams() {
     }: {
       targetId: string
       target:
-        | WorkspaceType.Board
-        | WorkspaceType.Channel
-        | WorkspaceType.Group
-        | WorkspaceType.DirectMessage
+        | EWorkspaceType.Board
+        | EWorkspaceType.Channel
+        | EWorkspaceType.Group
+        | EWorkspaceType.Direct
     }) => {
       lsActions.setTeamChild(teamId!, targetId)
       navigate(`/team/${teamId || 'personal'}/${urlParser[target]}/${targetId}`)
