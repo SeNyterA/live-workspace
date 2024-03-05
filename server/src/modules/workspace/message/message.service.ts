@@ -3,8 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 import { EMemberRole, Member } from 'src/entities/member.entity'
+import { Mention } from 'src/entities/mention.entity'
 import { Message } from 'src/entities/message.entity'
 import { WorkspaceType } from 'src/entities/workspace.entity'
+import { getListUserMentionIds } from 'src/libs/helper'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { In, LessThan, Repository } from 'typeorm'
@@ -24,6 +26,8 @@ export class MessageService {
     private readonly memberRepository: Repository<Member>,
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
+    @InjectRepository(Mention)
+    private readonly mentionRepository: Repository<Mention>,
     private readonly redisService: RedisService
   ) {}
 
@@ -63,6 +67,19 @@ export class MessageService {
         createdBy: { _id: user.sub },
         modifiedBy: { _id: user.sub }
       })
+    )
+
+    console.log()
+    const mentionIds = getListUserMentionIds(newMessage.content)
+
+    await this.mentionRepository.insert(
+      mentionIds.map(id => ({
+        message: { _id: newMessage._id },
+        mentionedUser: { _id: id },
+        workspace: { _id: targetId },
+        createdBy: { _id: user.sub },
+        modifiedBy: { _id: user.sub }
+      }))
     )
 
     const messageInserted = await this.messageRepository.findOneOrFail({

@@ -18,6 +18,7 @@ import { TeamService } from './team/team.service'
 import { WorkspaceController } from './workspace.controller'
 import { WorkspaceService } from './workspace.service'
 import { ChannelController } from './team/channel/channel.controller'
+import { Mention } from 'src/entities/mention.entity'
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { ChannelController } from './team/channel/channel.controller'
       Property,
       Option,
       Card,
-      File
+      File,
+      Mention
     ]),
     RedisModule
   ],
