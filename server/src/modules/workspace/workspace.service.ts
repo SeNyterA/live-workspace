@@ -4,7 +4,12 @@ import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
 import { Server, Socket } from 'socket.io'
 import { File } from 'src/entities/file.entity'
-import { EMemberRole, Member, RoleWeights } from 'src/entities/member.entity'
+import {
+  EMemberRole,
+  EMemberStatus,
+  Member,
+  RoleWeights
+} from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 
@@ -187,7 +192,13 @@ export class WorkspaceService {
 
   async getAllWorkspace({ user }: { user: TJwtUser }) {
     const workspaces = await this.workspaceRepository.find({
-      where: { members: { user: { _id: user.sub, isAvailable: true } } },
+      where: {
+        members: {
+          user: { _id: user.sub, isAvailable: true },
+          status: EMemberStatus.Active,
+          isAvailable: true
+        }
+      },
       relations: ['avatar', 'thumbnail']
     })
 

@@ -19,6 +19,8 @@ import { WorkspaceController } from './workspace.controller'
 import { WorkspaceService } from './workspace.service'
 import { ChannelController } from './team/channel/channel.controller'
 import { Mention } from 'src/entities/mention.entity'
+import { MemberController } from './member/member.controler'
+import { MemberService } from './member/member.service'
 
 @Module({
   imports: [
@@ -39,7 +41,8 @@ import { Mention } from 'src/entities/mention.entity'
     TeamController,
     BoardController,
     GroupController,
-    ChannelController
+    ChannelController,
+    MemberController
   ],
   providers: [
     WorkspaceService,
@@ -47,7 +50,8 @@ import { Mention } from 'src/entities/mention.entity'
     BoardService,
     ChannelService,
     GroupService,
-    ChannelService
+    ChannelService,
+    MemberService
   ],
   exports: [WorkspaceService]
 })

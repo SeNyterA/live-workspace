@@ -17,10 +17,10 @@ import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
 import {
   EMemberRole,
+  EMemberStatus,
   RoleWeights,
   TMember,
-  TUser,
-  EWorkspaceType
+  TUser
 } from '../../../types'
 import { hasPermissionToOperate, parseMember } from '../../../utils/helper'
 
@@ -126,57 +126,57 @@ const Member = memo(({ member, user }: { member: TMember; user: TUser }) => {
           </p>
         </div>
 
-        <Select
-          disabled={!enabled || isPending}
-          rightSection={isPending && <Loader size={12} />}
-          classNames={{
-            input:
-              'border-gray-100 border-none bg-gray-100 min-h-[30px] h-[30px]',
-            dropdown: 'pr-2'
-          }}
-          className='w-28'
-          data={[
-            { label: EMemberRole.Member, value: EMemberRole.Member },
-            {
-              label: EMemberRole.Admin,
-              value: EMemberRole.Admin,
-              disabled: (operatorWeight || 0) < RoleWeights[EMemberRole.Admin]
-            },
-            {
-              label: EMemberRole.Owner,
-              value: EMemberRole.Owner,
-              disabled: (operatorWeight || 0) < RoleWeights[EMemberRole.Owner]
-            }
-          ]}
-          value={member.role}
-          onChange={role => {
-            editWorkspaceMember({
-              url: {
-                baseUrl: '/workspaces/:workspaceId/members/:memberId',
-                urlParams: {
-                  workspaceId: member.targetId,
-                  memberId: member._id
-                }
+        {member.status === EMemberStatus.Invited ? (
+          <>Invited</>
+        ) : (
+          <Select
+            disabled={!enabled || isPending}
+            rightSection={isPending && <Loader size={12} />}
+            classNames={{
+              input:
+                'border-gray-100 border-none bg-gray-100 min-h-[30px] h-[30px]',
+              dropdown: 'pr-2'
+            }}
+            className='w-28'
+            data={[
+              { label: EMemberRole.Member, value: EMemberRole.Member },
+              {
+                label: EMemberRole.Admin,
+                value: EMemberRole.Admin,
+                disabled: (operatorWeight || 0) < RoleWeights[EMemberRole.Admin]
               },
-              method: 'patch',
-              payload: {
-                member: {
-                  role: role
-                } as any
+              {
+                label: EMemberRole.Owner,
+                value: EMemberRole.Owner,
+                disabled: (operatorWeight || 0) < RoleWeights[EMemberRole.Owner]
               }
-            })
-          }}
-        />
+            ]}
+            value={member.role}
+            onChange={role => {
+              editWorkspaceMember({
+                url: {
+                  baseUrl: '/workspaces/:workspaceId/members/:memberId',
+                  urlParams: {
+                    workspaceId: member.targetId,
+                    memberId: member._id
+                  }
+                },
+                method: 'patch',
+                payload: {
+                  member: {
+                    role: role
+                  } as any
+                }
+              })
+            }}
+          />
+        )}
       </div>
     </>
   )
 })
 
-export default function MembersSetting({
-  wokrspaceType
-}: {
-  wokrspaceType?: EWorkspaceType
-}) {
+export default function MembersSetting() {
   const [searchValue, setSearchValue] = useState('')
   const [validUsers, setValidUsers] = useState<TUser[]>([])
   const members = useAppSelector(state =>
@@ -248,7 +248,7 @@ export default function MembersSetting({
       )}
 
       <div className='mt-4 flex justify-between font-semibold'>
-        Channel members
+        Members
         <Badge variant='light' color='gray'>
           {members!.length}
         </Badge>

@@ -1,7 +1,8 @@
-import { ActionIcon, Avatar, Menu, rem } from '@mantine/core'
-import { IconArrowsLeftRight, IconTrash } from '@tabler/icons-react'
+import { ActionIcon, Avatar, Menu, Popover, rem } from '@mantine/core'
+import { IconBell, IconTrash } from '@tabler/icons-react'
 import { useAppSelector } from '../../redux/store'
 import { lsActions } from '../../utils/auth'
+import Notification from './Notification'
 
 export default function AppHeader() {
   const user = useAppSelector(state => state.auth.userInfo)
@@ -10,7 +11,7 @@ export default function AppHeader() {
     <div className='flex h-12 items-center gap-3 px-3'>
       <p className='text-xl font-semibold'>Live workspace - Senytera</p>
       <div className='flex flex-1 items-center justify-center'></div>
-
+      <Notification />
       <Menu shadow='md' width={200} position='bottom-end' withArrow>
         <Menu.Target>
           <ActionIcon
@@ -23,7 +24,7 @@ export default function AppHeader() {
         </Menu.Target>
 
         <Menu.Dropdown>
-          <div className='p-3 flex items-center flex-col justify-center'>
+          <div className='flex flex-col items-center justify-center p-3'>
             <Avatar src={user?.avatar?.path} size={100} />
             <p className='mt-2 text-lg font-semibold'>{user?.userName}</p>
             <p className='text-sm text-gray-500'>{user?.email}</p>

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberRole, Member } from 'src/entities/member.entity'
+import { EMemberRole, EMemberStatus, Member } from 'src/entities/member.entity'
 import { Mention } from 'src/entities/mention.entity'
 import { Message } from 'src/entities/message.entity'
 import { WorkspaceType } from 'src/entities/workspace.entity'
@@ -56,6 +56,7 @@ export class MessageService {
             WorkspaceType.Channel
           ])
         },
+        status: EMemberStatus.Active,
         isAvailable: true
       }
     })
@@ -105,6 +106,8 @@ export class MessageService {
   }) {
     await this.memberRepository.findOneOrFail({
       where: {
+        status: EMemberStatus.Active,
+        isAvailable: true,
         user: { _id: user.sub, isAvailable: true },
         workspace: {
           _id: targetId,
@@ -164,6 +167,7 @@ export class MessageService {
             WorkspaceType.Channel
           ])
         },
+        status: EMemberStatus.Active,
         isAvailable: true
       }
     })
@@ -199,6 +203,7 @@ export class MessageService {
             WorkspaceType.Channel
           ])
         },
+        status: EMemberStatus.Active,
         isAvailable: true
       }
     })
@@ -235,6 +240,7 @@ export class MessageService {
             WorkspaceType.Channel
           ])
         },
+        status: EMemberStatus.Active,
         isAvailable: true
       }
     })

@@ -6,6 +6,7 @@ import { TUser } from '../../types/user'
 import { TWorkspace } from '../../types/workspace'
 import { replaceDynamicValues } from './common'
 import http from './http'
+import { TMemberApi } from './mutations/member.api'
 
 type ApiQueryType = {
   base: {
@@ -159,7 +160,7 @@ type ApiQueryType = {
     }
     response: { [targetId: string]: number }
   }
-}
+} & TMemberApi['queries']
 
 export const useAppQuery = <T extends keyof ApiQueryType>({
   url,

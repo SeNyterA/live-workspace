@@ -1,3 +1,5 @@
+import { TUser } from "."
+
 export type TBase = {
   _id: string
   createdById: string
@@ -5,4 +7,7 @@ export type TBase = {
   createdAt: string
   updatedAt: string
   isAvailable: boolean
+
+  createdBy?: TUser
+  modifiedBy?: TUser
 }

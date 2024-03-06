@@ -15,6 +15,14 @@ export const RoleWeights: { [role in EMemberRole]: number } = {
   [EMemberRole.Owner]: 100
 }
 
+export enum EMemberStatus {
+  Invited = 'Invited',
+  Declined = 'Declined',
+  Active = 'Active',
+  Left = 'Left',
+  Kicked = 'Kicked'
+}
+
 @Entity()
 export class Member extends BaseEntity {
   @Column({
@@ -24,6 +32,17 @@ export class Member extends BaseEntity {
     nullable: false
   })
   role: EMemberRole
+
+  @Column({
+    type: 'enum',
+    enum: EMemberStatus,
+    default: EMemberStatus.Invited,
+    nullable: false
+  })
+  status: EMemberStatus
+
+  @Column({ type: 'boolean', default: false })
+  isInvited: boolean
 
   @Column({ type: 'float', default: 0, nullable: true })
   order?: number

@@ -10,5 +10,8 @@ export default {
     name: 'test {{name}}',
     title: '{{name}} name',
     displayUrl: 'Display URL'
+  },
+  notification: {
+    invitionContent: '{{name}} invition content'
   }
 }

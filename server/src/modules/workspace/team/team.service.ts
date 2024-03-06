@@ -2,7 +2,7 @@ import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberRole, Member } from 'src/entities/member.entity'
+import { EMemberRole, EMemberStatus, Member } from 'src/entities/member.entity'
 import {
   Workspace,
   WorkspaceStatus,
@@ -66,7 +66,8 @@ export class TeamService {
         role: EMemberRole.Owner,
         modifiedBy: { _id: user.sub },
         createdBy: { _id: user.sub },
-        workspace: newWorkspace
+        workspace: newWorkspace,
+        status: EMemberStatus.Active
       },
       ...members
         ?.filter(e => e.userId !== user.sub)
@@ -75,7 +76,8 @@ export class TeamService {
           role: e.role,
           modifiedBy: { _id: user.sub },
           createdBy: { _id: user.sub },
-          workspace: newWorkspace
+          workspace: newWorkspace,
+          status: EMemberStatus.Invited
         }))
     ])
 
@@ -141,7 +143,9 @@ export class TeamService {
       where: {
         workspace: { _id: teamId, isAvailable: true },
         user: { _id: user.sub, isAvailable: true },
-        role: In([EMemberRole.Owner, EMemberRole.Admin])
+        role: In([EMemberRole.Owner, EMemberRole.Admin]),
+        status: EMemberStatus.Active,
+        isAvailable: true
       }
     })
 
@@ -154,22 +158,23 @@ export class TeamService {
       parent: { _id: teamId }
     })
 
-    console.log(newWorkspace.generatedMaps[0], workspace)
-
     const teamMembers = await this.memberRepository.find({
       where: {
         workspace: { _id: teamId, isAvailable: true },
         user: { _id: Not(user.sub), isAvailable: true },
+        status: EMemberStatus.Active,
         isAvailable: true
       }
     })
+
     await this.memberRepository.insert([
       {
         role: EMemberRole.Owner,
         user: { _id: user.sub },
         workspace: { _id: newWorkspace.identifiers[0]._id },
         createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
+        modifiedBy: { _id: user.sub },
+        status: EMemberStatus.Active
       },
       ...teamMembers
         .filter(member =>
@@ -182,7 +187,8 @@ export class TeamService {
           user: { _id: member.userId },
           workspace: { _id: newWorkspace.identifiers[0]._id },
           createdBy: { _id: user.sub },
-          modifiedBy: { _id: user.sub }
+          modifiedBy: { _id: user.sub },
+          status: EMemberStatus.Invited
         }))
     ])
 
