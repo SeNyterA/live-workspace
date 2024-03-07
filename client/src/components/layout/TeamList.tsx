@@ -60,7 +60,9 @@ export default function TeamList() {
                   size={32}
                   className={teamId === team._id ? 'rounded' : ''}
                   src={team.avatar?.path}
-                />
+                >
+                  {team.title?.slice(0, 1)}
+                </Avatar>
               </ActionIcon>
             ))}
           </ScrollArea>

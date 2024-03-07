@@ -139,16 +139,27 @@ const Member = memo(({ member, user }: { member: TMember; user: TUser }) => {
             }}
             className='w-28'
             data={[
-              { label: EMemberRole.Member, value: EMemberRole.Member },
               {
-                label: EMemberRole.Admin,
-                value: EMemberRole.Admin,
-                disabled: (operatorWeight || 0) < RoleWeights[EMemberRole.Admin]
+                group: 'Role',
+                items: [
+                  { label: EMemberRole.Member, value: EMemberRole.Member },
+                  {
+                    label: EMemberRole.Admin,
+                    value: EMemberRole.Admin,
+                    disabled:
+                      (operatorWeight || 0) < RoleWeights[EMemberRole.Admin]
+                  },
+                  {
+                    label: EMemberRole.Owner,
+                    value: EMemberRole.Owner,
+                    disabled:
+                      (operatorWeight || 0) < RoleWeights[EMemberRole.Owner]
+                  }
+                ]
               },
               {
-                label: EMemberRole.Owner,
-                value: EMemberRole.Owner,
-                disabled: (operatorWeight || 0) < RoleWeights[EMemberRole.Owner]
+                group: 'Remove',
+                items: [{ label: 'Kick', value: 'Kick' }]
               }
             ]}
             value={member.role}
@@ -188,9 +199,9 @@ export default function MembersSetting() {
       }))
       .filter(
         ({ user }) =>
-          user.userName.includes(searchValue) ||
-          user.email.includes(searchValue) ||
-          user.nickName?.includes(searchValue)
+          user?.userName?.includes(searchValue) ||
+          user?.email?.includes(searchValue) ||
+          user?.nickName?.includes(searchValue)
       )
   )
 

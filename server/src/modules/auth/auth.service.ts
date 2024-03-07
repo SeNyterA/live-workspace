@@ -115,30 +115,40 @@ export class AuthService {
   async signInWithSocial({ token }: { token: string }) {
     try {
       const payload: FirebaseUserTokenData = this.jwtService.decode(token)
-      let user = await this.userRepository.findOne({
-        where: { firebaseId: payload.user_id }
+      const user = await this.userRepository.findOne({
+        where: { firebaseId: payload.user_id, isAvailable: true }
       })
-      if (!user) {
-        user = await this.userRepository.create({
-          userName: payload.email.split('@')[0],
-          email: payload.email,
-          firebaseId: payload.user_id,
-          nickName: payload.name
-        })
 
-        const avatarFile = await this.fileRepository.create({
+      if (user) {
+        const access_token = await this._generateUserCredentials(user)
+        return {
+          user: user,
+          token: access_token
+        }
+      } else {
+        const avatarFile = this.fileRepository.create({
           path: payload.picture,
           sourceType: EFileSourceType.Link
         })
         await this.fileRepository.save(avatarFile)
 
-        await this.userRepository.save({ ...user, avatar: avatarFile })
-      }
+        await this.userRepository.insert({
+          userName: payload.email.split('@')[0],
+          email: payload.email,
+          firebaseId: payload.user_id,
+          nickName: payload.name,
+          avatar: avatarFile
+        })
 
-      const access_token = await this._generateUserCredentials(user)
-      return {
-        user: user,
-        token: access_token
+        const user = await this.userRepository.findOne({
+          where: { firebaseId: payload.user_id, isAvailable: true }
+        })
+
+        const access_token = await this._generateUserCredentials(user)
+        return {
+          user: user,
+          token: access_token
+        }
       }
     } catch {
       throw new UnauthorizedException()

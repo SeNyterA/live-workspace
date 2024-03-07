@@ -19,7 +19,9 @@ export default function AppHeader() {
             variant='light'
             size='md'
           >
-            <Avatar src={user?.avatar?.path} size={32} />
+            <Avatar src={user?.avatar?.path} size={32}>
+              {user?.userName[0].toUpperCase()}
+            </Avatar>
           </ActionIcon>
         </Menu.Target>
 
