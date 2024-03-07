@@ -4,9 +4,9 @@ export type TMemberApi = {
   muations: {
     acceptInvition: {
       url: {
-        baseUrl: '/members/:memberId/accept-invition'
+        baseUrl: '/workspace/:workspaceId/accept-invition'
         urlParams: {
-          memberId: string
+          workspaceId: string
         }
       }
       method: 'post'
@@ -14,9 +14,9 @@ export type TMemberApi = {
     }
     declineInvition: {
       url: {
-        baseUrl: '/members/:memberId/decline-invition'
+        baseUrl: '/workspace/:workspaceId/decline-invition'
         urlParams: {
-          memberId: string
+          workspaceId: string
         }
       }
       method: 'post'

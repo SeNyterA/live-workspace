@@ -9,7 +9,11 @@ import {
   RoleWeights
 } from 'src/entities/member.entity'
 import { User } from 'src/entities/user.entity'
-import { Workspace } from 'src/entities/workspace.entity'
+import {
+  Workspace,
+  WorkspaceStatus,
+  WorkspaceType
+} from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { Brackets, In, Repository } from 'typeorm'
 
@@ -80,20 +84,16 @@ export class MemberService {
       where: {
         workspace: { _id: workspaceId, isAvailable: true },
         user: { email, isAvailable: true }
-      }
+      },
+      relations: ['workspace']
     })
 
-    if (member) {
-      if (member.status === EMemberStatus.Active) {
-        throw new Error('Member already in workspace')
-      }
-      if (member.status === EMemberStatus.Invited) {
-        throw new Error('Invition already sent')
-      }
+    if (member?.status === EMemberStatus.Active) {
+      throw new Error('User already in workspace')
     }
 
     const invition = await this.memberRepository.save({
-      _id: member._id,
+      ...member,
       role: EMemberRole.Member,
       status: EMemberStatus.Invited,
       user: { email, isAvailable: true },
@@ -109,37 +109,60 @@ export class MemberService {
 
   async acceptInvition({
     user,
-    memberId
+    workspaceId
   }: {
     user: TJwtUser
-    memberId: string
+    workspaceId: string
   }) {
-    await this.memberRepository.update(
-      {
-        _id: memberId,
-        workspace: { isAvailable: true },
+    const member = await this.memberRepository.findOneOrFail({
+      where: {
+        workspace: { isAvailable: true, _id: workspaceId },
         user: { _id: user.sub, isAvailable: true },
         status: EMemberStatus.Invited,
         isAvailable: true
       },
-      {
-        status: EMemberStatus.Active,
-        modifiedBy: { _id: user.sub }
-      }
-    )
+      relations: ['workspace']
+    })
+
+    const newMember = await this.memberRepository.save({
+      ...member,
+      status: EMemberStatus.Active,
+      modifiedBy: { _id: user.sub }
+    })
+
+    console.log(newMember)
+
+    if (member.workspace.type === WorkspaceType.Team) {
+      const children = await this.workspaceRepository.find({
+        where: {
+          parent: { _id: workspaceId },
+          isAvailable: true,
+          status: WorkspaceStatus.Public
+        }
+      })
+      const aa = await this.memberRepository.insert(
+        children.map(child => ({
+          workspace: { _id: child._id },
+          status: EMemberStatus.Active,
+          user: { _id: user.sub },
+          createdBy: { _id: member.createdById },
+          role: EMemberRole.Member
+        }))
+      )
+      console.log(aa)
+    }
   }
 
   async declineInvition({
     user,
-    memberId
+    workspaceId
   }: {
     user: TJwtUser
-    memberId: string
+    workspaceId: string
   }) {
     const _memberDeclined = await this.memberRepository.update(
       {
-        _id: memberId,
-        workspace: { isAvailable: true },
+        workspace: { isAvailable: true, _id: workspaceId },
         user: { _id: user.sub, isAvailable: true },
         status: EMemberStatus.Invited,
         isAvailable: true
@@ -255,14 +278,16 @@ export class MemberService {
   }) {
     await this.memberRepository.findOneOrFail({
       where: {
-        workspace: { _id: workspaceId },
+        isAvailable: true,
+        status: EMemberStatus.Active,
+        workspace: { _id: workspaceId, isAvailable: true },
         user: { _id: user.sub, isAvailable: true }
       }
     })
 
     const members = await this.memberRepository.find({
       where: { workspace: { _id: workspaceId, isAvailable: true } },
-      relations: ['user']
+      relations: ['user', 'user.avatar']
     })
 
     return members

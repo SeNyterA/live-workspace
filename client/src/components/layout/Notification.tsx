@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Image, Popover } from '@mantine/core'
+import { ActionIcon, Popover, ScrollArea } from '@mantine/core'
 import { IconBell } from '@tabler/icons-react'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import Invition from './Invition'
@@ -20,10 +20,15 @@ export default function Notification() {
           <IconBell size={24} />
         </ActionIcon>
       </Popover.Target>
-      <Popover.Dropdown className='h-80'>
-        {invitions?.invitions.map(invition => (
+      <Popover.Dropdown className='h-80 inset-0'>
+        {/* {invitions?.invitions.map(invition => (
           <Invition invition={invition} key={invition._id} />
-        ))}
+        ))} */}
+        <ScrollArea scrollbarSize={8} className='absolute inset-0 p-3'>
+          {invitions?.invitions.map(invition => (
+            <Invition invition={invition} key={invition._id} />
+          ))}
+        </ScrollArea>
       </Popover.Dropdown>
     </Popover>
   )
