@@ -19,7 +19,7 @@ export enum EMemberStatus {
   Invited = 'Invited',
   Declined = 'Declined',
   Active = 'Active',
-  Left = 'Left',
+  Leaved = 'Leaved',
   Kicked = 'Kicked'
 }
 

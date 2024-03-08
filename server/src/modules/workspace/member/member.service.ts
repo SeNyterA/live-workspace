@@ -15,7 +15,7 @@ import {
   WorkspaceType
 } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
-import { Brackets, In, Repository } from 'typeorm'
+import { In, Not, Repository } from 'typeorm'
 
 const checkPermission = async ({
   operatorRole,
@@ -71,40 +71,66 @@ export class MemberService {
     }
   }
 
-  async inviteMember({
+  async workpsaceMembers({
     user,
-    workspaceId,
-    email
+    workspaceId
   }: {
     user: TJwtUser
     workspaceId: string
-    email: string
   }) {
-    const member = await this.memberRepository.findOne({
+    await this.memberRepository.findOneOrFail({
       where: {
+        status: EMemberStatus.Active,
+        isAvailable: true,
         workspace: { _id: workspaceId, isAvailable: true },
-        user: { email, isAvailable: true }
+        user: { _id: user.sub, isAvailable: true }
+      }
+    })
+
+    const members = await this.memberRepository.find({
+      where: { workspace: { _id: workspaceId, isAvailable: true } },
+      relations: ['user', 'user.avatar']
+    })
+
+    return members
+  }
+
+  async inviteMember({
+    user,
+    workspaceId,
+    memberUserId
+  }: {
+    user: TJwtUser
+    workspaceId: string
+    memberUserId: string
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub, isAvailable: true },
+        workspace: { _id: workspaceId, isAvailable: true },
+        role: In([EMemberRole.Owner, EMemberRole.Admin])
+      }
+    })
+
+    const invition = await this.memberRepository.update(
+      {
+        user: { _id: memberUserId, isAvailable: true },
+        workspace: {
+          _id: workspaceId,
+          isAvailable: true,
+          type: In([
+            WorkspaceType.Direct,
+            WorkspaceType.Group,
+            WorkspaceType.Team
+          ])
+        }
       },
-      relations: ['workspace']
-    })
-
-    if (member?.status === EMemberStatus.Active) {
-      throw new Error('User already in workspace')
-    }
-
-    const invition = await this.memberRepository.save({
-      ...member,
-      role: EMemberRole.Member,
-      status: EMemberStatus.Invited,
-      user: { email, isAvailable: true },
-      workspace: { _id: workspaceId, isAvailable: true },
-      createdBy: { _id: user.sub },
-      modifiedBy: { _id: user.sub }
-    })
-
-    this.server.to([invition.userId, workspaceId]).emit('invition', {
-      invition
-    })
+      {
+        modifiedBy: { _id: user.sub },
+        role: EMemberRole.Member,
+        status: EMemberStatus.Invited
+      }
+    )
   }
 
   async acceptInvition({
@@ -124,13 +150,11 @@ export class MemberService {
       relations: ['workspace']
     })
 
-    const newMember = await this.memberRepository.save({
+    await this.memberRepository.save({
       ...member,
       status: EMemberStatus.Active,
       modifiedBy: { _id: user.sub }
     })
-
-    console.log(newMember)
 
     if (member.workspace.type === WorkspaceType.Team) {
       const children = await this.workspaceRepository.find({
@@ -140,7 +164,7 @@ export class MemberService {
           status: WorkspaceStatus.Public
         }
       })
-      const aa = await this.memberRepository.insert(
+      await this.memberRepository.insert(
         children.map(child => ({
           workspace: { _id: child._id },
           status: EMemberStatus.Active,
@@ -149,7 +173,6 @@ export class MemberService {
           role: EMemberRole.Member
         }))
       )
-      console.log(aa)
     }
   }
 
@@ -174,6 +197,68 @@ export class MemberService {
     )
 
     return _memberDeclined
+  }
+
+  async leaveWorkspace({
+    user,
+    workspaceId
+  }: {
+    workspaceId: string
+    user: TJwtUser
+  }) {
+    const members = await this.memberRepository.find({
+      where: {
+        workspace: [
+          { _id: workspaceId, isAvailable: true },
+          { parent: { _id: workspaceId, isAvailable: true }, isAvailable: true }
+        ],
+        user: { _id: user.sub, isAvailable: true }
+      }
+    })
+    const leavedMembers = await this.memberRepository.save(
+      members.map(member => ({
+        ...member,
+        status: EMemberStatus.Leaved,
+        modifiedBy: { _id: user.sub }
+      }))
+    )
+    return leavedMembers
+  }
+
+  async kickWorkspaceMember({
+    user,
+    workspaceId,
+    userTargetId
+  }: {
+    workspaceId: string
+    user: TJwtUser
+    userTargetId: string
+  }) {
+    await this.memberRepository.findOneOrFail({
+      where: {
+        user: { _id: user.sub, isAvailable: true },
+        workspace: { _id: workspaceId, isAvailable: true },
+        role: In([EMemberRole.Owner, EMemberRole.Admin])
+      }
+    })
+
+    const members = await this.memberRepository.find({
+      where: {
+        workspace: [
+          { _id: workspaceId, isAvailable: true },
+          { parent: { _id: workspaceId, isAvailable: true }, isAvailable: true }
+        ],
+        user: { _id: userTargetId, isAvailable: true }
+      }
+    })
+    const leavedMembers = await this.memberRepository.save(
+      members.map(member => ({
+        ...member,
+        status: EMemberStatus.Leaved,
+        modifiedBy: { _id: user.sub }
+      }))
+    )
+    return leavedMembers
   }
 
   async addMember({
@@ -267,94 +352,5 @@ export class MemberService {
     })
 
     return { member: memberUpdated }
-  }
-
-  async workpsaceMembers({
-    user,
-    workspaceId
-  }: {
-    user: TJwtUser
-    workspaceId: string
-  }) {
-    await this.memberRepository.findOneOrFail({
-      where: {
-        isAvailable: true,
-        status: EMemberStatus.Active,
-        workspace: { _id: workspaceId, isAvailable: true },
-        user: { _id: user.sub, isAvailable: true }
-      }
-    })
-
-    const members = await this.memberRepository.find({
-      where: { workspace: { _id: workspaceId, isAvailable: true } },
-      relations: ['user', 'user.avatar']
-    })
-
-    return members
-  }
-
-  async findPotentialMembers({
-    keyword,
-    skip,
-    take,
-    workspaceId
-  }: {
-    keyword: string
-    skip: number
-    take: number
-    workspaceId: string
-  }) {
-    const workspace = await this.workspaceRepository.findOneOrFail({
-      where: { _id: workspaceId, isAvailable: true }
-    })
-
-    let users
-
-    if (workspace.parentId) {
-      users = await this.userRepository
-        .createQueryBuilder('user')
-        .leftJoin('user.members', 'member')
-        .where('user.isAvailable = :isAvailable', { isAvailable: true })
-        .andWhere('member.workspaceId = :parentId', {
-          parentId: workspace.parentId
-        })
-        .andWhere('member.workspaceId != :workspaceId', {
-          workspaceId: workspace._id
-        })
-        .andWhere(
-          new Brackets(qb => {
-            qb.where('user.userName LIKE :keyword', { keyword: `%${keyword}%` })
-              .orWhere('user.email LIKE :keyword', { keyword: `%${keyword}%` })
-              .orWhere('user.nickName LIKE :keyword', {
-                keyword: `%${keyword}%`
-              })
-          })
-        )
-        .skip(skip)
-        .take(take)
-        .getMany()
-    } else {
-      users = await this.userRepository
-        .createQueryBuilder('user')
-        .leftJoin('user.members', 'member')
-        .where('user.isAvailable = :isAvailable', { isAvailable: true })
-        .andWhere('member.workspaceId != :workspaceId', {
-          workspaceId: workspace._id
-        })
-        .andWhere(
-          new Brackets(qb => {
-            qb.where('user.userName LIKE :keyword', { keyword: `%${keyword}%` })
-              .orWhere('user.email LIKE :keyword', { keyword: `%${keyword}%` })
-              .orWhere('user.nickName LIKE :keyword', {
-                keyword: `%${keyword}%`
-              })
-          })
-        )
-        .skip(skip)
-        .take(take)
-        .getMany()
-    }
-
-    return users
   }
 }

@@ -37,7 +37,7 @@ const Option = memo(
             <p className='text-xs leading-3 text-gray-500'>{user.email}</p>
           </div>
 
-          <MemberRole role={member.role} />
+          <MemberRole member={member} />
 
           {selected && <CheckIcon size={12} />}
         </div>

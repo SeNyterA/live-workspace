@@ -24,7 +24,7 @@ export default function WorkspaceSetting() {
           })
         )
       }
-      opened={!!workspaceSettingId}
+      opened={!!workspaceSettingId && workspaceSettingId !== 'personal'}
       title={
         <div className='flex items-center justify-center gap-1 text-lg'>
           {workspace?.avatar?.path && (

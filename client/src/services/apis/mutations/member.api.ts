@@ -22,6 +22,16 @@ export type TMemberApi = {
       method: 'post'
       response: { member: TMember }
     }
+    leaveWorkspace: {
+      url: {
+        baseUrl: '/workspace/:workspaceId/members'
+        urlParams: {
+          workspaceId: string
+        }
+      }
+      method: 'delete'
+      response: { member: TMember }
+    }
   }
   queries: {
     getInvitions: {

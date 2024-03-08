@@ -1,7 +1,6 @@
 import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
 import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
-import { EMemberRole } from '../../../../types'
 import MemberRole from '../../../common/MemberRole'
 
 export default function Members() {
@@ -67,7 +66,7 @@ export default function Members() {
               </p>
             </div>
 
-            {member && <MemberRole role={member.role} />}
+            {member && <MemberRole member={member} />}
           </div>
         ))}
     </NavLink>

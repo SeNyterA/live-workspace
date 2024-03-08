@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import { Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { MemberService } from './member.service'
@@ -29,6 +29,17 @@ export class MemberController {
     @Param('workspaceId') workspaceId: string
   ) {
     return this.memberService.declineInvition({
+      user,
+      workspaceId
+    })
+  }
+
+  @Delete('workspace/:workspaceId/members')
+  leaveWorkspace(
+    @HttpUser() user: TJwtUser,
+    @Param('workspaceId') workspaceId: string
+  ) {
+    return this.memberService.leaveWorkspace({
       user,
       workspaceId
     })

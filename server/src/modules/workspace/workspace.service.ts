@@ -215,7 +215,11 @@ export class WorkspaceService {
     const workspace = await this.workspaceRepository.findOneOrFail({
       where: {
         _id: workspaceId,
-        members: { user: { _id: user.sub, isAvailable: true } }
+        members: {
+          user: { _id: user.sub, isAvailable: true },
+          isAvailable: true,
+          status: EMemberStatus.Active
+        }
       },
       relations: ['avatar', 'thumbnail']
     })
