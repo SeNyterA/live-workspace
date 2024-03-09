@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+ 
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 import { Member } from 'src/entities/member.entity'

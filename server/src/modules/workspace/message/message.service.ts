@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+ 
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
 import { EMemberRole, EMemberStatus, Member } from 'src/entities/member.entity'

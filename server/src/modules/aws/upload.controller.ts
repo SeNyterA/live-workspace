@@ -1,18 +1,11 @@
-import {
-  Controller,
-  Post,
-  UploadedFile,
-  UploadedFiles,
-  UseInterceptors
-} from '@nestjs/common'
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
-import { InjectRepository } from '@nestjs/typeorm'
+import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common'
+import { FileInterceptor } from '@nestjs/platform-express'
+
+import { FileSourceType } from '@prisma/client'
 import { MulterFile } from 'multer'
 import slugify from 'slugify'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { File } from 'src/entities/file.entity'
-import { User } from 'src/entities/user.entity'
-import { Repository } from 'typeorm'
+import { PrismaService } from '../prisma/prisma.service'
 import { TJwtUser } from '../socket/socket.gateway'
 import { AWSConfigService } from './aws.config'
 
@@ -20,12 +13,7 @@ import { AWSConfigService } from './aws.config'
 export class UploadController {
   constructor(
     private readonly awsConfigService: AWSConfigService,
-
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-
-    @InjectRepository(File)
-    private readonly fileRepository: Repository<File>
+    private readonly prismaService: PrismaService
   ) {}
 
   @Post('upload')
@@ -54,52 +42,14 @@ export class UploadController {
       })
       .promise()
 
-    const createdFile = await this.fileRepository.insert({
-      size: fileRaw.size,
-      createdBy: { _id: user.sub },
-      modifiedBy: { _id: user.sub },
-      path: uploadResult.Location
+    return this.prismaService.file.create({
+      data: {
+        size: fileRaw.size,
+        createdBy: { connect: { id: user.sub } },
+        modifiedBy: { connect: { id: user.sub } },
+        path: uploadResult.Location,
+        sourceType: FileSourceType.AWS
+      }
     })
-
-    return await this.fileRepository.findOne({
-      where: { _id: createdFile.identifiers[0]._id }
-    })
-  }
-
-  @Post('uploads')
-  @UseInterceptors(FilesInterceptor('files'))
-  async uploadFiles(
-    @UploadedFiles() files: MulterFile[],
-    @HttpUser() user: TJwtUser
-  ) {
-    const s3 = this.awsConfigService.getS3Instance()
-
-    const uploadResults = await Promise.all(
-      files.map(async file => {
-        const { originalname, buffer, mimetype } = file
-        const timestamp = new Date().getTime()
-        const fileName = `${timestamp}_${user.sub}_${slugify(originalname, {
-          lower: true,
-          remove: /[*+~()'"!:@]/g
-        }).replace(/-/g, '_')}`
-
-        const uploadResult = await s3
-          .upload({
-            Bucket: this.awsConfigService.getBucketName(),
-            Key: fileName,
-            Body: buffer,
-            ACL: 'public-read',
-            ContentType: mimetype,
-            ContentDisposition: 'inline'
-          })
-          .promise()
-
-        return {
-          url: uploadResult.Location
-        }
-      })
-    )
-
-    return { urls: uploadResults.map(result => result.url) }
   }
 }

@@ -24,7 +24,7 @@ export class GroupController {
     return this.groupService.createGroup({
       user,
       workspace,
-      members
+      memberDto: members
     })
   }
 }

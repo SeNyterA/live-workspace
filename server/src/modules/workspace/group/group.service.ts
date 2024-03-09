@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberRole, Member } from 'src/entities/member.entity'
-import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
-import { Repository } from 'typeorm'
-import { generateRandomHash } from '../workspace.service'
+
+import {
+  Member,
+  Workspace,
+  WorkspaceStatus,
+  WorkspaceType
+} from '@prisma/client'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
 @WebSocketGateway({
@@ -17,12 +21,7 @@ import { TJwtUser } from 'src/modules/socket/socket.gateway'
 export class GroupService {
   @WebSocketServer()
   server: Server
-  constructor(
-    @InjectRepository(Workspace)
-    private readonly workspaceRepository: Repository<Workspace>,
-    @InjectRepository(Member)
-    private readonly memberRepository: Repository<Member>
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async createGroup({
     user,
@@ -33,44 +32,26 @@ export class GroupService {
     user: TJwtUser
     members?: Member[]
   }) {
-    const newWorkspace = await this.workspaceRepository.save(
-      this.workspaceRepository.create({
+    const newGroup = await this.prismaService.workspace.create({
+      data: {
         ...workspace,
         type: WorkspaceType.Group,
-        displayUrl: generateRandomHash(),
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      })
-    )
-
-    const _members = await this.memberRepository.insert([
-      {
-        role: EMemberRole.Owner,
-        user: { _id: user.sub },
-        workspace: { _id: newWorkspace._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      },
-      ...(members
-        ?.filter(e => e.userId !== user.sub)
-        .map(e => ({
-          ...e,
-          user: { _id: e.userId },
-          workspace: { _id: newWorkspace._id },
-          createdBy: { _id: user.sub },
-          modifiedBy: { _id: user.sub }
-        })) || [])
-    ])
-
-    const group = await this.workspaceRepository.findOne({
-      where: { _id: newWorkspace._id }
+        status: WorkspaceStatus.Private,
+        createdById: user.sub,
+        modifiedById: user.sub
+      }
     })
-    this.server
-      .to(_members.identifiers.map(e => e._id))
-      .emit('workspace', { workspace: group })
+
+    const _members = await this.prismaService.member.createMany({
+      data: members.map(member => ({
+        ...member,
+        workspaceId: newGroup.id
+      }))
+    })
 
     return {
-      group
+      ...newGroup,
+      members: _members
     }
   }
 }

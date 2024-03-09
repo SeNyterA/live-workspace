@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
 import { Server, Socket } from 'socket.io'
@@ -14,6 +14,7 @@ import { User } from 'src/entities/user.entity'
 import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
 
 import { Brackets, In, Repository } from 'typeorm'
+import { PrismaService } from '../prisma/prisma.service'
 import { TJwtUser } from '../socket/socket.gateway'
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
@@ -67,15 +68,29 @@ export class WorkspaceService {
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
     @InjectRepository(File)
-    private readonly fileRepository: Repository<File>
+    private readonly fileRepository: Repository<File>,
+    private readonly prismaService: PrismaService
   ) {}
 
   //#region Workspace
   async createUsersFakeData() {
-    const count = await this.userRepository.count()
+    // const count = await this.userRepository.count()
 
-    return await this.userRepository.insert(
-      Array(100000)
+    // return await this.userRepository.insert(
+    //   Array(100000)
+    //     .fill(1)
+    //     .map(() => ({
+    //       email:
+    //         generateRandomHash(Math.random().toString(), 10) + '@gmail.com',
+    //       userName: generateRandomHash(Math.random().toString(), 10),
+    //       password: crypto.SHA256('123123').toString(),
+    //       nickName: generateRandomHash(Math.random().toString(), 10),
+    //       isAvailable: true
+    //     }))
+    // )
+
+    const users = await this.prismaService.user.createMany({
+      data: Array(10000)
         .fill(1)
         .map(() => ({
           email:
@@ -84,8 +99,11 @@ export class WorkspaceService {
           password: crypto.SHA256('123123').toString(),
           nickName: generateRandomHash(Math.random().toString(), 10),
           isAvailable: true
-        }))
-    )
+        })),
+      skipDuplicates: true
+    })
+
+    console.log(users)
   }
 
   async createGroup({

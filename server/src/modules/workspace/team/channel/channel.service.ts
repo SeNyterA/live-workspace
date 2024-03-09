@@ -1,11 +1,23 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  forwardRef
+} from '@nestjs/common'
+
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import {
+  Member,
+  MemberRole,
+  MemberStatus,
+  Workspace,
+  WorkspaceType
+} from '@prisma/client'
 import { Server } from 'socket.io'
-import { Member } from 'src/entities/member.entity'
-import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
+
+import { Errors } from 'src/libs/errors'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
-import { Repository } from 'typeorm'
 import { TeamService } from '../team.service'
 
 @WebSocketGateway({
@@ -18,11 +30,9 @@ export class ChannelService {
   @WebSocketServer()
   server: Server
   constructor(
-    @InjectRepository(Workspace)
-    private readonly workspaceRepository: Repository<Workspace>,
-
     @Inject(forwardRef(() => TeamService))
-    private readonly teamService: TeamService
+    private readonly teamService: TeamService,
+    private readonly prismaService: PrismaService
   ) {}
 
   async createChannel({
@@ -36,15 +46,38 @@ export class ChannelService {
     teamId: string
     members?: Member[]
   }) {
-    console.log(members)
-    const channel = await this.teamService.createChildWorkspace({
-      user,
-      workspace,
-      teamId,
-      type: WorkspaceType.Channel,
-      members
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: user.sub,
+        workspaceId: teamId,
+        status: MemberStatus.Active,
+        role: {
+          in: [MemberRole.Admin, MemberRole.Owner]
+        }
+      }
     })
 
-    return { channel }
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const channel = await this.prismaService.workspace.create({
+      data: {
+        ...workspace,
+        workspaceParentId: teamId,
+        type: WorkspaceType.Channel,
+        createdById: user.sub,
+        modifiedById: user.sub,
+        members: {
+          createMany: {
+            data: members.map(member => ({
+              userId: member.userId,
+              role: member.role,
+              status: MemberStatus.Invited
+            }))
+          }
+        }
+      }
+    })
   }
 }

@@ -7,7 +7,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum EFileSourceType {
+enum FileSourceType {
   AWS
   Link
 }
@@ -25,13 +25,13 @@ enum WorkspaceStatus {
   Public
 }
 
-enum EMemberRole {
+enum MemberRole {
   Owner
   Admin
   Member
 }
 
-enum EMemberStatus {
+enum MemberStatus {
   Invited
   Declined
   Active
@@ -105,13 +105,13 @@ model User {
 }
 
 model File {
-  id          String          @id @default(uuid())
+  id          String         @id @default(uuid())
   path        String
   size        Float?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  isAvailable Boolean         @default(true)
-  sourceType  EFileSourceType
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  isAvailable Boolean        @default(true)
+  sourceType  FileSourceType
 
   createdBy   User?   @relation("CreatedBy", fields: [createdById], references: [id])
   createdById String?
@@ -149,6 +149,10 @@ model Workspace {
   thumbnail   File?   @relation("WorkspaceThumbnail", fields: [thumbnailId], references: [id])
   thumbnailId String?
 
+  workspaceParent    Workspace?  @relation("WorkspaceParent", fields: [workspaceParentId], references: [id])
+  workspaceParentId  String?
+  workspacesChildren Workspace[] @relation("WorkspaceParent")
+
   members    Member[]   @relation("MemberWorkspace")
   messages   Message[]  @relation("MessageWorkspace")
   cards      Card[]     @relation("CardWorkspace")
@@ -156,17 +160,17 @@ model Workspace {
 }
 
 model Member {
-  id          String        @id @default(uuid())
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  isAvailable Boolean       @default(true)
-  role        EMemberRole
-  status      EMemberStatus
+  id          String       @id @default(uuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  isAvailable Boolean      @default(true)
+  role        MemberRole
+  status      MemberStatus
 
   user   User   @relation("MemberUser", fields: [userId], references: [id])
   userId String
 
-  createdBy    User?   @relation("MemberCreatedBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("MemberCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("MemberModifiedBy", fields: [modifiedById], references: [id])
