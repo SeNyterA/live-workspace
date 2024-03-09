@@ -75,29 +75,29 @@ model User {
   createdFiles  File[] @relation("CreatedBy")
   modifiedFiles File[] @relation("ModifiedBy")
 
-  createdWorkspaces  Workspace[] @relation("WorkspaceCreateBy")
+  createdWorkspaces  Workspace[] @relation("WorkspaceCreatedBy")
   modifiedWorkspaces Workspace[] @relation("WorkspaceModifiedBy")
 
-  createdMembers  Member[] @relation("MemberCreateBy")
+  createdMembers  Member[] @relation("MemberCreatedBy")
   modifiedMembers Member[] @relation("MemberModifiedBy")
   members         Member[] @relation("MemberUser")
 
-  createdMessages  Message[] @relation("MessageCreateBy")
+  createdMessages  Message[] @relation("MessageCreatedBy")
   modifiedMessages Message[] @relation("MessageModifiedBy")
 
-  createdCards  Card[] @relation("CardCreateBy")
+  createdCards  Card[] @relation("CardCreatedBy")
   modifiedCards Card[] @relation("CardModifiedBy")
 
-  createdProperties  Property[] @relation("PropertyCreateBy")
+  createdProperties  Property[] @relation("PropertyCreatedBy")
   modifiedProperties Property[] @relation("PropertyModifiedBy")
 
-  createdPropertyOptions  PropertyOption[] @relation("PropertyOptionCreateBy")
+  createdPropertyOptions  PropertyOption[] @relation("PropertyOptionCreatedBy")
   modifiedPropertyOptions PropertyOption[] @relation("PropertyOptionModifiedBy")
 
-  createdReactions  Reaction[] @relation("ReactionCreateBy")
+  createdReactions  Reaction[] @relation("ReactionCreatedBy")
   modifiedReactions Reaction[] @relation("ReactionModifiedBy")
 
-  createdMentions  Mention[] @relation("MentionCreateBy")
+  createdMentions  Mention[] @relation("MentionCreatedBy")
   modifiedMentions Mention[] @relation("MentionModifiedBy")
   mentions         Mention[] @relation("MentionUser")
 
@@ -137,7 +137,7 @@ model Workspace {
   type        WorkspaceType
   status      WorkspaceStatus
 
-  createdBy   User?   @relation("WorkspaceCreateBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("WorkspaceCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("WorkspaceModifiedBy", fields: [modifiedById], references: [id])
@@ -166,7 +166,7 @@ model Member {
   user   User   @relation("MemberUser", fields: [userId], references: [id])
   userId String
 
-  createby    User?   @relation("MemberCreateBy", fields: [createdById], references: [id])
+  createdBy    User?   @relation("MemberCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("MemberModifiedBy", fields: [modifiedById], references: [id])
@@ -184,7 +184,7 @@ model Message {
   type        MessageType
   content     Json?
 
-  createdBy   User?   @relation("MessageCreateBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("MessageCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("MessageModifiedBy", fields: [modifiedById], references: [id])
@@ -219,7 +219,7 @@ model Card {
   thumbnail   File?   @relation("CardThumbnail", fields: [thumbnailId], references: [id])
   thumbnailId String?
 
-  createdBy   User?   @relation("CardCreateBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("CardCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("CardModifiedBy", fields: [modifiedById], references: [id])
@@ -242,7 +242,7 @@ model Property {
   workspace   Workspace @relation("PropertyWorkspace", fields: [workspaceId], references: [id])
   workspaceId String
 
-  createdBy   User?   @relation("PropertyCreateBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("PropertyCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("PropertyModifiedBy", fields: [modifiedById], references: [id])
@@ -264,7 +264,7 @@ model PropertyOption {
   property   Property @relation("PropertyOption", fields: [propertyId], references: [id])
   propertyId String
 
-  createdBy   User?   @relation("PropertyOptionCreateBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("PropertyOptionCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("PropertyOptionModifiedBy", fields: [modifiedById], references: [id])
@@ -279,7 +279,7 @@ model Reaction {
   type        String
   content     String?
 
-  createdBy   User?   @relation("ReactionCreateBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("ReactionCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("ReactionModifiedBy", fields: [modifiedById], references: [id])
@@ -300,7 +300,7 @@ model Mention {
   user   User   @relation("MentionUser", fields: [userId], references: [id])
   userId String
 
-  createdBy   User?   @relation("MentionCreateBy", fields: [createdById], references: [id])
+  createdBy   User?   @relation("MentionCreatedBy", fields: [createdById], references: [id])
   createdById String?
 
   modifiedBy   User?   @relation("MentionModifiedBy", fields: [modifiedById], references: [id])
