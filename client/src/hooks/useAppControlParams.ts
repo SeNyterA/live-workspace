@@ -49,21 +49,21 @@ export default function useAppControlParams() {
           state => state.workspace.workspaces[lsActions.getTeamChild(teamId)!]
         )
         if (!!teamChild) {
-          lsActions.setTeamChild(teamId, teamChild._id)
+          lsActions.setTeamChild(teamId, teamChild.id)
           return `/${urlParser[teamChild.type as keyof typeof urlParser]}/${
-            teamChild._id
+            teamChild.id
           }`
         } else {
           const teamChild = getAppValue(state =>
             Object.values(state.workspace.workspaces).find(
-              e => e.parentId === teamId
+              e => e.workspaceParentId === teamId
             )
           )
 
           if (teamChild) {
-            lsActions.setTeamChild(teamId, teamChild._id)
+            lsActions.setTeamChild(teamId, teamChild.id)
             return `/${urlParser[teamChild.type as keyof typeof urlParser]}/${
-              teamChild._id
+              teamChild.id
             }`
           }
         }

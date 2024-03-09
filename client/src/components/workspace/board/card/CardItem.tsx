@@ -12,10 +12,10 @@ function CardItem({ card }: { card: TCard }) {
   return (
     <div
       className='flex flex-col rounded bg-gray-100 px-2 py-1'
-      id={card._id}
+      id={card.id}
       onClick={() => {
         toogleCard({
-          cardId: card._id
+          cardId: card.id
         })
       }}
     >

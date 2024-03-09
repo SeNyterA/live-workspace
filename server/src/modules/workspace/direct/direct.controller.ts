@@ -1,8 +1,8 @@
 import { Body, Controller, Param, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { Workspace } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { DirectService } from './direct.service'
+import { Workspace } from '@prisma/client'
 
 @Controller('directs')
 export class GroupController {

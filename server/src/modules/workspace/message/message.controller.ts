@@ -7,8 +7,8 @@ import {
   Post,
   Query
 } from '@nestjs/common'
+import { Message } from '@prisma/client'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { Message } from 'src/entities/message.entity'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { MessageService } from './message.service'
 
@@ -82,21 +82,6 @@ export class MessageController {
       fromId,
       size: Number(size) || 100,
       user
-    })
-  }
-
-  @Post(':messageId/reaction')
-  reactMessage(
-    @HttpUser() user: TJwtUser,
-    @Param('workspaceId') targetId: string,
-    @Param('messageId') messageId: string,
-    @Body() { reaction }: { reaction: string }
-  ) {
-    return this.messageService.reactMessage({
-      user,
-      messageId,
-      reaction,
-      targetId
     })
   }
 }

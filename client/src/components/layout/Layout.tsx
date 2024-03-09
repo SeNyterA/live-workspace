@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
   const [thread, setThread] = useState<TThread>()
   const [openInfo, toggleInfo] = useState(false)
-  const { boardId, channelId, directId, groupId, teamId } = useAppParams()
+  const { teamId } = useAppParams()
 
   const { data: workspaces, isPending } = useAppQuery({
     key: 'workspaces',
@@ -41,10 +41,12 @@ export default function Layout({ children }: { children: ReactNode }) {
       baseUrl: '/workspaces'
     },
     onSucess(data) {
+
+      console.log({data})
       dispatch(
         workspaceActions.updateWorkspaceStore({
           workspaces: data.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
+            (pre, next) => ({ ...pre, [next.id]: next }),
             {}
           )
         })
@@ -61,7 +63,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     onSucess({ members, workspace }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace._id]: workspace },
+          workspaces: { [workspace.id]: workspace },
           members: arrayToObject(members, '_id'),
           users: arrayToObject(
             members.map(e => e.user!),
@@ -80,7 +82,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     resFunc: ({ workspace }) => {
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace._id]: workspace }
+          workspaces: { [workspace.id]: workspace }
         })
       )
     }

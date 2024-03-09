@@ -40,7 +40,7 @@ export default function PinedMesages() {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           messages: messages.reduce(
-            (acc, cur) => ({ ...acc, [cur._id]: cur }),
+            (acc, cur) => ({ ...acc, [cur.id]: cur }),
             {}
           )
         })
@@ -75,7 +75,7 @@ export default function PinedMesages() {
       {pinedMessages?.map((message, index) => (
         <>
           <Watching
-            key={message._id}
+            key={message.id}
             watchingFn={state => state.workspace.users[message.createdById]}
           >
             {createBy => (

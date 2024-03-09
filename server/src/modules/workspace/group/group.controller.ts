@@ -1,7 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { Member } from 'src/entities/member.entity'
-import { Workspace } from 'src/entities/workspace.entity'
+import { Member, Workspace } from '@prisma/client'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { GroupService } from './group.service'
 
@@ -24,7 +23,7 @@ export class GroupController {
     return this.groupService.createGroup({
       user,
       workspace,
-      memberDto: members
+      members
     })
   }
 }

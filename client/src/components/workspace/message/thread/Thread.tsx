@@ -35,7 +35,7 @@ export default function Thread({
 
   const threadMessages = useAppSelector(state =>
     Object.values(state.workspace.messages).filter(
-      m => m._id === thread?.threadId || m.threadId === thread?.threadId
+      m => m.id === thread?.threadId || m.threadId === thread?.threadId
     )
   )
 
@@ -64,7 +64,7 @@ export default function Thread({
         <ScrollArea className='absolute inset-0' scrollbarSize={8}>
           {groupMessages(threadMessages || []).map(groupMessage => (
             <MessageGroup
-              key={groupMessage.messages[0]._id}
+              key={groupMessage.messages[0].id}
               messageGroup={groupMessage}
             />
           ))}

@@ -1,5 +1,4 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
-
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import {
   MemberRole,
@@ -9,7 +8,6 @@ import {
 } from '@prisma/client'
 import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
-import { checkPermission } from 'src/libs/helper'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
@@ -28,8 +26,7 @@ export class MemberService {
     const invitions = await this.prismaService.member.findMany({
       where: {
         userId: user.sub,
-        status: MemberStatus.Invited,
-        isAvailable: true
+        status: MemberStatus.Invited
       },
 
       include: {
@@ -55,7 +52,6 @@ export class MemberService {
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        isAvailable: true,
         userId: user.sub,
         status: MemberStatus.Active,
         workspace: {
@@ -96,12 +92,9 @@ export class MemberService {
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        isAvailable: true,
         userId: user.sub,
         status: MemberStatus.Active,
-        role: {
-          in: [MemberRole.Owner, MemberRole.Admin]
-        },
+        role: MemberRole.Admin,
         workspace: {
           id: workspaceId,
           isAvailable: true
@@ -138,24 +131,13 @@ export class MemberService {
     user: TJwtUser
     workspaceId: string
   }) {
-    const member = await this.prismaService.member.findFirst({
-      where: {
-        workspaceId: workspaceId,
-        userId: user.sub,
-        status: MemberStatus.Invited,
-        isAvailable: true
-      }
-    })
-
-    if (!member) {
-      throw new ForbiddenException({
-        code: Errors.PERMISSION_DENIED
-      })
-    }
-
     const memberUpdated = await this.prismaService.member.update({
       where: {
-        id: member.id
+        userId_workspaceId: {
+          userId: user.sub,
+          workspaceId: workspaceId
+        },
+        status: MemberStatus.Invited
       },
       data: {
         status: MemberStatus.Active,
@@ -176,9 +158,8 @@ export class MemberService {
       await this.prismaService.member.createMany({
         data: children.map(child => ({
           workspaceId: child.id,
-          status: MemberStatus.Active,
           userId: user.sub,
-          createdById: member.createdById,
+          status: MemberStatus.Active,
           role: MemberRole.Member
         }))
       })
@@ -192,24 +173,13 @@ export class MemberService {
     user: TJwtUser
     workspaceId: string
   }) {
-    const member = await this.prismaService.member.findFirst({
-      where: {
-        workspaceId: workspaceId,
-        userId: user.sub,
-        status: MemberStatus.Invited,
-        isAvailable: true
-      }
-    })
-
-    if (!member) {
-      throw new ForbiddenException({
-        code: Errors.PERMISSION_DENIED
-      })
-    }
-
     await this.prismaService.member.update({
       where: {
-        id: member.id
+        userId_workspaceId: {
+          userId: user.sub,
+          workspaceId: workspaceId
+        },
+        status: MemberStatus.Invited
       },
       data: {
         status: MemberStatus.Declined,
@@ -225,24 +195,13 @@ export class MemberService {
     workspaceId: string
     user: TJwtUser
   }) {
-    const member = await this.prismaService.member.findFirst({
-      where: {
-        workspaceId: workspaceId,
-        userId: user.sub,
-        status: MemberStatus.Active,
-        isAvailable: true
-      }
-    })
-
-    if (!member) {
-      throw new ForbiddenException({
-        code: Errors.PERMISSION_DENIED
-      })
-    }
-
     await this.prismaService.member.update({
       where: {
-        id: member.id
+        userId_workspaceId: {
+          userId: user.sub,
+          workspaceId: workspaceId
+        },
+        status: MemberStatus.Active
       },
       data: {
         status: MemberStatus.Leaved,
@@ -262,12 +221,9 @@ export class MemberService {
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        isAvailable: true,
         userId: user.sub,
         status: MemberStatus.Active,
-        role: {
-          in: [MemberRole.Owner, MemberRole.Admin]
-        },
+        role: MemberRole.Admin,
         workspace: {
           id: workspaceId,
           isAvailable: true
@@ -280,37 +236,44 @@ export class MemberService {
       })
     }
 
-    if (
-      checkPermission({
-        operatorRole: memberOperator.role,
-        targetRole: MemberRole.Member
-      })
-    ) {
-      throw new ForbiddenException({
-        code: Errors.PERMISSION_DENIED
-      })
-    }
+    const membersKicked = await this.prismaService.member.updateMany({
+      where: {
+        userId: userTargetId,
+        OR: [
+          {
+            workspaceId: workspaceId
+          },
+          {
+            workspace: {
+              workspaceParentId: workspaceId
+            }
+          }
+        ]
+      },
+      data: {
+        status: MemberStatus.Kicked,
+        modifiedById: user.sub
+      }
+    })
+    return membersKicked
   }
 
   async editMemberRole({
     memberRole,
     user,
     workspaceId,
-    memberId
+    userTargetId
   }: {
     memberRole: MemberRole
     user: TJwtUser
     workspaceId: string
-    memberId: string
+    userTargetId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        isAvailable: true,
         userId: user.sub,
         status: MemberStatus.Active,
-        role: {
-          in: [MemberRole.Owner, MemberRole.Admin]
-        },
+        role: MemberRole.Admin,
         workspace: {
           id: workspaceId,
           isAvailable: true
@@ -319,17 +282,6 @@ export class MemberService {
     })
 
     if (!memberOperator) {
-      throw new ForbiddenException({
-        code: Errors.PERMISSION_DENIED
-      })
-    }
-
-    if (
-      checkPermission({
-        operatorRole: memberOperator.role,
-        targetRole: memberRole
-      })
-    ) {
       throw new ForbiddenException({
         code: Errors.PERMISSION_DENIED
       })
@@ -337,7 +289,10 @@ export class MemberService {
 
     const memberUpdated = await this.prismaService.member.update({
       where: {
-        id: memberId
+        userId_workspaceId: {
+          userId: userTargetId,
+          workspaceId: workspaceId
+        }
       },
       data: {
         role: memberRole,

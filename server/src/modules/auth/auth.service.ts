@@ -9,7 +9,6 @@ import * as crypto from 'crypto-js'
 import { Errors } from 'src/libs/errors'
 import { MailService } from '../mail/mail.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { TLoginPayload } from './auth.dto'
 
 export type FirebaseUserTokenData = {
   name: string
@@ -57,7 +56,13 @@ export class AuthService {
     return hash === hashedPassword
   }
 
-  async signIn({ password, userNameOrEmail }: TLoginPayload) {
+  async signIn({
+    password,
+    userNameOrEmail
+  }: {
+    password?: string
+    userNameOrEmail?: string
+  }) {
     const user = await this.prismaService.user.findFirst({
       where: {
         OR: [{ email: userNameOrEmail }, { userName: userNameOrEmail }]

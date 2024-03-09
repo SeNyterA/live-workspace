@@ -26,7 +26,6 @@ enum WorkspaceStatus {
 }
 
 enum MemberRole {
-  Owner
   Admin
   Member
 }
@@ -94,12 +93,11 @@ model User {
   createdPropertyOptions  PropertyOption[] @relation("PropertyOptionCreatedBy")
   modifiedPropertyOptions PropertyOption[] @relation("PropertyOptionModifiedBy")
 
-  createdReactions  Reaction[] @relation("ReactionCreatedBy")
-  modifiedReactions Reaction[] @relation("ReactionModifiedBy")
-
   createdMentions  Mention[] @relation("MentionCreatedBy")
   modifiedMentions Mention[] @relation("MentionModifiedBy")
   mentions         Mention[] @relation("MentionUser")
+
+  reactionMessages Reaction[] @relation("ReactionUser")
 
   @@map(name: "users")
 }
@@ -125,6 +123,8 @@ model File {
   cardsThumbnail      Card[]              @relation("CardThumbnail")
   messagesAttachment  MessageAttachment[] @relation("AttachmentFile")
   cardsAttachment     CardAttachment[]    @relation("AttachmentFile")
+
+  @@map("files")
 }
 
 model Workspace {
@@ -136,6 +136,7 @@ model Workspace {
   isAvailable Boolean         @default(true)
   type        WorkspaceType
   status      WorkspaceStatus
+  displayUrl  String?         @unique
 
   createdBy   User?   @relation("WorkspaceCreatedBy", fields: [createdById], references: [id])
   createdById String?
@@ -157,18 +158,21 @@ model Workspace {
   messages   Message[]  @relation("MessageWorkspace")
   cards      Card[]     @relation("CardWorkspace")
   properties Property[] @relation("PropertyWorkspace")
+
+  @@map("workspaces")
 }
 
 model Member {
-  id          String       @id @default(uuid())
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  isAvailable Boolean      @default(true)
-  role        MemberRole
-  status      MemberStatus
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  role      MemberRole
+  status    MemberStatus
 
   user   User   @relation("MemberUser", fields: [userId], references: [id])
   userId String
+
+  workspace   Workspace @relation("MemberWorkspace", fields: [workspaceId], references: [id])
+  workspaceId String
 
   createdBy   User?   @relation("MemberCreatedBy", fields: [createdById], references: [id])
   createdById String?
@@ -176,8 +180,8 @@ model Member {
   modifiedBy   User?   @relation("MemberModifiedBy", fields: [modifiedById], references: [id])
   modifiedById String?
 
-  workspace   Workspace @relation("MemberWorkspace", fields: [workspaceId], references: [id])
-  workspaceId String
+  @@id([userId, workspaceId])
+  @@map("members")
 }
 
 model Message {
@@ -187,6 +191,7 @@ model Message {
   isAvailable Boolean     @default(true)
   type        MessageType
   content     Json?
+  isPinned    Boolean?
 
   createdBy   User?   @relation("MessageCreatedBy", fields: [createdById], references: [id])
   createdById String?
@@ -208,6 +213,8 @@ model Message {
   reactions   Reaction[]          @relation("ReactionMessage")
   mentions    Mention[]           @relation("MentionMessage")
   attachments MessageAttachment[] @relation("AttachmentMessage")
+
+  @@map("messages")
 }
 
 model Card {
@@ -233,14 +240,18 @@ model Card {
   workspaceId String
 
   attachments CardAttachment[] @relation("AttachmentCard")
+
+  @@map("cards")
 }
 
 model Property {
   id          String       @id @default(uuid())
+  title       String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   isAvailable Boolean      @default(true)
   detail      Json?
+  order       Float?
   type        PropertyType
 
   workspace   Workspace @relation("PropertyWorkspace", fields: [workspaceId], references: [id])
@@ -253,6 +264,8 @@ model Property {
   modifiedById String?
 
   options PropertyOption[] @relation("PropertyOption")
+
+  @@map("properties")
 }
 
 model PropertyOption {
@@ -273,36 +286,33 @@ model PropertyOption {
 
   modifiedBy   User?   @relation("PropertyOptionModifiedBy", fields: [modifiedById], references: [id])
   modifiedById String?
+
+  @@map("propertyOptions")
 }
 
 model Reaction {
-  id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   isAvailable Boolean  @default(true)
   type        String
   content     String?
 
-  createdBy   User?   @relation("ReactionCreatedBy", fields: [createdById], references: [id])
-  createdById String?
-
-  modifiedBy   User?   @relation("ReactionModifiedBy", fields: [modifiedById], references: [id])
-  modifiedById String?
+  user   User   @relation("ReactionUser", fields: [userId], references: [id])
+  userId String
 
   message   Message @relation("ReactionMessage", fields: [messageId], references: [id])
   messageId String
+
+  @@id([userId, messageId])
+  @@map("reactions")
 }
 
 model Mention {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isAvailable Boolean  @default(true)
-  type        String
-  content     String
-
   user   User   @relation("MentionUser", fields: [userId], references: [id])
   userId String
+
+  message   Message @relation("MentionMessage", fields: [messageId], references: [id])
+  messageId String
 
   createdBy   User?   @relation("MentionCreatedBy", fields: [createdById], references: [id])
   createdById String?
@@ -310,36 +320,28 @@ model Mention {
   modifiedBy   User?   @relation("MentionModifiedBy", fields: [modifiedById], references: [id])
   modifiedById String?
 
-  message   Message @relation("MentionMessage", fields: [messageId], references: [id])
-  messageId String
+  @@id([userId, messageId])
+  @@map("mentions")
 }
 
 model MessageAttachment {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isAvailable Boolean  @default(true)
-  type        String
-  content     String
-
   message   Message @relation("AttachmentMessage", fields: [messageId], references: [id])
   messageId String
 
   file   File   @relation("AttachmentFile", fields: [fileId], references: [id])
   fileId String
+
+  @@id([messageId, fileId])
+  @@map("messageAttachments")
 }
 
 model CardAttachment {
-  id          String   @id @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isAvailable Boolean  @default(true)
-  type        String
-  content     String
-
   card   Card   @relation("AttachmentCard", fields: [cardId], references: [id])
   cardId String
 
   file   File   @relation("AttachmentFile", fields: [fileId], references: [id])
   fileId String
+
+  @@id([cardId, fileId])
+  @@map("cardAttachments")
 }

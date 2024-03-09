@@ -29,13 +29,13 @@ export default function MessageContentWrapper() {
     resFunc: ({ message }) => {
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          messages: { [message._id]: message }
+          messages: { [message.id]: message }
         })
       )
     }
   })
   const workspace = useAppSelector(state =>
-    Object.values(state.workspace.workspaces).find(e => e._id === channelId)
+    Object.values(state.workspace.workspaces).find(e => e.id === channelId)
   )
 
   return (
@@ -95,7 +95,7 @@ export default function MessageContentWrapper() {
                   onSuccess(message) {
                     dispatch(
                       workspaceActions.updateWorkspaceStore({
-                        messages: { [message._id]: message }
+                        messages: { [message.id]: message }
                       })
                     )
                     socketEmit({
@@ -132,7 +132,7 @@ export default function MessageContentWrapper() {
                 onSuccess(message) {
                   dispatch(
                     workspaceActions.updateWorkspaceStore({
-                      messages: { [message._id]: message }
+                      messages: { [message.id]: message }
                     })
                   )
                   socketEmit({

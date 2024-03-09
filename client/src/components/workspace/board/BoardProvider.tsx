@@ -65,7 +65,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
           options: arrayToObject(options || [], '_id'),
           properties: arrayToObject(properties || [], '_id'),
           users: arrayToObject(users || [], '_id'),
-          workspaces: { [workspace._id]: workspace }
+          workspaces: { [workspace.id]: workspace }
         })
       )
     }
@@ -77,7 +77,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           options: {
-            [data.option._id]: data.option
+            [data.option.id]: data.option
           }
         })
       )
@@ -89,7 +89,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
     resFunc(data) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          cards: { [data.card._id]: data.card }
+          cards: { [data.card.id]: data.card }
         })
       )
     }
@@ -130,7 +130,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
           if (
             properties?.find(
               e =>
-                e._id === value &&
+                e.id === value &&
                 [
                   EFieldType.Assignees,
                   EFieldType.People,
@@ -164,11 +164,11 @@ const checkTrackingId = ({
   if (
     properties.find(
       e =>
-        e._id === trackingId &&
+        e.id === trackingId &&
         [EFieldType.Assignees, EFieldType.People, EFieldType.Select].includes(
           e.fieldType
         )
-    )?._id
+    )?.id
   )
     return undefined
 
@@ -176,11 +176,11 @@ const checkTrackingId = ({
 
   let _trackingId = properties.find(
     e =>
-      e._id === lsTrackingId &&
+      e.id === lsTrackingId &&
       [EFieldType.Assignees, EFieldType.People, EFieldType.Select].includes(
         e.fieldType
       )
-  )?._id
+  )?.id
 
   if (_trackingId) {
     lsActions.setTrackingId(boardId, _trackingId)
@@ -188,7 +188,7 @@ const checkTrackingId = ({
   }
 
   _trackingId = properties.find(e => [EFieldType.Select].includes(e.fieldType))
-    ?._id
+    ?.id
 
   if (_trackingId) {
     lsActions.setTrackingId(boardId, _trackingId)

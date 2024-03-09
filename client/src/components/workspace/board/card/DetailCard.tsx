@@ -13,7 +13,7 @@ export default function DetailCard() {
   const { toogleCard } = useAppControlParams()
   const { cardId } = useAppParams()
   const card = useAppSelector(state =>
-    Object.values(state.workspace.cards).find(e => e._id === cardId)
+    Object.values(state.workspace.cards).find(e => e.id === cardId)
   )
 
   const dispatch = useDispatch()
@@ -55,7 +55,7 @@ console.log({card})
                 <div className='h-[1000px]'></div>
                 <SendMessage
                   classNames={{ rootWrapper: 'sticky bottom-0' }}
-                  targetId={card._id}
+                  targetId={card.id}
                   createMessage={async ({ files, value }) => {}}
                 />
               </ScrollArea>

@@ -23,7 +23,7 @@ const getOptionWithNewOrder = ({
   draggableId: string
 }) => {
   try {
-    const optionTaget = options?.find(e => e._id === draggableId)
+    const optionTaget = options?.find(e => e.id === draggableId)
 
     if (!optionTaget) return
 
@@ -125,7 +125,7 @@ export default function CardsContent() {
                   const { newOption, oldOption } = data
                   dispatch(
                     workspaceActions.updateWorkspaceStore({
-                      options: { [newOption._id]: newOption }
+                      options: { [newOption.id]: newOption }
                     })
                   )
                   updateOption(
@@ -134,13 +134,13 @@ export default function CardsContent() {
                         baseUrl: 'boards/:boardId/options/:optionId',
                         urlParams: {
                           boardId: boardId!,
-                          optionId: newOption._id
+                          optionId: newOption.id
                         }
                       },
                       method: 'patch',
                       payload: {
                         option: {
-                          _id: newOption._id,
+                          _id: newOption.id,
                           order: newOption.order
                         } as any
                       }
@@ -149,7 +149,7 @@ export default function CardsContent() {
                       onError: error => {
                         dispatch(
                           workspaceActions.updateWorkspaceStore({
-                            options: { [oldOption._id]: oldOption }
+                            options: { [oldOption.id]: oldOption }
                           })
                         )
                       }
@@ -166,14 +166,14 @@ export default function CardsContent() {
                   const { newCard, oldCard } = data
                   dispatch(
                     workspaceActions.updateWorkspaceStore({
-                      cards: { [newCard._id]: newCard }
+                      cards: { [newCard.id]: newCard }
                     })
                   )
                   updateCard(
                     {
                       url: {
                         baseUrl: 'boards/:boardId/cards/:cardId',
-                        urlParams: { boardId: boardId!, cardId: newCard._id }
+                        urlParams: { boardId: boardId!, cardId: newCard.id }
                       },
                       method: 'patch',
                       payload: {
@@ -182,11 +182,11 @@ export default function CardsContent() {
                     },
                     {
                       onSuccess(data, variables, context) {
-                        if (data._id) {
+                        if (data.id) {
                           // toogleCard({ cardId: data._id })
                           dispatch(
                             workspaceActions.updateWorkspaceStore({
-                              [data._id]: data
+                              [data.id]: data
                             })
                           )
                         }
@@ -194,7 +194,7 @@ export default function CardsContent() {
                       onError: () => {
                         dispatch(
                           workspaceActions.updateWorkspaceStore({
-                            cards: { [oldCard._id]: oldCard }
+                            cards: { [oldCard.id]: oldCard }
                           })
                         )
                       }
@@ -216,8 +216,8 @@ export default function CardsContent() {
                   >
                     {options?.map((option, index) => (
                       <Draggable
-                        key={option._id}
-                        draggableId={option._id}
+                        key={option.id}
+                        draggableId={option.id}
                         index={index}
                       >
                         {dragProvided => (
@@ -264,8 +264,8 @@ export default function CardsContent() {
                               </div>
                             </div>
                             <CardOptions
-                              propertyId={propertyRoot._id}
-                              optionId={option._id}
+                              propertyId={propertyRoot.id}
+                              optionId={option.id}
                             />
                           </div>
                         )}

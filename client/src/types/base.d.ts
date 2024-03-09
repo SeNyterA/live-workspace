@@ -1,7 +1,7 @@
 import { TUser } from "."
 
 export type TBase = {
-  _id: string
+  id: string
   createdById: string
   modifiedById: string
   createdAt: string

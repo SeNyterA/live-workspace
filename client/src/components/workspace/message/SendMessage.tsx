@@ -241,7 +241,7 @@ export default function SendMessage({
         <div className='flex items-center justify-end gap-1 px-2 pb-2'>
           {files.map(file => (
             <Badge
-              key={file._id}
+              key={file.id}
               variant='transparent'
               className='h-[26px] rounded bg-gray-100'
               rightSection={

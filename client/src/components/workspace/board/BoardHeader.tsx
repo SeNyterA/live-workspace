@@ -37,7 +37,7 @@ export default function BoardHeader() {
           className='w-32'
           data={propertiesChecking?.map(e => ({
             label: e.title,
-            value: e._id
+            value: e.id
           }))}
           value={trackingId}
           onChange={propertyCheckingId => {

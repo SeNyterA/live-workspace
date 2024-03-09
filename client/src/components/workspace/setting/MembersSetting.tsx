@@ -84,7 +84,7 @@ const Member = memo(({ member }: { member: TMember }) => {
           const { member, user } = parseMember(data.member)
           dispatch(
             workspaceActions.updateWorkspaceStore({
-              members: { [member._id]: member },
+              members: { [member.id]: member },
               users: { [user!._id]: user! }
             })
           )
@@ -174,7 +174,7 @@ const Member = memo(({ member }: { member: TMember }) => {
                   baseUrl: '/workspaces/:workspaceId/members/:memberId',
                   urlParams: {
                     workspaceId: member.targetId,
-                    memberId: member._id
+                    memberId: member.id
                   }
                 },
                 method: 'patch',
@@ -246,7 +246,7 @@ export default function MembersSetting() {
         state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
       )
 
-      if (!workspace?.parentId) {
+      if (!workspace?.workspaceParentId) {
         const members =
           getAppValue(state =>
             Object.values(state.workspace.members).filter(
@@ -295,7 +295,7 @@ export default function MembersSetting() {
       {invitedMembers.length > 0 && (
         <>
           {invitedMembers.map(member => (
-            <Member_ member={member} key={member._id} />
+            <Member_ member={member} key={member.id} />
           ))}
         </>
       )}
@@ -304,7 +304,7 @@ export default function MembersSetting() {
         <>
           <Divider className='mt-3' variant='dashed' />
           {activeMembers.map(member => (
-            <Member_ member={member} key={member._id} />
+            <Member_ member={member} key={member.id} />
           ))}
         </>
       )}
@@ -313,7 +313,7 @@ export default function MembersSetting() {
         <>
           <Divider className='mt-3' variant='dashed' />
           {blockedMembers.map(member => (
-            <Member_ member={member} key={member._id} />
+            <Member_ member={member} key={member.id} />
           ))}
         </>
       )}

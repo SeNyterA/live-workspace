@@ -1,9 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { Member } from 'src/entities/member.entity'
-import { Workspace } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { TeamService } from './team.service'
+import { Member, Workspace } from '@prisma/client'
 
 @Controller('teams')
 export class TeamController {

@@ -42,7 +42,7 @@ export default function CardOptions({
           ref={dropProvided.innerRef}
         >
           {cards?.map((card, index) => (
-            <Draggable key={card._id} draggableId={card._id} index={index}>
+            <Draggable key={card.id} draggableId={card.id} index={index}>
               {dragProvided => (
                 <div
                   className='py-1'

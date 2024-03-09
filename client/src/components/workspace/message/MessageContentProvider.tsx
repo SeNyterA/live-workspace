@@ -67,7 +67,7 @@ export default function MessageContentProvider({
           messages: messages.reduce(
             (pre, next) => ({
               ...pre,
-              [next._id]: next
+              [next.id]: next
             }),
             {}
           )
@@ -92,11 +92,11 @@ export default function MessageContentProvider({
 
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace._id]: workspace },
+          workspaces: { [workspace.id]: workspace },
           members: __members.reduce(
             (pre, next) => ({
               ...pre,
-              [next._id]: next
+              [next.id]: next
             }),
             {}
           ),

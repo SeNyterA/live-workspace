@@ -34,6 +34,7 @@ export class UserService {
     skip: number
     take: number
   }) {
+    console.log(skip,take)
     const users = await this.prismaService.user.findMany({
       where: {
         OR: [
@@ -42,11 +43,9 @@ export class UserService {
           { nickName: { contains: keyword } }
         ]
       },
+
       skip,
-      take,
-      select: {
-        password: false
-      }
+      take
     })
 
     return {

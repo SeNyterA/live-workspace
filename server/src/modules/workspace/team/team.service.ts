@@ -1,8 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
-
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
 import {
@@ -52,6 +50,9 @@ export class TeamService {
     const team = await this.prismaService.workspace.create({
       data: {
         ...workspace,
+
+        thumbnailId: workspace.thumbnailId,
+        avatarId: workspace.avatarId,
         type: WorkspaceType.Team,
         status: WorkspaceStatus.Private,
         createdById: user.sub,
@@ -60,7 +61,7 @@ export class TeamService {
           createMany: {
             data: [
               {
-                role: MemberRole.Owner,
+                role: MemberRole.Admin,
                 userId: user.sub,
                 createdById: user.sub,
                 modifiedById: user.sub,

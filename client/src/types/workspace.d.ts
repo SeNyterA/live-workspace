@@ -25,7 +25,7 @@ export type TWorkspace = TBase & {
   displayUrl: string
   type: EWorkspaceType
   parent: Workspace
-  parentId: string
+  workspaceParentId: string
   status: EWorkspaceStatus
 
   members?: TMember[]

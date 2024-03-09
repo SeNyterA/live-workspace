@@ -5,6 +5,9 @@ import { Server } from 'socket.io'
 
 import {
   Member,
+  MemberRole,
+  MemberStatus,
+  MessageType,
   Workspace,
   WorkspaceStatus,
   WorkspaceType
@@ -38,20 +41,58 @@ export class GroupService {
         type: WorkspaceType.Group,
         status: WorkspaceStatus.Private,
         createdById: user.sub,
-        modifiedById: user.sub
+        modifiedById: user.sub,
+
+        members: {
+          createMany: {
+            data: [
+              {
+                userId: user.sub,
+                role: MemberRole.Admin,
+                status: MemberStatus.Active
+              },
+              ...(members
+                .filter(e => e.userId !== user.sub)
+                .map(e => ({
+                  userId: e.userId,
+                  role: MemberRole.Member,
+                  status: MemberStatus.Invited
+                })) || [])
+            ],
+            skipDuplicates: true
+          }
+        },
+
+        messages: {
+          createMany: {
+            data: [
+              {
+                content: {
+                  type: 'doc',
+                  content: [
+                    {
+                      type: 'heading',
+                      attrs: {
+                        textAlign: 'left',
+                        level: 2
+                      },
+                      content: [
+                        {
+                          type: 'text',
+                          text: 'Welcome to group'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                type: MessageType.System
+              }
+            ]
+          }
+        }
       }
     })
 
-    const _members = await this.prismaService.member.createMany({
-      data: members.map(member => ({
-        ...member,
-        workspaceId: newGroup.id
-      }))
-    })
-
-    return {
-      ...newGroup,
-      members: _members
-    }
+    return newGroup
   }
 }

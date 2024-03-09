@@ -1,15 +1,11 @@
-import { Injectable } from '@nestjs/common'
- 
+import { ForbiddenException, Injectable } from '@nestjs/common'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import { MemberRole, MemberStatus, Message } from '@prisma/client'
 import { Server } from 'socket.io'
-import { EMemberRole, EMemberStatus, Member } from 'src/entities/member.entity'
-import { Mention } from 'src/entities/mention.entity'
-import { Message } from 'src/entities/message.entity'
-import { WorkspaceType } from 'src/entities/workspace.entity'
-import { getListUserMentionIds } from 'src/libs/helper'
+import { Errors } from 'src/libs/errors'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
-import { In, LessThan, Repository } from 'typeorm'
 
 @WebSocketGateway({
   cors: {
@@ -22,17 +18,12 @@ export class MessageService {
   server: Server
 
   constructor(
-    @InjectRepository(Member)
-    private readonly memberRepository: Repository<Member>,
-    @InjectRepository(Message)
-    private readonly messageRepository: Repository<Message>,
-    @InjectRepository(Mention)
-    private readonly mentionRepository: Repository<Mention>,
-    private readonly redisService: RedisService
+    private readonly redisService: RedisService,
+    private readonly prismService: PrismaService
   ) {}
 
   async emitMessage({ message }: { message: Message }) {
-    this.server.to([message.targetId]).emit('message', { message })
+    this.server.to([message.workspaceId]).emit('message', { message })
   }
 
   async createMessage({
@@ -44,53 +35,27 @@ export class MessageService {
     user: TJwtUser
     targetId: string
   }) {
-    await this.memberRepository.findOneOrFail({
+    const memberOperator = await this.prismService.member.findFirst({
       where: {
-        user: { _id: user.sub, isAvailable: true },
-        workspace: {
-          _id: targetId,
-          isAvailable: true,
-          type: In([
-            WorkspaceType.Direct,
-            WorkspaceType.Group,
-            WorkspaceType.Channel
-          ])
-        },
-        status: EMemberStatus.Active,
-        isAvailable: true
+        userId: user.sub,
+        status: MemberStatus.Active,
+        workspaceId: targetId
+      }
+    })
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const newMessage = await this.prismService.message.create({
+      data: {
+        ...message,
+        workspaceId: targetId,
+        createdById: user.sub,
+        modifiedById: user.sub
       }
     })
 
-    const newMessage = await this.messageRepository.save(
-      this.messageRepository.create({
-        ...message,
-        target: { _id: targetId },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      })
-    )
-
-    console.log()
-    const mentionIds = getListUserMentionIds(newMessage.content)
-
-    await this.mentionRepository.insert(
-      mentionIds.map(id => ({
-        message: { _id: newMessage._id },
-        mentionedUser: { _id: id },
-        workspace: { _id: targetId },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      }))
-    )
-
-    const messageInserted = await this.messageRepository.findOneOrFail({
-      where: { _id: newMessage._id },
-      relations: ['attachments']
-    })
-
-    this.emitMessage({ message: messageInserted })
-
-    return messageInserted
+    return newMessage
   }
 
   async getMessages({
@@ -104,41 +69,37 @@ export class MessageService {
     size?: number
     user: TJwtUser
   }) {
-    await this.memberRepository.findOneOrFail({
+    const memberOperator = await this.prismService.member.findFirst({
       where: {
-        status: EMemberStatus.Active,
-        isAvailable: true,
-        user: { _id: user.sub, isAvailable: true },
-        workspace: {
-          _id: targetId,
-          isAvailable: true,
-          type: In([
-            WorkspaceType.Direct,
-            WorkspaceType.Group,
-            WorkspaceType.Channel
-          ])
-        }
+        userId: user.sub,
+        status: MemberStatus.Active,
+        workspaceId: targetId
       }
     })
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
 
-    const totalMessages = await this.messageRepository.count({
+    const totalMessages = await this.prismService.message.count({
       where: {
-        target: { _id: targetId },
+        workspaceId: targetId,
         isAvailable: true
       }
     })
 
-    const messages = await this.messageRepository.find({
+    const messages = await this.prismService.message.findMany({
       where: {
-        target: { _id: targetId },
+        workspaceId: targetId,
         isAvailable: true,
-        _id: fromId ? LessThan(fromId) : undefined
+        id: fromId ? { lt: fromId } : undefined
       },
-      order: {
-        createdAt: 'DESC'
+      orderBy: {
+        createdAt: 'desc'
       },
-      take: Number(size),
-      relations: ['attachments']
+      take: size,
+      include: {
+        attachments: true
+      }
     })
 
     const remainingCount = totalMessages - messages.length
@@ -155,31 +116,28 @@ export class MessageService {
     messageId: string
     targetId: string
   }) {
-    await this.memberRepository.findOneOrFail({
+    const memberOperator = await this.prismService.member.findFirst({
       where: {
-        user: { _id: user.sub, isAvailable: true },
-        workspace: {
-          _id: targetId,
-          isAvailable: true,
-          type: In([
-            WorkspaceType.Direct,
-            WorkspaceType.Group,
-            WorkspaceType.Channel
-          ])
-        },
-        status: EMemberStatus.Active,
-        isAvailable: true
+        userId: user.sub,
+        status: MemberStatus.Active,
+        workspaceId: targetId
       }
     })
-    const message = await this.messageRepository.findOneOrFail({
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+    const message = await this.prismService.message.findFirst({
       where: {
-        _id: messageId,
-        target: { _id: targetId }
+        id: messageId,
+        workspace: { id: targetId }
       }
     })
     message.isPinned = !message.isPinned
-    message.modifiedBy = { _id: user.sub } as any
-    const newMessage = await this.messageRepository.save(message)
+    message.modifiedById = user.sub
+    const newMessage = await this.prismService.message.update({
+      where: { id: message.id },
+      data: message
+    })
     this.emitMessage({ message: newMessage })
     return newMessage
   }
@@ -191,84 +149,23 @@ export class MessageService {
     user: TJwtUser
     targetId: string
   }) {
-    await this.memberRepository.findOneOrFail({
+    const memberOperator = await this.prismService.member.findFirst({
       where: {
-        user: { _id: user.sub, isAvailable: true },
-        workspace: {
-          _id: targetId,
-          isAvailable: true,
-          type: In([
-            WorkspaceType.Direct,
-            WorkspaceType.Group,
-            WorkspaceType.Channel
-          ])
-        },
-        status: EMemberStatus.Active,
-        isAvailable: true
+        userId: user.sub,
+        status: MemberStatus.Active,
+        workspaceId: targetId
       }
     })
-
-    return this.messageRepository.find({
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+    return this.prismService.message.findMany({
       where: {
-        target: { _id: targetId, isAvailable: true },
+        workspaceId: targetId,
         isPinned: true,
         isAvailable: true
       }
     })
-  }
-
-  async reactMessage({
-    messageId,
-    reaction,
-    targetId,
-    user
-  }: {
-    user: TJwtUser
-    messageId: string
-    targetId: string
-    reaction: string
-  }) {
-    await this.memberRepository.findOneOrFail({
-      where: {
-        user: { _id: user.sub, isAvailable: true },
-        workspace: {
-          _id: targetId,
-          isAvailable: true,
-          type: In([
-            WorkspaceType.Direct,
-            WorkspaceType.Group,
-            WorkspaceType.Channel
-          ])
-        },
-        status: EMemberStatus.Active,
-        isAvailable: true
-      }
-    })
-
-    const message = await this.messageRepository.findOneOrFail({
-      where: {
-        _id: messageId,
-        target: { _id: targetId }
-      }
-    })
-    message.reactions = message.reactions || {}
-
-    if (message.reactions[user.sub] === reaction) {
-      delete message.reactions[user.sub]
-    } else {
-      message.reactions[user.sub] = reaction
-    }
-
-    await this.messageRepository.save(message)
-
-    const messageUpdated = await this.messageRepository.findOneOrFail({
-      where: { _id: messageId },
-      relations: ['attachments']
-    })
-
-    this.emitMessage({ message: messageUpdated })
-
-    return { message: messageUpdated }
   }
 
   async deleteMessage({
@@ -280,37 +177,37 @@ export class MessageService {
     user: TJwtUser
     targetId: string
   }) {
-    const message = await this.messageRepository.findOneOrFail({
-      where: [
-        {
-          _id: messageId,
-          createdBy: { _id: user.sub },
-          target: {
-            _id: targetId,
-            members: {
-              _id: user.sub,
-              isAvailable: true
-            }
-          }
-        },
-        {
-          _id: messageId,
-          target: {
-            _id: targetId,
-            members: {
-              _id: user.sub,
-              isAvailable: true,
-              role: In([EMemberRole.Admin, EMemberRole.Owner])
-            }
-          }
-        }
-      ]
+    const message = await this.prismService.message.findFirst({
+      where: {
+        id: messageId,
+        createdById: user.sub,
+        workspaceId: targetId,
+        isAvailable: true
+      }
     })
 
-    message.isAvailable = false
-    message.modifiedBy._id = user.sub
+    if (!message) {
+      const isAdminOrOwner = await this.prismService.member.findFirst({
+        where: {
+          userId: user.sub,
+          status: MemberStatus.Active,
+          workspaceId: targetId,
+          role: MemberRole.Admin
+        }
+      })
 
-    const messageUpdated = await this.messageRepository.save(message)
+      if (!isAdminOrOwner) {
+        throw new ForbiddenException(Errors.PERMISSION_DENIED)
+      }
+    }
+
+    message.isAvailable = false
+    message.modifiedById = user.sub
+
+    const messageUpdated = await this.prismService.message.update({
+      where: { id: message.id },
+      data: message
+    })
     this.emitMessage({ message: messageUpdated })
     return messageUpdated
   }

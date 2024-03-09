@@ -34,7 +34,7 @@ export const getListUserMentionIds = (data: JSONContent): string[] => {
 }
 
 export const RoleWeights = {
-  [MemberRole.Owner]: 4,
+  // [MemberRole.Owner]: 4,
   [MemberRole.Admin]: 3,
   [MemberRole.Member]: 2
 }

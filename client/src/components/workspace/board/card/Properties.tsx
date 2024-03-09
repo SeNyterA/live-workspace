@@ -15,7 +15,7 @@ dayjs.extend(customParseFormat)
 export default function Properties() {
   const { boardId, cardId } = useAppParams()
   const card = useAppSelector(state =>
-    Object.values(state.workspace.cards).find(e => e._id === cardId)
+    Object.values(state.workspace.cards).find(e => e.id === cardId)
   )
   const properties = useAppSelector(state =>
     Object.values(state.workspace.properties).filter(e => e.boardId === boardId)
@@ -43,12 +43,12 @@ export default function Properties() {
           scrollbarSize={8}
         >
           {properties?.map(property => (
-            <Fragment key={property._id}>
+            <Fragment key={property.id}>
               {property.fieldType === EFieldType.Select && (
                 <Watching
                   watchingFn={state =>
                     Object.values(state.workspace.options)
-                      .filter(option => option.propertyId === property._id)
+                      .filter(option => option.propertyId === property.id)
                       .sort((a, b) => a.order - b.order)
                   }
                 >
@@ -59,11 +59,11 @@ export default function Properties() {
                       description={property.title}
                       placeholder='Pick value'
                       data={options?.map(option => ({
-                        value: option._id,
+                        value: option.id,
                         label: option.title
                       }))}
                       mt='md'
-                      value={tmpValue[property._id]?.toString()}
+                      value={tmpValue[property.id]?.toString()}
                       onChange={value => {
                         // setTmpValue(old => ({ ...old, [property._id]: value }))
                         // updateCard({
@@ -113,7 +113,7 @@ export default function Properties() {
                           value: e.user._id
                         }))}
                       mt='md'
-                      value={tmpValue[property._id]?.toString()}
+                      value={tmpValue[property.id]?.toString()}
                       onChange={value => {
                         // setTmpValue(old => ({ ...old, [property._id]: value }))
                         // updateCard({
@@ -150,7 +150,7 @@ export default function Properties() {
                   description={property.title}
                   placeholder='Pick value'
                   mt='md'
-                  value={tmpValue[property._id]?.toString()}
+                  value={tmpValue[property.id]?.toString()}
                   onBlur={value => {
                     // updateCard({
                     //   url: {
@@ -186,8 +186,8 @@ export default function Properties() {
                   {...{ placeholder: 'Pick value' }}
                   mt='md'
                   value={
-                    card?.properties?.[property._id]?.toString()
-                      ? new Date(card?.properties[property._id]?.toString()!)
+                    card?.properties?.[property.id]?.toString()
+                      ? new Date(card?.properties[property.id]?.toString()!)
                       : undefined
                   }
                   onChange={value => {

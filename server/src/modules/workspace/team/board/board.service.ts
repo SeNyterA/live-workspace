@@ -1,16 +1,22 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
- 
+import { ForbiddenException, Injectable } from '@nestjs/common'
+
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
 import { Server } from 'socket.io'
-import { Card } from 'src/entities/board/card.entity'
-import { Option } from 'src/entities/board/option.entity'
-import { Property } from 'src/entities/board/property.entity'
-import { Member } from 'src/entities/member.entity'
-import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
+
+import {
+  Card,
+  Member,
+  MemberRole,
+  MemberStatus,
+  Property,
+  PropertyOption,
+  Workspace,
+  WorkspaceType
+} from '@prisma/client'
+import { Errors } from 'src/libs/errors'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
-import { Repository } from 'typeorm'
-import { TeamService } from '../team.service'
 import { generateBoardData } from './board.init'
 
 export const generateRandomHash = (
@@ -30,36 +36,16 @@ export const generateRandomHash = (
 export class BoardService {
   @WebSocketServer()
   server: Server
-  constructor(
-    @InjectRepository(Workspace)
-    private readonly workspaceRepository: Repository<Workspace>,
-
-    @InjectRepository(Member)
-    private readonly memberRepository: Repository<Member>,
-
-    @InjectRepository(Property)
-    private readonly propertyRepository: Repository<Property>,
-
-    @InjectRepository(Option)
-    private readonly optionRepository: Repository<Option>,
-
-    @InjectRepository(Card)
-    private readonly cardRepository: Repository<Card>,
-
-    @Inject(forwardRef(() => TeamService))
-    private readonly teamService: TeamService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async initBoardData({ boardId }: { boardId: string }) {
-    const { cards, options, properties } = generateBoardData({
+    const {
+      cards: _cards,
+      options: _options,
+      properties: _properties
+    } = generateBoardData({
       boardId: boardId
     })
-
-    const _properties = await this.propertyRepository.insert(properties)
-    const _options = await this.optionRepository.insert(options)
-    const _cards = await this.cardRepository.insert(cards)
-
-    return { properties: _properties, options: _options, cards: _cards }
   }
 
   async createBoard({
@@ -73,19 +59,46 @@ export class BoardService {
     teamId: string
     members?: Member[]
   }) {
-    const board = await this.teamService.createChildWorkspace({
-      teamId,
-      type: WorkspaceType.Board,
-      user,
-      workspace,
-      members
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: user.sub,
+        workspaceId: teamId,
+        status: MemberStatus.Active,
+        role: MemberRole.Admin
+      }
     })
 
-    this.initBoardData({
-      boardId: board._id
-    })
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
 
-    return { board: board }
+    const board = await this.prismaService.workspace.create({
+      data: {
+        ...workspace,
+        workspaceParentId: teamId,
+        type: WorkspaceType.Board,
+        createdById: user.sub,
+        modifiedById: user.sub,
+
+        members: {
+          createMany: {
+            data: [
+              {
+                role: MemberRole.Admin,
+                userId: user.sub,
+                status: MemberStatus.Active
+              },
+              ...members.map(member => ({
+                userId: member.userId,
+                role: member.role,
+                status: MemberStatus.Invited
+              }))
+            ]
+          }
+        }
+      }
+    })
+    return board
   }
 
   async getBoardById({
@@ -95,59 +108,172 @@ export class BoardService {
     user: TJwtUser
     workspaceId: string
   }) {
-    const workspace = await this.workspaceRepository.findOneOrFail({
+    const workspace = await this.prismaService.workspace.findUnique({
       where: {
-        _id: workspaceId,
-        members: { user: { _id: user.sub, isAvailable: true } }
+        id: workspaceId,
+        isAvailable: true,
+        members: {
+          some: {
+            userId: user.sub,
+            status: MemberStatus.Active
+          }
+        }
       },
-      relations: ['properties', 'properties.options', 'avatar', 'thumbnail']
-    })
-
-    const cards = await this.cardRepository.find({
-      where: {
-        board: { _id: workspaceId }
+      include: {
+        members: {
+          include: {
+            user: {
+              include: { avatar: true }
+            }
+          }
+        },
+        cards: {
+          include: {
+            thumbnail: true
+          },
+          where: {
+            isAvailable: true
+          }
+        },
+        properties: {
+          where: {
+            isAvailable: true
+          },
+          include: {
+            options: {
+              where: { isAvailable: true }
+            }
+          }
+        }
       }
     })
-    const members = await this.memberRepository.find({
-      where: { workspace: { _id: workspaceId } },
-      relations: ['user']
+  }
+
+  async createProperty({
+    boardId,
+    user,
+    property
+  }: {
+    boardId: string
+    user: TJwtUser
+    property: Property
+  }) {
+    const board = await this.prismaService.workspace.findFirst({
+      where: {
+        id: boardId,
+        isAvailable: true,
+        members: {
+          some: {
+            userId: user.sub,
+            status: MemberStatus.Invited
+          }
+        }
+      }
     })
 
-    return { ...workspace, cards, members }
+    if (!board) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const propertyCreated = await this.prismaService.property.create({
+      data: {
+        ...property,
+        workspaceId: boardId,
+        createdById: user.sub,
+        modifiedById: user.sub
+      }
+    })
+
+    this.server.to(boardId).emit('property', { property: propertyCreated })
+
+    return propertyCreated
+  }
+
+  async createOption({
+    boardId,
+    user,
+    option,
+    propertyId
+  }: {
+    boardId: string
+    user: TJwtUser
+    propertyId: string
+    option: PropertyOption
+  }) {
+    const board = await this.prismaService.workspace.findUnique({
+      where: {
+        id: boardId,
+        isAvailable: true,
+        members: {
+          some: {
+            userId: user.sub,
+            status: MemberStatus.Invited
+          }
+        },
+        properties: {
+          some: {
+            id: propertyId,
+            isAvailable: true
+          }
+        }
+      }
+    })
+
+    if (!board) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const optionCreated = await this.prismaService.propertyOption.create({
+      data: {
+        ...option,
+        propertyId: propertyId,
+        createdById: user.sub,
+        modifiedById: user.sub
+      }
+    })
+
+    this.server.to(boardId).emit('option', { option: optionCreated })
+
+    return optionCreated
   }
 
   async updateOption({
     boardId,
-    optionId,
     user,
-    newOption
+    option,
+    propertyId
   }: {
-    optionId: string
-    user: TJwtUser
     boardId: string
-    newOption: Option
+    user: TJwtUser
+    propertyId: string
+    option: PropertyOption
   }) {
-    const option = await this.optionRepository.findOneOrFail({
+    const optionUpdated = await this.prismaService.propertyOption.update({
       where: {
-        _id: optionId,
-        board: {
-          _id: boardId,
+        id: option.id,
+        isAvailable: true,
+        property: {
+          id: propertyId,
           isAvailable: true,
-          members: { user: { _id: user.sub }, isAvailable: true }
+          workspace: {
+            id: boardId,
+            isAvailable: true,
+            members: {
+              some: {
+                userId: user.sub,
+                status: MemberStatus.Active
+              }
+            }
+          }
         }
+      },
+      data: {
+        ...option,
+        modifiedById: user.sub
       }
     })
-    const optionUpdate = await this.optionRepository.save({
-      ...option,
-      ...newOption,
-      modifiedBy: { _id: user.sub }
-    })
-
-    this.server
-      .to(boardId)
-      .emit('option', { option: optionUpdate, mode: 'update' })
-
-    return optionUpdate
+    this.server.to(boardId).emit('option', { option: optionUpdated })
+    return optionUpdated
   }
 
   async updateCard({
@@ -161,30 +287,28 @@ export class BoardService {
     boardId: string
     cardId: string
   }) {
-    const _card = await this.cardRepository.findOneOrFail({
+    const cardUpdated = await this.prismaService.card.update({
       where: {
-        _id: cardId,
+        id: cardId,
         isAvailable: true,
-        board: {
-          _id: boardId,
+        workspace: {
+          id: boardId,
           isAvailable: true,
           members: {
-            user: { _id: user.sub, isAvailable: true },
-            isAvailable: true
+            some: {
+              userId: user.sub,
+              status: MemberStatus.Active
+            }
           }
         }
+      },
+      data: {
+        ...card,
+        modifiedById: user.sub
       }
     })
-    const cardUpdated = await this.cardRepository.save({
-      ..._card,
-      ...card,
-      modifiedBy: { _id: user.sub }
-    })
 
-    this.server.to(boardId).emit('card', { card: cardUpdated, mode: 'update' })
-
-    return {
-      card: cardUpdated
-    }
+    this.server.to(boardId).emit('card', { card: cardUpdated })
+    return cardUpdated
   }
 }

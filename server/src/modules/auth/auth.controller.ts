@@ -1,8 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-
 import { TJwtUser } from '../socket/socket.gateway'
-import { TLoginPayload } from './auth.dto'
 import { Public } from './auth.guard'
 import { AuthService } from './auth.service'
 
@@ -12,7 +10,7 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  signIn(@Body() signInDto: TLoginPayload) {
+  signIn(@Body() signInDto: any) {
     return this.authService.signIn(signInDto)
   }
 

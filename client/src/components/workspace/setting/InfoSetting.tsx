@@ -38,7 +38,7 @@ const Title = ({ isDisabled }: { isDisabled: boolean }) => {
           method: 'patch',
           url: {
             baseUrl: `workspaces/:workspaceId`,
-            urlParams: { workspaceId: workspace?._id! }
+            urlParams: { workspaceId: workspace?.id! }
           },
           payload: { workspace: { title: e.target.value } as any }
         })
@@ -73,7 +73,7 @@ const Description = ({ isDisabled }: { isDisabled: boolean }) => {
           method: 'patch',
           url: {
             baseUrl: `workspaces/:workspaceId`,
-            urlParams: { workspaceId: workspace?._id! }
+            urlParams: { workspaceId: workspace?.id! }
           },
           payload: { workspace: { description: e.target.value } as any }
         })
@@ -109,7 +109,7 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
           method: 'patch',
           url: {
             baseUrl: `workspaces/:workspaceId`,
-            urlParams: { workspaceId: workspace?._id! }
+            urlParams: { workspaceId: workspace?.id! }
           },
           payload: { workspace: { displayUrl: e.target.value } as any }
         })
@@ -141,7 +141,7 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
             url: {
               baseUrl: `workspaces/:workspaceId`,
               urlParams: {
-                workspaceId: workspace?._id!
+                workspaceId: workspace?.id!
               }
             },
             payload: { workspace: { thumbnail: data } as any }
@@ -215,7 +215,7 @@ const WorkspaceStatus = ({ isDisabled }: { isDisabled: boolean }) => {
           url: {
             baseUrl: `workspaces/:workspaceId`,
             urlParams: {
-              workspaceId: workspace?._id!
+              workspaceId: workspace?.id!
             }
           },
           payload: { workspace: { status: value } as any }
@@ -274,7 +274,7 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
             url: {
               baseUrl: `workspaces/:workspaceId`,
               urlParams: {
-                workspaceId: workspace?._id!
+                workspaceId: workspace?.id!
               }
             },
             payload: { workspace: { avatar: data } as any }

@@ -10,6 +10,7 @@ import {
   Member,
   MemberRole,
   MemberStatus,
+  MessageType,
   Workspace,
   WorkspaceType
 } from '@prisma/client'
@@ -51,9 +52,7 @@ export class ChannelService {
         userId: user.sub,
         workspaceId: teamId,
         status: MemberStatus.Active,
-        role: {
-          in: [MemberRole.Admin, MemberRole.Owner]
-        }
+        role: MemberRole.Admin
       }
     })
 
@@ -68,6 +67,34 @@ export class ChannelService {
         type: WorkspaceType.Channel,
         createdById: user.sub,
         modifiedById: user.sub,
+        messages: {
+          createMany: {
+            data: [
+              {
+                content: {
+                  type: 'doc',
+                  content: [
+                    {
+                      type: 'heading',
+                      attrs: {
+                        textAlign: 'left',
+                        level: 2
+                      },
+                      content: [
+                        {
+                          type: 'text',
+                          text: 'Welcome to channel'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                type: MessageType.System
+              }
+            ]
+          }
+        },
+
         members: {
           createMany: {
             data: members.map(member => ({

@@ -43,22 +43,22 @@ export default function TeamList() {
           >
             {teams?.map(team => (
               <ActionIcon
-                key={team._id}
+                key={team.id}
                 className={`relative mx-auto mt-2 flex h-fit w-fit items-center justify-center p-0 first:mt-0 ${
-                  teamId === team._id
+                  teamId === team.id
                     ? 'rounded-full ring-1 ring-offset-2'
                     : 'rounded-full '
                 }`}
                 variant='light'
                 size='md'
                 onClick={() => {
-                  switchTeam({ teamId: team._id })
+                  switchTeam({ teamId: team.id })
                 }}
               >
                 <Avatar
                   radius='sm'
                   size={32}
-                  className={teamId === team._id ? 'rounded' : ''}
+                  className={teamId === team.id ? 'rounded' : ''}
                   src={team.avatar?.path}
                 >
                   {team.title?.slice(0, 1)}

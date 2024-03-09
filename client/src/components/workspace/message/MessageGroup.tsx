@@ -104,7 +104,7 @@ export default function MessageGroup({
 
           return (
             <div
-              key={message._id}
+              key={message.id}
               className={`mt-1 flex max-w-[500px] flex-col first:mt-0 ${
                 isOwner && 'items-end'
               }`}
@@ -145,7 +145,7 @@ export default function MessageGroup({
                 onClose={() => {
                   toogleImojiId(undefined)
                 }}
-                opened={emojiId === message._id}
+                opened={emojiId === message.id}
                 position='bottom-end'
                 offset={0}
               >
@@ -163,7 +163,7 @@ export default function MessageGroup({
                           baseUrl:
                             '/workspaces/:workspaceId/messages/:messageId/reaction',
                           urlParams: {
-                            messageId: message._id,
+                            messageId: message.id,
                             workspaceId: message.targetId
                           }
                         },
@@ -181,7 +181,7 @@ export default function MessageGroup({
                 className={`group relative w-fit rounded bg-gray-100 p-1 ${
                   message.replyToId && 'cursor-pointer'
                 }`}
-                key={message._id}
+                key={message.id}
               >
                 <div
                   className={`absolute top-0 z-10 hidden h-10 translate-y-[-100%] items-center justify-center gap-1 rounded bg-white px-2 shadow-custom group-hover:flex ${
@@ -192,7 +192,7 @@ export default function MessageGroup({
                     variant='light'
                     className='text-gray-600 hover:text-gray-800'
                     onClick={() => {
-                      toogleImojiId(message._id)
+                      toogleImojiId(message.id)
                     }}
                   >
                     <IconMoodPlus size={18} />
@@ -215,7 +215,7 @@ export default function MessageGroup({
                           baseUrl:
                             '/workspaces/:workspaceId/messages/:messageId/pin',
                           urlParams: {
-                            messageId: message._id,
+                            messageId: message.id,
                             workspaceId: message.targetId
                           }
                         }
@@ -231,7 +231,7 @@ export default function MessageGroup({
                     onClick={() => {
                       updateThread({
                         targetId: message.targetId,
-                        threadId: message.threadId || message._id
+                        threadId: message.threadId || message.id
                       })
                     }}
                   >
@@ -244,8 +244,8 @@ export default function MessageGroup({
                     onClick={() => {
                       updateThread({
                         targetId: message.targetId,
-                        threadId: message.threadId || message._id,
-                        replyId: message._id
+                        threadId: message.threadId || message.id,
+                        replyId: message.id
                       })
                     }}
                   >
@@ -261,7 +261,7 @@ export default function MessageGroup({
                           baseUrl:
                             '/workspaces/:workspaceId/messages/:messageId',
                           urlParams: {
-                            messageId: message._id,
+                            messageId: message.id,
                             workspaceId: message.targetId
                           }
                         }
@@ -307,7 +307,7 @@ export default function MessageGroup({
                               baseUrl:
                                 '/workspaces/:workspaceId/messages/:messageId/reaction',
                               urlParams: {
-                                messageId: message._id,
+                                messageId: message.id,
                                 workspaceId: message.targetId
                               }
                             },
@@ -347,7 +347,7 @@ export default function MessageGroup({
                                 baseUrl:
                                   '/workspaces/:workspaceId/messages/:messageId/reaction',
                                 urlParams: {
-                                  messageId: message._id,
+                                  messageId: message.id,
                                   workspaceId: message.targetId
                                 }
                               },

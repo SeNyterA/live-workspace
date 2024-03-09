@@ -84,7 +84,7 @@ export default function MessageContent({
     }
 
     const timeOut = setTimeout(() => {
-      if (messages.length > 0) lastMessageIdRef.current = messages[0]._id
+      if (messages.length > 0) lastMessageIdRef.current = messages[0].id
     }, 0)
     return () => {
       clearTimeout(timeOut)
@@ -138,7 +138,7 @@ export default function MessageContent({
 
           {groupedMessages.map(groupMessage => (
             <MessageGroup
-              key={groupMessage.messages[0]._id}
+              key={groupMessage.messages[0].id}
               messageGroup={groupMessage}
               scrollableRef={scrollableRef}
             />
