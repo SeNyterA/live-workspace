@@ -23,7 +23,7 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { TWorkspace, EWorkspaceType } from '../../types'
+import { EWorkspaceType, TWorkspace } from '../../types'
 import CreateWorkspace, {
   getDefaultValue
 } from '../workspace/create/CreateWorkspace'
@@ -71,8 +71,6 @@ export default function Sidebar() {
     return Object.values(state.workspace.workspaces).find(e => e.id === teamId)
   })
   const [searchValue, setSearchValue] = useState('')
-
-console.log(getAppValue(state=>state.workspace.workspaces))
 
   return (
     <>

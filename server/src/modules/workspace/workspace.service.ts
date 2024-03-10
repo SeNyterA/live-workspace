@@ -51,8 +51,6 @@ export class WorkspaceService {
         })),
       skipDuplicates: true
     })
-
-    console.log(users)
   }
 
   async updateWorkspace({
@@ -64,7 +62,7 @@ export class WorkspaceService {
     workspaceId: string
     workspace: Workspace
   }) {
-    return this.prismaService.workspace.update({
+    const workspaceUpdated = await this.prismaService.workspace.update({
       where: {
         id: workspaceId,
         isAvailable: true,
@@ -79,8 +77,18 @@ export class WorkspaceService {
       data: {
         ...workspace,
         modifiedById: user.sub
+      },
+      include: {
+        thumbnail: true,
+        avatar: true
       }
     })
+
+    this.server
+      .to(workspaceId)
+      .emit('workspace', { workspace: workspaceUpdated, action: 'update' })
+
+    return workspaceUpdated
   }
 
   async deleteWorkspace({
@@ -156,29 +164,37 @@ export class WorkspaceService {
     user: TJwtUser
     workspaceId: string
   }) {
-    return await this.prismaService.workspace.findUnique({
-      where: {
-        id: workspaceId,
-        isAvailable: true,
-        members: {
-          some: {
-            userId: user.sub,
-            status: MemberStatus.Active
+    const { members, ...workspace } =
+      await this.prismaService.workspace.findUnique({
+        where: {
+          id: workspaceId,
+          isAvailable: true,
+          members: {
+            some: {
+              userId: user.sub,
+              status: MemberStatus.Active
+            }
           }
-        }
-      },
-      include: {
-        members: {
-          include: {
-            user: {
-              include: {
-                avatar: true
+        },
+        include: {
+          thumbnail: true,
+          avatar: true,
+          members: {
+            include: {
+              user: {
+                include: {
+                  avatar: true
+                }
               }
             }
           }
         }
-      }
-    })
+      })
+
+    return {
+      workspace,
+      members
+    }
   }
 
   async getWorkspaceAttachFiles({
@@ -190,48 +206,6 @@ export class WorkspaceService {
   }) {
     const files = this.prismaService.file.findMany({
       where: {}
-    })
-  }
-  //#endregion
-
-  //#region SocketEmit
-  async workspaceEmit({
-    workspaces,
-    rooms
-  }: {
-    workspaces: TWorkspaceSocket
-    rooms: string[]
-  }) {
-    await this.server.to(rooms).emit('workspaces', {
-      workspaces
-    })
-  }
-
-  async memberEmit({ member, action }: TMemberEmit) {
-    // if (action === 'update') {
-    //   return this.server.to(member.id).emit('member', { member })
-    // }
-
-    const sockets = await this.server.to(member.userId).fetchSockets()
-
-    // if (action === 'create') {
-    //   return sockets.forEach(socket => {
-    //     socket.rooms.has(member.userId) && socket.join(member.targetId)
-    //   })
-    // }
-
-    // if (action === 'delete') {
-    //   return sockets.forEach(socket => {
-    //     socket.rooms.has(member.userId) && socket.leave(member.targetId)
-    //   })
-    // }
-  }
-
-  async membersEmit({ members }: { members: TMemberEmit[] }) {
-    const usersId = members.map(e => e.member.userId)
-
-    await this.server.emit('members', {
-      members
     })
   }
   //#endregion

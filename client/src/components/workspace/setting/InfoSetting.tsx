@@ -11,7 +11,12 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { EMemberRole, EWorkspaceStatus, EWorkspaceType } from '../../../types'
+import {
+  EMemberRole,
+  EMemberStatus,
+  EWorkspaceStatus,
+  EWorkspaceType
+} from '../../../types'
 
 const Title = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
@@ -144,7 +149,7 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
                 workspaceId: workspace?.id!
               }
             },
-            payload: { workspace: { thumbnail: data } as any }
+            payload: { workspace: { thumbnailId: data.id } as any }
           })
         }
       }
@@ -277,7 +282,7 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
                 workspaceId: workspace?.id!
               }
             },
-            payload: { workspace: { avatar: data } as any }
+            payload: { workspace: { avatarId: data.id } as any }
           })
         }
       }
@@ -346,11 +351,13 @@ export default function InfoSetting() {
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
   const enabled = useAppSelector(state =>
-    Object.values(state.workspace.members).find(
-      member =>
+    Object.values(state.workspace.members).find(member => {
+      return (
         member.userId === state.auth.userInfo?.id &&
-        [EMemberRole.Admin].includes(member.role)
-    )
+        [EMemberRole.Admin].includes(member.role) &&
+        member.status === EMemberStatus.Active
+      )
+    })
   )
 
   return (

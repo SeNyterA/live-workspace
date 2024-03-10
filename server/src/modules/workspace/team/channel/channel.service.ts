@@ -97,14 +97,18 @@ export class ChannelService {
 
         members: {
           createMany: {
-            data: members.map(member => ({
-              userId: member.userId,
-              role: member.role,
-              status: MemberStatus.Invited
-            }))
+            data: [
+              {
+                role: MemberRole.Member,
+                userId: user.sub,
+                status: MemberStatus.Active
+              }
+            ]
           }
         }
       }
     })
+
+    return channel
   }
 }

@@ -41,7 +41,6 @@ export default function Layout({ children }: { children: ReactNode }) {
       baseUrl: '/workspaces'
     },
     onSucess(data) {
-      console.log({ data })
       dispatch(
         workspaceActions.updateWorkspaceStore({
           workspaces: data.reduce(
@@ -60,6 +59,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       urlParams: { workspaceId: teamId! }
     },
     onSucess({ members, workspace }) {
+      console.log({first: members, second: workspace})
       dispatch(
         workspaceActions.updateWorkspaceStore({
           workspaces: { [workspace.id]: workspace },
