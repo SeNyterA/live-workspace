@@ -5,7 +5,7 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
-import { arrayToObject } from '../../utils/helper'
+import { arrayToObject, membersToObject } from '../../utils/helper'
 import Sidebar from '../sidebar/Sidebar'
 import AppHeader from './AppHeader'
 import TeamList from './TeamList'
@@ -41,8 +41,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       baseUrl: '/workspaces'
     },
     onSucess(data) {
-
-      console.log({data})
+      console.log({ data })
       dispatch(
         workspaceActions.updateWorkspaceStore({
           workspaces: data.reduce(
@@ -64,7 +63,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           workspaces: { [workspace.id]: workspace },
-          members: arrayToObject(members, 'id'),
+          members: membersToObject(members),
           users: arrayToObject(
             members.map(e => e.user!),
             'id'

@@ -7,7 +7,7 @@ import useRenderCount from '../../../hooks/useRenderCount'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { TOption } from '../../../types'
+import { TPropertyOption } from '../../../types'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
@@ -17,7 +17,7 @@ const getOptionWithNewOrder = ({
   from,
   options
 }: {
-  options?: TOption[]
+  options?: TPropertyOption[]
   from: number
   to?: number
   draggableId: string
@@ -231,7 +231,7 @@ export default function CardsContent() {
                               className='sticky top-0 bg-white pt-1'
                             >
                               <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-gray-100 px-2 ring-1 ring-gray-300'>
-                                <span>{option.title}</span>
+                                <span>{option.value}</span>
                                 <ActionIcon
                                   variant='transparent'
                                   aria-label='Settings'

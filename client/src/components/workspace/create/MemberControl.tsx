@@ -23,9 +23,11 @@ const MemberControl = ({
       key={user?.id}
     >
       <Avatar src={user?.avatar?.path} />
-      <div className='flex flex-1 flex-col justify-center max-w-[145px]'>
-        <p className='font-medium leading-5 truncate'>{user?.userName}</p>
-        <p className='text-xs leading-3 text-gray-500 truncate' >{user?.email}</p>
+      <div className='flex max-w-[145px] flex-1 flex-col justify-center'>
+        <p className='truncate font-medium leading-5'>{user?.userName}</p>
+        <p className='truncate text-xs leading-3 text-gray-500'>
+          {user?.email}
+        </p>
       </div>
       <Select
         classNames={{
@@ -33,7 +35,7 @@ const MemberControl = ({
         }}
         value={member.role}
         className='w-32'
-        data={[EMemberRole.Member, EMemberRole.Admin, EMemberRole.Owner]}
+        data={[EMemberRole.Member, EMemberRole.Admin]}
         onChange={role => role && onChange && onChange(role as EMemberRole)}
       />
       <ActionIcon

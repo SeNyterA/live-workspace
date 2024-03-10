@@ -8,7 +8,7 @@ import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
 import Watching from '../../../../redux/Watching'
 import { useAppMutation } from '../../../../services/apis/mutations/useAppMutation'
-import { EFieldType } from '../../../../types'
+import { EPropertyType } from '../../../../types'
 
 dayjs.extend(customParseFormat)
 
@@ -18,7 +18,9 @@ export default function Properties() {
     Object.values(state.workspace.cards).find(e => e.id === cardId)
   )
   const properties = useAppSelector(state =>
-    Object.values(state.workspace.properties).filter(e => e.boardId === boardId)
+    Object.values(state.workspace.properties).filter(
+      e => e.workspaceId === boardId
+    )
   )
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
   const [tmpValue, setTmpValue] = useState<any>({})
@@ -44,12 +46,14 @@ export default function Properties() {
         >
           {properties?.map(property => (
             <Fragment key={property.id}>
-              {property.fieldType === EFieldType.Select && (
+              {property.type === EPropertyType.Select && (
                 <Watching
-                  watchingFn={state =>
-                    Object.values(state.workspace.options)
-                      .filter(option => option.propertyId === property.id)
-                      .sort((a, b) => a.order - b.order)
+                  watchingFn={
+                    state =>
+                      Object.values(state.workspace.options).filter(
+                        option => option.propertyId === property.id
+                      )
+                    // .sort((a, b) => a.order - b.order)
                   }
                 >
                   {options => (
@@ -60,7 +64,7 @@ export default function Properties() {
                       placeholder='Pick value'
                       data={options?.map(option => ({
                         value: option.id,
-                        label: option.title
+                        label: option.label
                       }))}
                       mt='md'
                       value={tmpValue[property.id]?.toString()}
@@ -88,13 +92,13 @@ export default function Properties() {
                 </Watching>
               )}
 
-              {[EFieldType.People, EFieldType.Assignees].includes(
-                property.fieldType
+              {[EPropertyType.People, EPropertyType.Assignees].includes(
+                property.type
               ) && (
                 <Watching
                   watchingFn={state =>
                     Object.values(state.workspace.members)
-                      .filter(e => e.targetId === boardId)
+                      .filter(e => e.workspaceId === boardId)
                       .map(member => ({
                         member,
                         user: state.workspace.users[member.userId]
@@ -139,11 +143,11 @@ export default function Properties() {
               )}
 
               {[
-                EFieldType.String,
-                EFieldType.Number,
-                EFieldType.Link,
-                EFieldType.Email
-              ].includes(property.fieldType) && (
+                EPropertyType.String,
+                EPropertyType.Number,
+                EPropertyType.Link,
+                EPropertyType.Email
+              ].includes(property.type) && (
                 <TextInput
                   className='!mt-2 first:!mt-0'
                   label={property.title}
@@ -178,7 +182,7 @@ export default function Properties() {
                 />
               )}
 
-              {[EFieldType.Date].includes(property.fieldType) && (
+              {[EPropertyType.Date].includes(property.type) && (
                 <DateTimePicker
                   className='!mt-2 first:!mt-0'
                   label={property.title}

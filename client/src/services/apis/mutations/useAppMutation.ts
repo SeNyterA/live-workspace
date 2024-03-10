@@ -1,11 +1,15 @@
 import { MutationOptions, useMutation } from '@tanstack/react-query'
 import { JSONContent } from '@tiptap/react'
 import { AxiosRequestConfig } from 'axios'
-import { TCard, TOption } from '../../../types/board'
-import { EMemberRole, TMember } from '../../../types/member'
-import { TMessage } from '../../../types/message'
-import { TUser } from '../../../types/user'
-import { TWorkspace } from '../../../types/workspace'
+import {
+  EMemberRole,
+  TCard,
+  TMember,
+  TMessage,
+  TPropertyOption,
+  TUser,
+  TWorkspace
+} from '../../../types'
 import { replaceDynamicValues } from '../common'
 import http from '../http'
 import { TUploadMutionApi } from '../upload.api'
@@ -243,8 +247,8 @@ export type ApiMutationType = {
       }
     }
     method: 'patch'
-    payload: { option: TOption }
-    response: TOption
+    payload: { option: TPropertyOption }
+    response: TPropertyOption
   }
 
   updateCard: {

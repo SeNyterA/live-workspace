@@ -1,4 +1,4 @@
-// import { EMemberRole } from 'src/entities/member.entity'
+// import { MemberRole } from 'src/entities/member.entity'
 
 // type TPermissionsBase = {
 //   type: 'channel' | 'group' | 'team' | 'board'
@@ -7,9 +7,9 @@
 //   delete: boolean
 //   leave: boolean
 //   memberAction: {
-//     add: EMemberRole[]
-//     delete: EMemberRole[]
-//     toggleRole: EMemberRole[]
+//     add: MemberRole[]
+//     delete: MemberRole[]
+//     toggleRole: MemberRole[]
 //   }
 // }
 
@@ -31,20 +31,20 @@
 // type TBoardPermissions = TPermissionsBase & {
 //   type: 'board'
 //   cardAction: {
-//     create: EMemberRole[]
-//     edit: EMemberRole[]
-//     delete: EMemberRole[]
+//     create: MemberRole[]
+//     edit: MemberRole[]
+//     delete: MemberRole[]
 //   }
 //   fieldAction: {
-//     create: EMemberRole[]
-//     edit: EMemberRole[]
-//     delete: EMemberRole[]
+//     create: MemberRole[]
+//     edit: MemberRole[]
+//     delete: MemberRole[]
 //   }
 // }
 
-// export const getTeamPermission = (role?: EMemberRole): TTeamPermissions => {
+// export const getTeamPermission = (role?: MemberRole): TTeamPermissions => {
 //   switch (role) {
-//     case EMemberRole.Owner:
+//     case MemberRole.Owner:
 //       return {
 //         type: 'team',
 //         view: true,
@@ -54,12 +54,12 @@
 //         createBoard: true,
 //         createChannel: true,
 //         memberAction: {
-//           add: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           toggleRole: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           add: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           toggleRole: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         }
 //       }
-//     case EMemberRole.Admin:
+//     case MemberRole.Admin:
 //       return {
 //         type: 'team',
 //         view: true,
@@ -69,9 +69,9 @@
 //         createBoard: true,
 //         createChannel: true,
 //         memberAction: {
-//           add: [EMemberRole.Admin, EMemberRole.Member],
-//           delete: [EMemberRole.Admin, EMemberRole.Member],
-//           toggleRole: [EMemberRole.Admin, EMemberRole.Member]
+//           add: [MemberRole.Admin, MemberRole.Member],
+//           delete: [MemberRole.Admin, MemberRole.Member],
+//           toggleRole: [MemberRole.Admin, MemberRole.Member]
 //         }
 //       }
 
@@ -94,10 +94,10 @@
 // }
 
 // export const getChannelPermission = (
-//   role?: EMemberRole
+//   role?: MemberRole
 // ): TChannelPermissions => {
 //   switch (role) {
-//     case EMemberRole.Owner:
+//     case MemberRole.Owner:
 //       return {
 //         type: 'channel',
 //         delete: true,
@@ -106,12 +106,12 @@
 //         leave: true,
 //         switchChannelType: true,
 //         memberAction: {
-//           add: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           toggleRole: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           add: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           toggleRole: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         }
 //       }
-//     case EMemberRole.Admin:
+//     case MemberRole.Admin:
 //       return {
 //         type: 'channel',
 //         view: true,
@@ -120,13 +120,13 @@
 //         leave: true,
 //         switchChannelType: true,
 //         memberAction: {
-//           add: [EMemberRole.Admin, EMemberRole.Member],
-//           delete: [EMemberRole.Admin, EMemberRole.Member],
-//           toggleRole: [EMemberRole.Admin, EMemberRole.Member]
+//           add: [MemberRole.Admin, MemberRole.Member],
+//           delete: [MemberRole.Admin, MemberRole.Member],
+//           toggleRole: [MemberRole.Admin, MemberRole.Member]
 //         }
 //       }
 
-//     case EMemberRole.Member:
+//     case MemberRole.Member:
 //       return {
 //         type: 'channel',
 //         delete: false,
@@ -158,9 +158,9 @@
 //   }
 // }
 
-// export const getGroupPermission = (role?: EMemberRole): TGroupPermissions => {
+// export const getGroupPermission = (role?: MemberRole): TGroupPermissions => {
 //   switch (role) {
-//     case EMemberRole.Owner:
+//     case MemberRole.Owner:
 //       return {
 //         type: 'group',
 //         view: true,
@@ -168,12 +168,12 @@
 //         update: true,
 //         leave: true,
 //         memberAction: {
-//           add: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           toggleRole: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           add: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           toggleRole: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         }
 //       }
-//     case EMemberRole.Admin:
+//     case MemberRole.Admin:
 //       return {
 //         type: 'group',
 //         view: true,
@@ -181,12 +181,12 @@
 //         leave: true,
 //         delete: false,
 //         memberAction: {
-//           add: [EMemberRole.Admin, EMemberRole.Member],
-//           delete: [EMemberRole.Admin, EMemberRole.Member],
-//           toggleRole: [EMemberRole.Admin, EMemberRole.Member]
+//           add: [MemberRole.Admin, MemberRole.Member],
+//           delete: [MemberRole.Admin, MemberRole.Member],
+//           toggleRole: [MemberRole.Admin, MemberRole.Member]
 //         }
 //       }
-//     case EMemberRole.Member:
+//     case MemberRole.Member:
 //       return {
 //         type: 'group',
 //         view: true,
@@ -216,9 +216,9 @@
 //   }
 // }
 
-// export const getBoardPermission = (role?: EMemberRole): TBoardPermissions => {
+// export const getBoardPermission = (role?: MemberRole): TBoardPermissions => {
 //   switch (role) {
-//     case EMemberRole.Owner:
+//     case MemberRole.Owner:
 //       return {
 //         type: 'board',
 //         view: true,
@@ -226,22 +226,22 @@
 //         update: true,
 //         leave: true,
 //         cardAction: {
-//           create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           create: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           edit: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         },
 //         fieldAction: {
-//           create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           create: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           edit: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         },
 //         memberAction: {
-//           add: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           toggleRole: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           add: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           toggleRole: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         }
 //       }
-//     case EMemberRole.Admin:
+//     case MemberRole.Admin:
 //       return {
 //         type: 'board',
 //         view: true,
@@ -249,22 +249,22 @@
 //         update: true,
 //         leave: true,
 //         cardAction: {
-//           create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           create: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           edit: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         },
 //         fieldAction: {
-//           create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           create: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           edit: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         },
 //         memberAction: {
-//           add: [EMemberRole.Admin, EMemberRole.Member],
-//           delete: [EMemberRole.Admin, EMemberRole.Member],
-//           toggleRole: [EMemberRole.Admin, EMemberRole.Member]
+//           add: [MemberRole.Admin, MemberRole.Member],
+//           delete: [MemberRole.Admin, MemberRole.Member],
+//           toggleRole: [MemberRole.Admin, MemberRole.Member]
 //         }
 //       }
-//     case EMemberRole.Member:
+//     case MemberRole.Member:
 //       return {
 //         type: 'board',
 //         view: true,
@@ -272,14 +272,14 @@
 //         update: false,
 //         leave: true,
 //         cardAction: {
-//           create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           create: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           edit: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         },
 //         fieldAction: {
-//           create: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           delete: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner],
-//           edit: [EMemberRole.Admin, EMemberRole.Member, EMemberRole.Owner]
+//           create: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           delete: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner],
+//           edit: [MemberRole.Admin, MemberRole.Member, MemberRole.Owner]
 //         },
 //         memberAction: {
 //           add: [],

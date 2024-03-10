@@ -76,7 +76,7 @@ export default function PinedMesages() {
         <>
           <Watching
             key={message.id}
-            watchingFn={state => state.workspace.users[message.createdById]}
+            watchingFn={state => state.workspace.users[message.createdById!]}
           >
             {createBy => (
               <div className='flex gap-2 rounded first:mt-2'>

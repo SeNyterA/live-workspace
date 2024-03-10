@@ -35,7 +35,7 @@ export default function Thread({
 
   const threadMessages = useAppSelector(state =>
     Object.values(state.workspace.messages).filter(
-      m => m.id === thread?.threadId || m.threadId === thread?.threadId
+      m => m.id === thread?.threadId || m.threadToId === thread?.threadId
     )
   )
 

@@ -1,8 +1,13 @@
 import { JSONContent } from '@tiptap/react'
 import { getAppValue } from '../redux/store'
-import { EMemberRole, RoleWeights, TMember } from '../types'
-import { TOption, TProperty } from '../types/board'
-import { TWorkspace } from '../types/workspace'
+import {
+  EMemberRole,
+  RoleWeights,
+  TMember,
+  TProperty,
+  TPropertyOption,
+  TWorkspace
+} from '../types'
 
 export const cleanObj = <T extends Record<string, any>>(
   params: T
@@ -80,7 +85,7 @@ export const extractWorkspace = (workspace: TWorkspace) => {
   // Extract options from properties and remove options from each property
   const options = workspace.properties
     ?.map(property => property.options)
-    .flat() as TOption[] | undefined
+    .flat() as TPropertyOption[] | undefined
   const properties = workspace.properties?.map(
     ({ options, ...property }) => property
   ) as TProperty[] | undefined
@@ -97,7 +102,7 @@ export const extractWorkspace = (workspace: TWorkspace) => {
   } = workspace
 
   return {
-    workspace: workspaceWithoutRelations,
+    workspace: workspaceWithoutRelations as TWorkspace,
     members,
     users,
     properties,
@@ -121,6 +126,16 @@ export const arrayToObject = <
       return obj
     },
     {} as { [key: string]: T }
+  )
+}
+
+export const membersToObject = (members: TMember[]) => {
+  return members.reduce(
+    (obj, member) => {
+      obj[`${member.workspaceId}_${member.userId}`] = member
+      return obj
+    },
+    {} as { [key: string]: TMember }
   )
 }
 
@@ -149,7 +164,7 @@ export const hasPermissionToOperate = ({
 export const parseMember = (_member: TMember) => {
   const { user, ...member } = _member
   return {
-    member,
+    member: member as TMember,
     user
   }
 }

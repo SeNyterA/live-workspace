@@ -349,7 +349,7 @@ export default function InfoSetting() {
     Object.values(state.workspace.members).find(
       member =>
         member.userId === state.auth.userInfo?.id &&
-        [EMemberRole.Owner, EMemberRole.Admin].includes(member.role)
+        [EMemberRole.Admin].includes(member.role)
     )
   )
 

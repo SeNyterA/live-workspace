@@ -11,9 +11,9 @@ import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
-import { EFieldType, TProperty, TWorkspace } from '../../../types'
+import { EPropertyType, TProperty, TWorkspace } from '../../../types'
 import { lsActions } from '../../../utils/auth'
-import { arrayToObject, extractWorkspace } from '../../../utils/helper'
+import { arrayToObject, extractWorkspace, membersToObject } from '../../../utils/helper'
 
 export type TSortBy = 'label' | 'createdAt' | 'updatedAt'
 
@@ -61,7 +61,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           cards: arrayToObject(cards || [], 'id'),
-          members: arrayToObject(members || [], 'id'),
+          members: membersToObject(members),
           options: arrayToObject(options || [], 'id'),
           properties: arrayToObject(properties || [], 'id'),
           users: arrayToObject(users || [], 'id'),
@@ -99,7 +99,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
     state => state.workspace.workspaces[boardId || '']
   )
   const properties = useAppSelector(state =>
-    Object.values(state.workspace.properties).filter(e => e.boardId === boardId)
+    Object.values(state.workspace.properties).filter(e => e.workspaceId === boardId)
   )
 
   useEffect(() => {
@@ -132,10 +132,10 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
               e =>
                 e.id === value &&
                 [
-                  EFieldType.Assignees,
-                  EFieldType.People,
-                  EFieldType.Select
-                ].includes(e.fieldType)
+                  EPropertyType.Assignees,
+                  EPropertyType.People,
+                  EPropertyType.Select
+                ].includes(e.type)
             )
           ) {
             setTrackingId(value)
@@ -165,9 +165,11 @@ const checkTrackingId = ({
     properties.find(
       e =>
         e.id === trackingId &&
-        [EFieldType.Assignees, EFieldType.People, EFieldType.Select].includes(
-          e.fieldType
-        )
+        [
+          EPropertyType.Assignees,
+          EPropertyType.People,
+          EPropertyType.Select
+        ].includes(e.type)
     )?.id
   )
     return undefined
@@ -177,9 +179,11 @@ const checkTrackingId = ({
   let _trackingId = properties.find(
     e =>
       e.id === lsTrackingId &&
-      [EFieldType.Assignees, EFieldType.People, EFieldType.Select].includes(
-        e.fieldType
-      )
+      [
+        EPropertyType.Assignees,
+        EPropertyType.People,
+        EPropertyType.Select
+      ].includes(e.type)
   )?.id
 
   if (_trackingId) {
@@ -187,7 +191,7 @@ const checkTrackingId = ({
     return _trackingId
   }
 
-  _trackingId = properties.find(e => [EFieldType.Select].includes(e.fieldType))
+  _trackingId = properties.find(e => [EPropertyType.Select].includes(e.type))
     ?.id
 
   if (_trackingId) {

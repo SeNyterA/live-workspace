@@ -23,9 +23,9 @@ import {
   TMember,
   TUser
 } from '../../../types'
-import { hasPermissionToOperate, parseMember } from '../../../utils/helper'
 import MemberRole from '../../common/MemberRole'
 import useClassifyMember from './useClassifyMember'
+import { hasPermissionToOperate, parseMember } from '../../../utils/helper'
 
 const User = memo(({ user }: { user: TUser }) => {
   const { mutateAsync, isPending } = useAppMutation('addWorkspaceMember')
@@ -84,7 +84,7 @@ const Member = memo(({ member }: { member: TMember }) => {
           const { member, user } = parseMember(data.member)
           dispatch(
             workspaceActions.updateWorkspaceStore({
-              members: { [member.id]: member },
+              members: { [`${member.workspaceId}_${member.userId}`]: member },
               users: { [user!.id]: user! }
             })
           )
@@ -100,7 +100,7 @@ const Member = memo(({ member }: { member: TMember }) => {
           Object.values(state.workspace.members).find(
             e =>
               e.userId === state.auth.userInfo?.id &&
-              e.targetId === state.workspace.workspaceSettingId
+              e.workspaceId === state.workspace.workspaceSettingId
           )?.role
       ) || EMemberRole.Member,
     targetRole: member.role
@@ -153,12 +153,6 @@ const Member = memo(({ member }: { member: TMember }) => {
                     value: EMemberRole.Admin,
                     disabled:
                       (operatorWeight || 0) < RoleWeights[EMemberRole.Admin]
-                  },
-                  {
-                    label: EMemberRole.Owner,
-                    value: EMemberRole.Owner,
-                    disabled:
-                      (operatorWeight || 0) < RoleWeights[EMemberRole.Owner]
                   }
                 ]
               },
@@ -173,8 +167,8 @@ const Member = memo(({ member }: { member: TMember }) => {
                 url: {
                   baseUrl: '/workspaces/:workspaceId/members/:memberId',
                   urlParams: {
-                    workspaceId: member.targetId,
-                    memberId: member.id
+                    workspaceId: member.workspaceId,
+                    memberId: `${member.workspaceId}_${member.userId}`
                   }
                 },
                 method: 'patch',
@@ -250,7 +244,8 @@ export default function MembersSetting() {
         const members =
           getAppValue(state =>
             Object.values(state.workspace.members).filter(
-              member => member.targetId === state.workspace.workspaceSettingId
+              member =>
+                member.workspaceId === state.workspace.workspaceSettingId
             )
           ) || []
         const userIds = members.map(member => member.userId)
@@ -295,7 +290,10 @@ export default function MembersSetting() {
       {invitedMembers.length > 0 && (
         <>
           {invitedMembers.map(member => (
-            <Member_ member={member} key={member.id} />
+            <Member_
+              member={member}
+              key={`${member.workspaceId}_${member.userId}`}
+            />
           ))}
         </>
       )}
@@ -304,7 +302,10 @@ export default function MembersSetting() {
         <>
           <Divider className='mt-3' variant='dashed' />
           {activeMembers.map(member => (
-            <Member_ member={member} key={member.id} />
+            <Member_
+              member={member}
+              key={`${member.workspaceId}_${member.userId}`}
+            />
           ))}
         </>
       )}
@@ -313,7 +314,10 @@ export default function MembersSetting() {
         <>
           <Divider className='mt-3' variant='dashed' />
           {blockedMembers.map(member => (
-            <Member_ member={member} key={member.id} />
+            <Member_
+              member={member}
+              key={`${member.workspaceId}_${member.userId}`}
+            />
           ))}
         </>
       )}

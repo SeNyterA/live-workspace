@@ -99,7 +99,7 @@ export default function MessageGroup({
         </p>
         {messageGroup.messages.map(message => {
           const { images } = groupByFileType(
-            message.attachments?.map(e => e.path) || []
+            message.attachments?.map(e => e.file.path) || []
           )
 
           return (
@@ -164,7 +164,7 @@ export default function MessageGroup({
                             '/workspaces/:workspaceId/messages/:messageId/reaction',
                           urlParams: {
                             messageId: message.id,
-                            workspaceId: message.targetId
+                            workspaceId: message.workspaceId
                           }
                         },
                         method: 'post',
@@ -216,7 +216,7 @@ export default function MessageGroup({
                             '/workspaces/:workspaceId/messages/:messageId/pin',
                           urlParams: {
                             messageId: message.id,
-                            workspaceId: message.targetId
+                            workspaceId: message.workspaceId
                           }
                         }
                       })
@@ -230,8 +230,8 @@ export default function MessageGroup({
                     className='text-gray-600 hover:text-gray-800'
                     onClick={() => {
                       updateThread({
-                        targetId: message.targetId,
-                        threadId: message.threadId || message.id
+                        targetId: message.workspaceId,
+                        threadId: message.threadToId || message.id
                       })
                     }}
                   >
@@ -243,8 +243,8 @@ export default function MessageGroup({
                     className='text-gray-600 hover:text-gray-800'
                     onClick={() => {
                       updateThread({
-                        targetId: message.targetId,
-                        threadId: message.threadId || message.id,
+                        targetId: message.workspaceId,
+                        threadId: message.threadToId || message.id,
                         replyId: message.id
                       })
                     }}
@@ -262,7 +262,7 @@ export default function MessageGroup({
                             '/workspaces/:workspaceId/messages/:messageId',
                           urlParams: {
                             messageId: message.id,
-                            workspaceId: message.targetId
+                            workspaceId: message.workspaceId
                           }
                         }
                       })
@@ -308,7 +308,7 @@ export default function MessageGroup({
                                 '/workspaces/:workspaceId/messages/:messageId/reaction',
                               urlParams: {
                                 messageId: message.id,
-                                workspaceId: message.targetId
+                                workspaceId: message.workspaceId
                               }
                             },
                             method: 'post',
@@ -348,7 +348,7 @@ export default function MessageGroup({
                                   '/workspaces/:workspaceId/messages/:messageId/reaction',
                                 urlParams: {
                                   messageId: message.id,
-                                  workspaceId: message.targetId
+                                  workspaceId: message.workspaceId
                                 }
                               },
                               method: 'post',

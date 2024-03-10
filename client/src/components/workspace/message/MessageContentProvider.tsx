@@ -30,7 +30,7 @@ export const groupMessages = (messages: TMessage[]): TGroupedMessage[] => {
       currentGroup.messages.push(message)
     } else {
       currentGroup = {
-        userId: message.createdById,
+        userId: message.createdById!,
         messages: [message]
       }
       groupedMessages.push(currentGroup)
@@ -96,7 +96,7 @@ export default function MessageContentProvider({
           members: __members.reduce(
             (pre, next) => ({
               ...pre,
-              [next.id]: next
+              [`${next.workspaceId}_${next.userId}`]: next
             }),
             {}
           ),
@@ -115,7 +115,7 @@ export default function MessageContentProvider({
   const messages =
     useAppSelector(state =>
       Object.values(state.workspace.messages)
-        .filter(e => targetId === e.targetId && e.isAvailable)
+        .filter(e => targetId === e.workspaceId && e.isAvailable)
         .sort(
           (a, b) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()

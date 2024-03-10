@@ -16,7 +16,7 @@ export default function CardOptions({
   const cards = useAppSelector(state =>
     Object.values(state.workspace.cards).filter(
       card =>
-        card.boardId === boardId &&
+        card.workspaceId === boardId &&
         card.properties?.[propertyId] === optionId &&
         card.title.toLowerCase().includes(searchValue?.toLowerCase() || '')
     )

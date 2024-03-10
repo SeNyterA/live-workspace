@@ -1,6 +1,7 @@
 import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
 import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
+import { EMemberStatus } from '../../../../types'
 import MemberRole from '../../../common/MemberRole'
 
 export default function Members() {
@@ -9,7 +10,7 @@ export default function Members() {
 
   const members = useAppSelector(state =>
     Object.values(state.workspace.members)
-      .filter(member => member.targetId === targetId)
+      .filter(member => member.workspaceId === targetId)
       .map(member => ({
         member,
         user: state.workspace.users[member.userId]
@@ -17,7 +18,10 @@ export default function Members() {
   )
 
   const enableMembers = members
-    ?.filter(({ member, user }) => user?.isAvailable && member?.isAvailable)
+    ?.filter(
+      ({ member, user }) =>
+        user?.isAvailable && member.status === EMemberStatus.Active
+    )
     .sort((a, b) => (a.member.role > b.member.role ? -1 : 1))
 
   return (

@@ -61,7 +61,7 @@ const UserCombobox = memo(
       useAppSelector(state =>
         Object.values(state.workspace.members)
           .filter(
-            e => e.targetId === teamId && e.userId !== state.auth.userInfo?.id
+            e => e.workspaceId === teamId && e.userId !== state.auth.userInfo?.id
           )
           .map(member => ({
             member,

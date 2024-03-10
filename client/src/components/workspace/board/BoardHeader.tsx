@@ -1,7 +1,7 @@
 import { ActionIcon, Input, Select } from '@mantine/core'
 import { IconFilter, IconSearch } from '@tabler/icons-react'
 import { useAppSelector } from '../../../redux/store'
-import { EFieldType } from '../../../types'
+import { EPropertyType } from '../../../types'
 import { useBoard } from './BoardProvider'
 
 export default function BoardHeader() {
@@ -19,8 +19,8 @@ export default function BoardHeader() {
   const propertiesChecking = useAppSelector(state =>
     Object.values(state.workspace.properties).filter(
       property =>
-        property.boardId === boardId &&
-        [EFieldType.People, EFieldType.Select].includes(property.fieldType)
+        property.workspaceId === boardId &&
+        [EPropertyType.People, EPropertyType.Select].includes(property.type)
     )
   )
 

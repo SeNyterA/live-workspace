@@ -1,7 +1,5 @@
 import { useEffect } from 'react'
-import { TCard, TOption } from '../../types/board'
-import { TMessage } from '../../types/message'
-import { TWorkspace } from '../../types/workspace'
+import { TCard, TMessage, TPropertyOption, TWorkspace } from '../../types'
 import { useSocketContext } from './SocketProvider'
 
 export type ApiSocketType = {
@@ -39,7 +37,7 @@ export type ApiSocketType = {
 
   option: {
     response: {
-      option: TOption
+      option: TPropertyOption
       mode: 'create' | 'update' | 'delete'
     }
   }

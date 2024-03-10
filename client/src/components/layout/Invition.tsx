@@ -9,7 +9,7 @@ export default function Invition({ invition }: { invition: TMember }) {
     useAppMutation('declineInvition')
 
   return (
-    <div className='cursor-pointer rounded bg-gray-100 p-2 text-sm transition-colors hover:bg-gray-100 mt-2 first:mt-0'>
+    <div className='mt-2 cursor-pointer rounded bg-gray-100 p-2 text-sm transition-colors first:mt-0 hover:bg-gray-100'>
       <div>
         <span className='font-semibold'>{invition.createdBy?.userName}</span>
         <span> invite you to </span>
@@ -37,7 +37,7 @@ export default function Invition({ invition }: { invition: TMember }) {
               url: {
                 baseUrl: '/workspace/:workspaceId/accept-invition',
                 urlParams: {
-                  workspaceId: invition.targetId
+                  workspaceId: invition.workspaceId
                 }
               }
             })
@@ -57,7 +57,7 @@ export default function Invition({ invition }: { invition: TMember }) {
               url: {
                 baseUrl: '/workspace/:workspaceId/decline-invition',
                 urlParams: {
-                  workspaceId: invition.targetId
+                  workspaceId: invition.workspaceId
                 }
               }
             })

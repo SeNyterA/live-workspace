@@ -1,4 +1,4 @@
-import { TMember } from '../../../types/member'
+import { TMember } from '../../../types'
 
 export type TMemberApi = {
   muations: {

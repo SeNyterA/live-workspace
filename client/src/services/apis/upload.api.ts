@@ -1,4 +1,4 @@
-import { TFile } from '../../types/file'
+import { TFile } from '../../types'
 
 export type TUploadMutionApi = {
   uploadFile: {
