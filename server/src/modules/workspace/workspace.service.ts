@@ -209,7 +209,7 @@ export class WorkspaceService {
 
   async memberEmit({ member, action }: TMemberEmit) {
     // if (action === 'update') {
-    //   return this.server.to(member._id).emit('member', { member })
+    //   return this.server.to(member.id).emit('member', { member })
     // }
 
     const sockets = await this.server.to(member.userId).fetchSockets()

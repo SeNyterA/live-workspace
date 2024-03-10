@@ -50,7 +50,6 @@ export class TeamService {
     const team = await this.prismaService.workspace.create({
       data: {
         ...workspace,
-
         thumbnailId: workspace.thumbnailId,
         avatarId: workspace.avatarId,
         type: WorkspaceType.Team,
@@ -76,28 +75,16 @@ export class TeamService {
               })) || [])
             ]
           }
-        },
-        workspacesChildren: {
-          createMany: {
-            data: [
-              ...(boards || []).map(e => ({
-                ...e,
-                type: WorkspaceType.Board,
-                status: WorkspaceStatus.Private,
-                createdById: user.sub,
-                modifiedById: user.sub
-              })),
-              ...(channels || []).map(e => ({
-                ...e,
-                type: WorkspaceType.Channel,
-                status: WorkspaceStatus.Private,
-                createdById: user.sub,
-                modifiedById: user.sub
-              }))
-            ]
-          }
         }
       }
+    })
+
+    boards?.forEach(async board => {
+      await this.boardService.createBoard({
+        user,
+        workspace: board,
+        teamId: team.id
+      })
     })
   }
 }

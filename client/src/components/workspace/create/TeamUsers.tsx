@@ -29,7 +29,7 @@ const Option = memo(
     selected: boolean
   }) => {
     return (
-      <Combobox.Option value={user._id} key={user._id}>
+      <Combobox.Option value={user.id} key={user.id}>
         <div className='mt-3 flex flex-1 items-center gap-2 first:mt-0'>
           <Avatar src={user?.avatar?.path} size={32} />
           <div className='flex flex-1 flex-col justify-center'>
@@ -61,7 +61,7 @@ const UserCombobox = memo(
       useAppSelector(state =>
         Object.values(state.workspace.members)
           .filter(
-            e => e.targetId === teamId && e.userId !== state.auth.userInfo?._id
+            e => e.targetId === teamId && e.userId !== state.auth.userInfo?.id
           )
           .map(member => ({
             member,
@@ -108,7 +108,7 @@ const UserCombobox = memo(
                   <Option
                     user={user}
                     member={member}
-                    selected={usersSelectedId.includes(user._id)}
+                    selected={usersSelectedId.includes(user.id)}
                   />
                 ))
               )}

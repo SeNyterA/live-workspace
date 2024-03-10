@@ -140,7 +140,7 @@ export default function CardsContent() {
                       method: 'patch',
                       payload: {
                         option: {
-                          _id: newOption.id,
+                          id: newOption.id,
                           order: newOption.order
                         } as any
                       }
@@ -183,7 +183,7 @@ export default function CardsContent() {
                     {
                       onSuccess(data, variables, context) {
                         if (data.id) {
-                          // toogleCard({ cardId: data._id })
+                          // toogleCard({ cardId: data.id })
                           dispatch(
                             workspaceActions.updateWorkspaceStore({
                               [data.id]: data
@@ -249,12 +249,12 @@ export default function CardsContent() {
                                     //   payload: {
                                     //     title: 'anything bro' + timeStamp,
                                     //     properties: {
-                                    //       [propertyRoot._id]: option._id
+                                    //       [propertyRoot.id]: option.id
                                     //     }
                                     //   }
                                     // }).then(data => {
-                                    //   if (data.data?._id) {
-                                    //     toogleCard({ cardId: data.data._id })
+                                    //   if (data.data?.id) {
+                                    //     toogleCard({ cardId: data.data.id })
                                     //   }
                                     // })
                                   }}

@@ -14,13 +14,13 @@ const MemberControl = ({
   onRemove?: () => void
 }) => {
   const user = useAppSelector(state =>
-    Object.values(state.workspace.users).find(e => e._id === member.userId)
+    Object.values(state.workspace.users).find(e => e.id === member.userId)
   )
 
   return (
     <div
       className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
-      key={user?._id}
+      key={user?.id}
     >
       <Avatar src={user?.avatar?.path} />
       <div className='flex flex-1 flex-col justify-center max-w-[145px]'>

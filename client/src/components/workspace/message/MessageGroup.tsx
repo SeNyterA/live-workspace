@@ -41,7 +41,7 @@ export default function MessageGroup({
   const [emojiId, toogleImojiId] = useState<string>()
   const createdByUser = useAppSelector(state =>
     Object.values(state.workspace.users).find(
-      e => e._id === messageGroup.userId
+      e => e.id === messageGroup.userId
     )
   )
 
@@ -57,7 +57,7 @@ export default function MessageGroup({
 
   const isOwner = useAppSelector(state => {
     return (
-      state.auth.userInfo?._id === messageGroup.userId &&
+      state.auth.userInfo?.id === messageGroup.userId &&
       messageGroup.messages[0].type === EMessageType.Normal
     )
   })

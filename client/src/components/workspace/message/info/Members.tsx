@@ -43,7 +43,7 @@ export default function Members() {
         enableMembers?.map(({ member, user }) => (
           <div
             className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
-            key={user?._id}
+            key={user?.id}
           >
             <Indicator
               inline

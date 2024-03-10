@@ -60,7 +60,7 @@ const User = memo(({ user }: { user: TUser }) => {
             method: 'post',
             payload: {
               member: {
-                userId: user._id,
+                userId: user.id,
                 role: EMemberRole.Member
               } as any
             }
@@ -85,7 +85,7 @@ const Member = memo(({ member }: { member: TMember }) => {
           dispatch(
             workspaceActions.updateWorkspaceStore({
               members: { [member.id]: member },
-              users: { [user!._id]: user! }
+              users: { [user!.id]: user! }
             })
           )
         }
@@ -99,7 +99,7 @@ const Member = memo(({ member }: { member: TMember }) => {
         state =>
           Object.values(state.workspace.members).find(
             e =>
-              e.userId === state.auth.userInfo?._id &&
+              e.userId === state.auth.userInfo?.id &&
               e.targetId === state.workspace.workspaceSettingId
           )?.role
       ) || EMemberRole.Member,
@@ -196,7 +196,7 @@ const Member_ = ({ member }: { member: TMember }) => {
   return (
     <div
       className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
-      key={member?.user?._id}
+      key={member?.user?.id}
     >
       <Indicator
         inline
@@ -254,7 +254,7 @@ export default function MembersSetting() {
             )
           ) || []
         const userIds = members.map(member => member.userId)
-        const validUser = users.filter(user => !userIds.includes(user._id))
+        const validUser = users.filter(user => !userIds.includes(user.id))
         setValidUsers(validUser)
       }
     }
@@ -280,7 +280,7 @@ export default function MembersSetting() {
         <>
           <p className='mt-4 font-semibold'>Users</p>
           {validUsers.map(user => (
-            <User user={user} key={user._id} />
+            <User user={user} key={user.id} />
           ))}
         </>
       )}

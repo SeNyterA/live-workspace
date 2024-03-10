@@ -348,7 +348,7 @@ export default function InfoSetting() {
   const enabled = useAppSelector(state =>
     Object.values(state.workspace.members).find(
       member =>
-        member.userId === state.auth.userInfo?._id &&
+        member.userId === state.auth.userInfo?.id &&
         [EMemberRole.Owner, EMemberRole.Admin].includes(member.role)
     )
   )

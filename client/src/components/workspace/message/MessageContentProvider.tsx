@@ -103,7 +103,7 @@ export default function MessageContentProvider({
           users: __user.reduce(
             (pre, next) => ({
               ...pre,
-              ...(!!next && { [next._id]: next })
+              ...(!!next && { [next.id]: next })
             }),
             {}
           )

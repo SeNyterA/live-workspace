@@ -22,7 +22,7 @@ export default function Notification() {
       </Popover.Target>
       <Popover.Dropdown className='h-80 inset-0'>
         {/* {invitions?.invitions.map(invition => (
-          <Invition invition={invition} key={invition._id} />
+          <Invition invition={invition} key={invition.id} />
         ))} */}
         <ScrollArea scrollbarSize={8} className='absolute inset-0 p-3'>
           {invitions?.invitions.map(invition => (

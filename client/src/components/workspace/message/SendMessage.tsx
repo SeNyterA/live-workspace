@@ -119,7 +119,7 @@ export default function SendMessage({
             return (
               getAppValue(state =>
                 Object.values(state.workspace.users).filter(
-                  u => usersId?.includes(u._id)
+                  u => usersId?.includes(u.id)
                 )
               ) || []
             )

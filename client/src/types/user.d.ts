@@ -1,7 +1,7 @@
 import { TFile } from './file'
 
 export type TUser = {
-  _id: string
+  id: string
   firebaseId?: string
   userName: string
   email: string

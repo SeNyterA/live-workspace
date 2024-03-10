@@ -148,7 +148,7 @@ export class AuthService {
     //     return false
     //   } else {
     //     const tokenVerify = this.jwtService.sign(
-    //       { sub: existingUser._id },
+    //       { sub: existingUser.id },
     //       {
     //         secret: process.env.JWT_SECRET,
     //         expiresIn: '1h'
@@ -172,7 +172,7 @@ export class AuthService {
     //   })
     //   await this.userRepository.save(user)
     //   const tokenVerify = this.jwtService.sign(
-    //     { sub: user._id },
+    //     { sub: user.id },
     //     {
     //       expiresIn: '1h'
     //     }

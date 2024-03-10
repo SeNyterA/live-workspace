@@ -33,10 +33,10 @@ export default function UserDetailProvider({
         <Menu.Item
           leftSection={<IconMessageCircle size={14} />}
           onClick={() => {
-            if (!user?._id) return
+            if (!user?.id) return
             switchTo({
               target: EWorkspaceType.Direct,
-              targetId: user._id
+              targetId: user.id
             })
           }}
         >

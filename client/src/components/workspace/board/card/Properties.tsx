@@ -65,20 +65,20 @@ export default function Properties() {
                       mt='md'
                       value={tmpValue[property.id]?.toString()}
                       onChange={value => {
-                        // setTmpValue(old => ({ ...old, [property._id]: value }))
+                        // setTmpValue(old => ({ ...old, [property.id]: value }))
                         // updateCard({
                         //   url: {
                         //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
                         //     urlParams: {
                         //       boardId: boardId!,
-                        //       cardId: card?._id!
+                        //       cardId: card?.id!
                         //     }
                         //   },
                         //   method: 'patch',
                         //   payload: {
                         //     properties: {
                         //       ...card?.properties,
-                        //       [property._id]: value
+                        //       [property.id]: value
                         //     }
                         //   }
                         // })
@@ -110,25 +110,25 @@ export default function Properties() {
                         ?.filter(e => !!e.user)
                         .map(e => ({
                           label: e.user.userName,
-                          value: e.user._id
+                          value: e.user.id
                         }))}
                       mt='md'
                       value={tmpValue[property.id]?.toString()}
                       onChange={value => {
-                        // setTmpValue(old => ({ ...old, [property._id]: value }))
+                        // setTmpValue(old => ({ ...old, [property.id]: value }))
                         // updateCard({
                         //   url: {
                         //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
                         //     urlParams: {
                         //       boardId: boardId!,
-                        //       cardId: card?._id!
+                        //       cardId: card?.id!
                         //     }
                         //   },
                         //   method: 'patch',
                         //   payload: {
                         //     properties: {
                         //       ...card?.properties,
-                        //       [property._id]: value
+                        //       [property.id]: value
                         //     }
                         //   }
                         // })
@@ -157,14 +157,14 @@ export default function Properties() {
                     //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
                     //     urlParams: {
                     //       boardId: boardId!,
-                    //       cardId: card?._id!
+                    //       cardId: card?.id!
                     //     }
                     //   },
                     //   method: 'patch',
                     //   payload: {
                     //     properties: {
                     //       ...card?.properties,
-                    //       [property._id]: value.target.value
+                    //       [property.id]: value.target.value
                     //     }
                     //   }
                     // })
@@ -172,7 +172,7 @@ export default function Properties() {
                   onChange={value => {
                     // setTmpValue(old => ({
                     //   ...old,
-                    //   [property._id]: value.target.value
+                    //   [property.id]: value.target.value
                     // }))
                   }}
                 />
@@ -193,21 +193,21 @@ export default function Properties() {
                   onChange={value => {
                     // setTmpValue(old => ({
                     //   ...old,
-                    //   [property._id]: value?.toString()
+                    //   [property.id]: value?.toString()
                     // }))
                     // updateCard({
                     //   url: {
                     //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
                     //     urlParams: {
                     //       boardId: boardId!,
-                    //       cardId: card?._id!
+                    //       cardId: card?.id!
                     //     }
                     //   },
                     //   method: 'patch',
                     //   payload: {
                     //     properties: {
                     //       ...card?.properties,
-                    //       [property._id]: value?.toString()
+                    //       [property.id]: value?.toString()
                     //     }
                     //   }
                     // })

@@ -64,10 +64,10 @@ export default function Layout({ children }: { children: ReactNode }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           workspaces: { [workspace.id]: workspace },
-          members: arrayToObject(members, '_id'),
+          members: arrayToObject(members, 'id'),
           users: arrayToObject(
             members.map(e => e.user!),
-            '_id'
+            'id'
           )
         })
       )

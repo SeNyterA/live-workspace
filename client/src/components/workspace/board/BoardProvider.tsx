@@ -60,11 +60,11 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
 
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          cards: arrayToObject(cards || [], '_id'),
-          members: arrayToObject(members || [], '_id'),
-          options: arrayToObject(options || [], '_id'),
-          properties: arrayToObject(properties || [], '_id'),
-          users: arrayToObject(users || [], '_id'),
+          cards: arrayToObject(cards || [], 'id'),
+          members: arrayToObject(members || [], 'id'),
+          options: arrayToObject(options || [], 'id'),
+          properties: arrayToObject(properties || [], 'id'),
+          users: arrayToObject(users || [], 'id'),
           workspaces: { [workspace.id]: workspace }
         })
       )

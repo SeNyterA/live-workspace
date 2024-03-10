@@ -32,7 +32,7 @@ export class DirectService {
     //       type: WorkspaceType.Direct,
     //       isAvailable: true,
     //       members: {
-    //         user: { _id: In([userTargetId, user.sub]), isAvailable: true },
+    //         user: { id: In([userTargetId, user.sub]), isAvailable: true },
     //         isAvailable: true
     //       }
     //     },
@@ -42,24 +42,24 @@ export class DirectService {
     //   workspace =>
     //     workspace.members.length === 2 &&
     //     workspace.members.every(member =>
-    //       [user.sub, userTargetId].includes(member._id)
+    //       [user.sub, userTargetId].includes(member.id)
     //     )
     // )
     // if (direct) return { direct }
     // const users = await this.userRepository.find({
     //   where: {
     //     isAvailable: true,
-    //     _id: In([user.sub, userTargetId])
+    //     id: In([user.sub, userTargetId])
     //   }
     // })
     // if (users.length !== 2) throw new NotFoundException()
     // const newDirect = this.workspaceRepository.insert({
     //   ...workspace,
     //   type: WorkspaceType.Direct,
-    //   createdBy: { _id: user.sub },
+    //   createdBy: { id: user.sub },
     //   members: users.map(_user => ({
     //     user: _user,
-    //     createdBy: { _id: user.sub }
+    //     createdBy: { id: user.sub }
     //   }))
     // })
   }
