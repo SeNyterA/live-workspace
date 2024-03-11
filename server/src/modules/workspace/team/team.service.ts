@@ -86,5 +86,13 @@ export class TeamService {
         teamId: team.id
       })
     })
+
+    channels?.map(async channel => {
+      await this.channelService.createChannel({
+        user,
+        workspace: channel,
+        teamId: team.id
+      })
+    })
   }
 }

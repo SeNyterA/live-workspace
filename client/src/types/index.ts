@@ -58,8 +58,11 @@ export type TUser = {
   createdAt: Date
   updatedAt: Date
   isAvailable: boolean
-  avatar?: TFile
   avatarId?: string
+}
+
+export type TUserExtra = TUser & {
+  avatar?: TFile
   createdFiles: TFile[]
   modifiedFiles: TFile[]
   createdWorkspaces: TWorkspace[]
@@ -89,10 +92,13 @@ export type TFile = {
   updatedAt: Date
   isAvailable: boolean
   sourceType: EFileSourceType
-  createdBy?: TUser
   createdById?: string
-  modifiedBy?: TUser
   modifiedById?: string
+}
+
+export type TFileExtra = TFile & {
+  createdBy?: TUser
+  modifiedBy?: TUser
   workspacesAvatar: TWorkspace[]
   workspacesThumbnail: TWorkspace[]
   usersAvatar: TUser[]
@@ -111,16 +117,19 @@ export type TWorkspace = {
   type: EWorkspaceType
   status: EWorkspaceStatus
   displayUrl?: string
-  createdBy?: TUser
   createdById?: string
-  modifiedBy?: TUser
   modifiedById?: string
-  avatar?: TFile
   avatarId?: string
-  thumbnail?: TFile
   thumbnailId?: string
-  workspaceParent?: TWorkspace
   workspaceParentId?: string
+}
+
+export type TWorkspaceExtra = TWorkspace & {
+  createdBy?: TUser
+  modifiedBy?: TUser
+  avatar?: TFile
+  thumbnail?: TFile
+  workspaceParent?: TWorkspace
   workspacesChildren: TWorkspace[]
   members: TMember[]
   messages: TMessage[]
@@ -133,14 +142,17 @@ export type TMember = {
   updatedAt: Date
   role: EMemberRole
   status: EMemberStatus
-  user: TUser
   userId: string
-  workspace: TWorkspace
   workspaceId: string
-  createdBy?: TUser
   createdById?: string
-  modifiedBy?: TUser
   modifiedById?: string
+}
+
+export type TMemberExtra = TMember & {
+  user: TUser
+  workspace: TWorkspace
+  createdBy?: TUser
+  modifiedBy?: TUser
 }
 
 export type TMessage = {
@@ -151,17 +163,20 @@ export type TMessage = {
   type: EMessageType
   content?: any
   isPinned?: boolean
-  createdBy?: TUser
   createdById?: string
-  modifiedBy?: TUser
   modifiedById?: string
-  workspace: TWorkspace
   workspaceId: string
-  replyTo?: TMessage
   replyToId?: string
+  threadToId?: string
+}
+
+export type TMessageExtra = TMessage & {
+  createdBy?: TUser
+  modifiedBy?: TUser
+  workspace: TWorkspace
+  replyTo?: TMessage
   replyMessages: TMessage[]
   threadTo?: TMessage
-  threadToId?: string
   theadMessages: TMessage[]
   reactions: TReaction[]
   mentions: TMention[]
@@ -177,14 +192,16 @@ export type TCard = {
   isAvailable: boolean
   detail?: any
   properties?: any
-  thumbnail?: TFile
   thumbnailId?: string
-  createdBy?: TUser
   createdById?: string
-  modifiedBy?: TUser
   modifiedById?: string
-  workspace: TWorkspace
   workspaceId: string
+}
+export type TCardExtra = TCard & {
+  thumbnail?: TFile
+  createdBy?: TUser
+  modifiedBy?: TUser
+  workspace: TWorkspace
   attachments: TCardAttachment[]
 }
 
@@ -197,12 +214,18 @@ export type TProperty = {
   detail?: any
   order: number
   type: EPropertyType
-  workspace: TWorkspace
+
   workspaceId: string
-  createdBy?: TUser
+
   createdById?: string
-  modifiedBy?: TUser
+
   modifiedById?: string
+}
+
+export type TPropertyExtra = TProperty & {
+  workspace: TWorkspace
+  createdBy?: TUser
+  modifiedBy?: TUser
   options: TPropertyOption[]
 }
 
@@ -215,12 +238,15 @@ export type TPropertyOption = {
   label: string
   color?: string
   order: number
-  property: TProperty
   propertyId: string
-  createdBy?: TUser
   createdById?: string
-  modifiedBy?: TUser
   modifiedById?: string
+}
+
+export type TPropertyOptionExtra = TPropertyOption & {
+  property: TProperty
+  createdBy?: TUser
+  modifiedBy?: TUser
 }
 
 export type TReaction = {
@@ -229,35 +255,46 @@ export type TReaction = {
   isAvailable: boolean
   type: string
   content?: string
-  user: TUser
   userId: string
-  message: TMessage
   messageId: string
+}
+export type TReactionExtra = TReaction & {
+  user: TUser
+  message: TMessage
 }
 
 export type TMention = {
-  user: TUser
   userId: string
-  message: TMessage
   messageId: string
-  createdBy?: TUser
   createdById?: string
-  modifiedBy?: TUser
   modifiedById?: string
 }
 
-export type TMessageAttachment = {
+export type TMentionExtra = TMention & {
+  user: TUser
   message: TMessage
+  createdBy?: TUser
+  modifiedBy?: TUser
+}
+
+export type TMessageAttachment = {
   messageId: string
-  file: TFile
   fileId: string
 }
 
-export type TCardAttachment = {
-  card: TCard
-  cardId: string
+export type TMessageAttachmentExtra = TMessageAttachment & {
+  message: TMessage
   file: TFile
+}
+
+export type TCardAttachment = {
+  cardId: string
   fileId: string
+}
+
+export type TCardAttachmentExtra = TCardAttachment & {
+  card: TCard
+  file: TFile
 }
 
 export const RoleWeights = {

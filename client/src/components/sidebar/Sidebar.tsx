@@ -21,7 +21,7 @@ import { useLocation } from 'react-router-dom'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
-import { getAppValue, useAppSelector } from '../../redux/store'
+import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { EWorkspaceType, TWorkspace } from '../../types'
 import CreateWorkspace, {

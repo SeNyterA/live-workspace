@@ -87,12 +87,7 @@ export class BoardService {
                 role: MemberRole.Admin,
                 userId: user.sub,
                 status: MemberStatus.Active
-              },
-              ...members.map(member => ({
-                userId: member.userId,
-                role: member.role,
-                status: MemberStatus.Invited
-              }))
+              }
             ]
           }
         }
