@@ -325,23 +325,24 @@ model Mention {
 }
 
 model MessageAttachment {
+  id        String  @id @default(uuid())
   message   Message @relation("AttachmentMessage", fields: [messageId], references: [id])
   messageId String
 
   file   File   @relation("AttachmentFile", fields: [fileId], references: [id])
-  fileId String
+  fileId String @unique
 
-  @@id([messageId, fileId])
   @@map("messageAttachments")
 }
 
 model CardAttachment {
+  id String @id @default(uuid())
+
   card   Card   @relation("AttachmentCard", fields: [cardId], references: [id])
   cardId String
 
   file   File   @relation("AttachmentFile", fields: [fileId], references: [id])
-  fileId String
+  fileId String @unique
 
-  @@id([cardId, fileId])
   @@map("cardAttachments")
 }

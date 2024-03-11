@@ -1,162 +1,21 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE `users` (
+    `id` VARCHAR(191) NOT NULL,
+    `firebaseId` VARCHAR(191) NULL,
+    `userName` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `nickName` VARCHAR(191) NULL,
+    `password` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+    `isAvailable` BOOLEAN NOT NULL DEFAULT true,
+    `avatarId` VARCHAR(191) NULL,
 
-  - You are about to drop the `Card` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `CardAttachment` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `File` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Member` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Mention` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Message` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `MessageAttachment` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Property` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `PropertyOption` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Reaction` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Workspace` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE `Card` DROP FOREIGN KEY `Card_createdById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Card` DROP FOREIGN KEY `Card_modifiedById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Card` DROP FOREIGN KEY `Card_thumbnailId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Card` DROP FOREIGN KEY `Card_workspaceId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `CardAttachment` DROP FOREIGN KEY `CardAttachment_cardId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `CardAttachment` DROP FOREIGN KEY `CardAttachment_fileId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `File` DROP FOREIGN KEY `File_createdById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `File` DROP FOREIGN KEY `File_modifiedById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Member` DROP FOREIGN KEY `Member_createdById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Member` DROP FOREIGN KEY `Member_modifiedById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Member` DROP FOREIGN KEY `Member_userId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Member` DROP FOREIGN KEY `Member_workspaceId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Mention` DROP FOREIGN KEY `Mention_createdById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Mention` DROP FOREIGN KEY `Mention_messageId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Mention` DROP FOREIGN KEY `Mention_modifiedById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Mention` DROP FOREIGN KEY `Mention_userId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Message` DROP FOREIGN KEY `Message_createdById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Message` DROP FOREIGN KEY `Message_modifiedById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Message` DROP FOREIGN KEY `Message_replyToId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Message` DROP FOREIGN KEY `Message_threadToId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Message` DROP FOREIGN KEY `Message_workspaceId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `MessageAttachment` DROP FOREIGN KEY `MessageAttachment_fileId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `MessageAttachment` DROP FOREIGN KEY `MessageAttachment_messageId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Property` DROP FOREIGN KEY `Property_createdById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Property` DROP FOREIGN KEY `Property_modifiedById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Property` DROP FOREIGN KEY `Property_workspaceId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `PropertyOption` DROP FOREIGN KEY `PropertyOption_createdById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `PropertyOption` DROP FOREIGN KEY `PropertyOption_modifiedById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `PropertyOption` DROP FOREIGN KEY `PropertyOption_propertyId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Reaction` DROP FOREIGN KEY `Reaction_messageId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Reaction` DROP FOREIGN KEY `Reaction_userId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Workspace` DROP FOREIGN KEY `Workspace_avatarId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Workspace` DROP FOREIGN KEY `Workspace_createdById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Workspace` DROP FOREIGN KEY `Workspace_modifiedById_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Workspace` DROP FOREIGN KEY `Workspace_thumbnailId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `Workspace` DROP FOREIGN KEY `Workspace_workspaceParentId_fkey`;
-
--- DropForeignKey
-ALTER TABLE `users` DROP FOREIGN KEY `users_avatarId_fkey`;
-
--- DropTable
-DROP TABLE `Card`;
-
--- DropTable
-DROP TABLE `CardAttachment`;
-
--- DropTable
-DROP TABLE `File`;
-
--- DropTable
-DROP TABLE `Member`;
-
--- DropTable
-DROP TABLE `Mention`;
-
--- DropTable
-DROP TABLE `Message`;
-
--- DropTable
-DROP TABLE `MessageAttachment`;
-
--- DropTable
-DROP TABLE `Property`;
-
--- DropTable
-DROP TABLE `PropertyOption`;
-
--- DropTable
-DROP TABLE `Reaction`;
-
--- DropTable
-DROP TABLE `Workspace`;
+    UNIQUE INDEX `users_firebaseId_key`(`firebaseId`),
+    UNIQUE INDEX `users_userName_key`(`userName`),
+    UNIQUE INDEX `users_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `files` (
@@ -183,12 +42,14 @@ CREATE TABLE `workspaces` (
     `isAvailable` BOOLEAN NOT NULL DEFAULT true,
     `type` ENUM('Channel', 'Board', 'Group', 'Direct', 'Team') NOT NULL,
     `status` ENUM('Private', 'Public') NOT NULL,
+    `displayUrl` VARCHAR(191) NULL,
     `createdById` VARCHAR(191) NULL,
     `modifiedById` VARCHAR(191) NULL,
     `avatarId` VARCHAR(191) NULL,
     `thumbnailId` VARCHAR(191) NULL,
     `workspaceParentId` VARCHAR(191) NULL,
 
+    UNIQUE INDEX `workspaces_displayUrl_key`(`displayUrl`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -301,18 +162,22 @@ CREATE TABLE `mentions` (
 
 -- CreateTable
 CREATE TABLE `messageAttachments` (
+    `id` VARCHAR(191) NOT NULL,
     `messageId` VARCHAR(191) NOT NULL,
     `fileId` VARCHAR(191) NOT NULL,
 
-    PRIMARY KEY (`messageId`, `fileId`)
+    UNIQUE INDEX `messageAttachments_fileId_key`(`fileId`),
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `cardAttachments` (
+    `id` VARCHAR(191) NOT NULL,
     `cardId` VARCHAR(191) NOT NULL,
     `fileId` VARCHAR(191) NOT NULL,
 
-    PRIMARY KEY (`cardId`, `fileId`)
+    UNIQUE INDEX `cardAttachments_fileId_key`(`fileId`),
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey

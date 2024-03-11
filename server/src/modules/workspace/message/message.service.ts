@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import { MemberRole, MemberStatus, Message } from '@prisma/client'
+import { MemberRole, MemberStatus, Message, MessageType } from '@prisma/client'
 import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
@@ -49,11 +49,22 @@ export class MessageService {
     const newMessage = await this.prismService.message.create({
       data: {
         ...message,
+        attachments: {
+          createMany: {
+            data: (message as any).attachments
+          }
+        },
+        type: MessageType.Normal,
         workspaceId: targetId,
         createdById: user.sub,
         modifiedById: user.sub
+      },
+      include: {
+        attachments: true
       }
     })
+
+    this.server.to([targetId]).emit('message', { message: newMessage })
 
     return newMessage
   }

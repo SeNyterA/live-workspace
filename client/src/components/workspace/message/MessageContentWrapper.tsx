@@ -86,8 +86,9 @@ export default function MessageContentWrapper() {
                   payload: {
                     message: {
                       content: value,
-
-                      attachments: files
+                      attachments: files.map(file => ({
+                        fileId: file.id
+                      }))
                     } as any
                   }
                 },
