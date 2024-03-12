@@ -99,7 +99,7 @@ export class ChannelService {
           createMany: {
             data: [
               {
-                role: MemberRole.Member,
+                role: MemberRole.Admin,
                 userId: user.sub,
                 status: MemberStatus.Active
               }

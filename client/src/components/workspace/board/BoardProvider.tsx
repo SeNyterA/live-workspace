@@ -11,9 +11,13 @@ import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
-import { EPropertyType, TProperty, TWorkspace } from '../../../types'
+import {
+  EPropertyType,
+  extractApi,
+  TProperty,
+  TWorkspace
+} from '../../../types'
 import { lsActions } from '../../../utils/auth'
-import { arrayToObject, extractWorkspace, membersToObject } from '../../../utils/helper'
 
 export type TSortBy = 'label' | 'createdAt' | 'updatedAt'
 
@@ -55,18 +59,18 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
       enabled: !!boardId
     },
     onSucess(data) {
-      const { cards, members, options, properties, users, workspace } =
-        extractWorkspace(data)
-
-      dispatch(
-        workspaceActions.updateWorkspaceStore({
-          cards: arrayToObject(cards || [], 'id'),
-          members: membersToObject(members),
-          options: arrayToObject(options || [], 'id'),
-          properties: arrayToObject(properties || [], 'id'),
-          users: arrayToObject(users || [], 'id'),
-          workspaces: { [workspace.id]: workspace }
+      console.log(
+        '22222',
+        extractApi({
+          workspaces: [data]
         })
+      )
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            workspaces: [data]
+          })
+        )
       )
     }
   })
@@ -99,7 +103,9 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
     state => state.workspace.workspaces[boardId || '']
   )
   const properties = useAppSelector(state =>
-    Object.values(state.workspace.properties).filter(e => e.workspaceId === boardId)
+    Object.values(state.workspace.properties).filter(
+      e => e.workspaceId === boardId
+    )
   )
 
   useEffect(() => {
@@ -191,8 +197,9 @@ const checkTrackingId = ({
     return _trackingId
   }
 
-  _trackingId = properties.find(e => [EPropertyType.Select].includes(e.type))
-    ?.id
+  _trackingId = properties.find(e =>
+    [EPropertyType.Select].includes(e.type)
+  )?.id
 
   if (_trackingId) {
     lsActions.setTrackingId(boardId, _trackingId)

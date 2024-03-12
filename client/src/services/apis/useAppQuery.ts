@@ -1,5 +1,11 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { TFile, TMember, TMessage, TUser, TWorkspace } from '../../types'
+import {
+  TFileExtra,
+  TMemberExtra,
+  TMessageExtra,
+  TUserExtra,
+  TWorkspaceExtra
+} from '../../types'
 import { replaceDynamicValues } from './common'
 import http from './http'
 import { TMemberApi } from './mutations/member.api'
@@ -18,14 +24,14 @@ type ApiQueryType = {
         param2: string
       }
     }
-    response: TUser
+    response: TUserExtra
   }
 
   login: {
     url: {
       baseUrl: '/auth/profile'
     }
-    response: TUser
+    response: TUserExtra
   }
 
   verify: {
@@ -35,7 +41,7 @@ type ApiQueryType = {
         token: string
       }
     }
-    response: TUser
+    response: TUserExtra
   }
 
   //workspace
@@ -46,14 +52,14 @@ type ApiQueryType = {
         workspaceId: string
       }
     }
-    response: { workspace: TWorkspace; members: TMember[] }
+    response: { workspace: TWorkspaceExtra; members: TMemberExtra[] }
   }
 
   workspaces: {
     url: {
       baseUrl: '/workspaces'
     }
-    response: TWorkspace[]
+    response: TWorkspaceExtra[]
   }
 
   workspaceFiles: {
@@ -63,7 +69,7 @@ type ApiQueryType = {
         workspaceId: string
       }
     }
-    response: TFile[]
+    response: TFileExtra[]
   }
 
   board: {
@@ -73,7 +79,7 @@ type ApiQueryType = {
         boardId: string
       }
     }
-    response: TWorkspace
+    response: TWorkspaceExtra
   }
 
   targetMembers: {
@@ -87,8 +93,8 @@ type ApiQueryType = {
       }
     }
     response: {
-      members: TMember[]
-      users: TUser[]
+      members: TMemberExtra[]
+      users: TUserExtra[]
     }
   }
 
@@ -100,7 +106,7 @@ type ApiQueryType = {
       }
     }
     response: {
-      messages: TMessage[]
+      messages: TMessageExtra[]
       remainingCount: number
     }
   }
@@ -112,7 +118,7 @@ type ApiQueryType = {
         workspaceId: string
       }
     }
-    response: TMessage[]
+    response: TMessageExtra[]
   }
 
   findUsersByKeyword: {
@@ -125,7 +131,7 @@ type ApiQueryType = {
       }
     }
     response: {
-      users: TUser[]
+      users: TUserExtra[]
     }
   }
 
@@ -137,7 +143,7 @@ type ApiQueryType = {
       }
     }
     response: {
-      user: TUser
+      user: TUserExtra
     }
   }
 

@@ -62,26 +62,26 @@ export type TUser = {
 }
 
 export type TUserExtra = TUser & {
-  avatar?: TFile
-  createdFiles: TFile[]
-  modifiedFiles: TFile[]
-  createdWorkspaces: TWorkspace[]
-  modifiedWorkspaces: TWorkspace[]
-  createdMembers: TMember[]
-  modifiedMembers: TMember[]
-  members: TMember[]
-  createdMessages: TMessage[]
-  modifiedMessages: TMessage[]
-  createdCards: TCard[]
-  modifiedCards: TCard[]
-  createdProperties: TProperty[]
-  modifiedProperties: TProperty[]
-  createdPropertyOptions: TPropertyOption[]
-  modifiedPropertyOptions: TPropertyOption[]
-  createdMentions: TMention[]
-  modifiedMentions: TMention[]
-  mentions: TMention[]
-  reactionMessages: TReaction[]
+  avatar?: TFileExtra
+  createdFiles: TFileExtra[]
+  modifiedFiles: TFileExtra[]
+  createdWorkspaces: TWorkspaceExtra[]
+  modifiedWorkspaces: TWorkspaceExtra[]
+  createdMembers: TMemberExtra[]
+  modifiedMembers: TMemberExtra[]
+  members: TMemberExtra[]
+  createdMessages: TMessageExtra[]
+  modifiedMessages: TMessageExtra[]
+  createdCards: TCardExtra[]
+  modifiedCards: TCardExtra[]
+  createdProperties: TPropertyExtra[]
+  modifiedProperties: TPropertyExtra[]
+  createdPropertyOptions: TPropertyOptionExtra[]
+  modifiedPropertyOptions: TPropertyOptionExtra[]
+  createdMentions: TMentionExtra[]
+  modifiedMentions: TMentionExtra[]
+  mentions: TMentionExtra[]
+  reactionMessages: TReactionExtra[]
 }
 
 export type TFile = {
@@ -97,14 +97,14 @@ export type TFile = {
 }
 
 export type TFileExtra = TFile & {
-  createdBy?: TUser
-  modifiedBy?: TUser
-  workspacesAvatar: TWorkspace[]
-  workspacesThumbnail: TWorkspace[]
-  usersAvatar: TUser[]
-  cardsThumbnail: TCard[]
-  messagesAttachment: TMessageAttachment[]
-  cardsAttachment: TCardAttachment[]
+  createdBy?: TUserExtra
+  modifiedBy?: TUserExtra
+  workspacesAvatar: TWorkspaceExtra[]
+  workspacesThumbnail: TWorkspaceExtra[]
+  usersAvatar: TUserExtra[]
+  cardsThumbnail: TCardExtra[]
+  messagesAttachment: TMessageAttachmentExtra[]
+  cardsAttachment: TCardAttachmentExtra[]
 }
 
 export type TWorkspace = {
@@ -125,16 +125,16 @@ export type TWorkspace = {
 }
 
 export type TWorkspaceExtra = TWorkspace & {
-  createdBy?: TUser
-  modifiedBy?: TUser
-  avatar?: TFile
-  thumbnail?: TFile
-  workspaceParent?: TWorkspace
-  workspacesChildren: TWorkspace[]
-  members: TMember[]
-  messages: TMessage[]
-  cards: TCard[]
-  properties: TProperty[]
+  createdBy?: TUserExtra
+  modifiedBy?: TUserExtra
+  avatar?: TFileExtra
+  thumbnail?: TFileExtra
+  workspaceParent?: TWorkspaceExtra
+  workspacesChildren: TWorkspaceExtra[]
+  members: TMemberExtra[]
+  messages: TMessageExtra[]
+  cards: TCardExtra[]
+  properties: TPropertyExtra[]
 }
 
 export type TMember = {
@@ -149,10 +149,10 @@ export type TMember = {
 }
 
 export type TMemberExtra = TMember & {
-  user: TUser
-  workspace: TWorkspace
-  createdBy?: TUser
-  modifiedBy?: TUser
+  user: TUserExtra
+  workspace: TWorkspaceExtra
+  createdBy?: TUserExtra
+  modifiedBy?: TUserExtra
 }
 
 export type TMessage = {
@@ -171,16 +171,16 @@ export type TMessage = {
 }
 
 export type TMessageExtra = TMessage & {
-  createdBy?: TUser
-  modifiedBy?: TUser
-  workspace: TWorkspace
-  replyTo?: TMessage
-  replyMessages: TMessage[]
-  threadTo?: TMessage
-  theadMessages: TMessage[]
-  reactions: TReaction[]
-  mentions: TMention[]
-  attachments: TMessageAttachment[]
+  createdBy?: TUserExtra
+  modifiedBy?: TUserExtra
+  workspace: TWorkspaceExtra
+  replyTo?: TMessageExtra
+  replyMessages: TMessageExtra[]
+  threadTo?: TMessageExtra
+  theadMessages: TMessageExtra[]
+  reactions: TReactionExtra[]
+  mentions: TMentionExtra[]
+  attachments: TMessageAttachmentExtra[]
 }
 
 export type TCard = {
@@ -198,11 +198,11 @@ export type TCard = {
   workspaceId: string
 }
 export type TCardExtra = TCard & {
-  thumbnail?: TFile
-  createdBy?: TUser
-  modifiedBy?: TUser
-  workspace: TWorkspace
-  attachments: TCardAttachment[]
+  thumbnail?: TFileExtra
+  createdBy?: TUserExtra
+  modifiedBy?: TUserExtra
+  workspace: TWorkspaceExtra
+  attachments: TCardAttachmentExtra[]
 }
 
 export type TProperty = {
@@ -214,19 +214,16 @@ export type TProperty = {
   detail?: any
   order: number
   type: EPropertyType
-
   workspaceId: string
-
   createdById?: string
-
   modifiedById?: string
 }
 
 export type TPropertyExtra = TProperty & {
-  workspace: TWorkspace
-  createdBy?: TUser
-  modifiedBy?: TUser
-  options: TPropertyOption[]
+  workspace: TWorkspaceExtra
+  createdBy?: TUserExtra
+  modifiedBy?: TUserExtra
+  options: TPropertyOptionExtra[]
 }
 
 export type TPropertyOption = {
@@ -244,9 +241,9 @@ export type TPropertyOption = {
 }
 
 export type TPropertyOptionExtra = TPropertyOption & {
-  property: TProperty
-  createdBy?: TUser
-  modifiedBy?: TUser
+  property: TPropertyExtra
+  createdBy?: TUserExtra
+  modifiedBy?: TUserExtra
 }
 
 export type TReaction = {
@@ -259,8 +256,8 @@ export type TReaction = {
   messageId: string
 }
 export type TReactionExtra = TReaction & {
-  user: TUser
-  message: TMessage
+  user: TUserExtra
+  message: TMessageExtra
 }
 
 export type TMention = {
@@ -271,10 +268,10 @@ export type TMention = {
 }
 
 export type TMentionExtra = TMention & {
-  user: TUser
-  message: TMessage
-  createdBy?: TUser
-  modifiedBy?: TUser
+  user: TUserExtra
+  message: TMessageExtra
+  createdBy?: TUserExtra
+  modifiedBy?: TUserExtra
 }
 
 export type TMessageAttachment = {
@@ -283,8 +280,8 @@ export type TMessageAttachment = {
 }
 
 export type TMessageAttachmentExtra = TMessageAttachment & {
-  message: TMessage
-  file: TFile
+  message: TMessageExtra
+  file: TFileExtra
 }
 
 export type TCardAttachment = {
@@ -293,11 +290,177 @@ export type TCardAttachment = {
 }
 
 export type TCardAttachmentExtra = TCardAttachment & {
-  card: TCard
-  file: TFile
+  card: TCardExtra
+  file: TFileExtra
 }
 
 export const RoleWeights = {
   [EMemberRole.Admin]: 10,
   [EMemberRole.Member]: 1
+}
+
+export type TUsers = { [userId: string]: TUser }
+export type TMembers = { [membersId: string]: TMember }
+export type TMessages = {
+  [messageId: string]: TMessage
+}
+export type TUnreadCounts = { [targetId: string]: number }
+export type TUserReadedMessages = {
+  [key: string]: string //targetId:userId:messageId
+}
+export type TCards = { [cardId: string]: TCard }
+export type TProperties = { [propertyId: string]: TProperty }
+export type TpropertiesTracking = { [boardId: string]: string }
+export type TWorkspaces = { [cardId: string]: TWorkspace }
+export type TOptions = { [optionId: string]: TPropertyOption }
+export type TFiles = { [fileId: string]: TFile }
+export type TAttachments = {
+  [attachmentId: string]: TMessageAttachment | TCardAttachment
+}
+
+export const extractApi = ({
+  cards,
+  members,
+  messages,
+  options,
+  properties,
+  users,
+  workspaces
+}: {
+  workspaces?: TWorkspaceExtra[]
+  cards?: TCardAttachmentExtra[]
+  messages?: TMessageExtra[]
+  members?: TMemberExtra[]
+  users?: TUserExtra[]
+  properties?: TPropertyExtra[]
+  options?: TPropertyOptionExtra[]
+}) => {
+  const res: any = {
+    users: {},
+    members: {},
+    workspaces: {},
+    cards: {},
+    files: {},
+    options: {},
+    attachments: {}
+  }
+
+  const extractUser = (userData: TUserExtra) => {
+    const { avatar, ...resUser } = userData
+    avatar && (res.files[avatar.id] = avatar)
+    res.users[userData.id] = resUser
+  }
+
+  const extractMembers = (members: TMemberExtra[]) => {
+    return members.map(member => {
+      const { user, ...resMember } = member
+      extractUser(user)
+      res.members[`${member.workspaceId}_${member.userId}`] = resMember
+    })
+  }
+
+  const extractMessAttachments = (attachments: TMessageAttachmentExtra[]) => {
+    return attachments.map(attachment => {
+      const { file, ...resAttachment } = attachment
+      res.files[file.id] = file
+      res.attachments[`${attachment.messageId}_${attachment.fileId}`] =
+        resAttachment
+    })
+  }
+
+  const extractCardsAttachments = (attachments: TCardAttachmentExtra[]) => {
+    return attachments.map(attachment => {
+      const { file, ...resAttachment } = attachment
+      res.files[file.id] = file
+      res.attachments[`${attachment.cardId}_${attachment.fileId}`] =
+        resAttachment
+    })
+  }
+
+  const extractCards = (cards: TCardExtra[]) => {
+    return cards.map(card => {
+      const { thumbnail, attachments, ...resCard } = card
+      thumbnail && (res.files[thumbnail.id] = thumbnail)
+      extractCardsAttachments(attachments)
+
+      res.cards[card.id] = resCard
+    })
+  }
+
+  const extractMessages = (messages: TMessageExtra[]) => {
+    return messages.map(message => {
+      const {
+        createdBy,
+        modifiedBy,
+        replyTo,
+        threadTo,
+        reactions,
+        mentions,
+        attachments,
+        ...resMessage
+      } = message
+      createdBy && extractUser(createdBy)
+      modifiedBy && extractUser(modifiedBy)
+      replyTo && (res.messages[replyTo.id] = replyTo)
+      threadTo && (res.messages[threadTo.id] = threadTo)
+      attachments && extractMessAttachments(attachments)
+
+      res.messages[message.id] = resMessage
+    })
+  }
+
+  const extractOptions = (options: TPropertyOptionExtra[]) => {
+    return options.map(option => {
+      res.options[option.id] = option
+    })
+  }
+
+  const extractProperties = (properties: TPropertyExtra[]) => {
+    return properties.map(property => {
+      const { options, ...resProperty } = property
+      res.properties[property.id] = resProperty
+      options && extractOptions(options)
+    })
+  }
+
+  const extractWorkspaces = (workspaces: TWorkspaceExtra[]) => {
+    return workspaces.map(workspace => {
+      const {
+        members,
+        avatar,
+        thumbnail,
+        properties,
+        messages,
+        cards,
+        ...resWorkspace
+      } = workspace
+
+      avatar && (res.files[avatar.id] = avatar)
+      thumbnail && (res.files[thumbnail.id] = thumbnail)
+      cards && extractCards(cards)
+      members && extractMembers(members)
+      messages && extractMessages(messages)
+      properties && extractProperties(properties)
+
+      res.workspaces[workspace.id] = resWorkspace
+    })
+  }
+
+  workspaces && extractWorkspaces(workspaces)
+  cards && extractCardsAttachments(cards)
+  messages && extractMessages(messages)
+  members && extractMembers(members)
+  users && users.map(user => extractUser(user))
+  properties && extractProperties(properties)
+  options && extractOptions(options)
+
+  return res as {
+    users: TUsers
+    members: TMembers
+    workspaces: TWorkspaces
+    cards: TCards
+    files: TFiles
+    options: TOptions
+    attachments: TAttachments
+  }
 }

@@ -1,29 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { TOptions } from 'i18next'
 import { assign } from 'lodash'
 import {
-  TCard,
-  TMember,
-  TMessage,
-  TProperty,
-  TPropertyOption,
-  TUser,
-  TWorkspace
+  TAttachments,
+  TCards,
+  TFiles,
+  TMembers,
+  TMessages,
+  TProperties,
+  TpropertiesTracking,
+  TUnreadCounts,
+  TUserReadedMessages,
+  TUsers,
+  TWorkspaces
 } from '../../types'
-
-export type TUsers = { [userId: string]: TUser }
-export type TMembers = { [membersId: string]: TMember }
-export type TMessages = {
-  [messageId: string]: TMessage
-}
-export type TUnreadCounts = { [targetId: string]: number }
-export type TUserReadedMessages = {
-  [key: string]: string //targetId:userId:messageId
-}
-export type TCards = { [cardId: string]: TCard }
-export type TProperties = { [propertyId: string]: TProperty }
-export type TpropertiesTracking = { [boardId: string]: string }
-export type TWorkspaces = { [cardId: string]: TWorkspace }
-export type TOptions = { [optionId: string]: TPropertyOption }
 
 type TWorkpsaceStore = {
   workspaces: TWorkspaces
@@ -35,21 +25,26 @@ type TWorkpsaceStore = {
   cards: TCards
   properties: TProperties
   options: TOptions
+  files: TFiles
   propertiesTracking: TpropertiesTracking
   workspaceSettingId?: string
+  attachments: TAttachments
   settingPosition?: 'left' | 'right'
 }
 
 const initialState: TWorkpsaceStore = {
   workspaces: {},
+  files: {},
   members: {},
   messages: {},
   users: {},
-  userReadedMessages: {},
-  unreadCount: {},
   cards: {},
   properties: {},
   options: {},
+  attachments: {},
+  userReadedMessages: {},
+  unreadCount: {},
+
   propertiesTracking: {}
 }
 const workspaceSlice = createSlice({

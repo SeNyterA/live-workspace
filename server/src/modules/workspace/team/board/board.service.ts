@@ -142,6 +142,8 @@ export class BoardService {
         }
       }
     })
+
+    return workspace
   }
 
   async createProperty({

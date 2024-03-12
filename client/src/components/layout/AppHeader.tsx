@@ -1,6 +1,7 @@
-import { ActionIcon, Avatar, Menu, Popover, rem } from '@mantine/core'
-import { IconBell, IconTrash } from '@tabler/icons-react'
+import { ActionIcon, Avatar, Menu, rem } from '@mantine/core'
+import { IconTrash } from '@tabler/icons-react'
 import { useAppSelector } from '../../redux/store'
+import Watching from '../../redux/Watching'
 import { lsActions } from '../../utils/auth'
 import Notification from './Notification'
 
@@ -19,15 +20,30 @@ export default function AppHeader() {
             variant='light'
             size='md'
           >
-            <Avatar src={user?.avatar?.path} size={32}>
-              {user?.userName[0].toUpperCase()}
-            </Avatar>
+            <Watching
+              watchingFn={state => state.workspace.files[user?.avatarId!]}
+            >
+              {avatar => (
+                <Avatar src={avatar?.path} size={32}>
+                  {user?.userName[0].toUpperCase()}
+                </Avatar>
+              )}
+            </Watching>
           </ActionIcon>
         </Menu.Target>
 
         <Menu.Dropdown>
           <div className='flex flex-col items-center justify-center p-3'>
-            <Avatar src={user?.avatar?.path} size={100} />
+            <Watching
+              watchingFn={state => state.workspace.files[user?.avatarId!]}
+            >
+              {avatar => (
+                <Avatar src={avatar?.path} size={100}>
+                  {user?.userName[0].toUpperCase()}
+                </Avatar>
+              )}
+            </Watching>
+
             <p className='mt-2 text-lg font-semibold'>{user?.userName}</p>
             <p className='text-sm text-gray-500'>{user?.email}</p>
           </div>

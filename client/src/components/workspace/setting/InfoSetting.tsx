@@ -10,6 +10,7 @@ import {
 } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useAppSelector } from '../../../redux/store'
+import Watching from '../../../redux/Watching'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import {
   EMemberRole,
@@ -183,14 +184,20 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
         className='mt-4 w-full'
         disabled={isPending || isDisabled || uploadPending}
       >
-        <Avatar
-          classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.thumbnail?.path}
-          className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
-          alt='Team thumbnail'
+        <Watching
+          watchingFn={state => state.workspace.files[workspace?.thumbnailId!]}
         >
-          Team thumbnail
-        </Avatar>
+          {thumbnail => (
+            <Avatar
+              classNames={{ placeholder: 'rounded-lg' }}
+              src={thumbnail?.path}
+              className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
+              alt='Team thumbnail'
+            >
+              Team thumbnail
+            </Avatar>
+          )}
+        </Watching>
       </Dropzone>
       <Input.Description className='mt-1'>
         This image is used for thumbnail
@@ -288,6 +295,9 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
       }
     }
   )
+  const avatar = useAppSelector(
+    state => state.workspace.files[workspace?.avatarId!]
+  )
 
   return (
     <>
@@ -319,22 +329,22 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
       >
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.avatar?.path}
+          src={avatar?.path}
           className='h-32 w-32 rounded-lg'
         />
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.avatar?.path}
+          src={avatar?.path}
           className='h-24 w-24 rounded-lg'
         />
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.avatar?.path}
+          src={avatar?.path}
           className='h-16 w-16 rounded-lg'
         />
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.avatar?.path}
+          src={avatar?.path}
           className='!h-8 !w-8 rounded-lg'
           size={32}
         />

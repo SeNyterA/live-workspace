@@ -5,7 +5,7 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
-import { arrayToObject, membersToObject } from '../../utils/helper'
+import { extractApi } from '../../types'
 import Sidebar from '../sidebar/Sidebar'
 import AppHeader from './AppHeader'
 import TeamList from './TeamList'
@@ -35,19 +35,18 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [openInfo, toggleInfo] = useState(false)
   const { teamId } = useAppParams()
 
-  const { data: workspaces, isPending } = useAppQuery({
+  const { isPending } = useAppQuery({
     key: 'workspaces',
     url: {
       baseUrl: '/workspaces'
     },
     onSucess(data) {
       dispatch(
-        workspaceActions.updateWorkspaceStore({
-          workspaces: data.reduce(
-            (pre, next) => ({ ...pre, [next.id]: next }),
-            {}
-          )
-        })
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            workspaces: data
+          })
+        )
       )
     }
   })
@@ -59,16 +58,13 @@ export default function Layout({ children }: { children: ReactNode }) {
       urlParams: { workspaceId: teamId! }
     },
     onSucess({ members, workspace }) {
-      console.log({first: members, second: workspace})
       dispatch(
-        workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace.id]: workspace },
-          members: membersToObject(members),
-          users: arrayToObject(
-            members.map(e => e.user!),
-            'id'
-          )
-        })
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            members,
+            workspaces: [workspace]
+          })
+        )
       )
     },
     options: {

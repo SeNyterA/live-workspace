@@ -12,8 +12,8 @@ import {
 import { IconPlus, IconSearch } from '@tabler/icons-react'
 import { memo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { workspaceActions } from '../../../redux/slices/workspace.slice'
-import { getAppValue } from '../../../redux/store'
+import { getAppValue, useAppSelector } from '../../../redux/store'
+import Watching from '../../../redux/Watching'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
 import {
@@ -23,15 +23,19 @@ import {
   TMember,
   TUser
 } from '../../../types'
+import { hasPermissionToOperate } from '../../../utils/helper'
 import MemberRole from '../../common/MemberRole'
 import useClassifyMember from './useClassifyMember'
-import { hasPermissionToOperate, parseMember } from '../../../utils/helper'
 
 const User = memo(({ user }: { user: TUser }) => {
   const { mutateAsync, isPending } = useAppMutation('addWorkspaceMember')
   return (
     <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
-      <Avatar src={user?.avatar?.path} size={32} />
+      <Watching
+        watchingFn={state => state.workspace.files[user?.avatarId!]?.path}
+      >
+        {path => !!path && <Avatar src={path} size={32} />}
+      </Watching>
 
       <div className='flex flex-1 flex-col justify-center pt-1'>
         <p className='max-w-[150px] truncate text-sm font-medium leading-4'>
@@ -81,13 +85,13 @@ const Member = memo(({ member }: { member: TMember }) => {
     {
       mutationOptions: {
         onSuccess(data, variables, context) {
-          const { member, user } = parseMember(data.member)
-          dispatch(
-            workspaceActions.updateWorkspaceStore({
-              members: { [`${member.workspaceId}_${member.userId}`]: member },
-              users: { [user!.id]: user! }
-            })
-          )
+          // const { member, user } = parseMember(data.member)
+          // dispatch(
+          //   workspaceActions.updateWorkspaceStore({
+          //     members: { [`${member.workspaceId}_${member.userId}`]: member },
+          //     users: { [user!.id]: user! }
+          //   })
+          // )
         }
       }
     }
@@ -105,6 +109,8 @@ const Member = memo(({ member }: { member: TMember }) => {
       ) || EMemberRole.Member,
     targetRole: member.role
   })
+
+  const user = useAppSelector(state => state.workspace.users[member.userId])
   return (
     <>
       <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
@@ -117,15 +123,23 @@ const Member = memo(({ member }: { member: TMember }) => {
           withBorder
           zIndex={1}
         >
-          <Avatar src={member?.user?.avatar?.path} size={32} />
+          <Watching
+            watchingFn={state =>
+              state.workspace.files[
+                state.workspace.users[member.userId].avatarId!
+              ]?.path
+            }
+          >
+            {path => !!path && <Avatar src={path} size={32} />}
+          </Watching>
         </Indicator>
 
         <div className='flex flex-1 flex-col justify-center pt-1'>
           <p className='max-w-[150px] truncate text-sm font-medium leading-4'>
-            {member?.user?.userName}
+            {user?.userName}
           </p>
           <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
-            {member?.user?.email}
+            {user?.email}
           </p>
         </div>
 
@@ -188,33 +202,38 @@ const Member = memo(({ member }: { member: TMember }) => {
 
 const Member_ = ({ member }: { member: TMember }) => {
   return (
-    <div
-      className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
-      key={member?.user?.id}
-    >
-      <Indicator
-        inline
-        size={16}
-        offset={3}
-        position='bottom-end'
-        color='yellow'
-        withBorder
-        zIndex={1}
-      >
-        <Avatar src={member?.user?.avatar?.path} size={32} />
-      </Indicator>
+    <Watching watchingFn={state => state.workspace.users[member.userId]}>
+      {user => (
+        <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
+          <Indicator
+            inline
+            size={16}
+            offset={3}
+            position='bottom-end'
+            color='yellow'
+            withBorder
+            zIndex={1}
+          >
+            <Watching
+              watchingFn={state => state.workspace.files[user?.avatarId!]}
+            >
+              {file => <Avatar src={file?.path} size={32} />}
+            </Watching>
+          </Indicator>
 
-      <div className='flex flex-1 flex-col justify-center'>
-        <p className='max-w-[150px] truncate font-medium leading-4'>
-          {member?.user?.userName}
-        </p>
-        <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
-          {member?.user?.email}
-        </p>
-      </div>
+          <div className='flex flex-1 flex-col justify-center'>
+            <p className='max-w-[150px] truncate font-medium leading-4'>
+              {user?.userName}
+            </p>
+            <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+              {user?.email}
+            </p>
+          </div>
 
-      {member && <MemberRole member={member} />}
-    </div>
+          {member && <MemberRole member={member} />}
+        </div>
+      )}
+    </Watching>
   )
 }
 
