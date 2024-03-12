@@ -11,6 +11,7 @@ import {
   MemberStatus,
   Property,
   PropertyOption,
+  PropertyType,
   Workspace,
   WorkspaceType
 } from '@prisma/client'
@@ -46,18 +47,159 @@ export class BoardService {
     } = generateBoardData({
       boardId: boardId
     })
+
+    const properties = await this.prismaService.property.createMany({
+      data: _properties as any
+    })
+
+    const options = await this.prismaService.propertyOption.createMany({
+      data: _options as any
+    })
+
+    const cards = await this.prismaService.card.createMany({
+      data: _cards as any
+    })
+  }
+
+  async createBoardData({
+    boardId,
+    user
+  }: {
+    boardId: string
+    user: TJwtUser
+  }) {
+    // const properties = await Promise.all([
+    //   this.prismaService.property.create({
+    //     data: {
+    //       workspaceId: boardId,
+    //       title: 'Status',
+    //       type: PropertyType.Select,
+    //       createdById: user.sub,
+    //       modifiedById: user.sub,
+    //       options: {
+    //         createMany: {
+    //           data: [
+    //             {
+    //               title: 'To Do',
+    //               color: '#FF0000',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 1
+    //             },
+    //             {
+    //               title: 'In Progress',
+    //               color: '#00FF00',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 2
+    //             },
+    //             {
+    //               title: 'Done',
+    //               color: '#0000FF',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 3
+    //             },
+    //             {
+    //               title: 'Blocked',
+    //               color: '#FFFF00',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 4
+    //             },
+    //             {
+    //               title: 'Review',
+    //               color: '#FF00FF',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 5
+    //             },
+    //             {
+    //               title: 'Testing',
+    //               color: '#00FFFF',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 6
+    //             },
+    //             {
+    //               title: 'Deployed',
+    //               color: '#FFA500',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 7
+    //             },
+    //             {
+    //               title: 'Archived',
+    //               color: '#808080',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 8
+    //             }
+    //           ]
+    //         }
+    //       }
+    //     }
+    //   }),
+    //   this.prismaService.property.create({
+    //     data: {
+    //       workspaceId: boardId,
+    //       title: 'Priority',
+    //       type: PropertyType.Select,
+    //       createdById: user.sub,
+    //       modifiedById: user.sub,
+    //       options: {
+    //         createMany: {
+    //           data: [
+    //             {
+    //               title: 'Low',
+    //               color: '#00FF00',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 1
+    //             },
+    //             {
+    //               title: 'Medium',
+    //               color: '#FFFF00',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 2
+    //             },
+    //             {
+    //               title: 'High',
+    //               color: '#FF0000',
+    //               createdById: user.sub,
+    //               modifiedById: user.sub,
+    //               order: 3
+    //             }
+    //           ]
+    //         }
+    //       }
+    //     }
+    //   }),
+    //   this.prismaService.property.create({
+    //     data: {
+    //       title: 'Progress',
+    //       type: PropertyType.String,
+    //       workspaceId: boardId,
+    //       createdById: user.sub,
+    //       modifiedById: user.sub
+    //     }
+    //   })
+    // ])
   }
 
   async createBoard({
     user,
     workspace,
     teamId,
-    members
+    members,
+    isInitBoardData
   }: {
     workspace: Workspace
     user: TJwtUser
     teamId: string
     members?: Member[]
+    isInitBoardData?: boolean
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
@@ -80,6 +222,19 @@ export class BoardService {
         createdById: user.sub,
         modifiedById: user.sub,
 
+        properties: {
+          createMany: {
+            data: [
+              {
+                title: 'Status',
+                type: PropertyType.Select,
+                createdById: user.sub,
+                modifiedById: user.sub
+              }
+            ]
+          }
+        },
+
         members: {
           createMany: {
             data: [
@@ -93,6 +248,9 @@ export class BoardService {
         }
       }
     })
+
+    this.initBoardData({ boardId: board.id })
+
     return board
   }
 

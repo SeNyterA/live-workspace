@@ -39,42 +39,42 @@ export const generateBoardData = ({
     {
       id: uuidv4(),
       color: '#FF0000',
-      label: 'To Do',
+      title: 'To Do',
       propertyId: properties[0].id,
       order: 1
     },
     {
       id: uuidv4(),
       color: '#00FF00',
-      label: 'In Progress',
+      title: 'In Progress',
       propertyId: properties[0].id,
       order: 2
     },
     {
       id: uuidv4(),
       color: '#0000FF',
-      label: 'Done',
+      title: 'Done',
       propertyId: properties[0].id,
       order: 3
     },
     {
       id: uuidv4(),
       color: '#FFFF00',
-      label: 'Review',
+      title: 'Review',
       propertyId: properties[0].id,
       order: 4
     },
     {
       id: uuidv4(),
       color: '#FF00FF',
-      label: 'Blocked',
+      title: 'Blocked',
       propertyId: properties[0].id,
       order: 5
     },
     {
       id: uuidv4(),
       color: '#008080',
-      label: 'On Hold',
+      title: 'On Hold',
       propertyId: properties[0].id,
       order: 6
     }

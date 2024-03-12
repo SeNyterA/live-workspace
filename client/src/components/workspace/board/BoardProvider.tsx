@@ -59,12 +59,6 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
       enabled: !!boardId
     },
     onSucess(data) {
-      console.log(
-        '22222',
-        extractApi({
-          workspaces: [data]
-        })
-      )
       dispatch(
         workspaceActions.updateWorkspaceStore(
           extractApi({

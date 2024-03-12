@@ -19,10 +19,10 @@ import StarterKit from '@tiptap/starter-kit'
 import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useEffect, useState } from 'react'
-import { useAppSelector } from '../../../redux/store'
+import { getAppValue, useAppSelector } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { EMessageType } from '../../../types'
+import { EMessageType, TMessageAttachment } from '../../../types'
 import { updateLabelMention } from '../../../utils/helper'
 import { useLayout } from '../../layout/Layout'
 import { groupByFileType } from '../../new-message/helper'
@@ -40,9 +40,7 @@ export default function MessageGroup({
   const { updateThread } = useLayout()
   const [emojiId, toogleImojiId] = useState<string>()
   const createdByUser = useAppSelector(state =>
-    Object.values(state.workspace.users).find(
-      e => e.id === messageGroup.userId
-    )
+    Object.values(state.workspace.users).find(e => e.id === messageGroup.userId)
   )
 
   const { mutateAsync: reactWorkspaceMessage } = useAppMutation(
@@ -74,13 +72,17 @@ export default function MessageGroup({
       } ${classNames?.wrapper}`}
     >
       {!isOwner && (
-        // <UserDetailProvider user={createdByUser}>
-        <Avatar
-          src={createdByUser?.avatar?.path}
-          size={32}
-          className='ring-1 ring-offset-1'
-        />
-        // </UserDetailProvider>
+        <Watching
+          watchingFn={state => state.workspace.files[createdByUser?.avatarId!]}
+        >
+          {data => (
+            <Avatar
+              src={data?.path}
+              size={32}
+              className='ring-1 ring-offset-1'
+            />
+          )}
+        </Watching>
       )}
 
       <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
@@ -98,9 +100,15 @@ export default function MessageGroup({
           )}
         </p>
         {messageGroup.messages.map(message => {
-          const { images } = groupByFileType(
-            message.attachments?.map(e => e.file.path) || []
+          const path = getAppValue(state =>
+            Object.values(state.workspace.attachments)
+              .filter(e => (e as TMessageAttachment)?.messageId === message.id)
+              .map(
+                e => getAppValue(state => state.workspace.files[e.fileId])?.path
+              )
           )
+
+          const { images } = groupByFileType(path as string[])
 
           return (
             <div

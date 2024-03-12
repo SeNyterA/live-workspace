@@ -2,6 +2,7 @@ import { ActionIcon, Avatar, Select } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { memo } from 'react'
 import { useAppSelector } from '../../../redux/store'
+import Watching from '../../../redux/Watching'
 import { EMemberRole, TMember } from '../../../types'
 
 const MemberControl = ({
@@ -22,7 +23,10 @@ const MemberControl = ({
       className='mt-2 flex flex-1 items-center gap-2 first:mt-0'
       key={user?.id}
     >
-      <Avatar src={user?.avatar?.path} />
+      <Watching watchingFn={state => state.workspace.files[user?.avatarId!]}>
+        {data => <Avatar src={data?.path} size={32} />}
+      </Watching>
+
       <div className='flex max-w-[145px] flex-1 flex-col justify-center'>
         <p className='truncate font-medium leading-5'>{user?.userName}</p>
         <p className='truncate text-xs leading-3 text-gray-500'>
