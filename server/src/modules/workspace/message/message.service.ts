@@ -1,6 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import { MemberRole, MemberStatus, Message, MessageType } from '@prisma/client'
+import {
+  MemberRole,
+  MemberStatus,
+  Message,
+  MessageType,
+  Reaction
+} from '@prisma/client'
 import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
@@ -19,7 +25,7 @@ export class MessageService {
 
   constructor(
     private readonly redisService: RedisService,
-    private readonly prismService: PrismaService
+    private readonly prismaService: PrismaService
   ) {}
 
   async emitMessage({ message }: { message: Message }) {
@@ -35,7 +41,7 @@ export class MessageService {
     user: TJwtUser
     targetId: string
   }) {
-    const memberOperator = await this.prismService.member.findFirst({
+    const memberOperator = await this.prismaService.member.findFirst({
       where: {
         userId: user.sub,
         status: MemberStatus.Active,
@@ -46,7 +52,7 @@ export class MessageService {
       throw new ForbiddenException(Errors.PERMISSION_DENIED)
     }
 
-    const newMessage = await this.prismService.message.create({
+    const newMessage = await this.prismaService.message.create({
       data: {
         ...message,
         attachments: {
@@ -80,7 +86,7 @@ export class MessageService {
     size?: number
     user: TJwtUser
   }) {
-    const memberOperator = await this.prismService.member.findFirst({
+    const memberOperator = await this.prismaService.member.findFirst({
       where: {
         userId: user.sub,
         status: MemberStatus.Active,
@@ -91,14 +97,14 @@ export class MessageService {
       throw new ForbiddenException(Errors.PERMISSION_DENIED)
     }
 
-    const totalMessages = await this.prismService.message.count({
+    const totalMessages = await this.prismaService.message.count({
       where: {
         workspaceId: targetId,
         isAvailable: true
       }
     })
 
-    const messages = await this.prismService.message.findMany({
+    const messages = await this.prismaService.message.findMany({
       where: {
         workspaceId: targetId,
         isAvailable: true,
@@ -109,7 +115,16 @@ export class MessageService {
       },
       take: size,
       include: {
-        attachments: true
+        attachments: {
+          include: {
+            file: true
+          }
+        },
+        reactions: {
+          where: {
+            isAvailable: true
+          }
+        }
       }
     })
 
@@ -127,7 +142,7 @@ export class MessageService {
     messageId: string
     targetId: string
   }) {
-    const memberOperator = await this.prismService.member.findFirst({
+    const memberOperator = await this.prismaService.member.findFirst({
       where: {
         userId: user.sub,
         status: MemberStatus.Active,
@@ -137,7 +152,7 @@ export class MessageService {
     if (!memberOperator) {
       throw new ForbiddenException(Errors.PERMISSION_DENIED)
     }
-    const message = await this.prismService.message.findFirst({
+    const message = await this.prismaService.message.findFirst({
       where: {
         id: messageId,
         workspace: { id: targetId }
@@ -145,7 +160,7 @@ export class MessageService {
     })
     message.isPinned = !message.isPinned
     message.modifiedById = user.sub
-    const newMessage = await this.prismService.message.update({
+    const newMessage = await this.prismaService.message.update({
       where: { id: message.id },
       data: message
     })
@@ -160,7 +175,7 @@ export class MessageService {
     user: TJwtUser
     targetId: string
   }) {
-    const memberOperator = await this.prismService.member.findFirst({
+    const memberOperator = await this.prismaService.member.findFirst({
       where: {
         userId: user.sub,
         status: MemberStatus.Active,
@@ -170,7 +185,7 @@ export class MessageService {
     if (!memberOperator) {
       throw new ForbiddenException(Errors.PERMISSION_DENIED)
     }
-    return this.prismService.message.findMany({
+    return this.prismaService.message.findMany({
       where: {
         workspaceId: targetId,
         isPinned: true,
@@ -188,7 +203,7 @@ export class MessageService {
     user: TJwtUser
     targetId: string
   }) {
-    const message = await this.prismService.message.findFirst({
+    const message = await this.prismaService.message.findFirst({
       where: {
         id: messageId,
         createdById: user.sub,
@@ -198,7 +213,7 @@ export class MessageService {
     })
 
     if (!message) {
-      const isAdminOrOwner = await this.prismService.member.findFirst({
+      const isAdminOrOwner = await this.prismaService.member.findFirst({
         where: {
           userId: user.sub,
           status: MemberStatus.Active,
@@ -215,12 +230,68 @@ export class MessageService {
     message.isAvailable = false
     message.modifiedById = user.sub
 
-    const messageUpdated = await this.prismService.message.update({
+    const messageUpdated = await this.prismaService.message.update({
       where: { id: message.id },
       data: message
     })
     this.emitMessage({ message: messageUpdated })
     return messageUpdated
+  }
+
+  async reactMessage({
+    messageId,
+    targetId,
+    user,
+    icon
+  }: {
+    messageId: string
+    targetId: string
+    user: TJwtUser
+    icon: { native?: string; shortcode?: string; unified: string }
+  }) {
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: user.sub,
+        status: MemberStatus.Active,
+        workspaceId: targetId
+      }
+    })
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const reaction = await this.prismaService.reaction.findUnique({
+      where: { userId_messageId: { messageId, userId: user.sub } }
+    })
+
+    let newReaction: Reaction
+    if (reaction) {
+      if (reaction.unified === icon.unified) {
+        newReaction = await this.prismaService.reaction.update({
+          where: { userId_messageId: { messageId, userId: user.sub } },
+          data: { isAvailable: false }
+        })
+      } else {
+        newReaction = await this.prismaService.reaction.update({
+          where: { userId_messageId: { messageId, userId: user.sub } },
+          data: { isAvailable: true, ...icon }
+        })
+      }
+    } else {
+      newReaction = await this.prismaService.reaction.create({
+        data: {
+          userId: user.sub,
+          messageId,
+          ...icon
+        }
+      })
+    }
+
+    this.server.to([targetId]).emit('reaction', {
+      reaction: newReaction
+    })
+
+    return { reaction: newReaction }
   }
 
   //#region Typing

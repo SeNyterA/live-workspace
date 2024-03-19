@@ -4,7 +4,8 @@ import useAppParams from '../../../hooks/useAppParams'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
-import { TMessage } from '../../../types'
+import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
+import { extractApi, TMessage } from '../../../types'
 
 export type TGroupedMessage = {
   userId: string
@@ -49,7 +50,7 @@ export default function MessageContentProvider({
   const targetId = channelId || groupId || directId || ''
   const dispatch = useDispatch()
 
-  const { data: workpsaceMessages, refetch } = useAppQuery({
+  useAppQuery({
     key: 'workpsaceMessages',
     url: {
       baseUrl: 'workspaces/:workspaceId/messages',
@@ -63,14 +64,22 @@ export default function MessageContentProvider({
     },
     onSucess({ messages, remainingCount }) {
       dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            messages
+          })
+        )
+      )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'reaction',
+    resFunc({ reaction }) {
+      console.log({ reaction })
+      dispatch(
         workspaceActions.updateWorkspaceStore({
-          messages: messages.reduce(
-            (pre, next) => ({
-              ...pre,
-              [next.id]: next
-            }),
-            {}
-          )
+          reactions: { [`${reaction.messageId}_${reaction.userId}`]: reaction }
         })
       )
     }

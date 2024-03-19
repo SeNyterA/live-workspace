@@ -17,6 +17,7 @@ import { TBoardlMutationApi } from './board'
 import { TChannelMutationApi } from './channel'
 import { TGroupMutationApi } from './group'
 import { TMemberApi } from './member.api'
+import { TMessageApi } from './message.api'
 import { TWorkspaceMutationApi } from './worksapce'
 
 const objectToFormData = (obj: any): FormData => {
@@ -293,7 +294,8 @@ export type ApiMutationType = {
   TGroupMutationApi &
   TBoardlMutationApi &
   TWorkspaceMutationApi &
-  TMemberApi['muations']
+  TMemberApi['muations'] &
+  TMessageApi['muations']
 
 export const useAppMutation = <T extends keyof ApiMutationType>(
   _key: T,

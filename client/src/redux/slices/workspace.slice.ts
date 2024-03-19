@@ -9,6 +9,7 @@ import {
   TMessages,
   TProperties,
   TpropertiesTracking,
+  TReactions,
   TUnreadCounts,
   TUserReadedMessages,
   TUsers,
@@ -26,6 +27,7 @@ type TWorkpsaceStore = {
   properties: TProperties
   options: TOptions
   files: TFiles
+  reactions: TReactions
   propertiesTracking: TpropertiesTracking
   workspaceSettingId?: string
   attachments: TAttachments
@@ -40,6 +42,7 @@ const initialState: TWorkpsaceStore = {
   users: {},
   cards: {},
   properties: {},
+  reactions: {},
   options: {},
   attachments: {},
   userReadedMessages: {},

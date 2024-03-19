@@ -293,8 +293,9 @@ model Reaction {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   isAvailable Boolean  @default(true)
-  type        String
-  content     String?
+  shortcode   String   @default("")
+  unified     String   @default("")
+  native      String   @default("")
 
   user   User   @relation("ReactionUser", fields: [userId], references: [id])
   userId String
@@ -324,7 +325,9 @@ model Mention {
 }
 
 model MessageAttachment {
-  id        String  @id @default(uuid())
+  id          String  @id @default(uuid())
+  isAvailable Boolean @default(true)
+
   message   Message @relation("AttachmentMessage", fields: [messageId], references: [id])
   messageId String
 
@@ -335,7 +338,8 @@ model MessageAttachment {
 }
 
 model CardAttachment {
-  id String @id @default(uuid())
+  id          String  @id @default(uuid())
+  isAvailable Boolean @default(true)
 
   card   Card   @relation("AttachmentCard", fields: [cardId], references: [id])
   cardId String

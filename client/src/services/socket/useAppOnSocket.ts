@@ -3,6 +3,8 @@ import {
   TCardExtra,
   TMessageExtra,
   TPropertyOptionExtra,
+  TReaction,
+  TReactionExtra,
   TWorkspaceExtra
 } from '../../types'
 import { useSocketContext } from './SocketProvider'
@@ -50,6 +52,11 @@ export type ApiSocketType = {
     response: {
       card: TCardExtra
       mode: 'create' | 'update' | 'delete'
+    }
+  }
+  reaction: {
+    response: {
+      reaction: TReactionExtra
     }
   }
 }

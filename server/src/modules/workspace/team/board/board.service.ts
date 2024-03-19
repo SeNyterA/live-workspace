@@ -13,6 +13,7 @@ import {
   PropertyOption,
   PropertyType,
   Workspace,
+  WorkspaceStatus,
   WorkspaceType
 } from '@prisma/client'
 import { Errors } from 'src/libs/errors'
@@ -236,20 +237,34 @@ export class BoardService {
         },
 
         members: {
-          createMany: {
-            data: [
-              {
-                role: MemberRole.Admin,
-                userId: user.sub,
-                status: MemberStatus.Active
-              }
-            ]
+          create: {
+            role: MemberRole.Admin,
+            userId: user.sub,
+            status: MemberStatus.Active
           }
         }
       }
     })
 
     this.initBoardData({ boardId: board.id })
+
+    if (board.status === WorkspaceStatus.Public) {
+      const teamMembers = await this.prismaService.member.findMany({
+        where: {
+          status: MemberStatus.Active,
+          workspaceId: teamId
+        }
+      })
+      await this.prismaService.member.createMany({
+        data: teamMembers.map(member => ({
+          role: MemberRole.Member,
+          status: MemberStatus.Active,
+          userId: member.userId,
+          workspaceId: board.id
+        })),
+        skipDuplicates: true
+      })
+    }
 
     return board
   }

@@ -250,10 +250,13 @@ export type TReaction = {
   createdAt: Date
   updatedAt: Date
   isAvailable: boolean
-  type: string
-  content?: string
+
   userId: string
   messageId: string
+
+  shortcode: string
+  unified: string
+  native: string
 }
 export type TReactionExtra = TReaction & {
   user: TUserExtra
@@ -277,6 +280,7 @@ export type TMentionExtra = TMention & {
 export type TMessageAttachment = {
   messageId: string
   fileId: string
+  type: 'messageAttactment'
 }
 
 export type TMessageAttachmentExtra = TMessageAttachment & {
@@ -287,6 +291,7 @@ export type TMessageAttachmentExtra = TMessageAttachment & {
 export type TCardAttachment = {
   cardId: string
   fileId: string
+  type: 'cardAttactment'
 }
 
 export type TCardAttachmentExtra = TCardAttachment & {
@@ -317,6 +322,7 @@ export type TFiles = { [fileId: string]: TFile }
 export type TAttachments = {
   [attachmentId: string]: TMessageAttachment | TCardAttachment
 }
+export type TReactions = { [reactionId: string]: TReaction }
 
 export const extractApi = ({
   cards,
@@ -342,7 +348,9 @@ export const extractApi = ({
     cards: {},
     files: {},
     options: {},
-    attachments: {}
+    attachments: {},
+    messages: {},
+    reactions: {}
   }
 
   const extractUser = (userData: TUserExtra) => {
@@ -362,18 +370,23 @@ export const extractApi = ({
   const extractMessAttachments = (attachments: TMessageAttachmentExtra[]) => {
     return attachments.map(attachment => {
       const { file, ...resAttachment } = attachment
-      res.files[file.id] = file
-      res.attachments[`${attachment.messageId}_${attachment.fileId}`] =
-        resAttachment
+      file && (res.files[file.id] = file)
+
+      res.attachments[`${attachment.messageId}_${attachment.fileId}`] = {
+        ...resAttachment,
+        type: 'messageAttactment'
+      }
     })
   }
 
   const extractCardsAttachments = (attachments: TCardAttachmentExtra[]) => {
     return attachments.map(attachment => {
       const { file, ...resAttachment } = attachment
-      res.files[file.id] = file
-      res.attachments[`${attachment.cardId}_${attachment.fileId}`] =
-        resAttachment
+      file && (res.files[file.id] = file)
+      res.attachments[`${attachment.cardId}_${attachment.fileId}`] = {
+        ...resAttachment,
+        type: 'cardAttactment'
+      }
     })
   }
 
@@ -404,6 +417,12 @@ export const extractApi = ({
       replyTo && (res.messages[replyTo.id] = replyTo)
       threadTo && (res.messages[threadTo.id] = threadTo)
       attachments && extractMessAttachments(attachments)
+      reactions &&
+        reactions.forEach(
+          reaction =>
+            (res.reactions[`${reaction.messageId}_${reaction.userId}`] =
+              reaction)
+        )
 
       res.messages[message.id] = resMessage
     })

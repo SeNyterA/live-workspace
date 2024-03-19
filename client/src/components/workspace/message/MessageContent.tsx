@@ -91,11 +91,6 @@ export default function MessageContent({
     }
   }, [messages])
 
-  //#region read messageId
-  const makeAsReadMessageId = useRef<{
-    messageId: string
-  }>()
-
   useEffect(() => {
     if (
       loadMoreInView &&

@@ -47,6 +47,26 @@ export class MessageController {
     })
   }
 
+  @Post(':messageId/react')
+  async reactMessage(
+    @HttpUser() user: TJwtUser,
+    @Param('workspaceId') targetId: string,
+    @Param('messageId') messageId: string,
+    @Body()
+    payload: {
+      native?: string
+      shortcode?: string
+      unified: string
+    }
+  ) {
+    return this.messageService.reactMessage({
+      user,
+      messageId,
+      targetId,
+      icon: payload
+    })
+  }
+
   @Post(':messageId/pin')
   pinMessage(
     @HttpUser() user: TJwtUser,
