@@ -111,7 +111,7 @@ type ApiQueryType = {
     }
     response: {
       messages: TMessageExtra[]
-      remainingCount: number
+      isCompleted: boolean
     }
   }
 
@@ -203,10 +203,12 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
 }
 
 export const appGetFn = async <T extends keyof ApiQueryType>({
-  url
-}: Omit<ApiQueryType[T], 'response'> & { key: T }): Promise<
-  ApiQueryType[T]['response']
-> => {
+  url,
+  onSucess
+}: Omit<ApiQueryType[T], 'response'> & {
+  key: T
+  onSucess?: (data: ApiQueryType[T]['response']) => void
+}): Promise<ApiQueryType[T]['response']> => {
   const urlApi = `${replaceDynamicValues(
     url.baseUrl,
     (url as any)?.urlParams || {}
@@ -216,6 +218,7 @@ export const appGetFn = async <T extends keyof ApiQueryType>({
     const response = await http.get(urlApi, {
       params: (url as any)?.queryParams
     })
+    onSucess && onSucess(response.data)
     return response.data
   } catch (error) {
     console.error('Error making API request:', error)

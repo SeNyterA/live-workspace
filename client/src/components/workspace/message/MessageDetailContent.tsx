@@ -46,6 +46,7 @@ function MessageDetailContent({
   return (
     <div
       key={message.id}
+      id={message.id}
       className={`mt-1 flex max-w-[500px] flex-col first:mt-0 ${
         isOwner && 'items-end'
       }`}

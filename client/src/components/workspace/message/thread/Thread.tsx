@@ -14,9 +14,9 @@ import Watching from '../../../../redux/Watching'
 import { TFile } from '../../../../types'
 import { updateLabelMention } from '../../../../utils/helper'
 import { TThread, useLayout } from '../../../layout/Layout'
+import SendMessage from '../create-message/SendMessage'
 import { groupMessages } from '../MessageContentProvider'
 import MessageGroup from '../MessageGroup'
-import SendMessage from '../create-message/SendMessage'
 
 export default function Thread({
   createMessage

@@ -66,7 +66,11 @@ export default function MessageGroup({
           )}
         </p>
         {messageGroup.messages.map(message => (
-          <MessageDetailContent message={message} isOwner={isOwner} />
+          <MessageDetailContent
+            key={message.id}
+            message={message}
+            isOwner={isOwner}
+          />
         ))}
       </div>
     </div>

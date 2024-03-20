@@ -34,6 +34,7 @@ function Reactions({
     <div className='mt-1 flex gap-2'>
       {reactionsByUnified.map((reactions, index) => (
         <div
+          key={reactions[0].unified}
           className='cursor-pointer rounded bg-white p-0.5 transition hover:ring-1'
           onClick={() => {
             reactMessage({

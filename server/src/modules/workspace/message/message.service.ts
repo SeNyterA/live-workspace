@@ -97,55 +97,67 @@ export class MessageService {
       throw new ForbiddenException(Errors.PERMISSION_DENIED)
     }
 
-    // const messages = await this.prismaService.message.findMany({
-    //   where: {
-    //     workspaceId: targetId,
-    //     isAvailable: true,
-    //     id: fromId ? { lt: fromId } : undefined
-    //   },
-    //   orderBy: {
-    //     createdAt: 'desc'
-    //   },
-    //   take: size,
-    //   include: {
-    //     attachments: {
-    //       include: {
-    //         file: true
-    //       }
-    //     },
-    //     reactions: {
-    //       where: {
-    //         isAvailable: true
-    //       }
-    //     }
-    //   }
-    // })
+    if (!!fromId) {
+      const firstMess = await this.prismaService.message.findUnique({
+        where: { id: fromId, isAvailable: true }
+      })
 
-    // const remainingCount = totalMessages - messages.length
-
-    // return { messages, remainingCount }
-
-    const firstMess =
-      !!fromId &&
-      (await this.prismaService.message.findUnique({
+      const messages = await this.prismaService.message.findMany({
         where: {
-          id: fromId
+          workspaceId: targetId,
+          isAvailable: true,
+          createdAt: { lte: firstMess?.createdAt }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: size + 1,
+        include: {
+          attachments: {
+            include: {
+              file: true
+            }
+          },
+          reactions: {
+            where: {
+              isAvailable: true
+            }
+          }
         }
-      }))
+      })
+      return {
+        messages: messages.slice(0, size),
+        isComplete: messages.length <= size
+      }
+    } else {
+      const messages = await this.prismaService.message.findMany({
+        where: {
+          workspaceId: targetId,
+          isAvailable: true
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: size + 1,
+        include: {
+          attachments: {
+            include: {
+              file: true
+            }
+          },
+          reactions: {
+            where: {
+              isAvailable: true
+            }
+          }
+        }
+      })
 
-    // const messages = await this.prismaService.message.aggregate({
-    //   where: {
-    //     workspaceId: targetId,
-    //     isAvailable: true,
-    //     createdAt: fromId ? { lte: firstMess?.createdAt } : undefined
-    //   },
-    //   orderBy: {
-    //     createdAt: 'desc'
-    //   },
-    //   take: size
-    // })
-
-    // return { messages }
+      return {
+        messages: messages.slice(0, size),
+        isComplete: messages.length <= size
+      }
+    }
   }
 
   async pinMessage({

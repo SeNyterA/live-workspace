@@ -1,11 +1,11 @@
 import { Loader, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../../hooks/useAppParams'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
-import { useAppQuery } from '../../../services/apis/useAppQuery'
+import { appGetFn, useAppQuery } from '../../../services/apis/useAppQuery'
 import { extractApi } from '../../../types'
 import { useMessageContent } from './MessageContentProvider'
 import MessageGroup from './MessageGroup'
@@ -15,19 +15,53 @@ export default function MessageContent() {
   const { messages, groupedMessages } = useMessageContent()
   const { channelId, directId, groupId } = useAppParams()
   const targetId = channelId || groupId || directId || ''
-  const [fromId, setFormId] = useState<string | undefined>()
 
-  const { scrollableRef } = useScrollIntoView<HTMLDivElement, HTMLDivElement>({
+  const { scrollableRef, targetRef, scrollIntoView } = useScrollIntoView<
+    HTMLDivElement,
+    HTMLDivElement
+  >({
     duration: 300
   })
-  const loadMoreRef = useRef<boolean>(false)
+  const lastMessageIdRef = useRef<string>()
+  const loadMoreMessageIdRef = useRef<string>()
+
   const bottomRef = useRef<boolean>(false)
   const { ref: loadMoreObserverRef, inView: loadMoreInView } = useInView({
     threshold: 0,
     onChange: inView => {
-      if (inView) {
-        setFormId(messages[0]?.id)
-        loadMoreRef.current = inView
+      if (inView && messages[0].id !== loadMoreMessageIdRef.current) {
+        loadMoreMessageIdRef.current = messages[0].id
+
+        appGetFn({
+          key: 'workpsaceMessages',
+          url: {
+            baseUrl: 'workspaces/:workspaceId/messages',
+            urlParams: {
+              workspaceId: targetId
+            },
+            queryParams: {
+              size: 250,
+              fromId: messages[0].id
+            }
+          },
+          onSucess({ isCompleted, messages }) {
+            dispatch(
+              workspaceActions.updateWorkspaceStore(
+                extractApi({
+                  messages: messages
+                })
+              )
+            )
+
+            setTimeout(() => {
+              targetRef.current = document.getElementById(
+                loadMoreMessageIdRef.current!
+              ) as any
+
+              scrollIntoView()
+            }, 1000)
+          }
+        })
       }
     }
   })
@@ -38,7 +72,7 @@ export default function MessageContent() {
     }
   })
 
-  const { data, isPending } = useAppQuery({
+  const { isPending } = useAppQuery({
     key: 'workpsaceMessages',
     url: {
       baseUrl: 'workspaces/:workspaceId/messages',
@@ -46,15 +80,14 @@ export default function MessageContent() {
         workspaceId: targetId
       },
       queryParams: {
-        size: 30,
-        fromId
+        size: 250
       }
     },
     options: {
       queryKey: [targetId],
       enabled: !!targetId
     },
-    onSucess({ messages, remainingCount }) {
+    onSucess({ messages }) {
       dispatch(
         workspaceActions.updateWorkspaceStore(
           extractApi({
