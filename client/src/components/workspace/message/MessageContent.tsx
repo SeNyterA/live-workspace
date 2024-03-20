@@ -100,7 +100,7 @@ export default function MessageContent() {
 
           scrollIntoView()
         }
-      }, 0)
+      }, 200)
     }
   })
 
