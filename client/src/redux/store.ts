@@ -45,7 +45,6 @@ export const getAppValue = <T>(
 export const useAppSelector = <T>(
   selector: (state: RootState) => T
 ): T | undefined => {
-  console.count('useAppSelector')
   try {
     const value = useSelector(state =>
       JSON.stringify(selector(state as RootState))
