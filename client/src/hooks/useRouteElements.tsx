@@ -23,11 +23,8 @@ function PrivateRoute() {
     key: 'login',
     url: {
       baseUrl: '/auth/profile'
-    }
-  })
-
-  useEffect(() => {
-    if (user) {
+    },
+    onSucess(user) {
       dispatch(
         authActions.loginSuccess({
           token: lsActions.getToken(),
@@ -35,12 +32,10 @@ function PrivateRoute() {
         })
       )
     }
-  }, [user, dispatch])
+  })
 
   return isAuthenticated ? (
-    <SocketProvider>
-      <Outlet />
-    </SocketProvider>
+    <SocketProvider>{user && <Outlet />}</SocketProvider>
   ) : (
     <Navigate to='/auth/login' />
   )

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 import useAppParams from '../../../hooks/useAppParams'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { appGetFn, useAppQuery } from '../../../services/apis/useAppQuery'
+import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
 import { extractApi } from '../../../types'
 import { useMessageContent } from './MessageContentProvider'
 import MessageGroup from './MessageGroup'
@@ -22,14 +23,14 @@ export default function MessageContent() {
   >({
     duration: 300
   })
-  const lastMessageIdRef = useRef<string>()
+
   const loadMoreMessageIdRef = useRef<string>()
 
   const bottomRef = useRef<boolean>(false)
   const { ref: loadMoreObserverRef, inView: loadMoreInView } = useInView({
     threshold: 0,
     onChange: inView => {
-      if (inView && messages[0].id !== loadMoreMessageIdRef.current) {
+      if (inView && !!loadMoreMessageIdRef.current) {
         loadMoreMessageIdRef.current = messages[0].id
 
         appGetFn({
@@ -40,11 +41,11 @@ export default function MessageContent() {
               workspaceId: targetId
             },
             queryParams: {
-              size: 250,
+              size: 50,
               fromId: messages[0].id
             }
           },
-          onSucess({ isCompleted, messages }) {
+          onSucess({ messages }) {
             dispatch(
               workspaceActions.updateWorkspaceStore(
                 extractApi({
@@ -59,7 +60,7 @@ export default function MessageContent() {
               ) as any
 
               scrollIntoView()
-            }, 1000)
+            }, 0)
           }
         })
       }
@@ -72,6 +73,37 @@ export default function MessageContent() {
     }
   })
 
+  useAppOnSocket({
+    key: 'reaction',
+    resFunc({ reaction }) {
+      console.log({ reaction })
+      dispatch(
+        workspaceActions.updateWorkspaceStore({
+          reactions: { [`${reaction.messageId}_${reaction.userId}`]: reaction }
+        })
+      )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'message',
+    resFunc: ({ message }) => {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({ messages: [message] })
+        )
+      )
+
+      setTimeout(() => {
+        if (bottomInview) {
+          targetRef.current = document.getElementById(message.id) as any
+
+          scrollIntoView()
+        }
+      }, 0)
+    }
+  })
+
   const { isPending } = useAppQuery({
     key: 'workpsaceMessages',
     url: {
@@ -80,12 +112,14 @@ export default function MessageContent() {
         workspaceId: targetId
       },
       queryParams: {
-        size: 250
+        size: 50
       }
     },
     options: {
       queryKey: [targetId],
-      enabled: !!targetId
+      enabled: !!targetId,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false
     },
     onSucess({ messages }) {
       dispatch(
@@ -95,6 +129,15 @@ export default function MessageContent() {
           })
         )
       )
+      if (!loadMoreMessageIdRef.current) {
+        setTimeout(() => {
+          scrollToBottom()
+        }, 0)
+
+        setTimeout(() => {
+          loadMoreMessageIdRef.current = messages[messages.length - 1].id
+        }, 1000)
+      }
     }
   })
 
@@ -125,13 +168,13 @@ export default function MessageContent() {
           <div className='relative'>
             <div
               ref={loadMoreObserverRef}
-              className='flex items-center justify-center bg-black'
+              className='flex items-center justify-center'
             >
               {isPending && <Loader size='xs' type='dots' />}
             </div>
             <div
               ref={loadMoreObserverRef}
-              className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-black'
+              className='absolute inset-0 bottom-[-400px] z-[-10] flex items-center justify-center'
             />
           </div>
 
@@ -146,7 +189,7 @@ export default function MessageContent() {
           <div className='relative'>
             <div
               ref={bottomObserverRef}
-              className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center bg-black'
+              className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center'
             />
           </div>
         </ScrollArea>

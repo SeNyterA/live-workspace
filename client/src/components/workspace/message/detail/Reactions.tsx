@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { useAppSelector } from '../../../../redux/store'
+import { getAppValue, useAppSelector } from '../../../../redux/store'
 import { useAppMutation } from '../../../../services/apis/mutations/useAppMutation'
 import { TReaction } from '../../../../types'
 
@@ -35,7 +35,7 @@ function Reactions({
       {reactionsByUnified.map((reactions, index) => (
         <div
           key={reactions[0].unified}
-          className='cursor-pointer rounded bg-white p-0.5 transition hover:ring-1'
+          className={`cursor-pointer rounded bg-white p-0.5 transition hover:ring-1 hover:ring-blue-500 ${reactions.some(e => e.userId === getAppValue(state => state.auth.userInfo?.id)) && 'ring-1 ring-gray-300'}`}
           onClick={() => {
             reactMessage({
               url: {
