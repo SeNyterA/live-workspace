@@ -16,12 +16,12 @@ import {
 import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
 import tippy from 'tippy.js'
-import useTyping from '../../../hooks/useTyping'
-import { getAppValue } from '../../../redux/store'
-import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { TFile } from '../../../types'
-import MentionList from './MentionList'
-import Typing from './Typing'
+import useTyping from '../../../../hooks/useTyping'
+import { getAppValue } from '../../../../redux/store'
+import { useAppMutation } from '../../../../services/apis/mutations/useAppMutation'
+import { TFile } from '../../../../types'
+import MentionList from '../MentionList'
+import Typing from '../Typing'
 
 type TSendMessage = {
   targetId: string

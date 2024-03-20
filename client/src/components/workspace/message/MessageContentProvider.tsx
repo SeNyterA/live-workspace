@@ -50,29 +50,6 @@ export default function MessageContentProvider({
   const targetId = channelId || groupId || directId || ''
   const dispatch = useDispatch()
 
-  useAppQuery({
-    key: 'workpsaceMessages',
-    url: {
-      baseUrl: 'workspaces/:workspaceId/messages',
-      urlParams: {
-        workspaceId: targetId
-      }
-    },
-    options: {
-      queryKey: [targetId],
-      enabled: !!targetId
-    },
-    onSucess({ messages, remainingCount }) {
-      dispatch(
-        workspaceActions.updateWorkspaceStore(
-          extractApi({
-            messages
-          })
-        )
-      )
-    }
-  })
-
   useAppOnSocket({
     key: 'reaction',
     resFunc({ reaction }) {
@@ -117,6 +94,17 @@ export default function MessageContentProvider({
             {}
           )
         })
+      )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'message',
+    resFunc: ({ message }) => {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({ messages: [message] })
+        )
       )
     }
   })

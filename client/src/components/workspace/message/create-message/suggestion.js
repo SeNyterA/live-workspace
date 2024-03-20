@@ -1,6 +1,6 @@
 import { ReactRenderer } from '@tiptap/react'
 import tippy from 'tippy.js'
-import MentionList from './MentionList.jsx'
+import MentionList from '../MentionList.jsx'
 
 export default {
   items: ({ query }) => {

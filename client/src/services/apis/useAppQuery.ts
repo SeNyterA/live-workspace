@@ -104,6 +104,10 @@ type ApiQueryType = {
       urlParams: {
         workspaceId: string
       }
+      queryParams?: {
+        fromId?: string
+        size?: number
+      }
     }
     response: {
       messages: TMessageExtra[]

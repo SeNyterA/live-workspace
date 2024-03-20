@@ -97,40 +97,55 @@ export class MessageService {
       throw new ForbiddenException(Errors.PERMISSION_DENIED)
     }
 
-    const totalMessages = await this.prismaService.message.count({
-      where: {
-        workspaceId: targetId,
-        isAvailable: true
-      }
-    })
+    // const messages = await this.prismaService.message.findMany({
+    //   where: {
+    //     workspaceId: targetId,
+    //     isAvailable: true,
+    //     id: fromId ? { lt: fromId } : undefined
+    //   },
+    //   orderBy: {
+    //     createdAt: 'desc'
+    //   },
+    //   take: size,
+    //   include: {
+    //     attachments: {
+    //       include: {
+    //         file: true
+    //       }
+    //     },
+    //     reactions: {
+    //       where: {
+    //         isAvailable: true
+    //       }
+    //     }
+    //   }
+    // })
 
-    const messages = await this.prismaService.message.findMany({
-      where: {
-        workspaceId: targetId,
-        isAvailable: true,
-        id: fromId ? { lt: fromId } : undefined
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: size,
-      include: {
-        attachments: {
-          include: {
-            file: true
-          }
-        },
-        reactions: {
-          where: {
-            isAvailable: true
-          }
+    // const remainingCount = totalMessages - messages.length
+
+    // return { messages, remainingCount }
+
+    const firstMess =
+      !!fromId &&
+      (await this.prismaService.message.findUnique({
+        where: {
+          id: fromId
         }
-      }
-    })
+      }))
 
-    const remainingCount = totalMessages - messages.length
+    // const messages = await this.prismaService.message.aggregate({
+    //   where: {
+    //     workspaceId: targetId,
+    //     isAvailable: true,
+    //     createdAt: fromId ? { lte: firstMess?.createdAt } : undefined
+    //   },
+    //   orderBy: {
+    //     createdAt: 'desc'
+    //   },
+    //   take: size
+    // })
 
-    return { messages, remainingCount }
+    // return { messages }
   }
 
   async pinMessage({

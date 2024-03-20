@@ -16,7 +16,7 @@ import { updateLabelMention } from '../../../../utils/helper'
 import { TThread, useLayout } from '../../../layout/Layout'
 import { groupMessages } from '../MessageContentProvider'
 import MessageGroup from '../MessageGroup'
-import SendMessage from '../SendMessage'
+import SendMessage from '../create-message/SendMessage'
 
 export default function Thread({
   createMessage

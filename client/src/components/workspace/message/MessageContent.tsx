@@ -1,40 +1,67 @@
 import { Loader, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
-import useRenderCount from '../../../hooks/useRenderCount'
+import { useDispatch } from 'react-redux'
+import useAppParams from '../../../hooks/useAppParams'
+import { workspaceActions } from '../../../redux/slices/workspace.slice'
+import { useAppQuery } from '../../../services/apis/useAppQuery'
+import { extractApi } from '../../../types'
 import { useMessageContent } from './MessageContentProvider'
 import MessageGroup from './MessageGroup'
 
-export default function MessageContent({
-  loadMore,
-  isLoading,
-  remainingCount
-}: {
-  loadMore?: (fromId?: string) => void
-  isLoading?: boolean
-  remainingCount?: number
-}) {
-  useRenderCount('MessageContent')
+export default function MessageContent() {
+  const dispatch = useDispatch()
   const { messages, groupedMessages } = useMessageContent()
-  const lastMessageIdRef = useRef<string>()
-  const loadMoreMessageIdRef = useRef<string>()
+  const { channelId, directId, groupId } = useAppParams()
+  const targetId = channelId || groupId || directId || ''
+  const [fromId, setFormId] = useState<string | undefined>()
+
   const { scrollableRef } = useScrollIntoView<HTMLDivElement, HTMLDivElement>({
     duration: 300
   })
   const loadMoreRef = useRef<boolean>(false)
   const bottomRef = useRef<boolean>(false)
-
   const { ref: loadMoreObserverRef, inView: loadMoreInView } = useInView({
     threshold: 0,
     onChange: inView => {
-      loadMoreRef.current = inView
+      if (inView) {
+        setFormId(messages[0]?.id)
+        loadMoreRef.current = inView
+      }
     }
   })
-  const { ref: bottomObserverRef } = useInView({
+  const { ref: bottomObserverRef, inView: bottomInview } = useInView({
     threshold: 0,
     onChange: inView => {
       bottomRef.current = inView
+    }
+  })
+
+  const { data, isPending } = useAppQuery({
+    key: 'workpsaceMessages',
+    url: {
+      baseUrl: 'workspaces/:workspaceId/messages',
+      urlParams: {
+        workspaceId: targetId
+      },
+      queryParams: {
+        size: 30,
+        fromId
+      }
+    },
+    options: {
+      queryKey: [targetId],
+      enabled: !!targetId
+    },
+    onSucess({ messages, remainingCount }) {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            messages
+          })
+        )
+      )
     }
   })
 
@@ -52,58 +79,6 @@ export default function MessageContent({
     }
   }
 
-  useLayoutEffect(() => {
-    if (!lastMessageIdRef.current && messages) {
-      scrollToBottom()
-    }
-  }, [messages])
-
-  useEffect(() => {
-    if (!lastMessageIdRef.current && messages) {
-      scrollToBottom()
-    }
-
-    if (bottomRef.current) {
-      scrollToBottom()
-    }
-
-    if (
-      lastMessageIdRef.current &&
-      loadMoreMessageIdRef.current &&
-      lastMessageIdRef.current !== loadMoreMessageIdRef.current
-    ) {
-      const messContent = document.querySelector(
-        `#id_${loadMoreMessageIdRef.current}`
-      )
-
-      if (messContent) {
-        const { top } = messContent.getBoundingClientRect()
-        scrollTo(top)
-        loadMoreMessageIdRef.current = undefined
-      }
-    }
-
-    const timeOut = setTimeout(() => {
-      if (messages.length > 0) lastMessageIdRef.current = messages[0].id
-    }, 0)
-    return () => {
-      clearTimeout(timeOut)
-    }
-  }, [messages])
-
-  useEffect(() => {
-    if (
-      loadMoreInView &&
-      lastMessageIdRef.current &&
-      !isLoading &&
-      loadMore &&
-      remainingCount
-    ) {
-      loadMoreMessageIdRef.current = lastMessageIdRef.current
-      loadMore(lastMessageIdRef.current)
-    }
-  }, [loadMoreInView])
-
   return (
     <div className='relative flex-1'>
       {messages.length > 0 && (
@@ -114,22 +89,18 @@ export default function MessageContent({
           onCompositionStart={e => console.log(e)}
           onCompositionEnd={e => console.log(e)}
         >
-          {remainingCount ? (
-            <div className='relative'>
-              <div
-                ref={loadMoreObserverRef}
-                className='flex items-center justify-center'
-              >
-                {isLoading && <Loader size='xs' type='dots' />}
-              </div>
-              <div
-                ref={loadMoreObserverRef}
-                className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-black'
-              />
+          <div className='relative'>
+            <div
+              ref={loadMoreObserverRef}
+              className='flex items-center justify-center bg-black'
+            >
+              {isPending && <Loader size='xs' type='dots' />}
             </div>
-          ) : (
-            <></>
-          )}
+            <div
+              ref={loadMoreObserverRef}
+              className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-black'
+            />
+          </div>
 
           {groupedMessages.map(groupMessage => (
             <MessageGroup
@@ -142,7 +113,7 @@ export default function MessageContent({
           <div className='relative'>
             <div
               ref={bottomObserverRef}
-              className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center'
+              className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center bg-black'
             />
           </div>
         </ScrollArea>
