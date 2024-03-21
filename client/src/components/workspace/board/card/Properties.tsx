@@ -64,7 +64,7 @@ export default function Properties() {
                       placeholder='Pick value'
                       data={options?.map(option => ({
                         value: option.id,
-                        label: option.label
+                        label: option.title
                       }))}
                       mt='md'
                       value={tmpValue[property.id]?.toString()}

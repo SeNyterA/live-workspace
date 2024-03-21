@@ -4,6 +4,7 @@ import { useState } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
+import Watching from '../../redux/Watching'
 import { EWorkspaceType } from '../../types'
 import CreateWorkspace from '../workspace/create/CreateWorkspace'
 
@@ -55,14 +56,20 @@ export default function TeamList() {
                   switchTeam({ teamId: team.id })
                 }}
               >
-                <Avatar
-                  radius='sm'
-                  size={32}
-                  className={teamId === team.id ? 'rounded' : ''}
-                  src={team.avatar?.path}
+                <Watching
+                  watchingFn={state => state.workspace.files[team.avatarId!]}
                 >
-                  {team.title?.slice(0, 1)}
-                </Avatar>
+                  {avatar => (
+                    <Avatar
+                      radius='sm'
+                      size={32}
+                      className={teamId === team.id ? 'rounded' : ''}
+                      src={avatar?.path}
+                    >
+                      {team.title?.slice(0, 1)}
+                    </Avatar>
+                  )}
+                </Watching>
               </ActionIcon>
             ))}
           </ScrollArea>

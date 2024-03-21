@@ -13,7 +13,11 @@ export default function Members() {
       .filter(member => member.workspaceId === targetId)
       .map(member => ({
         member,
-        user: state.workspace.users[member.userId]
+        user: {
+          ...state.workspace.users[member.userId],
+          avatar:
+            state.workspace.files[state.workspace.users[member.userId].avatarId!]
+        }
       }))
   )
 

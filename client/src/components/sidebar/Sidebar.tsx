@@ -67,9 +67,11 @@ export default function Sidebar() {
   const dispatch = useDispatch()
   const path = useLocation()
   const [toggle, setToggle] = useState<EWorkspaceType>()
-  const team = useAppSelector(state => {
-    return Object.values(state.workspace.workspaces).find(e => e.id === teamId)
-  })
+  const team = useAppSelector(state => ({
+    ...state.workspace.workspaces[teamId!],
+    thumbnail:
+      state.workspace.files[state.workspace.workspaces[teamId!]?.thumbnailId!]
+  }))
   const [searchValue, setSearchValue] = useState('')
 
   return (

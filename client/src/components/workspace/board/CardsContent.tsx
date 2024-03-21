@@ -2,7 +2,6 @@ import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
-import useAppControlParams from '../../../hooks/useAppControlParams'
 import useRenderCount from '../../../hooks/useRenderCount'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../../redux/store'
@@ -87,8 +86,6 @@ const getCardUpdated = ({
 export default function CardsContent() {
   useRenderCount('CardsContent')
   const { trackingId, boardId } = useBoard()
-  const { toogleCard } = useAppControlParams()
-  // const { mutateAsync: createCard } = useAppMutation('createCard')
   const { mutateAsync: updateOption } = useAppMutation('updateOption')
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
   const dispatch = useDispatch()
@@ -231,33 +228,12 @@ export default function CardsContent() {
                               className='sticky top-0 bg-white pt-1'
                             >
                               <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-gray-100 px-2 ring-1 ring-gray-300'>
-                                <span>{option.value}</span>
+                                <span>{option.title}</span>
                                 <ActionIcon
                                   variant='transparent'
                                   aria-label='Settings'
                                   className='h-[30px] w-[30px] bg-gray-100 text-gray-600'
-                                  onClick={() => {
-                                    // const timeStamp =
-                                    //   new Date().getMilliseconds()
-                                    // createCard({
-                                    //   url: {
-                                    //     baseUrl:
-                                    //       '/workspace/boards/:boardId/cards',
-                                    //     urlParams: { boardId: boardId! }
-                                    //   },
-                                    //   method: 'post',
-                                    //   payload: {
-                                    //     title: 'anything bro' + timeStamp,
-                                    //     properties: {
-                                    //       [propertyRoot.id]: option.id
-                                    //     }
-                                    //   }
-                                    // }).then(data => {
-                                    //   if (data.data?.id) {
-                                    //     toogleCard({ cardId: data.data.id })
-                                    //   }
-                                    // })
-                                  }}
+                                  onClick={() => {}}
                                 >
                                   <IconPlus size={16} stroke={1.5} />
                                 </ActionIcon>

@@ -2,7 +2,8 @@ import { ActionIcon, Avatar, Menu } from '@mantine/core'
 import { IconMessageCircle } from '@tabler/icons-react'
 import { ReactNode } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
-import { TUser, EWorkspaceType } from '../../types'
+import Watching from '../../redux/Watching'
+import { EWorkspaceType, TUser } from '../../types'
 
 export default function UserDetailProvider({
   children,
@@ -24,7 +25,11 @@ export default function UserDetailProvider({
       </Menu.Target>
       <Menu.Dropdown>
         <div className='flex flex-col items-center justify-center p-4 pb-0'>
-          <Avatar src={user?.avatar?.path} size={120} />
+          <Watching
+            watchingFn={state => state.workspace.files[user?.avatarId!]}
+          >
+            {avatar => <Avatar src={avatar?.path} size={120} />}
+          </Watching>
           <p className='mt-2 text-base font-semibold'>{user?.nickName}</p>
           <p className='text-sm text-gray-500'>{`@${user?.userName}`}</p>
           <p className='text-sm text-gray-500'>{user?.email}</p>

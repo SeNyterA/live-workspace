@@ -11,8 +11,6 @@ export default function Notification() {
     }
   })
 
-  console.log(invitions?.invitions)
-
   return (
     <Popover width={300} position='bottom-end' withArrow shadow='md'>
       <Popover.Target>
@@ -20,7 +18,7 @@ export default function Notification() {
           <IconBell size={24} />
         </ActionIcon>
       </Popover.Target>
-      <Popover.Dropdown className='h-80 inset-0'>
+      <Popover.Dropdown className='inset-0 h-80'>
         {/* {invitions?.invitions.map(invition => (
           <Invition invition={invition} key={invition.id} />
         ))} */}

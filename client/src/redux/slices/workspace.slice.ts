@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { TOptions } from 'i18next'
+
 import { assign } from 'lodash'
 import {
   TAttachments,
@@ -7,6 +7,7 @@ import {
   TFiles,
   TMembers,
   TMessages,
+  TOptions,
   TProperties,
   TpropertiesTracking,
   TReactions,

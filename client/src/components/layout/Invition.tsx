@@ -1,8 +1,8 @@
 import { Button, Image } from '@mantine/core'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
-import { TMember } from '../../types'
+import { TMemberExtra } from '../../types'
 
-export default function Invition({ invition }: { invition: TMember }) {
+export default function Invition({ invition }: { invition: TMemberExtra }) {
   const { mutateAsync: acceptInvition, isPending: acceptInvitionLoading } =
     useAppMutation('acceptInvition')
   const { mutateAsync: declineInvition, isPending: declineInvitionLoading } =

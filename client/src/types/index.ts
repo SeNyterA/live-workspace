@@ -231,8 +231,7 @@ export type TPropertyOption = {
   createdAt: Date
   updatedAt: Date
   isAvailable: boolean
-  value: string
-  label: string
+  title: string
   color?: string
   order: number
   propertyId: string
@@ -349,6 +348,7 @@ export const extractApi = ({
     files: {},
     options: {},
     attachments: {},
+    properties: {},
     messages: {},
     reactions: {}
   }
@@ -360,7 +360,7 @@ export const extractApi = ({
   }
 
   const extractMembers = (members: TMemberExtra[]) => {
-    return members.map(member => {
+    members.forEach(member => {
       const { user, ...resMember } = member
       extractUser(user)
       res.members[`${member.workspaceId}_${member.userId}`] = resMember
@@ -368,7 +368,7 @@ export const extractApi = ({
   }
 
   const extractMessAttachments = (attachments: TMessageAttachmentExtra[]) => {
-    return attachments.map(attachment => {
+    attachments.forEach(attachment => {
       const { file, ...resAttachment } = attachment
       file && (res.files[file.id] = file)
 
@@ -380,9 +380,9 @@ export const extractApi = ({
   }
 
   const extractCardsAttachments = (attachments: TCardAttachmentExtra[]) => {
-    return attachments.map(attachment => {
+    attachments.forEach(attachment => {
       const { file, ...resAttachment } = attachment
-      file && (res.files[file.id] = file)
+      !!file && (res.files[file.id] = file)
       res.attachments[`${attachment.cardId}_${attachment.fileId}`] = {
         ...resAttachment,
         type: 'cardAttactment'
@@ -391,17 +391,17 @@ export const extractApi = ({
   }
 
   const extractCards = (cards: TCardExtra[]) => {
-    return cards.map(card => {
+    cards.forEach(card => {
       const { thumbnail, attachments, ...resCard } = card
-      thumbnail && (res.files[thumbnail.id] = thumbnail)
-      extractCardsAttachments(attachments)
+      !!thumbnail && (res.files[thumbnail.id] = thumbnail)
+      !!attachments && extractCardsAttachments(attachments)
 
       res.cards[card.id] = resCard
     })
   }
 
   const extractMessages = (messages: TMessageExtra[]) => {
-    return messages.map(message => {
+    messages.forEach(message => {
       const {
         createdBy,
         modifiedBy,
@@ -412,12 +412,12 @@ export const extractApi = ({
         attachments,
         ...resMessage
       } = message
-      createdBy && extractUser(createdBy)
-      modifiedBy && extractUser(modifiedBy)
-      replyTo && (res.messages[replyTo.id] = replyTo)
-      threadTo && (res.messages[threadTo.id] = threadTo)
-      attachments && extractMessAttachments(attachments)
-      reactions &&
+      !!createdBy && extractUser(createdBy)
+      !!modifiedBy && extractUser(modifiedBy)
+      !!replyTo && (res.messages[replyTo.id] = replyTo)
+      !!threadTo && (res.messages[threadTo.id] = threadTo)
+      !!attachments && extractMessAttachments(attachments)
+      !!reactions &&
         reactions.forEach(
           reaction =>
             (res.reactions[`${reaction.messageId}_${reaction.userId}`] =
@@ -429,21 +429,21 @@ export const extractApi = ({
   }
 
   const extractOptions = (options: TPropertyOptionExtra[]) => {
-    return options.map(option => {
+    options.forEach(option => {
       res.options[option.id] = option
     })
   }
 
   const extractProperties = (properties: TPropertyExtra[]) => {
-    return properties.map(property => {
+    properties.forEach(property => {
       const { options, ...resProperty } = property
+      !!options && extractOptions(options)
       res.properties[property.id] = resProperty
-      options && extractOptions(options)
     })
   }
 
   const extractWorkspaces = (workspaces: TWorkspaceExtra[]) => {
-    return workspaces.map(workspace => {
+    workspaces.forEach(workspace => {
       const {
         members,
         avatar,
@@ -454,24 +454,24 @@ export const extractApi = ({
         ...resWorkspace
       } = workspace
 
-      avatar && (res.files[avatar.id] = avatar)
-      thumbnail && (res.files[thumbnail.id] = thumbnail)
-      cards && extractCards(cards)
-      members && extractMembers(members)
-      messages && extractMessages(messages)
-      properties && extractProperties(properties)
+      !!avatar && (res.files[avatar.id] = avatar)
+      !!thumbnail && (res.files[thumbnail.id] = thumbnail)
+      !!cards && extractCards(cards)
+      !!members && extractMembers(members)
+      !!messages && extractMessages(messages)
+      !!properties && extractProperties(properties)
 
       res.workspaces[workspace.id] = resWorkspace
     })
   }
 
-  workspaces && extractWorkspaces(workspaces)
-  cards && extractCardsAttachments(cards)
-  messages && extractMessages(messages)
-  members && extractMembers(members)
-  users && users.map(user => extractUser(user))
-  properties && extractProperties(properties)
-  options && extractOptions(options)
+  !!workspaces && extractWorkspaces(workspaces)
+  !!cards && extractCardsAttachments(cards)
+  !!messages && extractMessages(messages)
+  !!members && extractMembers(members)
+  !!users && users.forEach(user => extractUser(user))
+  !!properties && extractProperties(properties)
+  !!options && extractOptions(options)
 
   return res as {
     users: TUsers
