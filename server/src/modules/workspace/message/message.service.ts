@@ -66,7 +66,11 @@ export class MessageService {
         modifiedById: user.sub
       },
       include: {
-        attachments: true
+        attachments: {
+          include: {
+            file: true
+          }
+        }
       }
     })
 

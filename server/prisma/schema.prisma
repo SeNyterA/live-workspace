@@ -106,6 +106,7 @@ model User {
 model File {
   id          String         @id @default(uuid())
   path        String
+  name        String?
   size        Float?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt

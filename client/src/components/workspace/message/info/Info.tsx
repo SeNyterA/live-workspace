@@ -24,8 +24,8 @@ export default function Info() {
       ]
   }))
 
-  const { t } = useTranslation(['ns1', 'ns2'])
-  console.log(t('setting.name', { name: workspace?.title }))
+  // const { t } = useTranslation(['ns1', 'ns2'])
+  // console.log(t('setting.name', { name: workspace?.title }))
 
   return (
     <>
@@ -63,6 +63,7 @@ export default function Info() {
 
         {workspace?.thumbnail?.path && (
           <Image
+            loading='lazy'
             src={workspace?.thumbnail?.path}
             className='aspect-video w-full rounded-lg'
           />

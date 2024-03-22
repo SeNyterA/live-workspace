@@ -84,6 +84,7 @@ export default function Sidebar() {
 
         {!!team?.thumbnail?.path && (
           <Image
+            loading='lazy'
             src={team?.thumbnail?.path}
             className='aspect-video w-full rounded-lg'
           />

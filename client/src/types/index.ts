@@ -87,6 +87,7 @@ export type TUserExtra = TUser & {
 export type TFile = {
   id: string
   path: string
+  name?: string
   size?: number
   createdAt: Date
   updatedAt: Date

@@ -118,8 +118,8 @@ export default function SendMessage({
 
             return (
               getAppValue(state =>
-                Object.values(state.workspace.users).filter(
-                  u => usersId?.includes(u.id)
+                Object.values(state.workspace.users).filter(u =>
+                  usersId?.includes(u.id)
                 )
               ) || []
             )
@@ -254,7 +254,7 @@ export default function SendMessage({
                 ></IconX>
               }
             >
-              {/* {formatFileName(file.path)} */}
+              {file.name}
             </Badge>
           ))}
           <FileButton

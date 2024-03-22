@@ -95,9 +95,8 @@ export default function MessageContent() {
       )
 
       setTimeout(() => {
-        if (bottomInview) {
+        if (true) {
           targetRef.current = document.getElementById(message.id) as any
-
           scrollIntoView()
         }
       }, 200)

@@ -16,6 +16,7 @@ export default function Attachments({ messageId }: { messageId: string }) {
     <>
       {files?.map(img => (
         <Image
+          loading='lazy'
           mah={400}
           maw={400}
           key={img.path}

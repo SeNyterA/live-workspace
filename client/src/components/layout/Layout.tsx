@@ -76,9 +76,11 @@ export default function Layout({ children }: { children: ReactNode }) {
     key: 'workspace',
     resFunc: ({ workspace }) => {
       dispatch(
-        workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace.id]: workspace }
-        })
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            workspaces: [workspace]
+          })
+        )
       )
     }
   })

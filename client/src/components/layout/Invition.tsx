@@ -18,6 +18,7 @@ export default function Invition({ invition }: { invition: TMemberExtra }) {
 
       {invition.workspace?.thumbnail && (
         <Image
+          loading='lazy'
           src={invition.workspace?.thumbnail.path}
           alt={invition.workspace?.title}
           className='aspect-video rounded'

@@ -41,7 +41,13 @@ export default function Files() {
         {workspaceFiles?.map((file, index) => {
           const url = new URL(file.path)
           url.searchParams.set('quality', 'low')
-          return <Image src={url.toString()} className='aspect-[1] rounded' />
+          return (
+            <Image
+              loading='lazy'
+              src={url.toString()}
+              className='aspect-[1] rounded'
+            />
+          )
         })}
       </div>
     </NavLink>

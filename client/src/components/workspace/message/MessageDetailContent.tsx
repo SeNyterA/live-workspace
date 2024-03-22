@@ -206,6 +206,7 @@ function MessageDetailContent({
             <IconTrash size={18} />
           </ActionIcon>
         </div>
+        {message.isPinned && <IconPin size={18} className='text-red-500' />}
 
         <div
           className='text-sm'

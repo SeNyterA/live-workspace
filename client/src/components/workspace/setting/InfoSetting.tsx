@@ -126,9 +126,10 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
 }
 
 const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
-  const workspace = useAppSelector(
-    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  const workspaceId = useAppSelector(
+    state => state.workspace.workspaceSettingId
   )
+
   const { mutateAsync: updateWorkspace, isPending } =
     useAppMutation('updateWorkspace')
 
@@ -147,7 +148,7 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
             url: {
               baseUrl: `workspaces/:workspaceId`,
               urlParams: {
-                workspaceId: workspace?.id!
+                workspaceId: workspaceId!
               }
             },
             payload: { workspace: { thumbnailId: data.id } as any }
@@ -185,18 +186,30 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
         disabled={isPending || isDisabled || uploadPending}
       >
         <Watching
-          watchingFn={state => state.workspace.files[workspace?.thumbnailId!]}
+          watchingFn={state => {
+            const thumbnail =
+              state.workspace.files[
+                state.workspace.workspaces[workspaceId!].thumbnailId!
+              ]
+
+            console.log({
+              state
+            })
+            return thumbnail
+          }}
         >
-          {thumbnail => (
-            <Avatar
-              classNames={{ placeholder: 'rounded-lg' }}
-              src={thumbnail?.path}
-              className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
-              alt='Team thumbnail'
-            >
-              Team thumbnail
-            </Avatar>
-          )}
+          {thumbnail => {
+            return (
+              <Avatar
+                classNames={{ placeholder: 'rounded-lg' }}
+                src={thumbnail?.path}
+                className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
+                alt='Team thumbnail'
+              >
+                Team thumbnail
+              </Avatar>
+            )
+          }}
         </Watching>
       </Dropzone>
       <Input.Description className='mt-1'>

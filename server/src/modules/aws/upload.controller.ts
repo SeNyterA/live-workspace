@@ -48,6 +48,7 @@ export class UploadController {
         createdBy: { connect: { id: user.sub } },
         modifiedBy: { connect: { id: user.sub } },
         path: uploadResult.Location,
+        name: originalname,
         sourceType: FileSourceType.AWS
       }
     })

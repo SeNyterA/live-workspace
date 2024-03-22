@@ -82,12 +82,10 @@ export default function useRouteElements() {
         {
           path: 'team/:teamId',
           element: (
-            <ErrorBoundary fallback={<></>}>
-              <Layout>
-                <Outlet />
-                <WorkspaceSetting />
-              </Layout>
-            </ErrorBoundary>
+            <Layout>
+              <Outlet />
+              <WorkspaceSetting />
+            </Layout>
           ),
           children: [
             {
@@ -101,45 +99,29 @@ export default function useRouteElements() {
             {
               path: 'board/:boardId',
               element: (
-                <ErrorBoundary fallback={<></>}>
+                <>
                   <BoardContent />
                   <Outlet />
-                </ErrorBoundary>
+                </>
               ),
               children: [
                 {
                   path: ':cardId',
-                  element: (
-                    <ErrorBoundary fallback={<></>}>
-                      <DetailCard />
-                    </ErrorBoundary>
-                  )
+                  element: <DetailCard />
                 }
               ]
             },
             {
               path: 'channel/:channelId',
-              element: (
-                <ErrorBoundary fallback={<></>}>
-                  <MessageContentWrapper />
-                </ErrorBoundary>
-              )
+              element: <MessageContentWrapper />
             },
             {
               path: 'group/:groupId',
-              element: (
-                <ErrorBoundary fallback={<></>}>
-                  <MessageContentWrapper />
-                </ErrorBoundary>
-              )
+              element: <MessageContentWrapper />
             },
             {
               path: 'direct-message/:directId',
-              element: (
-                <ErrorBoundary fallback={<></>}>
-                  <MessageContentWrapper />
-                </ErrorBoundary>
-              )
+              element: <MessageContentWrapper />
             }
           ]
         }

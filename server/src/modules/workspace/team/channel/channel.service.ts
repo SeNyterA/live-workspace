@@ -78,7 +78,7 @@ export class ChannelService {
                       type: 'heading',
                       attrs: {
                         textAlign: 'left',
-                        level: 2
+                        level: 4
                       },
                       content: [
                         {
@@ -108,6 +108,8 @@ export class ChannelService {
         }
       }
     })
+
+    this.server.to(teamId).emit('workspace', { workspace: channel })
 
     return channel
   }
