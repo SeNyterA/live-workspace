@@ -111,12 +111,15 @@ export default function CardsContent() {
             <DragDropContext
               onDragEnd={result => {
                 if (result.type === 'column') {
+                  console.log({ result })
                   const data = getOptionWithNewOrder({
                     draggableId: result.draggableId,
                     from: result.source.index,
                     to: result.destination?.index || 0,
                     options
                   })
+
+                  console.log({data})
                   if (!data) return
 
                   const { newOption, oldOption } = data

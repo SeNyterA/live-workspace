@@ -29,29 +29,15 @@ export const getAppValue = <T>(
   }
 }
 
-// export const useAppSelector = <T>(
-//   selector: (state: RootState) => T,
-//   defaultValue?: T
-// ): T | undefined => {
-//   try {
-//     const value = useSelector(selector)
-//     return value || defaultValue
-//   } catch (error) {
-//     // console.log('_useSelector error', error)
-//     return defaultValue
-//   }
-// }
-
 export const useAppSelector = <T>(
   selector: (state: RootState) => T
 ): T | undefined => {
-  try {
-    const value = useSelector(state =>
-      JSON.stringify(selector(state as RootState))
-    )
-    return JSON.parse(value)
-  } catch (error) {
-    // console.warn('useAppSelector error', error)
-    return undefined
-  }
+  const value = useSelector(state => {
+    try {
+      return JSON.stringify(selector(state as RootState))
+    } catch (error) {
+      return undefined
+    }
+  })
+  return value ? JSON.parse(value) : undefined
 }

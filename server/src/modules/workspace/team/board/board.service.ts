@@ -341,4 +341,47 @@ export class BoardService {
     this.server.to(boardId).emit('card', { card: cardUpdated })
     return cardUpdated
   }
+
+  async updateColumnPosition({
+    boardId,
+    optionId,
+    user,
+    order,
+    propertyId
+  }: {
+    boardId: string
+    user: TJwtUser
+    optionId: string
+    propertyId: string
+    order: number
+  }) {
+    const optionUpdated = await this.prismaService.propertyOption.update({
+      where: {
+        id: optionId,
+        isAvailable: true,
+        property: {
+          id: propertyId,
+          isAvailable: true,
+          type: { in: [PropertyType.Select] },
+          workspace: {
+            id: boardId,
+            isAvailable: true,
+            members: {
+              some: {
+                userId: user.sub,
+                status: MemberStatus.Active
+              }
+            }
+          }
+        }
+      },
+      data: {
+        order: order,
+        modifiedById: user.sub
+      }
+    })
+    this.server.to(boardId).emit('option', { option: optionUpdated })
+
+    return optionUpdated
+  }
 }

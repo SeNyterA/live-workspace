@@ -34,7 +34,7 @@ function Reactions({
     <div className={`flex gap-2 ${reactionsByUnified.length > 0 && 'mt-1'}`}>
       {reactionsByUnified.map((reactions, index) => (
         <div
-          key={reactions[0].unified + reactions.length}
+          key={reactions.toString()}
           className={`cursor-pointer rounded bg-white p-0.5 transition hover:ring-1 hover:ring-blue-500 ${reactions.some(e => e.userId === getAppValue(state => state.auth.userInfo?.id)) && 'ring-1 ring-gray-300'}`}
           onClick={() => {
             reactMessage({
