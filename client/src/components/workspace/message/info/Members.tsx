@@ -57,11 +57,11 @@ export default function Members() {
           >
             <Indicator
               inline
-              size={16}
-              offset={3}
+              size={12}
+              offset={4}
               position='bottom-end'
               color='yellow'
-              withBorder
+              processing
               zIndex={1}
             >
               <Avatar src={user?.avatar?.path} size={32} />

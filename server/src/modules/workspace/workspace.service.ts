@@ -206,9 +206,44 @@ export class WorkspaceService {
     workspaceId: string
     user: TJwtUser
   }) {
-    const files = this.prismaService.file.findMany({
-      where: {}
+    await this.prismaService.member.findUniqueOrThrow({
+      where: {
+        userId_workspaceId: {
+          userId: user.sub,
+          workspaceId: workspaceId
+        },
+        workspace: {
+          id: workspaceId,
+          isAvailable: true
+        },
+        status: MemberStatus.Active
+      }
     })
+
+    const attachmemnts = await Promise.all([
+      this.prismaService.cardAttachment.findMany({
+        where: {
+          card: {
+            workspaceId: workspaceId
+          }
+        },
+        include: {
+          file: true
+        }
+      }),
+      this.prismaService.messageAttachment.findMany({
+        where: {
+          message: {
+            workspaceId: workspaceId
+          }
+        },
+        include: {
+          file: true
+        }
+      })
+    ])
+    return attachmemnts.flat()
   }
+
   //#endregion
 }

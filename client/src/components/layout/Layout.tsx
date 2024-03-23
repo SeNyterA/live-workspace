@@ -85,10 +85,23 @@ export default function Layout({ children }: { children: ReactNode }) {
     }
   })
 
+  useAppOnSocket({
+    key: 'workspaces',
+    resFunc: ({ workspaces }) => {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            workspaces
+          })
+        )
+      )
+    }
+  })
+
   return (
     <>
       <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur' />
-    
+
       <div className='fixed inset-0 flex h-screen w-screen flex-col text-sm text-gray-100'>
         <LoadingOverlay
           visible={isPending}

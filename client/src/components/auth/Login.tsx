@@ -138,6 +138,9 @@ export default function Authentication() {
                   <TextInput
                     label='Name'
                     placeholder='Your name'
+                    classNames={{
+                      input: 'bg-gray-400/20 text-gray-100'
+                    }}
                     value={field.value}
                     onChange={field.onChange}
                     error={fieldState.error && fieldState.error.message}
@@ -161,6 +164,9 @@ export default function Authentication() {
                 <TextInput
                   label='Email'
                   placeholder='hello@mantine.dev'
+                  classNames={{
+                    input: 'bg-gray-400/20 text-gray-100'
+                  }}
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState.error && fieldState.error.message}
@@ -183,6 +189,9 @@ export default function Authentication() {
                 <PasswordInput
                   label='Password'
                   placeholder='Your password'
+                  classNames={{
+                    input: 'bg-gray-400/20 text-gray-100'
+                  }}
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState.error && fieldState.error.message}

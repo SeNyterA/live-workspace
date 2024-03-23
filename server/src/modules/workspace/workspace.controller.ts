@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common'
+import { Workspace } from '@prisma/client'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from '../socket/socket.gateway'
 import { WorkspaceService } from './workspace.service'
-import { Member, Workspace } from '@prisma/client'
 
 @Controller('workspaces')
 export class WorkspaceController {
@@ -16,6 +16,14 @@ export class WorkspaceController {
   @Get(':id')
   getWorkspace(@HttpUser() user: TJwtUser, @Param('id') workspaceId: string) {
     return this.workspaceService.getWorkspaceById({ user, workspaceId })
+  }
+
+  @Get(':id/files')
+  getWorkspaceAttachments(
+    @HttpUser() user: TJwtUser,
+    @Param('id') workspaceId: string
+  ) {
+    return this.workspaceService.getWorkspaceAttachFiles({ user, workspaceId })
   }
 
   @Patch(':id')

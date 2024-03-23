@@ -147,7 +147,7 @@ export class MemberService {
     })
 
     if (memberUpdated.workspace.type === WorkspaceType.Team) {
-      const children = await this.prismaService.workspace.findMany({
+      const workspaceChidren = await this.prismaService.workspace.findMany({
         where: {
           workspaceParentId: workspaceId,
           isAvailable: true,
@@ -156,7 +156,7 @@ export class MemberService {
       })
 
       await this.prismaService.member.createMany({
-        data: children.map(child => ({
+        data: workspaceChidren.map(child => ({
           workspaceId: child.id,
           userId: user.sub,
           status: MemberStatus.Active,
@@ -164,6 +164,27 @@ export class MemberService {
         }))
       })
     }
+
+    const workspaces = await this.prismaService.workspace.findMany({
+      where: {
+        OR: [{ workspaceParentId: workspaceId }, { id: workspaceId }],
+        isAvailable: true,
+        members: {
+          some: {
+            userId: user.sub,
+            status: MemberStatus.Active
+          }
+        }
+      },
+      include: {
+        avatar: true,
+        thumbnail: true
+      }
+    })
+
+    this.server.to(user.sub).emit('workspaces', { workspaces })
+
+    return workspaces
   }
 
   async declineInvition({

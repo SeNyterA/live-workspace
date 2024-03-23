@@ -76,7 +76,7 @@ export default function Info() {
           >
             <Members />
             {!!(channelId || groupId || directId) && <PinedMesages />}
-            <Files />
+            {/* <Files /> */}
           </ScrollArea>
         </div>
       </div>

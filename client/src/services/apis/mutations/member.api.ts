@@ -1,4 +1,4 @@
-import { TMember, TMemberExtra } from '../../../types'
+import { TMember, TMemberExtra, TWorkspaceExtra } from '../../../types'
 
 export type TMemberApi = {
   muations: {
@@ -10,7 +10,7 @@ export type TMemberApi = {
         }
       }
       method: 'post'
-      response: { member: TMember }
+      response: TWorkspaceExtra[]
     }
     declineInvition: {
       url: {
