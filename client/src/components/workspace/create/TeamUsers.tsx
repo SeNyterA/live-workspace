@@ -191,7 +191,11 @@ export const TeamUsers = memo(() => {
                     label: 'Add Members',
                     description: 'Type to search and add members to the team',
                     placeholder: 'Search and select members...',
-                    className: 'mt-4'
+                    className: 'mt-4',
+                    classNames: {
+                      input:
+                        'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+                    }
                   }}
                 />
 

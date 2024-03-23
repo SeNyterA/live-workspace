@@ -49,7 +49,7 @@ const ThumbnailField = () => {
             <Avatar
               classNames={{ placeholder: 'rounded-lg' }}
               src={data?.path}
-              className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
+              className='h-40 w-full flex-1 rounded-lg border'
               alt='Team thumbnail'
             >
               Team thumbnail
@@ -129,7 +129,7 @@ const AvatarField = () => {
               size={32}
             />
           </Dropzone>
-          <Input.Description className=''>
+          <Input.Description className='mt-1'>
             This image is used for avatar
           </Input.Description>
         </>
@@ -169,7 +169,11 @@ export default function CreateWorkspaceInfo() {
             placeholder='Enter the team name'
             size='sm'
             className='mt-4'
-            classNames={{ label: 'capitalize' }}
+            classNames={{
+              label: 'capitalize',
+              input:
+                'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+            }}
             value={value}
             onChange={e => onChange(e.target.value)}
             error={fieldState.error && fieldState.error.message}
@@ -191,6 +195,10 @@ export default function CreateWorkspaceInfo() {
             }`}
             size='sm'
             className='mt-4'
+            classNames={{
+              input:
+                'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+            }}
             value={value}
             onChange={e => onChange(e.target.value)}
             error={fieldState.error && fieldState.error.message}
@@ -206,6 +214,10 @@ export default function CreateWorkspaceInfo() {
             label='Team Description'
             placeholder='Enter a description for the team...'
             className='mt-4'
+            classNames={{
+              input:
+                'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+            }}
             value={value}
             onChange={e => onChange(e.target.value)}
           />

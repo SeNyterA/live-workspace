@@ -1,4 +1,11 @@
-import { ActionIcon, Avatar, Divider, Drawer, ScrollArea } from '@mantine/core'
+import {
+  ActionIcon,
+  Avatar,
+  Divider,
+  Drawer,
+  Indicator,
+  ScrollArea
+} from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
@@ -24,7 +31,7 @@ export default function TeamList() {
 
   return (
     <>
-      <div className='flex h-full w-[56px] flex-col justify-center gap-2 py-2'>
+      <div className='flex h-full w-[60px] flex-col justify-center gap-2 py-2'>
         <ActionIcon
           className={`mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${
             teamId === 'personal' ? 'ring-[1.5px]' : ''
@@ -32,7 +39,7 @@ export default function TeamList() {
           variant='subtle'
           onClick={() => switchTeam({ teamId: 'personal' })}
         >
-          <Avatar size={32} />
+          <Avatar size={36} />
         </ActionIcon>
 
         <Divider variant='dashed' className='mx-4' />
@@ -43,34 +50,50 @@ export default function TeamList() {
             classNames={{ viewport: 'py-1 teamlist-viewport' }}
           >
             {teams?.map(team => (
-              <ActionIcon
-                key={team.id}
-                className={`relative mx-auto mt-2 flex h-fit w-fit items-center justify-center p-0 first:mt-0 ${
-                  teamId === team.id
-                    ? 'rounded-full ring-1 ring-offset-2'
-                    : 'rounded-full '
-                }`}
-                variant='light'
-                size='md'
-                onClick={() => {
-                  switchTeam({ teamId: team.id })
-                }}
+              <Indicator
+                inline
+                processing
+                color='#F3F4F6'
+                size={12}
+                offset={5}
+                zIndex={1}
+                className='mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-1'
+                classNames={
+                  {
+                    // indicator:
+                    //   'bg-white before:content-[attr(data-before)] before:block before:bg-white'
+                  }
+                }
               >
-                <Watching
-                  watchingFn={state => state.workspace.files[team.avatarId!]}
+                <ActionIcon
+                  key={team.id}
+                  className={`relative h-fit w-fit ${
+                    teamId === team.id
+                      ? 'rounded-full ring-2 ring-blue-400'
+                      : 'rounded-full '
+                  }`}
+                  variant='light'
+                  size='md'
+                  onClick={() => {
+                    switchTeam({ teamId: team.id })
+                  }}
                 >
-                  {avatar => (
-                    <Avatar
-                      radius='sm'
-                      size={32}
-                      className={teamId === team.id ? 'rounded' : ''}
-                      src={avatar?.path}
-                    >
-                      {team.title?.slice(0, 1)}
-                    </Avatar>
-                  )}
-                </Watching>
-              </ActionIcon>
+                  <Watching
+                    watchingFn={state => state.workspace.files[team.avatarId!]}
+                  >
+                    {avatar => (
+                      <Avatar
+                        radius='sm'
+                        size={36}
+                        className={teamId === team.id ? 'rounded' : ''}
+                        src={avatar?.path}
+                      >
+                        {team.title?.slice(0, 1)}
+                      </Avatar>
+                    )}
+                  </Watching>
+                </ActionIcon>
+              </Indicator>
             ))}
           </ScrollArea>
         </div>
@@ -83,7 +106,7 @@ export default function TeamList() {
             toggleDrawer(true)
           }}
         >
-          <Avatar size={32}>
+          <Avatar size={36}>
             <IconPlus />
           </Avatar>
         </ActionIcon>
@@ -94,16 +117,17 @@ export default function TeamList() {
         opened={openDrawer}
         title={<p className='text-lg font-semibold'>Create team</p>}
         overlayProps={{
-          color: '#000',
-          backgroundOpacity: 0.2,
-          blur: 0.5
+          blur: '0.5'
         }}
         classNames={{
-          content: 'rounded-lg flex flex-col',
+          header: 'bg-transparent',
+          content: 'rounded-lg flex flex-col bg-black/80',
           inner: 'p-3',
-          body: 'flex flex-col flex-1 relative text-sm'
+          body: 'flex flex-col flex-1 relative text-sm',
+          root: 'text-gray-100',
+          overlay: 'bg-white/10 blur'
         }}
-        size={400}
+        size={376}
         position={'left'}
       >
         <CreateWorkspace

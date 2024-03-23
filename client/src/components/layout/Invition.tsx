@@ -9,21 +9,20 @@ export default function Invition({ invition }: { invition: TMemberExtra }) {
     useAppMutation('declineInvition')
 
   return (
-    <div className='mt-2 cursor-pointer rounded bg-gray-100 p-2 text-sm transition-colors first:mt-0 hover:bg-gray-100'>
-      <div>
-        <span className='font-semibold'>{invition.createdBy?.userName}</span>
-        <span> invite you to </span>
-        <span className='font-semibold'>{invition.workspace?.title}</span>
-      </div>
-
+    <div className='mt-2 cursor-pointer rounded bg-gray-400/20 p-2 text-sm text-white transition-colors first:mt-0 hover:bg-gray-100/20'>
       {invition.workspace?.thumbnail && (
         <Image
           loading='lazy'
           src={invition.workspace?.thumbnail.path}
-          alt={invition.workspace?.title}
+          alt={invition.workspace?.thumbnail.path}
           className='aspect-video rounded'
         />
       )}
+      <div>
+        <span className='font-semibold'>{invition.createdBy?.userName}</span>
+        <span>{` invite you to ${invition.workspace.type} `}</span>
+        <span className='font-semibold'>{invition.workspace?.title}</span>
+      </div>
 
       <div className='mt-2'>
         <Button

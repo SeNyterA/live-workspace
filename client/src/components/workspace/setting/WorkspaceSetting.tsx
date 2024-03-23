@@ -42,23 +42,26 @@ export default function WorkspaceSetting() {
         </div>
       }
       overlayProps={{
-        color: '#000',
-        backgroundOpacity: 0.2,
-        blur: 0.5
+        blur: '0.5'
       }}
       classNames={{
-        content: 'rounded-lg flex flex-col',
+        header: 'bg-transparent',
+        content: 'rounded-lg flex flex-col bg-black/80',
         inner: 'p-3',
-        body: 'flex flex-col flex-1 relative text-sm'
+        body: 'flex flex-col flex-1 relative text-sm',
+        root: 'text-gray-100',
+        overlay: 'bg-white/10 blur'
       }}
-      size={400}
+      size={376}
       position={position || 'left'}
     >
       <Tabs
         defaultValue='info'
         classNames={{
           root: 'h-full flex flex-col',
-          panel: 'flex-1'
+          panel: 'flex-1',
+          list: 'before:content-[attr(data-before)] before:block before:h-[2px] before:border-blue-400/20',
+          tab: 'bg-transparent hover:bg-blue-400/20'
         }}
       >
         <Tabs.List>

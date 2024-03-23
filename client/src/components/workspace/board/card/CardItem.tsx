@@ -11,7 +11,7 @@ function CardItem({ card }: { card: TCard }) {
 
   return (
     <div
-      className='flex flex-col rounded bg-gray-100 px-2 py-1'
+      className='flex flex-col rounded bg-blue-400/20 px-2 py-1'
       id={card.id}
       onClick={() => {
         toogleCard({

@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
+import store from '../../redux/store'
 import { lsActions } from '../../utils/auth'
 import { baseURL } from '../config'
 

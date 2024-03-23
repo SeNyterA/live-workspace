@@ -3,7 +3,6 @@ import {
   TCardExtra,
   TMessageExtra,
   TPropertyOptionExtra,
-  TReaction,
   TReactionExtra,
   TWorkspaceExtra
 } from '../../types'
@@ -33,6 +32,12 @@ export type ApiSocketType = {
     response: {
       workspace: TWorkspaceExtra
       action?: 'create' | 'update' | 'delete'
+    }
+  }
+
+  workspaces: {
+    response: {
+      workspaces: TWorkspaceExtra[]
     }
   }
 

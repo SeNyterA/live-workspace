@@ -36,6 +36,10 @@ const Title = ({ isDisabled }: { isDisabled: boolean }) => {
       placeholder='Enter the team name'
       size='sm'
       className='mt-4'
+      classNames={{
+        input:
+          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+      }}
       defaultValue={workspace?.title}
       key={workspace?.title}
       onBlur={e =>
@@ -66,6 +70,10 @@ const Description = ({ isDisabled }: { isDisabled: boolean }) => {
     <Textarea
       placeholder='Enter a description...'
       className='mt-4'
+      classNames={{
+        input:
+          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+      }}
       defaultValue={workspace?.description}
       key={workspace?.description}
       // data-autofocus
@@ -106,6 +114,10 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
       description='This is the url that will be used to access the team. e.g. .../teams/your-team-name'
       size='sm'
       className='mt-4'
+      classNames={{
+        input:
+          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+      }}
       defaultValue={workspace?.displayUrl}
       disabled={isPending || isDisabled}
       key={workspace?.displayUrl}
@@ -203,7 +215,7 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
               <Avatar
                 classNames={{ placeholder: 'rounded-lg' }}
                 src={thumbnail?.path}
-                className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
+                className='h-40 w-full flex-1 rounded-lg border'
                 alt='Team thumbnail'
               >
                 Team thumbnail
@@ -362,7 +374,7 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
           size={32}
         />
       </Dropzone>
-      <Input.Description className=''>
+      <Input.Description className='mt-1'>
         This image is used for avatar
       </Input.Description>
     </>

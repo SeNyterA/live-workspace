@@ -12,7 +12,16 @@ export default function Notification() {
   })
 
   return (
-    <Popover width={300} position='bottom-end' withArrow shadow='md'>
+    <Popover
+      width={300}
+      position='bottom-end'
+      withArrow
+      shadow='md'
+      classNames={{
+        dropdown: '!bg-gray-400/20 border-none',
+        arrow: 'bg-gray-400/20 border-none'
+      }}
+    >
       <Popover.Target>
         <ActionIcon className='bg-transparent text-gray-500'>
           <IconBell size={24} />
@@ -22,7 +31,10 @@ export default function Notification() {
         {/* {invitions?.invitions.map(invition => (
           <Invition invition={invition} key={invition.id} />
         ))} */}
-        <ScrollArea scrollbarSize={8} className='absolute inset-0 p-3'>
+        <ScrollArea
+          scrollbarSize={8}
+          className='absolute inset-0 bg-transparent p-3'
+        >
           {invitions?.invitions.map(invition => (
             <Invition invition={invition} key={invition.workspaceId} />
           ))}

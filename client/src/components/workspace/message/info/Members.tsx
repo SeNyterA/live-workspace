@@ -16,7 +16,9 @@ export default function Members() {
         user: {
           ...state.workspace.users[member.userId],
           avatar:
-            state.workspace.files[state.workspace.users[member.userId].avatarId!]
+            state.workspace.files[
+              state.workspace.users[member.userId].avatarId!
+            ]
         }
       }))
   )
@@ -30,7 +32,7 @@ export default function Members() {
 
   return (
     <NavLink
-      className='sticky top-0 z-[2] bg-white p-1 pl-0'
+      className='sticky top-0 z-[2] p-1 pl-0 hover:bg-blue-400/20'
       label={
         <div className='flex items-center justify-between'>
           Members
@@ -44,7 +46,7 @@ export default function Members() {
       onClick={() => {}}
       classNames={{
         children:
-          'pl-0 border-0 border-b border-dashed border-gray-200 pb-2 mb-4'
+          'pl-0 border-0 border-b border-dashed border-gray-200/20 pb-2 mb-4'
       }}
     >
       {!!enableMembers?.length &&
@@ -55,11 +57,11 @@ export default function Members() {
           >
             <Indicator
               inline
-              size={16}
-              offset={3}
+              size={12}
+              offset={4}
               position='bottom-end'
               color='yellow'
-              withBorder
+              processing
               zIndex={1}
             >
               <Avatar src={user?.avatar?.path} size={32} />

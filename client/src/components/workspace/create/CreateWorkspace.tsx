@@ -100,7 +100,9 @@ export default function CreateWorkspace({
         defaultValue='info'
         classNames={{
           root: 'h-full flex flex-col',
-          panel: 'flex-1'
+          panel: 'flex-1',
+          list: 'before:content-[attr(data-before)] before:block before:h-[2px] before:border-blue-400/20',
+          tab: 'bg-transparent hover:bg-blue-400/20'
         }}
       >
         <Tabs.List>
@@ -132,11 +134,16 @@ export default function CreateWorkspace({
       </Tabs>
 
       <div className='mt-4 flex items-center justify-end gap-3'>
-        <Button variant='default' color='red'>
+        <Button
+          variant='transparent'
+          className='bg-transparent text-red-300 hover:bg-red-400/20 hover:text-red-500'
+        >
           Close
         </Button>
 
         <Button
+          variant='transparent'
+          className='bg-blue-400/20'
           onClick={form.handleSubmit(({ ...data }) => {
             console.log({ data })
             if (workspaceType === EWorkspaceType.Team) {

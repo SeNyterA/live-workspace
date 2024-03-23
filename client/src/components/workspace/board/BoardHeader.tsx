@@ -32,7 +32,9 @@ export default function BoardHeader() {
         <Select
           classNames={{
             input:
-              'border-gray-100 border-none bg-gray-100 min-h-[30px] h-[30px]'
+              'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px] h-[30px]',
+            dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+            option: 'hover:bg-gray-700/90'
           }}
           className='w-32'
           data={propertiesChecking?.map(e => ({
@@ -51,7 +53,9 @@ export default function BoardHeader() {
         <Select
           classNames={{
             input:
-              'border-gray-100 border-none bg-gray-100 min-h-[30px] h-[30px]'
+              'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px] h-[30px]',
+            dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+            option: 'hover:bg-gray-700/90'
           }}
           className='w-32'
           value={sortBy}
@@ -67,12 +71,12 @@ export default function BoardHeader() {
       </label>
 
       <Input
-        className='flex h-[30px] items-center rounded bg-gray-100'
+        className='flex h-[30px] items-center rounded bg-gray-400/20'
         size='sm'
         placeholder='Search card name'
         leftSection={<IconSearch size={14} />}
         classNames={{
-          input: 'bg-transparent border-none min-h-[20px] h-[20px]'
+          input: 'bg-transparent border-none min-h-[20px] h-[20px] text-gray-100',
         }}
         value={searchValue}
         onChange={e => setSearchValue(e.currentTarget.value)}
@@ -81,7 +85,7 @@ export default function BoardHeader() {
       <ActionIcon
         variant='transparent'
         aria-label='Settings'
-        className='h-[30px] w-[30px] bg-gray-100 text-gray-600'
+        className='h-[30px] w-[30px] bg-gray-400/20'
       >
         <IconFilter size={16} stroke={1.5} />
       </ActionIcon>

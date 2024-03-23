@@ -34,14 +34,15 @@ const TeamChild = ({ name }: { name: 'channels' | 'boards' }) => {
               rightSection={
                 <ActionIcon
                   variant='transparent'
-                  className='bg-gray-100'
+                  className='hover:bg-gray-400/20'
                   onClick={() => remove(index)}
                 >
                   <IconX size={16} />
                 </ActionIcon>
               }
               classNames={{
-                input: 'border border-dashed'
+                input:
+                  'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40 border border-dashed'
               }}
               error={fieldState.error && fieldState.error.message}
             />

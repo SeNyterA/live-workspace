@@ -240,14 +240,14 @@ export default function CardsContent() {
                           >
                             <div
                               {...dragProvided.dragHandleProps}
-                              className='sticky top-0 bg-white pt-1'
+                              className='sticky top-0'
                             >
-                              <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-gray-100 px-2 ring-1 ring-gray-300'>
+                              <div className='flex h-9 items-center justify-between rounded border border-gray-300 px-2 pr-1 bg-gray-900/90 bg-black'>
                                 <span>{option.title}</span>
                                 <ActionIcon
                                   variant='transparent'
                                   aria-label='Settings'
-                                  className='h-[30px] w-[30px] bg-gray-100 text-gray-600'
+                                  className='h-[28px] w-[28px] bg-blue-400/20 text-white'
                                   onClick={() => {}}
                                 >
                                   <IconPlus size={16} stroke={1.5} />

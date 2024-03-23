@@ -1,4 +1,4 @@
-import { Divider, LoadingOverlay } from '@mantine/core'
+import { LoadingOverlay } from '@mantine/core'
 import { createContext, ReactNode, useContext, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
@@ -85,34 +85,53 @@ export default function Layout({ children }: { children: ReactNode }) {
     }
   })
 
+  useAppOnSocket({
+    key: 'workspaces',
+    resFunc: ({ workspaces }) => {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            workspaces
+          })
+        )
+      )
+    }
+  })
+
   return (
-    <div className='relative flex h-screen w-screen flex-col text-sm'>
-      <LoadingOverlay
-        visible={isPending}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
-      <AppHeader />
-      <Divider variant='dashed' />
-      <div className='flex flex-1'>
-        <TeamList />
+    <>
+      <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur' />
 
-        <Divider variant='dashed' orientation='vertical' />
-        <div className='flex flex-1'>
-          <Sidebar />
-          <Divider variant='dashed' orientation='vertical' />
-          <layoutContext.Provider
-            value={{
-              thread,
-              updateThread: thread => setThread(thread),
+      <div className='fixed inset-0 flex h-screen w-screen flex-col text-sm text-gray-100'>
+        <LoadingOverlay
+          visible={isPending}
+          classNames={{
+            overlay: 'bg-black/50'
+          }}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+        />
+        <AppHeader />
 
-              openInfo,
-              toggleInfo: info => toggleInfo(info)
-            }}
-          >
-            {children}
-          </layoutContext.Provider>
+        <div className='flex flex-1 bg-black/80'>
+          <TeamList />
+
+          <div className='flex flex-1'>
+            <Sidebar />
+
+            <layoutContext.Provider
+              value={{
+                thread,
+                updateThread: thread => setThread(thread),
+
+                openInfo,
+                toggleInfo: info => toggleInfo(info)
+              }}
+            >
+              {children}
+            </layoutContext.Provider>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }

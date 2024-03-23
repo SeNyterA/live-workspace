@@ -54,7 +54,7 @@ export default function PinedMesages() {
 
   return (
     <NavLink
-      className='sticky top-0 z-[2] mt-1 bg-white p-1 pl-0'
+      className='sticky top-0 z-[2] mt-1 hover:bg-blue-400/20 p-1 pl-0'
       label={
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>Pined messages</p>
@@ -69,7 +69,7 @@ export default function PinedMesages() {
       onClick={() => {}}
       classNames={{
         children:
-          'pl-0 border-0 border-b border-dashed border-gray-200 pb-2 mb-4'
+          'pl-0 border-0 border-b border-dashed border-gray-200/20 pb-2 mb-4'
       }}
     >
       {pinedMessages?.map((message, index) => (
