@@ -3,6 +3,7 @@ import {
   Divider,
   Drawer,
   Image,
+  Indicator,
   Input,
   NavLink,
   ScrollArea
@@ -37,8 +38,11 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
 
   return (
     <NavLink
-      classNames={{ label: 'truncate max-w-[220px] block flex-1' }}
-      className='p-1 pl-3 hover:bg-blue-400/10'
+      classNames={{
+        label: 'max-w-[220px] block flex-1 overflow-visible',
+        body: 'overflow-visible'
+      }}
+      className='overflow-visible p-1 pl-3 hover:bg-blue-400/10'
       label={
         <div className='flex items-center gap-2'>
           <span className='flex-1 truncate'>
@@ -49,6 +53,7 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
               {unreadCount}
             </span>
           )}
+          <Indicator processing className='mr-2' />
         </div>
       }
       active={[channelId, groupId, directId, boardId].includes(workspace.id)}
@@ -76,7 +81,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className='mb-4 flex w-72 flex-col gap-2 rounded-lg bg-cyan-900/30 shadow-lg px-4 py-3 '>
+      <div className='mb-4 flex w-72 flex-col gap-2 rounded-lg bg-cyan-900/30 px-4 py-3 shadow-lg '>
         <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
         <p className='line-clamp-3 text-gray-500'>
           {team ? team?.description : 'Wellcome to workspace'}
