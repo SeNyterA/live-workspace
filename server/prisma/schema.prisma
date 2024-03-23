@@ -212,6 +212,9 @@ model Message {
   threadToId    String?
   theadMessages Message[] @relation("ThreadTo")
 
+  cardId String?
+  card   Card?   @relation("CardMessage", fields: [cardId], references: [id])
+
   reactions   Reaction[]          @relation("ReactionMessage")
   mentions    Mention[]           @relation("MentionMessage")
   attachments MessageAttachment[] @relation("AttachmentMessage")
@@ -242,6 +245,7 @@ model Card {
   workspaceId String
 
   attachments CardAttachment[] @relation("AttachmentCard")
+  messages    Message[]        @relation("CardMessage")
 
   @@map("cards")
 }
