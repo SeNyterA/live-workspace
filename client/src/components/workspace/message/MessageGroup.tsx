@@ -1,8 +1,7 @@
-import { Avatar } from '@mantine/core'
 import dayjs from 'dayjs'
 import { useAppSelector } from '../../../redux/store'
-import Watching from '../../../redux/Watching'
 import { EMessageType } from '../../../types'
+import UserIcon from '../../common/UserIcon'
 import { TGroupedMessage } from './MessageContentProvider'
 import MessageDetailContent from './MessageDetailContent'
 
@@ -37,26 +36,14 @@ export default function MessageGroup({
         isOwner ? 'justify-end' : 'justify-start'
       } ${classNames?.wrapper}`}
     >
-      {!isOwner && (
-        <Watching
-          watchingFn={state => state.workspace.files[createdByUser?.avatarId!]}
-        >
-          {data => (
-            <Avatar
-              src={data?.path}
-              size={32}
-              className='ring-1 ring-offset-1'
-            />
-          )}
-        </Watching>
-      )}
+      {!isOwner && <UserIcon user={createdByUser} />}
 
       <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
         {!isOwner && (
           <p className='font-medium'>
             {messageGroup.messages[0].type === EMessageType.System
               ? EMessageType.System
-              : createdByUser?.userName}
+              : createdByUser?.nickName || createdByUser?.userName}
           </p>
         )}
 

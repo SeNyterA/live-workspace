@@ -16,6 +16,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
+import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { memo, useState } from 'react'
 import Watching from '../../../redux/Watching'
@@ -121,13 +122,13 @@ function MessageDetailContent({
         key={message.id}
       >
         <div
-          className={`absolute top-0 z-10 hidden h-10 translate-y-[-100%] items-center justify-center gap-1 rounded bg-white px-2 shadow-custom group-hover:flex ${
+          className={`absolute top-0 z-10 hidden translate-y-[-100%] items-center justify-center gap-1 rounded bg-gray-900 p-1 shadow-custom group-hover:flex ${
             isOwner ? 'right-0' : 'left-0'
           }`}
         >
           <ActionIcon
             variant='light'
-            className='text-gray-600 hover:text-gray-800'
+            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               toogleImojiId(message.id)
             }}
@@ -135,16 +136,18 @@ function MessageDetailContent({
             <IconMoodPlus size={18} />
           </ActionIcon>
 
-          <ActionIcon
-            variant='light'
-            className='text-gray-600 hover:text-gray-800'
-          >
-            <IconEdit size={18} />
-          </ActionIcon>
+          {isOwner && (
+            <ActionIcon
+              variant='light'
+              className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
+            >
+              <IconEdit size={18} />
+            </ActionIcon>
+          )}
 
           <ActionIcon
             variant='light'
-            className='text-gray-600 hover:text-gray-800'
+            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               pinWorkspaceMessage({
                 method: 'post',
@@ -163,7 +166,7 @@ function MessageDetailContent({
 
           <ActionIcon
             variant='light'
-            className='text-gray-600 hover:text-gray-800'
+            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               updateThread({
                 targetId: message.workspaceId,
@@ -176,8 +179,13 @@ function MessageDetailContent({
 
           <ActionIcon
             variant='light'
-            className='text-gray-600 hover:text-gray-800'
+            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
+              console.log({
+                targetId: message.workspaceId,
+                threadId: message.threadToId || message.id,
+                replyId: message.id
+              })
               updateThread({
                 targetId: message.workspaceId,
                 threadId: message.threadToId || message.id,
@@ -187,29 +195,30 @@ function MessageDetailContent({
           >
             <IconMessageReply size={18} />
           </ActionIcon>
-          <ActionIcon
-            variant='light'
-            className='text-gray-600 hover:text-gray-800'
-            onClick={() => {
-              deleteWorkspaceMessage({
-                method: 'delete',
-                url: {
-                  baseUrl: '/workspaces/:workspaceId/messages/:messageId',
-                  urlParams: {
-                    messageId: message.id,
-                    workspaceId: message.workspaceId
+          {isOwner && (
+            <ActionIcon
+              variant='light'
+              className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
+              onClick={() => {
+                deleteWorkspaceMessage({
+                  method: 'delete',
+                  url: {
+                    baseUrl: '/workspaces/:workspaceId/messages/:messageId',
+                    urlParams: {
+                      messageId: message.id,
+                      workspaceId: message.workspaceId
+                    }
                   }
-                }
-              })
-            }}
-          >
-            <IconTrash size={18} />
-          </ActionIcon>
+                })
+              }}
+            >
+              <IconTrash size={18} />
+            </ActionIcon>
+          )}
         </div>
-        {message.isPinned && <IconPin size={18} className='text-red-500' />}
 
         <div
-          className='text-sm'
+          className='cursor-pointer text-sm'
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(
               generateHTML(updateLabelMention(message.content), [
@@ -225,6 +234,17 @@ function MessageDetailContent({
         />
         <Attachments messageId={message.id} />
         <Reactions messageId={message.id} workspaceId={message.workspaceId} />
+        {message.isPinned && (
+          <IconPin
+            size={20}
+            className='absolute right-0 top-0 translate-x-3 translate-y-[-8px] rounded text-yellow-500'
+          />
+        )}
+        <p
+          className={`invisible absolute top-[50%] translate-y-[-50%] text-gray-300 group-hover:visible ${isOwner ? 'left-0 translate-x-[-110%]' : 'right-0 translate-x-[110%]'} text-xs text-gray-300 ${message.isPinned ? 'hidden' : ''}`}
+        >
+          {dayjs(message.createdAt).format('HH:mm')}
+        </p>
       </div>
     </div>
   )

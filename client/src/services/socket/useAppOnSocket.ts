@@ -16,6 +16,12 @@ export type ApiSocketType = {
     }
   }
 
+  userPresence: {
+    response: {
+      [userId: string]: 'online' | 'offline'
+    }
+  }
+
   typing: {
     response: {
       targetId: string

@@ -57,14 +57,15 @@ export default function Layout({ children }: { children: ReactNode }) {
       baseUrl: '/workspaces/:workspaceId',
       urlParams: { workspaceId: teamId! }
     },
-    onSucess({ members, workspace }) {
+    onSucess({ members, workspace, usersPresence }) {
       dispatch(
-        workspaceActions.updateWorkspaceStore(
-          extractApi({
+        workspaceActions.updateWorkspaceStore({
+          ...extractApi({
             members,
             workspaces: [workspace]
-          })
-        )
+          }),
+          presents: usersPresence
+        })
       )
     },
     options: {
@@ -97,6 +98,15 @@ export default function Layout({ children }: { children: ReactNode }) {
       )
     }
   })
+
+  useAppOnSocket({
+    key: 'userPresence',
+    resFunc: data => {
+      dispatch(workspaceActions.updateWorkspaceStore({ presents: data }))
+    }
+  })
+
+  console.count('Layout')
 
   return (
     <>

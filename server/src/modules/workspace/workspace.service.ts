@@ -6,6 +6,7 @@ import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
 import { PrismaService } from '../prisma/prisma.service'
 import { TJwtUser } from '../socket/socket.gateway'
+import { RedisService } from '../redis/redis.service'
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
   data: Workspace
@@ -34,7 +35,10 @@ export const generateRandomHash = (
 export class WorkspaceService {
   @WebSocketServer()
   server: Server
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly redisService: RedisService
+  ) {}
 
   //#region Workspace
   async createUsersFakeData() {
@@ -193,9 +197,14 @@ export class WorkspaceService {
         }
       })
 
+    const usersPresence = await this.redisService.getUsersPresence(
+      members.map(member => member.userId)
+    )
+
     return {
       workspace,
-      members
+      members,
+      usersPresence
     }
   }
 

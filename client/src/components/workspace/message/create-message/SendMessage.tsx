@@ -298,12 +298,12 @@ export default function SendMessage({
       </div>
 
       <p
-        className={`info-wrapper absolute bottom-1 left-4 right-3 flex justify-between text-xs text-gray-500 ${classNames?.infoWrapper}`}
+        className={`info-wrapper absolute bottom-1 left-4 right-3 flex justify-between text-xs text-gray-300 ${classNames?.infoWrapper}`}
       >
         <Typing messRefId={targetId} />
         <span>
-          Press <kbd className='bg-gray-100'>⌘Enter</kbd> or{' '}
-          <kbd className='bg-gray-100'>Alt Enter</kbd> to quickly send
+          Press <kbd className='bg-gray-400/30 rounded-sm'>⌘Enter</kbd> or{' '}
+          <kbd className='bg-gray-400/30 rounded-sm'>Alt Enter</kbd> to quickly send
         </span>
       </p>
     </div>

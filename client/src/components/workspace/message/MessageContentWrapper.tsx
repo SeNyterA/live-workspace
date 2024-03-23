@@ -62,9 +62,9 @@ export default function MessageContentWrapper() {
           <MessageContent key={workspaceId} />
 
           <SendMessage
-          classNames={{
-            rootWrapper:'mx-2'
-          }}
+            classNames={{
+              rootWrapper: 'mx-2'
+            }}
             targetId={channelId || ''}
             createMessage={({ files, value }) => {
               sendWorkspaceMessage(
@@ -104,8 +104,8 @@ export default function MessageContentWrapper() {
         </div>
 
         <Thread
-          createMessage={async ({ files, value, thread }) => {
-            await sendWorkspaceMessage(
+          createMessage={({ files, value, thread }) => {
+            sendWorkspaceMessage(
               {
                 url: {
                   baseUrl: '/workspaces/:workspaceId/messages',
@@ -116,10 +116,13 @@ export default function MessageContentWrapper() {
                 method: 'post',
                 payload: {
                   message: {
-                    content: value
+                    content: value,
+                    attachments: files.map(file => ({
+                      fileId: file.id
+                    })),
+                    threadToId: thread.threadId,
+                    replyToId: thread.replyId
                   } as any
-                  // threadId: thread.threadId,
-                  // replyToId: thread.replyId
                 }
               },
               {
@@ -131,7 +134,7 @@ export default function MessageContentWrapper() {
                   )
                   socketEmit({
                     key: 'stopTyping',
-                    targetId: workspaceId || ''
+                    targetId: workspaceId
                   })
                 }
               }
@@ -141,7 +144,11 @@ export default function MessageContentWrapper() {
 
         {openInfo && (
           <>
-            <Divider orientation='vertical' variant='dashed' className='border-gray-200/20' />
+            <Divider
+              orientation='vertical'
+              variant='dashed'
+              className='border-gray-200/20'
+            />
             <Info />
           </>
         )}

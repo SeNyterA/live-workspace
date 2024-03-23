@@ -44,14 +44,21 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const members = await this.prismaService.member.findMany({
       where: {
         userId: user.sub,
-        status: MemberStatus.Active,
+
         workspace: {
           isAvailable: true
         }
       }
     })
 
-    client.join([...members.map(member => member.workspaceId), user.sub])
+    client.join([
+      ...members
+        .filter(e => e.status === MemberStatus.Active)
+        .map(member => member.workspaceId),
+      user.sub
+    ])
+
+    return members
   }
 
   async handleConnection(client: CustomSocket, ...args: any[]) {
@@ -66,14 +73,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!jwtUser?.sub) throw new Error('Invalid user')
       client.user = jwtUser
 
-      await this.subscribeToWorkspaces({
+      const members = await this.subscribeToWorkspaces({
         client,
         user: jwtUser
       })
-      await this.redisService.redisClient.set(
-        `presence:${jwtUser.sub}`,
-        'online'
-      )
+
+      this.redisService.redisClient.set(`presence:${jwtUser.sub}`, 'online')
+      this.server
+        .to(members.map(member => member.workspaceId))
+        .emit('userPresence', { [jwtUser.sub]: 'online' })
     } catch (error) {
       client.disconnect()
     }
@@ -87,8 +95,20 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const sockets = await this.server.fetchSockets()
       const userSockets = sockets.filter(socket => socket.rooms.has(userId))
       if (userSockets.length) return
-      const time = Date.now().toString()
-      await this.redisService.redisClient.set(`presence:${userId}`, time)
+
+      const now = Date.now().toString()
+      const members = await this.prismaService.member.findMany({
+        where: {
+          userId
+        }
+      })
+
+      this.server
+        .to(members.map(member => member.workspaceId))
+        .emit('userPresence', {
+          [userId]: now
+        })
+      this.redisService.redisClient.set(`presence:${userId}`, now)
     } catch (error) {}
   }
 }

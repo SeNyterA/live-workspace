@@ -18,8 +18,8 @@ export default function Notification() {
       withArrow
       shadow='md'
       classNames={{
-        dropdown: '!bg-gray-400/20 border-none',
-        arrow: 'bg-gray-400/20 border-none'
+        dropdown: '!bg-black/95 border-gray-800',
+        arrow: 'bg-black/95 border-gray-800'
       }}
     >
       <Popover.Target>

@@ -3,6 +3,7 @@ import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
 import { EMemberStatus } from '../../../../types'
 import MemberRole from '../../../common/MemberRole'
+import UserIcon from '../../../common/UserIcon'
 
 export default function Members() {
   const { boardId, channelId, directId, groupId } = useAppParams()
@@ -55,7 +56,7 @@ export default function Members() {
             className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
             key={user?.id}
           >
-            <Indicator
+            {/* <Indicator
               inline
               size={12}
               offset={4}
@@ -65,7 +66,9 @@ export default function Members() {
               zIndex={1}
             >
               <Avatar src={user?.avatar?.path} size={32} />
-            </Indicator>
+            </Indicator> */}
+
+            <UserIcon user={user} size={32}/>
 
             <div className='flex flex-1 flex-col justify-center'>
               <p className='max-w-[150px] truncate font-medium leading-4'>

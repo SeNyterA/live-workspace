@@ -50,14 +50,15 @@ export default function Thread({
       title={<p className='text-lg font-semibold'>Thread</p>}
       position='right'
       overlayProps={{
-        color: '#000',
-        backgroundOpacity: 0.2,
-        blur: 0.5
+        blur: '0.5'
       }}
       classNames={{
-        content: 'rounded-lg flex flex-col',
+        header: 'bg-transparent',
+        content: 'rounded-lg flex flex-col bg-black/80',
         inner: 'p-3',
-        body: 'flex flex-col flex-1 px-0 pb-2'
+        body: 'flex flex-col flex-1 relative text-sm p-0',
+        root: 'text-gray-100',
+        overlay: 'bg-white/10 blur'
       }}
     >
       <div className='relative flex-1'>
@@ -79,7 +80,7 @@ export default function Thread({
         >
           {data => (
             <div
-              className='mb-1 ml-5 line-clamp-1 h-4 max-w-96 cursor-pointer truncate !bg-transparent text-sm !text-blue-400 hover:underline'
+              className='mb-1 ml-5 line-clamp-1 h-4 w-fit max-w-96 cursor-pointer truncate !bg-transparent text-sm !text-blue-400 hover:underline'
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   generateHTML(

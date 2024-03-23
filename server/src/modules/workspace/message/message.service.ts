@@ -126,7 +126,8 @@ export class MessageService {
             where: {
               isAvailable: true
             }
-          }
+          },
+          replyTo: true
         }
       })
       return {

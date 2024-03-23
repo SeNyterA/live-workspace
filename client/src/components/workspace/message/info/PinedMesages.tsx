@@ -1,3 +1,4 @@
+import { userInfo } from 'os'
 import { Avatar, Badge, Divider, Loader, NavLink } from '@mantine/core'
 import { Link } from '@mantine/tiptap'
 import Highlight from '@tiptap/extension-highlight'
@@ -16,6 +17,7 @@ import { useAppSelector } from '../../../../redux/store'
 import Watching from '../../../../redux/Watching'
 import { useAppQuery } from '../../../../services/apis/useAppQuery'
 import { updateLabelMention } from '../../../../utils/helper'
+import UserIcon from '../../../common/UserIcon'
 import Attachments from '../detail/Attachments'
 
 export default function PinedMesages() {
@@ -54,7 +56,7 @@ export default function PinedMesages() {
 
   return (
     <NavLink
-      className='sticky top-0 z-[2] mt-1 hover:bg-blue-400/20 p-1 pl-0'
+      className='sticky top-0 z-[2] mt-1 p-1 pl-0 hover:bg-blue-400/20'
       label={
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>Pined messages</p>
@@ -76,23 +78,17 @@ export default function PinedMesages() {
         <Fragment key={message.id}>
           <Watching
             key={message.id}
-            watchingFn={state => ({
-              ...state.workspace.users[message.createdById!],
-              avatar:
-                state.workspace.files[
-                  state.workspace.users[message.createdById!].avatarId!
-                ]
-            })}
+            watchingFn={state => state.workspace.users[message.createdById!]}
           >
             {createBy => (
               <div className='flex gap-2 rounded first:mt-2'>
-                <Avatar src={createBy?.avatar?.path} />
+                <UserIcon user={createBy} />
 
                 <div className='flex-1'>
                   <p className='font-medium'>
                     {createBy?.userName || 'Senytera'}
                   </p>
-                  <p className='text-xs'>
+                  <p className='text-xs text-gray-500'>
                     {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
                   </p>
                   <div

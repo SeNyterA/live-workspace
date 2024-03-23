@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
 import { assign } from 'lodash'
 import {
   TAttachments,
@@ -33,6 +32,7 @@ type TWorkpsaceStore = {
   workspaceSettingId?: string
   attachments: TAttachments
   settingPosition?: 'left' | 'right'
+  presents: { [userId: string]: string }
 }
 
 const initialState: TWorkpsaceStore = {
@@ -48,7 +48,7 @@ const initialState: TWorkpsaceStore = {
   attachments: {},
   userReadedMessages: {},
   unreadCount: {},
-
+  presents: {},
   propertiesTracking: {}
 }
 const workspaceSlice = createSlice({

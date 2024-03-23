@@ -52,7 +52,11 @@ type ApiQueryType = {
         workspaceId: string
       }
     }
-    response: { workspace: TWorkspaceExtra; members: TMemberExtra[] }
+    response: {
+      workspace: TWorkspaceExtra
+      members: TMemberExtra[]
+      usersPresence: { [userId: string]: 'online' | 'offline' }
+    }
   }
 
   workspaces: {
