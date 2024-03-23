@@ -32,6 +32,7 @@ export type ApiSocketType = {
   workspace: {
     response: {
       workspace: TWorkspaceExtra
+      action?: 'create' | 'update' | 'delete'
     }
   }
 

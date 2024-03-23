@@ -5,7 +5,6 @@ import {
   Checkbox,
   Divider,
   Group,
-  Paper,
   PasswordInput,
   Stack,
   Text,
@@ -40,8 +39,15 @@ export default function Authentication() {
   })
 
   return (
-    <div className='flex h-screen w-screen items-center justify-center'>
-      <Paper radius='md' className='w-96' p='xl' withBorder>
+    <div className='relative flex h-screen w-screen items-center bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat'>
+      <div className='m-10 text-white'>
+        <p className='text-[60px] font-bold'>Live workspace</p>
+        <p className='text-[30px] font-light'>Collaborate with your team</p>
+        <p className='text-[20px] font-light'>
+          Create, share and manage your projects
+        </p>
+      </div>
+      <div className='absolute inset-10 left-[unset] w-96 rounded-xl bg-black/80 p-6 text-white'>
         <Text size='lg' fw={500}>
           Welcome to Mantine, {type === 'register' ? 'Register' : 'Login'} with
         </Text>
@@ -223,7 +229,7 @@ export default function Authentication() {
             </Button>
           </Group>
         </form>
-      </Paper>
+      </div>
     </div>
   )
 }

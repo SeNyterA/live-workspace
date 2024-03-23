@@ -43,14 +43,16 @@ export class WorkspaceService {
         .fill(1)
         .map(() => ({
           email:
-            generateRandomHash(Math.random().toString(), 10) + '@gmail.com',
-          userName: generateRandomHash(Math.random().toString(), 10),
+            generateRandomHash(Math.random().toString(), 16) + '@gmail.com',
+          userName: generateRandomHash(Math.random().toString(), 16),
           password: crypto.SHA256('123123').toString(),
-          nickName: generateRandomHash(Math.random().toString(), 10),
+          nickName: generateRandomHash(Math.random().toString(), 16),
           isAvailable: true
         })),
       skipDuplicates: true
     })
+
+    console.log(users.count)
   }
 
   async updateWorkspace({

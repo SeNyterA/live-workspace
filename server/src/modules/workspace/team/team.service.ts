@@ -76,6 +76,11 @@ export class TeamService {
             ]
           }
         }
+      },
+      include: {
+        members: true,
+        avatar: true,
+        thumbnail: true
       }
     })
 
@@ -94,5 +99,12 @@ export class TeamService {
         teamId: team.id
       })
     })
+
+    const { members: _, ..._team } = team
+    this.server
+      .to(team.members.map(e => e.userId))
+      .emit('workspace', { workspace: _team, action: 'create' })
+
+    return team
   }
 }

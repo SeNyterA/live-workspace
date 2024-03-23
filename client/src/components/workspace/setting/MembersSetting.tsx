@@ -41,7 +41,7 @@ const User = memo(({ user }: { user: TUser }) => {
         <p className='max-w-[150px] truncate text-sm font-medium leading-4'>
           {user?.userName}
         </p>
-        <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+        <p className='leading-2 truncate text-xs text-gray-500'>
           {user?.email}
         </p>
       </div>
@@ -138,7 +138,7 @@ const Member = memo(({ member }: { member: TMember }) => {
           <p className='max-w-[150px] truncate text-sm font-medium leading-4'>
             {user?.userName}
           </p>
-          <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+          <p className='leading-2 truncate text-xs text-gray-500'>
             {user?.email}
           </p>
         </div>
@@ -225,7 +225,7 @@ const Member_ = ({ member }: { member: TMember }) => {
             <p className='max-w-[150px] truncate font-medium leading-4'>
               {user?.userName}
             </p>
-            <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+            <p className='leading-2 truncate text-xs text-gray-500'>
               {user?.email}
             </p>
           </div>
