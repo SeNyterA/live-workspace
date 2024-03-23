@@ -283,7 +283,11 @@ export default function MembersSetting() {
         label='Search'
         description='Search by name, username, email. Atleast 3 characters required'
         placeholder='senytera'
-        className='sticky top-0 z-[300] mt-4 bg-white'
+        className='sticky top-0 z-[300] mt-4'
+        classNames={{
+          input:
+            'text-gray-100 bg-gray-400/20 border-gray-100/20 hover:border-blue-500/50 focus:border-blue-500/70'
+        }}
         leftSection={<IconSearch size={16} />}
         value={searchValue}
         onChange={event => setSearchValue(event.currentTarget.value)}
@@ -319,7 +323,7 @@ export default function MembersSetting() {
 
       {activeMembers.length > 0 && (
         <>
-          <Divider className='mt-3' variant='dashed' />
+          <Divider className='mt-3 border-gray-100/20' variant='dashed' />
           {activeMembers.map(member => (
             <Member_
               member={member}

@@ -76,7 +76,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className='mb-6 flex w-72 flex-col gap-2 rounded-lg bg-white/10 px-4 py-3 '>
+      <div className='mb-4 flex w-72 flex-col gap-2 rounded-lg bg-cyan-900/30 shadow-lg px-4 py-3 '>
         <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
         <p className='line-clamp-3 text-gray-500'>
           {team ? team?.description : 'Wellcome to workspace'}
@@ -210,7 +210,7 @@ export default function Sidebar() {
             )}
 
             <NavLink
-              className='sticky top-0 z-10 mb-1 p-1 hover:bg-blue-400/10'
+              className='sticky top-0 z-10 mb-1 mt-1 p-1 hover:bg-blue-400/10'
               label='Groups'
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={!!groupId}

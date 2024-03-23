@@ -86,35 +86,38 @@ export default function Layout({ children }: { children: ReactNode }) {
   })
 
   return (
-    <div className='relative flex h-screen w-screen flex-col bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat text-sm text-gray-100'>
-      <LoadingOverlay
-        visible={isPending}
-        classNames={{
-          overlay: 'bg-black/50'
-        }}
-        overlayProps={{ radius: 'sm', blur: 2 }}
-      />
-      <AppHeader />
+    <>
+      <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur-sm'></div>
+      <div className='fixed inset-0 z-[1] flex h-screen w-screen flex-col text-sm text-gray-100'>
+        <LoadingOverlay
+          visible={isPending}
+          classNames={{
+            overlay: 'bg-black/50'
+          }}
+          overlayProps={{ radius: 'sm', blur: 2 }}
+        />
+        <AppHeader />
 
-      <div className='flex flex-1 bg-black/80'>
-        <TeamList />
+        <div className='flex flex-1 bg-black/80'>
+          <TeamList />
 
-        <div className='flex flex-1'>
-          <Sidebar />
+          <div className='flex flex-1'>
+            <Sidebar />
 
-          <layoutContext.Provider
-            value={{
-              thread,
-              updateThread: thread => setThread(thread),
+            <layoutContext.Provider
+              value={{
+                thread,
+                updateThread: thread => setThread(thread),
 
-              openInfo,
-              toggleInfo: info => toggleInfo(info)
-            }}
-          >
-            {children}
-          </layoutContext.Provider>
+                openInfo,
+                toggleInfo: info => toggleInfo(info)
+              }}
+            >
+              {children}
+            </layoutContext.Provider>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
