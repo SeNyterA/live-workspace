@@ -86,7 +86,9 @@ const getCardUpdated = ({
 export default function CardsContent() {
   useRenderCount('CardsContent')
   const { trackingId, boardId } = useBoard()
-  const { mutateAsync: updateOption } = useAppMutation('updateOption')
+  const { mutateAsync: updateColumnPosition } = useAppMutation(
+    'updateColumnPosition'
+  )
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
   const dispatch = useDispatch()
 
@@ -119,7 +121,7 @@ export default function CardsContent() {
                     options
                   })
 
-                  console.log({data})
+                  console.log({ data })
                   if (!data) return
 
                   const { newOption, oldOption } = data
@@ -128,28 +130,38 @@ export default function CardsContent() {
                       options: { [newOption.id]: newOption }
                     })
                   )
-                  updateOption(
+
+                  updateColumnPosition(
                     {
+                      method: 'patch',
                       url: {
-                        baseUrl: 'boards/:boardId/options/:optionId',
+                        baseUrl:
+                          'boards/:boardId/properies/:propertyId/options/:optionId',
                         urlParams: {
                           boardId: boardId!,
+                          propertyId: trackingId!,
                           optionId: newOption.id
                         }
                       },
-                      method: 'patch',
                       payload: {
-                        option: {
-                          id: newOption.id,
-                          order: newOption.order
-                        } as any
+                        order: newOption.order
                       }
                     },
                     {
-                      onError: error => {
+                      onError(error, variables, context) {
                         dispatch(
                           workspaceActions.updateWorkspaceStore({
-                            options: { [oldOption.id]: oldOption }
+                            options: {
+                              [oldOption.id]: {
+                                ...getAppValue(
+                                  state =>
+                                    state.workspace.options[
+                                      variables.url.urlParams.optionId
+                                    ]
+                                )!,
+                                order: oldOption.order
+                              }
+                            }
                           })
                         )
                       }

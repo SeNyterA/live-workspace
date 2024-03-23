@@ -137,7 +137,7 @@ export default function Sidebar() {
                   active={path.pathname.includes('board')}
                   defaultOpened={!!boardId}
                   classNames={{
-                    children: 'pl-6'
+                    children: 'pl-5'
                   }}
                 >
                   <Watching

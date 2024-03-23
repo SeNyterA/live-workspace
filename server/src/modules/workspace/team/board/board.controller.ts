@@ -41,4 +41,21 @@ export class BoardController {
       cardId
     })
   }
+
+  @Patch('boards/:boardId/properies/:propertyId/options/:optionId')
+  updateOption(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Param('propertyId') propertyId: string,
+    @Param('optionId') optionId: string,
+    @Body() { order }: { order: number }
+  ) {
+    return this.boardService.updateColumnPosition({
+      boardId,
+      user,
+      optionId,
+      propertyId,
+      order
+    })
+  }
 }
