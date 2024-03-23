@@ -215,7 +215,7 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
               <Avatar
                 classNames={{ placeholder: 'rounded-lg' }}
                 src={thumbnail?.path}
-                className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
+                className='h-40 w-full flex-1 rounded-lg border'
                 alt='Team thumbnail'
               >
                 Team thumbnail

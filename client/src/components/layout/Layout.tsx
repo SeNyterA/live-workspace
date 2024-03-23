@@ -87,8 +87,9 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur-sm'></div>
-      <div className='fixed inset-0 z-[1] flex h-screen w-screen flex-col text-sm text-gray-100'>
+      <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur' />
+    
+      <div className='fixed inset-0 flex h-screen w-screen flex-col text-sm text-gray-100'>
         <LoadingOverlay
           visible={isPending}
           classNames={{

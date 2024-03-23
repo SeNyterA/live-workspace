@@ -290,11 +290,14 @@ export default function Sidebar() {
           blur: 0.5
         }}
         classNames={{
-          content: 'rounded-lg flex flex-col',
+          header: 'bg-transparent',
+          content: 'rounded-lg flex flex-col bg-black/80',
           inner: 'p-3',
-          body: 'flex flex-col flex-1 relative text-sm'
+          body: 'flex flex-col flex-1 relative text-sm',
+          root: 'text-gray-100',
+          overlay: 'bg-white/10 blur'
         }}
-        size={400}
+        size={376}
         position={'left'}
       >
         <CreateWorkspace

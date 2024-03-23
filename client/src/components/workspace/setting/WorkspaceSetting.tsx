@@ -52,7 +52,7 @@ export default function WorkspaceSetting() {
         root: 'text-gray-100',
         overlay: 'bg-white/10 blur'
       }}
-      size={400}
+      size={376}
       position={position || 'left'}
     >
       <Tabs

@@ -281,7 +281,7 @@ export default function MembersSetting() {
     >
       <TextInput
         label='Search'
-        description='Search by name, username, email. Atleast 3 characters required'
+        description='Atleast 3 characters required'
         placeholder='senytera'
         className='sticky top-0 z-[300] mt-4'
         classNames={{

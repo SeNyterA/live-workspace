@@ -47,7 +47,7 @@ export default function TeamList() {
                 key={team.id}
                 className={`relative mx-auto mt-2 flex h-fit w-fit items-center justify-center p-0 first:mt-0 ${
                   teamId === team.id
-                    ? 'rounded-full ring-2 ring-offset-2 ring-blue-400'
+                    ? 'rounded-full ring-2 ring-blue-400 ring-offset-2'
                     : 'rounded-full '
                 }`}
                 variant='light'
@@ -94,16 +94,17 @@ export default function TeamList() {
         opened={openDrawer}
         title={<p className='text-lg font-semibold'>Create team</p>}
         overlayProps={{
-          color: '#000',
-          backgroundOpacity: 0.2,
-          blur: 0.5
+          blur: '0.5'
         }}
         classNames={{
-          content: 'rounded-lg flex flex-col',
+          header: 'bg-transparent',
+          content: 'rounded-lg flex flex-col bg-black/80',
           inner: 'p-3',
-          body: 'flex flex-col flex-1 relative text-sm'
+          body: 'flex flex-col flex-1 relative text-sm',
+          root: 'text-gray-100',
+          overlay: 'bg-white/10 blur'
         }}
-        size={400}
+        size={376}
         position={'left'}
       >
         <CreateWorkspace
