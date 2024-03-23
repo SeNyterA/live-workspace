@@ -7,10 +7,8 @@ import {
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
-import { InjectRepository } from '@nestjs/typeorm'
 import { Request } from 'express'
-import { User } from 'src/entities/user.entity'
-import { Repository } from 'typeorm'
+import { PrismaService } from '../prisma/prisma.service'
 
 export const IS_PUBLIC_KEY = 'isPublic'
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
@@ -21,8 +19,7 @@ export class AuthGuard implements CanActivate {
     private jwtService: JwtService,
     private reflector: Reflector,
 
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly prismaService: PrismaService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -47,9 +44,11 @@ export class AuthGuard implements CanActivate {
         })
         .catch(err => {})
 
-      await this.userRepository.findOneOrFail({
-        where: { _id: payload.sub, isAvailable: true }
+      const user = await this.prismaService.user.findUnique({
+        where: { id: payload.sub }
       })
+
+      if (!user) throw new UnauthorizedException()
 
       request['user'] = payload
     } catch {

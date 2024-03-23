@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
 import { Server } from 'socket.io'
-import { User } from 'src/entities/user.entity'
-import { Like, Repository } from 'typeorm'
+import { PrismaService } from '../prisma/prisma.service'
 
 export const generateRandomHash = (
   inputString = Math.random().toString(),
@@ -24,10 +23,7 @@ export const generateRandomHash = (
 export class UserService {
   @WebSocketServer()
   server: Server
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async findByKeyword({
     keyword,
@@ -38,16 +34,21 @@ export class UserService {
     skip: number
     take: number
   }) {
-    const users = await this.userRepository.find({
-      where: [
-        { isAvailable: true, userName: Like(`%${keyword}%`) },
-        { isAvailable: true, email: Like(`%${keyword}%`) },
-        { isAvailable: true, nickName: Like(`%${keyword}%`) }
-      ],
+    const users = await this.prismaService.user.findMany({
+      where: {
+        OR: [
+          { userName: { contains: keyword } },
+          { email: { contains: keyword } },
+          { nickName: { contains: keyword } }
+        ]
+      },
+
       skip,
       take
     })
 
-    return { users }
+    return {
+      users
+    }
   }
 }

@@ -4,13 +4,11 @@ import {
   UnauthorizedException
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { InjectRepository } from '@nestjs/typeorm'
+import { FileSourceType, User } from '@prisma/client'
 import * as crypto from 'crypto-js'
-import { EFileSourceType, File } from 'src/entities/file.entity'
-import { User } from 'src/entities/user.entity'
-import { Repository } from 'typeorm'
+import { Errors } from 'src/libs/errors'
 import { MailService } from '../mail/mail.service'
-import { TLoginPayload } from './auth.dto'
+import { PrismaService } from '../prisma/prisma.service'
 
 export type FirebaseUserTokenData = {
   name: string
@@ -37,13 +35,19 @@ export type FirebaseUserTokenData = {
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(File)
-    private readonly fileRepository: Repository<File>,
+    private readonly prismaService: PrismaService,
     private readonly mailService: MailService
   ) {}
 
+  private async _generateUserCredentials(user: User): Promise<string> {
+    console.log(user)
+    const payload = {
+      email: user.email,
+      userName: user.userName,
+      sub: user.id
+    }
+    return this.jwtService.sign(payload, { secret: process.env.JWT_SECRET })
+  }
   private _comparePasswords(
     plainPassword: string,
     hashedPassword: string
@@ -52,46 +56,26 @@ export class AuthService {
     return hash === hashedPassword
   }
 
-  private async validateUser(
-    userNameOrEmail: string,
-    password: string
-  ): Promise<User | null> {
-    try {
-      const user = await this.userRepository.findOne({
-        where: [{ userName: userNameOrEmail }, { email: userNameOrEmail }]
-      })
-      if (!user) {
-        return null
+  async signIn({
+    password,
+    userNameOrEmail
+  }: {
+    password?: string
+    userNameOrEmail?: string
+  }) {
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        OR: [{ email: userNameOrEmail }, { userName: userNameOrEmail }]
       }
-      const isPasswordCorrect = this._comparePasswords(password, user.password)
-      if (!isPasswordCorrect) {
-        return null
-      }
-      return user
-    } catch (error) {
-      console.error('Error validating user:', error)
-      throw error
-    }
-  }
+    })
 
-  private async _generateUserCredentials(user: User): Promise<string> {
-    console.log(user)
-    const payload = {
-      email: user.email,
-      userName: user.userName,
-      sub: user._id
-    }
-    return this.jwtService.sign(payload, { secret: process.env.JWT_SECRET })
-  }
-
-  async signIn({ password, userNameOrEmail }: TLoginPayload) {
-    const user = await this.validateUser(userNameOrEmail, password)
-    if (!user) {
+    if (!user) throw new BadRequestException(`Email or password are invalid`)
+    if (!this._comparePasswords(password, user.password))
       throw new BadRequestException(`Email or password are invalid`)
-    }
+
     if (!user.isAvailable) {
       const tokenVerify = this.jwtService.sign(
-        { sub: user._id },
+        { sub: user.id },
         {
           secret: process.env.JWT_SECRET,
           expiresIn: '1h'
@@ -103,7 +87,9 @@ export class AuthService {
         subject: 'Verify Your Account',
         text: `Hello ${user.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
       })
-      return { error: { message: '', code: 100111 } }
+      return new UnauthorizedException({
+        code: Errors.PLEASE_VERIFY_YOUR_ACCOUNT
+      })
     }
     const access_token = await this._generateUserCredentials(user)
     return {
@@ -115,35 +101,33 @@ export class AuthService {
   async signInWithSocial({ token }: { token: string }) {
     try {
       const payload: FirebaseUserTokenData = this.jwtService.decode(token)
-      const user = await this.userRepository.findOne({
-        where: { firebaseId: payload.user_id, isAvailable: true }
+      const existingUser = await this.prismaService.user.findUnique({
+        where: { firebaseId: payload.user_id },
+        include: { avatar: true }
       })
 
-      if (user) {
-        const access_token = await this._generateUserCredentials(user)
+      if (existingUser) {
+        const access_token = await this._generateUserCredentials(existingUser)
         return {
-          user: user,
+          user: existingUser,
           token: access_token
         }
       } else {
-        const avatarFile = this.fileRepository.create({
-          path: payload.picture,
-          sourceType: EFileSourceType.Link
+        const user = await this.prismaService.user.create({
+          data: {
+            userName: payload.email.split('@')[0],
+            email: payload.email,
+            firebaseId: payload.user_id,
+            nickName: payload.name,
+            avatar: {
+              create: {
+                path: payload.picture,
+                sourceType: FileSourceType.Link
+              }
+            }
+          },
+          include: { avatar: true }
         })
-        await this.fileRepository.save(avatarFile)
-
-        await this.userRepository.insert({
-          userName: payload.email.split('@')[0],
-          email: payload.email,
-          firebaseId: payload.user_id,
-          nickName: payload.name,
-          avatar: avatarFile
-        })
-
-        const user = await this.userRepository.findOne({
-          where: { firebaseId: payload.user_id, isAvailable: true }
-        })
-
         const access_token = await this._generateUserCredentials(user)
         return {
           user: user,
@@ -155,7 +139,7 @@ export class AuthService {
     }
   }
 
-  async signUp(userDto: any) {
+  async signUp(userDto: User) {
     // const existingUser = await this.userRepository.findOne({
     //   where: [{ email: userDto.email }, { userName: userDto.userName }]
     // })
@@ -164,7 +148,7 @@ export class AuthService {
     //     return false
     //   } else {
     //     const tokenVerify = this.jwtService.sign(
-    //       { sub: existingUser._id },
+    //       { sub: existingUser.id },
     //       {
     //         secret: process.env.JWT_SECRET,
     //         expiresIn: '1h'
@@ -188,7 +172,7 @@ export class AuthService {
     //   })
     //   await this.userRepository.save(user)
     //   const tokenVerify = this.jwtService.sign(
-    //     { sub: user._id },
+    //     { sub: user.id },
     //     {
     //       expiresIn: '1h'
     //     }
@@ -211,29 +195,29 @@ export class AuthService {
           secret: process.env.JWT_SECRET
         }
       )
-      const user = await this.userRepository.findOne({
-        where: { _id: payload.sub, isAvailable: false }
+      const user = await this.prismaService.user.update({
+        where: { id: payload.sub, isAvailable: false },
+        data: { isAvailable: true },
+        include: { avatar: true }
       })
+
       if (!user) {
-        return { message: 'Invalid token or account already verified' }
+        return { message: 'Failed to verify account' }
       }
-      this.userRepository.update(user._id, { isAvailable: true })
       const access_token = await this._generateUserCredentials(user)
       return {
         user: user,
         token: access_token
       }
     } catch (error) {
-      console.error('Error verifying account:', error.message)
       return { message: 'Failed to verify account' }
     }
   }
 
   async getProfile(id: string) {
-    const user = await this.userRepository.findOne({
-      where: { _id: id },
-      relations: ['avatar']
+    return this.prismaService.user.findUnique({
+      where: { id: id },
+      include: { avatar: true }
     })
-    return user
   }
 }

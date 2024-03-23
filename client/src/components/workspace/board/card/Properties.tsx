@@ -8,17 +8,19 @@ import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
 import Watching from '../../../../redux/Watching'
 import { useAppMutation } from '../../../../services/apis/mutations/useAppMutation'
-import { EFieldType } from '../../../../types'
+import { EPropertyType } from '../../../../types'
 
 dayjs.extend(customParseFormat)
 
 export default function Properties() {
   const { boardId, cardId } = useAppParams()
   const card = useAppSelector(state =>
-    Object.values(state.workspace.cards).find(e => e._id === cardId)
+    Object.values(state.workspace.cards).find(e => e.id === cardId)
   )
   const properties = useAppSelector(state =>
-    Object.values(state.workspace.properties).filter(e => e.boardId === boardId)
+    Object.values(state.workspace.properties).filter(
+      e => e.workspaceId === boardId
+    )
   )
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
   const [tmpValue, setTmpValue] = useState<any>({})
@@ -32,6 +34,7 @@ export default function Properties() {
   return (
     <div className='relative flex w-80 flex-col rounded-lg bg-white p-3'>
       <Image
+        loading='lazy'
         className='rounded-lg'
         src={
           'https://s3.ap-southeast-1.amazonaws.com/liveworkspace.senytera/1709031245746_ca114960-a6a3-4acd-8b63-02f5a9155ed0_wallpapersden.com_stitched_woman_face_wxl.jpg'
@@ -43,13 +46,15 @@ export default function Properties() {
           scrollbarSize={8}
         >
           {properties?.map(property => (
-            <Fragment key={property._id}>
-              {property.fieldType === EFieldType.Select && (
+            <Fragment key={property.id}>
+              {property.type === EPropertyType.Select && (
                 <Watching
-                  watchingFn={state =>
-                    Object.values(state.workspace.options)
-                      .filter(option => option.propertyId === property._id)
-                      .sort((a, b) => a.order - b.order)
+                  watchingFn={
+                    state =>
+                      Object.values(state.workspace.options).filter(
+                        option => option.propertyId === property.id
+                      )
+                    // .sort((a, b) => a.order - b.order)
                   }
                 >
                   {options => (
@@ -59,26 +64,26 @@ export default function Properties() {
                       description={property.title}
                       placeholder='Pick value'
                       data={options?.map(option => ({
-                        value: option._id,
+                        value: option.id,
                         label: option.title
                       }))}
                       mt='md'
-                      value={tmpValue[property._id]?.toString()}
+                      value={tmpValue[property.id]?.toString()}
                       onChange={value => {
-                        // setTmpValue(old => ({ ...old, [property._id]: value }))
+                        // setTmpValue(old => ({ ...old, [property.id]: value }))
                         // updateCard({
                         //   url: {
                         //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
                         //     urlParams: {
                         //       boardId: boardId!,
-                        //       cardId: card?._id!
+                        //       cardId: card?.id!
                         //     }
                         //   },
                         //   method: 'patch',
                         //   payload: {
                         //     properties: {
                         //       ...card?.properties,
-                        //       [property._id]: value
+                        //       [property.id]: value
                         //     }
                         //   }
                         // })
@@ -88,13 +93,13 @@ export default function Properties() {
                 </Watching>
               )}
 
-              {[EFieldType.People, EFieldType.Assignees].includes(
-                property.fieldType
+              {[EPropertyType.People, EPropertyType.Assignees].includes(
+                property.type
               ) && (
                 <Watching
                   watchingFn={state =>
                     Object.values(state.workspace.members)
-                      .filter(e => e.targetId === boardId)
+                      .filter(e => e.workspaceId === boardId)
                       .map(member => ({
                         member,
                         user: state.workspace.users[member.userId]
@@ -110,25 +115,25 @@ export default function Properties() {
                         ?.filter(e => !!e.user)
                         .map(e => ({
                           label: e.user.userName,
-                          value: e.user._id
+                          value: e.user.id
                         }))}
                       mt='md'
-                      value={tmpValue[property._id]?.toString()}
+                      value={tmpValue[property.id]?.toString()}
                       onChange={value => {
-                        // setTmpValue(old => ({ ...old, [property._id]: value }))
+                        // setTmpValue(old => ({ ...old, [property.id]: value }))
                         // updateCard({
                         //   url: {
                         //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
                         //     urlParams: {
                         //       boardId: boardId!,
-                        //       cardId: card?._id!
+                        //       cardId: card?.id!
                         //     }
                         //   },
                         //   method: 'patch',
                         //   payload: {
                         //     properties: {
                         //       ...card?.properties,
-                        //       [property._id]: value
+                        //       [property.id]: value
                         //     }
                         //   }
                         // })
@@ -139,32 +144,32 @@ export default function Properties() {
               )}
 
               {[
-                EFieldType.String,
-                EFieldType.Number,
-                EFieldType.Link,
-                EFieldType.Email
-              ].includes(property.fieldType) && (
+                EPropertyType.String,
+                EPropertyType.Number,
+                EPropertyType.Link,
+                EPropertyType.Email
+              ].includes(property.type) && (
                 <TextInput
                   className='!mt-2 first:!mt-0'
                   label={property.title}
                   description={property.title}
                   placeholder='Pick value'
                   mt='md'
-                  value={tmpValue[property._id]?.toString()}
+                  value={tmpValue[property.id]?.toString()}
                   onBlur={value => {
                     // updateCard({
                     //   url: {
                     //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
                     //     urlParams: {
                     //       boardId: boardId!,
-                    //       cardId: card?._id!
+                    //       cardId: card?.id!
                     //     }
                     //   },
                     //   method: 'patch',
                     //   payload: {
                     //     properties: {
                     //       ...card?.properties,
-                    //       [property._id]: value.target.value
+                    //       [property.id]: value.target.value
                     //     }
                     //   }
                     // })
@@ -172,13 +177,13 @@ export default function Properties() {
                   onChange={value => {
                     // setTmpValue(old => ({
                     //   ...old,
-                    //   [property._id]: value.target.value
+                    //   [property.id]: value.target.value
                     // }))
                   }}
                 />
               )}
 
-              {[EFieldType.Date].includes(property.fieldType) && (
+              {[EPropertyType.Date].includes(property.type) && (
                 <DateTimePicker
                   className='!mt-2 first:!mt-0'
                   label={property.title}
@@ -186,28 +191,28 @@ export default function Properties() {
                   {...{ placeholder: 'Pick value' }}
                   mt='md'
                   value={
-                    card?.properties?.[property._id]?.toString()
-                      ? new Date(card?.properties[property._id]?.toString()!)
+                    card?.properties?.[property.id]?.toString()
+                      ? new Date(card?.properties[property.id]?.toString()!)
                       : undefined
                   }
                   onChange={value => {
                     // setTmpValue(old => ({
                     //   ...old,
-                    //   [property._id]: value?.toString()
+                    //   [property.id]: value?.toString()
                     // }))
                     // updateCard({
                     //   url: {
                     //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
                     //     urlParams: {
                     //       boardId: boardId!,
-                    //       cardId: card?._id!
+                    //       cardId: card?.id!
                     //     }
                     //   },
                     //   method: 'patch',
                     //   payload: {
                     //     properties: {
                     //       ...card?.properties,
-                    //       [property._id]: value?.toString()
+                    //       [property.id]: value?.toString()
                     //     }
                     //   }
                     // })

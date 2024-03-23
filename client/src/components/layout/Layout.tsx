@@ -5,7 +5,7 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppQuery } from '../../services/apis/useAppQuery'
 import { useAppOnSocket } from '../../services/socket/useAppOnSocket'
-import { arrayToObject } from '../../utils/helper'
+import { extractApi } from '../../types'
 import Sidebar from '../sidebar/Sidebar'
 import AppHeader from './AppHeader'
 import TeamList from './TeamList'
@@ -33,21 +33,20 @@ export default function Layout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch()
   const [thread, setThread] = useState<TThread>()
   const [openInfo, toggleInfo] = useState(false)
-  const { boardId, channelId, directId, groupId, teamId } = useAppParams()
+  const { teamId } = useAppParams()
 
-  const { data: workspaces, isPending } = useAppQuery({
+  const { isPending } = useAppQuery({
     key: 'workspaces',
     url: {
       baseUrl: '/workspaces'
     },
     onSucess(data) {
       dispatch(
-        workspaceActions.updateWorkspaceStore({
-          workspaces: data.reduce(
-            (pre, next) => ({ ...pre, [next._id]: next }),
-            {}
-          )
-        })
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            workspaces: data
+          })
+        )
       )
     }
   })
@@ -60,14 +59,12 @@ export default function Layout({ children }: { children: ReactNode }) {
     },
     onSucess({ members, workspace }) {
       dispatch(
-        workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace._id]: workspace },
-          members: arrayToObject(members, '_id'),
-          users: arrayToObject(
-            members.map(e => e.user!),
-            '_id'
-          )
-        })
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            members,
+            workspaces: [workspace]
+          })
+        )
       )
     },
     options: {
@@ -79,9 +76,11 @@ export default function Layout({ children }: { children: ReactNode }) {
     key: 'workspace',
     resFunc: ({ workspace }) => {
       dispatch(
-        workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace._id]: workspace }
-        })
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            workspaces: [workspace]
+          })
+        )
       )
     }
   })

@@ -23,7 +23,7 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { TWorkspace, EWorkspaceType } from '../../types'
+import { EWorkspaceType, TWorkspace } from '../../types'
 import CreateWorkspace, {
   getDefaultValue
 } from '../workspace/create/CreateWorkspace'
@@ -31,7 +31,7 @@ import CreateWorkspace, {
 function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
   const { channelId, groupId, directId, boardId } = useAppParams()
   const unreadCount = useAppSelector(
-    state => state.workspace.unreadCount[workspace._id]
+    state => state.workspace.unreadCount[workspace.id]
   )
   const { switchTo } = useAppControlParams()
 
@@ -42,7 +42,7 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
       label={
         <div className='flex items-center gap-2'>
           <span className='flex-1 truncate'>
-            {workspace.title || workspace._id}
+            {workspace.title || workspace.id}
           </span>
           {unreadCount && (
             <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center text-xs leading-4 text-gray-800'>
@@ -51,11 +51,11 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
           )}
         </div>
       }
-      active={[channelId, groupId, directId, boardId].includes(workspace._id)}
+      active={[channelId, groupId, directId, boardId].includes(workspace.id)}
       onClick={() => {
         switchTo({
           target: workspace.type as any,
-          targetId: workspace._id
+          targetId: workspace.id
         })
       }}
     />
@@ -67,9 +67,11 @@ export default function Sidebar() {
   const dispatch = useDispatch()
   const path = useLocation()
   const [toggle, setToggle] = useState<EWorkspaceType>()
-  const team = useAppSelector(state => {
-    return Object.values(state.workspace.workspaces).find(e => e._id === teamId)
-  })
+  const team = useAppSelector(state => ({
+    ...state.workspace.workspaces[teamId!],
+    thumbnail:
+      state.workspace.files[state.workspace.workspaces[teamId!]?.thumbnailId!]
+  }))
   const [searchValue, setSearchValue] = useState('')
 
   return (
@@ -82,6 +84,7 @@ export default function Sidebar() {
 
         {!!team?.thumbnail?.path && (
           <Image
+            loading='lazy'
             src={team?.thumbnail?.path}
             className='aspect-video w-full rounded-lg'
           />
@@ -134,7 +137,7 @@ export default function Sidebar() {
                   active={path.pathname.includes('board')}
                   defaultOpened={!!boardId}
                   classNames={{
-                    children: 'pl-6'
+                    children: 'pl-5'
                   }}
                 >
                   <Watching
@@ -142,14 +145,14 @@ export default function Sidebar() {
                       Object.values(state.workspace.workspaces).filter(
                         e =>
                           e.type === EWorkspaceType.Board &&
-                          e.parentId === teamId
+                          e.workspaceParentId === teamId
                       )
                     }
                   >
                     {boards => (
                       <>
                         {boards?.map(item => (
-                          <WorkspaceNav workspace={item} key={item._id} />
+                          <WorkspaceNav workspace={item} key={item.id} />
                         ))}
                       </>
                     )}
@@ -177,14 +180,14 @@ export default function Sidebar() {
                       Object.values(state.workspace.workspaces).filter(
                         e =>
                           e.type === EWorkspaceType.Channel &&
-                          e.parentId === teamId
+                          e.workspaceParentId === teamId
                       )
                     }
                   >
                     {channels => (
                       <>
                         {channels?.map(item => (
-                          <WorkspaceNav workspace={item} key={item._id} />
+                          <WorkspaceNav workspace={item} key={item.id} />
                         ))}
                       </>
                     )}
@@ -222,7 +225,7 @@ export default function Sidebar() {
                 {groups => (
                   <>
                     {groups?.map(item => (
-                      <WorkspaceNav workspace={item} key={item._id} />
+                      <WorkspaceNav workspace={item} key={item.id} />
                     ))}
                   </>
                 )}
@@ -256,7 +259,7 @@ export default function Sidebar() {
                 {directs => (
                   <>
                     {directs?.map(item => (
-                      <WorkspaceNav workspace={item} key={item._id} />
+                      <WorkspaceNav workspace={item} key={item.id} />
                     ))}
                   </>
                 )}

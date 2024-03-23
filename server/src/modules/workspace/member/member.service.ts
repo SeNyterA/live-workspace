@@ -1,37 +1,16 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+import { ForbiddenException, Injectable } from '@nestjs/common'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import { Server } from 'socket.io'
 import {
-  EMemberRole,
-  EMemberStatus,
-  Member,
-  RoleWeights
-} from 'src/entities/member.entity'
-import { User } from 'src/entities/user.entity'
-import {
-  Workspace,
+  MemberRole,
+  MemberStatus,
   WorkspaceStatus,
   WorkspaceType
-} from 'src/entities/workspace.entity'
+} from '@prisma/client'
+import { Server } from 'socket.io'
+import { Errors } from 'src/libs/errors'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
-import { In, Not, Repository } from 'typeorm'
 
-const checkPermission = async ({
-  operatorRole,
-  targetRole = EMemberRole.Member
-}: {
-  operatorRole: EMemberRole
-  targetRole?: EMemberRole
-}) => {
-  if (
-    RoleWeights[operatorRole] >= RoleWeights[targetRole] &&
-    RoleWeights[operatorRole] > RoleWeights[EMemberRole.Member]
-  ) {
-    return true
-  }
-  return false
-}
 @WebSocketGateway({
   cors: {
     origin: '*'
@@ -41,34 +20,27 @@ const checkPermission = async ({
 export class MemberService {
   @WebSocketServer()
   server: Server
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Workspace)
-    private readonly workspaceRepository: Repository<Workspace>,
-    @InjectRepository(Member)
-    private readonly memberRepository: Repository<Member>
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async getInvitions({ user }: { user: TJwtUser }) {
-    const invitions = await this.memberRepository.find({
+    const invitions = await this.prismaService.member.findMany({
       where: {
-        user: { _id: user.sub, isAvailable: true },
-        status: EMemberStatus.Invited,
-        isAvailable: true
+        userId: user.sub,
+        status: MemberStatus.Invited
       },
-      relations: [
-        'workspace',
-        'createdBy',
-        'workspace.avatar',
-        'workspace.thumbnail',
-        'createdBy.avatar'
-      ]
+
+      include: {
+        workspace: {
+          include: {
+            avatar: true,
+            thumbnail: true
+          }
+        },
+        createdBy: true
+      }
     })
 
-    return {
-      invitions
-    }
+    return { invitions }
   }
 
   async workpsaceMembers({
@@ -78,21 +50,35 @@ export class MemberService {
     user: TJwtUser
     workspaceId: string
   }) {
-    await this.memberRepository.findOneOrFail({
+    const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        status: EMemberStatus.Active,
-        isAvailable: true,
-        workspace: { _id: workspaceId, isAvailable: true },
-        user: { _id: user.sub, isAvailable: true }
+        userId: user.sub,
+        status: MemberStatus.Active,
+        workspace: {
+          id: workspaceId,
+          isAvailable: true
+        }
       }
     })
 
-    const members = await this.memberRepository.find({
-      where: { workspace: { _id: workspaceId, isAvailable: true } },
-      relations: ['user', 'user.avatar']
-    })
+    if (!memberOperator) {
+      throw new ForbiddenException({
+        code: Errors.PERMISSION_DENIED
+      })
+    }
 
-    return members
+    return this.prismaService.member.findMany({
+      where: {
+        workspaceId: workspaceId
+      },
+      include: {
+        user: {
+          include: {
+            avatar: true
+          }
+        }
+      }
+    })
   }
 
   async inviteMember({
@@ -104,33 +90,38 @@ export class MemberService {
     workspaceId: string
     memberUserId: string
   }) {
-    await this.memberRepository.findOneOrFail({
+    const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: workspaceId, isAvailable: true },
-        role: In([EMemberRole.Owner, EMemberRole.Admin])
+        userId: user.sub,
+        status: MemberStatus.Active,
+        role: MemberRole.Admin,
+        workspace: {
+          id: workspaceId,
+          isAvailable: true
+        }
       }
     })
 
-    const invition = await this.memberRepository.update(
-      {
-        user: { _id: memberUserId, isAvailable: true },
-        workspace: {
-          _id: workspaceId,
-          isAvailable: true,
-          type: In([
-            WorkspaceType.Direct,
-            WorkspaceType.Group,
-            WorkspaceType.Team
-          ])
-        }
+    if (!memberOperator) {
+      throw new ForbiddenException({
+        code: Errors.PERMISSION_DENIED
+      })
+    }
+
+    const member = await this.prismaService.member.create({
+      data: {
+        workspaceId: workspaceId,
+        userId: memberUserId,
+        status: MemberStatus.Invited,
+        createdById: user.sub,
+        role: MemberRole.Member
       },
-      {
-        modifiedBy: { _id: user.sub },
-        role: EMemberRole.Member,
-        status: EMemberStatus.Invited
+      include: {
+        user: true
       }
-    )
+    })
+
+    return member
   }
 
   async acceptInvition({
@@ -140,39 +131,38 @@ export class MemberService {
     user: TJwtUser
     workspaceId: string
   }) {
-    const member = await this.memberRepository.findOneOrFail({
+    const memberUpdated = await this.prismaService.member.update({
       where: {
-        workspace: { isAvailable: true, _id: workspaceId },
-        user: { _id: user.sub, isAvailable: true },
-        status: EMemberStatus.Invited,
-        isAvailable: true
+        userId_workspaceId: {
+          userId: user.sub,
+          workspaceId: workspaceId
+        },
+        status: MemberStatus.Invited
       },
-      relations: ['workspace']
+      data: {
+        status: MemberStatus.Active,
+        modifiedById: user.sub
+      },
+      include: { workspace: true }
     })
 
-    await this.memberRepository.save({
-      ...member,
-      status: EMemberStatus.Active,
-      modifiedBy: { _id: user.sub }
-    })
-
-    if (member.workspace.type === WorkspaceType.Team) {
-      const children = await this.workspaceRepository.find({
+    if (memberUpdated.workspace.type === WorkspaceType.Team) {
+      const children = await this.prismaService.workspace.findMany({
         where: {
-          parent: { _id: workspaceId },
+          workspaceParentId: workspaceId,
           isAvailable: true,
           status: WorkspaceStatus.Public
         }
       })
-      await this.memberRepository.insert(
-        children.map(child => ({
-          workspace: { _id: child._id },
-          status: EMemberStatus.Active,
-          user: { _id: user.sub },
-          createdBy: { _id: member.createdById },
-          role: EMemberRole.Member
+
+      await this.prismaService.member.createMany({
+        data: children.map(child => ({
+          workspaceId: child.id,
+          userId: user.sub,
+          status: MemberStatus.Active,
+          role: MemberRole.Member
         }))
-      )
+      })
     }
   }
 
@@ -183,20 +173,19 @@ export class MemberService {
     user: TJwtUser
     workspaceId: string
   }) {
-    const _memberDeclined = await this.memberRepository.update(
-      {
-        workspace: { isAvailable: true, _id: workspaceId },
-        user: { _id: user.sub, isAvailable: true },
-        status: EMemberStatus.Invited,
-        isAvailable: true
+    await this.prismaService.member.update({
+      where: {
+        userId_workspaceId: {
+          userId: user.sub,
+          workspaceId: workspaceId
+        },
+        status: MemberStatus.Invited
       },
-      {
-        status: EMemberStatus.Declined,
-        modifiedBy: { _id: user.sub }
+      data: {
+        status: MemberStatus.Declined,
+        modifiedById: user.sub
       }
-    )
-
-    return _memberDeclined
+    })
   }
 
   async leaveWorkspace({
@@ -206,23 +195,19 @@ export class MemberService {
     workspaceId: string
     user: TJwtUser
   }) {
-    const members = await this.memberRepository.find({
+    await this.prismaService.member.update({
       where: {
-        workspace: [
-          { _id: workspaceId, isAvailable: true },
-          { parent: { _id: workspaceId, isAvailable: true }, isAvailable: true }
-        ],
-        user: { _id: user.sub, isAvailable: true }
+        userId_workspaceId: {
+          userId: user.sub,
+          workspaceId: workspaceId
+        },
+        status: MemberStatus.Active
+      },
+      data: {
+        status: MemberStatus.Leaved,
+        modifiedById: user.sub
       }
     })
-    const leavedMembers = await this.memberRepository.save(
-      members.map(member => ({
-        ...member,
-        status: EMemberStatus.Leaved,
-        modifiedBy: { _id: user.sub }
-      }))
-    )
-    return leavedMembers
   }
 
   async kickWorkspaceMember({
@@ -234,123 +219,87 @@ export class MemberService {
     user: TJwtUser
     userTargetId: string
   }) {
-    await this.memberRepository.findOneOrFail({
+    const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        user: { _id: user.sub, isAvailable: true },
-        workspace: { _id: workspaceId, isAvailable: true },
-        role: In([EMemberRole.Owner, EMemberRole.Admin])
+        userId: user.sub,
+        status: MemberStatus.Active,
+        role: MemberRole.Admin,
+        workspace: {
+          id: workspaceId,
+          isAvailable: true
+        }
       }
     })
-
-    const members = await this.memberRepository.find({
-      where: {
-        workspace: [
-          { _id: workspaceId, isAvailable: true },
-          { parent: { _id: workspaceId, isAvailable: true }, isAvailable: true }
-        ],
-        user: { _id: userTargetId, isAvailable: true }
-      }
-    })
-    const leavedMembers = await this.memberRepository.save(
-      members.map(member => ({
-        ...member,
-        status: EMemberStatus.Leaved,
-        modifiedBy: { _id: user.sub }
-      }))
-    )
-    return leavedMembers
-  }
-
-  async addMember({
-    member,
-    user,
-    workspaceId
-  }: {
-    member: Member
-    user: TJwtUser
-    workspaceId: string
-  }) {
-    const operator = await this.memberRepository.findOneOrFail({
-      where: {
-        user: { _id: user.sub },
-        workspace: { _id: workspaceId },
-        role: In([EMemberRole.Owner, EMemberRole.Admin])
-      }
-    })
-
-    if (
-      !checkPermission({
-        operatorRole: operator.role,
-        targetRole: member.role
-      }) ||
-      !checkPermission({ operatorRole: operator.role, targetRole: member.role })
-    ) {
-      throw new Error('Permission denied')
+    if (!memberOperator) {
+      throw new ForbiddenException({
+        code: Errors.PERMISSION_DENIED
+      })
     }
 
-    this.memberRepository.save({
-      ...member,
-
-      user: { _id: member.userId },
-      workspace: { _id: workspaceId },
-      createdBy: { _id: user.sub },
-      modifiedBy: { _id: user.sub }
+    const membersKicked = await this.prismaService.member.updateMany({
+      where: {
+        userId: userTargetId,
+        OR: [
+          {
+            workspaceId: workspaceId
+          },
+          {
+            workspace: {
+              workspaceParentId: workspaceId
+            }
+          }
+        ]
+      },
+      data: {
+        status: MemberStatus.Kicked,
+        modifiedById: user.sub
+      }
     })
+    return membersKicked
   }
 
-  async editMember({
-    member,
+  async editMemberRole({
+    memberRole,
     user,
     workspaceId,
-    memberId
+    userTargetId
   }: {
-    member: Member
+    memberRole: MemberRole
     user: TJwtUser
     workspaceId: string
-    memberId: string
+    userTargetId: string
   }) {
-    const operator = await this.memberRepository.findOneOrFail({
+    const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        user: { _id: user.sub },
-        workspace: { _id: workspaceId, isAvailable: true },
-        role: In([EMemberRole.Owner, EMemberRole.Admin])
+        userId: user.sub,
+        status: MemberStatus.Active,
+        role: MemberRole.Admin,
+        workspace: {
+          id: workspaceId,
+          isAvailable: true
+        }
       }
     })
 
-    const target = await this.memberRepository.findOneOrFail({
-      where: {
-        _id: memberId,
-        user: { isAvailable: true },
-        workspace: { _id: workspaceId, isAvailable: true }
-      }
-    })
-
-    if (
-      !checkPermission({
-        operatorRole: operator.role,
-        targetRole: target.role
-      }) ||
-      !checkPermission({ operatorRole: operator.role, targetRole: member.role })
-    ) {
-      throw new Error('Permission denied')
+    if (!memberOperator) {
+      throw new ForbiddenException({
+        code: Errors.PERMISSION_DENIED
+      })
     }
 
-    await this.memberRepository.save({
-      ...target,
-      ...member,
-      modifiedBy: { _id: user.sub }
+    const memberUpdated = await this.prismaService.member.update({
+      where: {
+        userId_workspaceId: {
+          userId: userTargetId,
+          workspaceId: workspaceId
+        }
+      },
+      data: {
+        role: memberRole,
+        modifiedById: user.sub
+      }
     })
 
-    const memberUpdated = await this.memberRepository.findOneOrFail({
-      where: { _id: target._id },
-      relations: ['user']
-    })
-
-    this.server.to(workspaceId).emit('member', {
-      member: memberUpdated,
-      action: 'update'
-    })
-
-    return { member: memberUpdated }
+    return memberUpdated
   }
 }

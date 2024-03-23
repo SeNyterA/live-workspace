@@ -1,4 +1,4 @@
-import { TMember } from '../../../types/member'
+import { TMember, TMemberExtra } from '../../../types'
 
 export type TMemberApi = {
   muations: {
@@ -38,7 +38,7 @@ export type TMemberApi = {
       url: {
         baseUrl: '/members/invitions'
       }
-      response: { invitions: TMember[] }
+      response: { invitions: TMemberExtra[] }
     }
   }
 }

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
+import Watching from '../../redux/Watching'
 import { EWorkspaceType } from '../../types'
 import CreateWorkspace from '../workspace/create/CreateWorkspace'
 
@@ -43,26 +44,32 @@ export default function TeamList() {
           >
             {teams?.map(team => (
               <ActionIcon
-                key={team._id}
+                key={team.id}
                 className={`relative mx-auto mt-2 flex h-fit w-fit items-center justify-center p-0 first:mt-0 ${
-                  teamId === team._id
+                  teamId === team.id
                     ? 'rounded-full ring-1 ring-offset-2'
                     : 'rounded-full '
                 }`}
                 variant='light'
                 size='md'
                 onClick={() => {
-                  switchTeam({ teamId: team._id })
+                  switchTeam({ teamId: team.id })
                 }}
               >
-                <Avatar
-                  radius='sm'
-                  size={32}
-                  className={teamId === team._id ? 'rounded' : ''}
-                  src={team.avatar?.path}
+                <Watching
+                  watchingFn={state => state.workspace.files[team.avatarId!]}
                 >
-                  {team.title?.slice(0, 1)}
-                </Avatar>
+                  {avatar => (
+                    <Avatar
+                      radius='sm'
+                      size={32}
+                      className={teamId === team.id ? 'rounded' : ''}
+                      src={avatar?.path}
+                    >
+                      {team.title?.slice(0, 1)}
+                    </Avatar>
+                  )}
+                </Watching>
               </ActionIcon>
             ))}
           </ScrollArea>

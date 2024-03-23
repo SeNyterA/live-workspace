@@ -1,5 +1,4 @@
-import { TMember } from '../../../types/member'
-import { TWorkspace } from '../../../types/workspace'
+import { TMember, TWorkspace } from '../../../types'
 
 export type TChannelMutationApi = {
   createChannel: {

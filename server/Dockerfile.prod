@@ -1,19 +1,22 @@
 # Stage 1: Builder
 FROM node:18 as builder
 WORKDIR /app
+
 COPY package.json ./
-# Install dependencies
 RUN yarn install
-# Copy source code
+
+COPY prisma ./prisma
+RUN yarn prisma generate
+
 COPY . .
-# Build the application
+
 RUN yarn build
 RUN yarn install --production
+RUN yarn prisma generate
 
 # Stage 2: Final
 FROM node:18-alpine
 WORKDIR /app
-# Copy everything from the builder stage
 COPY --from=builder /app .
-# Command default to run the application
+EXPOSE 8420
 CMD ["node", "dist/main"]

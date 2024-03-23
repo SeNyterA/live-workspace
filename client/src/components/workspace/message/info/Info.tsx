@@ -12,16 +12,20 @@ import PinedMesages from './PinedMesages'
 export default function Info() {
   const { channelId, directId, groupId, boardId } = useAppParams()
   const dispatch = useDispatch()
+  const workspaceId = channelId || groupId || directId || boardId || ''
 
-  const workspace = useAppSelector(
-    state =>
-      state.workspace.workspaces[
-        channelId || groupId || directId || boardId || ''
+  const workspace = useAppSelector(state => ({
+    ...state.workspace.workspaces[workspaceId],
+    avatar:
+      state.workspace.files[state.workspace.workspaces[workspaceId]?.avatarId!],
+    thumbnail:
+      state.workspace.files[
+        state.workspace.workspaces[workspaceId]?.thumbnailId!
       ]
-  )
+  }))
 
-  const { t } = useTranslation(['ns1', 'ns2'])
-  console.log(t('setting.name', { name: workspace?.title }))
+  // const { t } = useTranslation(['ns1', 'ns2'])
+  // console.log(t('setting.name', { name: workspace?.title }))
 
   return (
     <>
@@ -59,6 +63,7 @@ export default function Info() {
 
         {workspace?.thumbnail?.path && (
           <Image
+            loading='lazy'
             src={workspace?.thumbnail?.path}
             className='aspect-video w-full rounded-lg'
           />

@@ -13,6 +13,7 @@ import { memo, useState } from 'react'
 import { Controller, useFieldArray } from 'react-hook-form'
 import useAppParams from '../../../hooks/useAppParams'
 import { useAppSelector } from '../../../redux/store'
+import Watching from '../../../redux/Watching'
 import { EMemberRole, EWorkspaceStatus, TMember, TUser } from '../../../types'
 import MemberRole from '../../common/MemberRole'
 import { useCreateWorkspaceForm } from './CreateWorkspace'
@@ -29,9 +30,11 @@ const Option = memo(
     selected: boolean
   }) => {
     return (
-      <Combobox.Option value={user._id} key={user._id}>
+      <Combobox.Option value={user.id} key={user.id}>
         <div className='mt-3 flex flex-1 items-center gap-2 first:mt-0'>
-          <Avatar src={user?.avatar?.path} size={32} />
+          <Watching watchingFn={state => state.workspace.files[user.avatarId!]}>
+            {avatar => <Avatar src={avatar?.path} size={32} />}
+          </Watching>
           <div className='flex flex-1 flex-col justify-center'>
             <p className='font-medium leading-5'>{user.userName}</p>
             <p className='text-xs leading-3 text-gray-500'>{user.email}</p>
@@ -61,7 +64,8 @@ const UserCombobox = memo(
       useAppSelector(state =>
         Object.values(state.workspace.members)
           .filter(
-            e => e.targetId === teamId && e.userId !== state.auth.userInfo?._id
+            e =>
+              e.workspaceId === teamId && e.userId !== state.auth.userInfo?.id
           )
           .map(member => ({
             member,
@@ -108,7 +112,7 @@ const UserCombobox = memo(
                   <Option
                     user={user}
                     member={member}
-                    selected={usersSelectedId.includes(user._id)}
+                    selected={usersSelectedId.includes(user.id)}
                   />
                 ))
               )}

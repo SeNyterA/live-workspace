@@ -1,0 +1,357 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+enum FileSourceType {
+  AWS
+  Link
+}
+
+enum WorkspaceType {
+  Channel
+  Board
+  Group
+  Direct
+  Team
+}
+
+enum WorkspaceStatus {
+  Private
+  Public
+}
+
+enum MemberRole {
+  Admin
+  Member
+}
+
+enum MemberStatus {
+  Invited
+  Declined
+  Active
+  Leaved
+  Kicked
+}
+
+enum MessageType {
+  Normal
+  System
+}
+
+enum PropertyType {
+  Date
+  Number
+  String
+  People
+  MultiPeople
+  Select
+  MultiSelect
+  Link
+  Email
+  Assignees
+  DueDate
+}
+
+model User {
+  id          String   @id @default(uuid())
+  firebaseId  String?  @unique
+  userName    String   @unique
+  email       String   @unique
+  nickName    String?
+  password    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isAvailable Boolean  @default(true)
+
+  avatar   File?   @relation("UserAvatar", fields: [avatarId], references: [id])
+  avatarId String?
+
+  createdFiles  File[] @relation("CreatedBy")
+  modifiedFiles File[] @relation("ModifiedBy")
+
+  createdWorkspaces  Workspace[] @relation("WorkspaceCreatedBy")
+  modifiedWorkspaces Workspace[] @relation("WorkspaceModifiedBy")
+
+  createdMembers  Member[] @relation("MemberCreatedBy")
+  modifiedMembers Member[] @relation("MemberModifiedBy")
+  members         Member[] @relation("MemberUser")
+
+  createdMessages  Message[] @relation("MessageCreatedBy")
+  modifiedMessages Message[] @relation("MessageModifiedBy")
+
+  createdCards  Card[] @relation("CardCreatedBy")
+  modifiedCards Card[] @relation("CardModifiedBy")
+
+  createdProperties  Property[] @relation("PropertyCreatedBy")
+  modifiedProperties Property[] @relation("PropertyModifiedBy")
+
+  createdPropertyOptions  PropertyOption[] @relation("PropertyOptionCreatedBy")
+  modifiedPropertyOptions PropertyOption[] @relation("PropertyOptionModifiedBy")
+
+  createdMentions  Mention[] @relation("MentionCreatedBy")
+  modifiedMentions Mention[] @relation("MentionModifiedBy")
+  mentions         Mention[] @relation("MentionUser")
+
+  reactionMessages Reaction[] @relation("ReactionUser")
+
+  @@map(name: "users")
+}
+
+model File {
+  id          String         @id @default(uuid())
+  path        String
+  name        String?
+  size        Float?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  isAvailable Boolean        @default(true)
+  sourceType  FileSourceType
+
+  createdBy   User?   @relation("CreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  modifiedBy   User?   @relation("ModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+
+  workspacesAvatar    Workspace[]         @relation("WorkspaceAvatar")
+  workspacesThumbnail Workspace[]         @relation("WorkspaceThumbnail")
+  usersAvatar         User[]              @relation("UserAvatar")
+  cardsThumbnail      Card[]              @relation("CardThumbnail")
+  messagesAttachment  MessageAttachment[] @relation("AttachmentFile")
+  cardsAttachment     CardAttachment[]    @relation("AttachmentFile")
+
+  @@map("files")
+}
+
+model Workspace {
+  id          String          @id @default(uuid())
+  title       String          @default("Untitled")
+  description String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  isAvailable Boolean         @default(true)
+  type        WorkspaceType
+  status      WorkspaceStatus @default(Public)
+  displayUrl  String?         @unique
+
+  createdBy   User?   @relation("WorkspaceCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  modifiedBy   User?   @relation("WorkspaceModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+
+  avatar   File?   @relation("WorkspaceAvatar", fields: [avatarId], references: [id])
+  avatarId String?
+
+  thumbnail   File?   @relation("WorkspaceThumbnail", fields: [thumbnailId], references: [id])
+  thumbnailId String?
+
+  workspaceParent    Workspace?  @relation("WorkspaceParent", fields: [workspaceParentId], references: [id])
+  workspaceParentId  String?
+  workspacesChildren Workspace[] @relation("WorkspaceParent")
+
+  members    Member[]   @relation("MemberWorkspace")
+  messages   Message[]  @relation("MessageWorkspace")
+  cards      Card[]     @relation("CardWorkspace")
+  properties Property[] @relation("PropertyWorkspace")
+
+  @@map("workspaces")
+}
+
+model Member {
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  role      MemberRole
+  status    MemberStatus
+
+  user   User   @relation("MemberUser", fields: [userId], references: [id])
+  userId String
+
+  workspace   Workspace @relation("MemberWorkspace", fields: [workspaceId], references: [id])
+  workspaceId String
+
+  createdBy   User?   @relation("MemberCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  modifiedBy   User?   @relation("MemberModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+
+  @@id([userId, workspaceId])
+  @@map("members")
+}
+
+model Message {
+  id          String      @id @default(uuid())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  isAvailable Boolean     @default(true)
+  type        MessageType
+  content     Json?
+  isPinned    Boolean?
+
+  createdBy   User?   @relation("MessageCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  modifiedBy   User?   @relation("MessageModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+
+  workspace   Workspace @relation("MessageWorkspace", fields: [workspaceId], references: [id])
+  workspaceId String
+
+  replyTo       Message?  @relation("ReplyTo", fields: [replyToId], references: [id])
+  replyToId     String?
+  replyMessages Message[] @relation("ReplyTo")
+
+  threadTo      Message?  @relation("ThreadTo", fields: [threadToId], references: [id])
+  threadToId    String?
+  theadMessages Message[] @relation("ThreadTo")
+
+  cardId String?
+  card   Card?   @relation("CardMessage", fields: [cardId], references: [id])
+
+  reactions   Reaction[]          @relation("ReactionMessage")
+  mentions    Mention[]           @relation("MentionMessage")
+  attachments MessageAttachment[] @relation("AttachmentMessage")
+
+  @@map("messages")
+}
+
+model Card {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isAvailable Boolean  @default(true)
+  detail      Json?
+  properties  Json?
+
+  thumbnail   File?   @relation("CardThumbnail", fields: [thumbnailId], references: [id])
+  thumbnailId String?
+
+  createdBy   User?   @relation("CardCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  modifiedBy   User?   @relation("CardModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+
+  workspace   Workspace @relation("CardWorkspace", fields: [workspaceId], references: [id])
+  workspaceId String
+
+  attachments CardAttachment[] @relation("AttachmentCard")
+  messages    Message[]        @relation("CardMessage")
+
+  @@map("cards")
+}
+
+model Property {
+  id          String       @id @default(uuid())
+  title       String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  isAvailable Boolean      @default(true)
+  detail      Json?
+  order       Float?
+  type        PropertyType
+
+  workspace   Workspace @relation("PropertyWorkspace", fields: [workspaceId], references: [id])
+  workspaceId String
+
+  createdBy   User?   @relation("PropertyCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  modifiedBy   User?   @relation("PropertyModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+
+  options PropertyOption[] @relation("PropertyOption")
+
+  @@map("properties")
+}
+
+model PropertyOption {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isAvailable Boolean  @default(true)
+  title       String
+  color       String?
+  order       Float?
+
+  property   Property @relation("PropertyOption", fields: [propertyId], references: [id])
+  propertyId String
+
+  createdBy   User?   @relation("PropertyOptionCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  modifiedBy   User?   @relation("PropertyOptionModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+
+  @@map("propertyOptions")
+}
+
+model Reaction {
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isAvailable Boolean  @default(true)
+  shortcode   String   @default("")
+  unified     String   @default("")
+  native      String   @default("")
+
+  user   User   @relation("ReactionUser", fields: [userId], references: [id])
+  userId String
+
+  message   Message @relation("ReactionMessage", fields: [messageId], references: [id])
+  messageId String
+
+  @@id([userId, messageId])
+  @@map("reactions")
+}
+
+model Mention {
+  user   User   @relation("MentionUser", fields: [userId], references: [id])
+  userId String
+
+  message   Message @relation("MentionMessage", fields: [messageId], references: [id])
+  messageId String
+
+  createdBy   User?   @relation("MentionCreatedBy", fields: [createdById], references: [id])
+  createdById String?
+
+  modifiedBy   User?   @relation("MentionModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String?
+
+  @@id([userId, messageId])
+  @@map("mentions")
+}
+
+model MessageAttachment {
+  id          String  @id @default(uuid())
+  isAvailable Boolean @default(true)
+
+  message   Message @relation("AttachmentMessage", fields: [messageId], references: [id])
+  messageId String
+
+  file   File   @relation("AttachmentFile", fields: [fileId], references: [id])
+  fileId String @unique
+
+  @@map("messageAttachments")
+}
+
+model CardAttachment {
+  id          String  @id @default(uuid())
+  isAvailable Boolean @default(true)
+
+  card   Card   @relation("AttachmentCard", fields: [cardId], references: [id])
+  cardId String
+
+  file   File   @relation("AttachmentFile", fields: [fileId], references: [id])
+  fileId String @unique
+
+  @@map("cardAttachments")
+}

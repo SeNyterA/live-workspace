@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { EMemberRole, Member } from 'src/entities/member.entity'
-import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
-import { Repository } from 'typeorm'
-import { generateRandomHash } from '../workspace.service'
+
+import {
+  Member,
+  MemberRole,
+  MemberStatus,
+  MessageType,
+  Workspace,
+  WorkspaceStatus,
+  WorkspaceType
+} from '@prisma/client'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
 @WebSocketGateway({
@@ -17,12 +24,7 @@ import { TJwtUser } from 'src/modules/socket/socket.gateway'
 export class GroupService {
   @WebSocketServer()
   server: Server
-  constructor(
-    @InjectRepository(Workspace)
-    private readonly workspaceRepository: Repository<Workspace>,
-    @InjectRepository(Member)
-    private readonly memberRepository: Repository<Member>
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async createGroup({
     user,
@@ -33,44 +35,64 @@ export class GroupService {
     user: TJwtUser
     members?: Member[]
   }) {
-    const newWorkspace = await this.workspaceRepository.save(
-      this.workspaceRepository.create({
+    const newGroup = await this.prismaService.workspace.create({
+      data: {
         ...workspace,
         type: WorkspaceType.Group,
-        displayUrl: generateRandomHash(),
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      })
-    )
+        status: WorkspaceStatus.Private,
+        createdById: user.sub,
+        modifiedById: user.sub,
 
-    const _members = await this.memberRepository.insert([
-      {
-        role: EMemberRole.Owner,
-        user: { _id: user.sub },
-        workspace: { _id: newWorkspace._id },
-        createdBy: { _id: user.sub },
-        modifiedBy: { _id: user.sub }
-      },
-      ...(members
-        ?.filter(e => e.userId !== user.sub)
-        .map(e => ({
-          ...e,
-          user: { _id: e.userId },
-          workspace: { _id: newWorkspace._id },
-          createdBy: { _id: user.sub },
-          modifiedBy: { _id: user.sub }
-        })) || [])
-    ])
+        members: {
+          createMany: {
+            data: [
+              {
+                userId: user.sub,
+                role: MemberRole.Admin,
+                status: MemberStatus.Active
+              },
+              ...(members
+                .filter(e => e.userId !== user.sub)
+                .map(e => ({
+                  userId: e.userId,
+                  role: MemberRole.Member,
+                  status: MemberStatus.Invited
+                })) || [])
+            ],
+            skipDuplicates: true
+          }
+        },
 
-    const group = await this.workspaceRepository.findOne({
-      where: { _id: newWorkspace._id }
+        messages: {
+          createMany: {
+            data: [
+              {
+                content: {
+                  type: 'doc',
+                  content: [
+                    {
+                      type: 'heading',
+                      attrs: {
+                        textAlign: 'left',
+                        level: 2
+                      },
+                      content: [
+                        {
+                          type: 'text',
+                          text: 'Welcome to group'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                type: MessageType.System
+              }
+            ]
+          }
+        }
+      }
     })
-    this.server
-      .to(_members.identifiers.map(e => e._id))
-      .emit('workspace', { workspace: group })
 
-    return {
-      group
-    }
+    return newGroup
   }
 }

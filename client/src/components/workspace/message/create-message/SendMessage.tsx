@@ -16,12 +16,12 @@ import {
 import StarterKit from '@tiptap/starter-kit'
 import { useState } from 'react'
 import tippy from 'tippy.js'
-import useTyping from '../../../hooks/useTyping'
-import { getAppValue } from '../../../redux/store'
-import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { TFile } from '../../../types'
-import MentionList from './MentionList'
-import Typing from './Typing'
+import useTyping from '../../../../hooks/useTyping'
+import { getAppValue } from '../../../../redux/store'
+import { useAppMutation } from '../../../../services/apis/mutations/useAppMutation'
+import { TFile } from '../../../../types'
+import MentionList from '../MentionList'
+import Typing from '../Typing'
 
 type TSendMessage = {
   targetId: string
@@ -118,8 +118,8 @@ export default function SendMessage({
 
             return (
               getAppValue(state =>
-                Object.values(state.workspace.users).filter(
-                  u => usersId?.includes(u._id)
+                Object.values(state.workspace.users).filter(u =>
+                  usersId?.includes(u.id)
                 )
               ) || []
             )
@@ -241,7 +241,7 @@ export default function SendMessage({
         <div className='flex items-center justify-end gap-1 px-2 pb-2'>
           {files.map(file => (
             <Badge
-              key={file._id}
+              key={file.id}
               variant='transparent'
               className='h-[26px] rounded bg-gray-100'
               rightSection={
@@ -254,7 +254,7 @@ export default function SendMessage({
                 ></IconX>
               }
             >
-              {/* {formatFileName(file.path)} */}
+              {file.name}
             </Badge>
           ))}
           <FileButton

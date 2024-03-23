@@ -1,6 +1,7 @@
 import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
 import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
+import { EMemberStatus } from '../../../../types'
 import MemberRole from '../../../common/MemberRole'
 
 export default function Members() {
@@ -9,15 +10,22 @@ export default function Members() {
 
   const members = useAppSelector(state =>
     Object.values(state.workspace.members)
-      .filter(member => member.targetId === targetId)
+      .filter(member => member.workspaceId === targetId)
       .map(member => ({
         member,
-        user: state.workspace.users[member.userId]
+        user: {
+          ...state.workspace.users[member.userId],
+          avatar:
+            state.workspace.files[state.workspace.users[member.userId].avatarId!]
+        }
       }))
   )
 
   const enableMembers = members
-    ?.filter(({ member, user }) => user?.isAvailable && member?.isAvailable)
+    ?.filter(
+      ({ member, user }) =>
+        user?.isAvailable && member.status === EMemberStatus.Active
+    )
     .sort((a, b) => (a.member.role > b.member.role ? -1 : 1))
 
   return (
@@ -43,7 +51,7 @@ export default function Members() {
         enableMembers?.map(({ member, user }) => (
           <div
             className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
-            key={user?._id}
+            key={user?.id}
           >
             <Indicator
               inline

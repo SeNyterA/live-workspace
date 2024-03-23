@@ -2,12 +2,11 @@ import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
-import useAppControlParams from '../../../hooks/useAppControlParams'
 import useRenderCount from '../../../hooks/useRenderCount'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { TOption } from '../../../types'
+import { TPropertyOption } from '../../../types'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
@@ -17,13 +16,13 @@ const getOptionWithNewOrder = ({
   from,
   options
 }: {
-  options?: TOption[]
+  options?: TPropertyOption[]
   from: number
   to?: number
   draggableId: string
 }) => {
   try {
-    const optionTaget = options?.find(e => e._id === draggableId)
+    const optionTaget = options?.find(e => e.id === draggableId)
 
     if (!optionTaget) return
 
@@ -87,9 +86,9 @@ const getCardUpdated = ({
 export default function CardsContent() {
   useRenderCount('CardsContent')
   const { trackingId, boardId } = useBoard()
-  const { toogleCard } = useAppControlParams()
-  // const { mutateAsync: createCard } = useAppMutation('createCard')
-  const { mutateAsync: updateOption } = useAppMutation('updateOption')
+  const { mutateAsync: updateColumnPosition } = useAppMutation(
+    'updateColumnPosition'
+  )
   const { mutateAsync: updateCard } = useAppMutation('updateCard')
   const dispatch = useDispatch()
 
@@ -114,42 +113,55 @@ export default function CardsContent() {
             <DragDropContext
               onDragEnd={result => {
                 if (result.type === 'column') {
+                  console.log({ result })
                   const data = getOptionWithNewOrder({
                     draggableId: result.draggableId,
                     from: result.source.index,
                     to: result.destination?.index || 0,
                     options
                   })
+
+                  console.log({ data })
                   if (!data) return
 
                   const { newOption, oldOption } = data
                   dispatch(
                     workspaceActions.updateWorkspaceStore({
-                      options: { [newOption._id]: newOption }
+                      options: { [newOption.id]: newOption }
                     })
                   )
-                  updateOption(
+
+                  updateColumnPosition(
                     {
+                      method: 'patch',
                       url: {
-                        baseUrl: 'boards/:boardId/options/:optionId',
+                        baseUrl:
+                          'boards/:boardId/properies/:propertyId/options/:optionId',
                         urlParams: {
                           boardId: boardId!,
-                          optionId: newOption._id
+                          propertyId: trackingId!,
+                          optionId: newOption.id
                         }
                       },
-                      method: 'patch',
                       payload: {
-                        option: {
-                          _id: newOption._id,
-                          order: newOption.order
-                        } as any
+                        order: newOption.order
                       }
                     },
                     {
-                      onError: error => {
+                      onError(error, variables, context) {
                         dispatch(
                           workspaceActions.updateWorkspaceStore({
-                            options: { [oldOption._id]: oldOption }
+                            options: {
+                              [oldOption.id]: {
+                                ...getAppValue(
+                                  state =>
+                                    state.workspace.options[
+                                      variables.url.urlParams.optionId
+                                    ]
+                                )!,
+                                order: oldOption.order
+                              }
+                            }
                           })
                         )
                       }
@@ -166,14 +178,14 @@ export default function CardsContent() {
                   const { newCard, oldCard } = data
                   dispatch(
                     workspaceActions.updateWorkspaceStore({
-                      cards: { [newCard._id]: newCard }
+                      cards: { [newCard.id]: newCard }
                     })
                   )
                   updateCard(
                     {
                       url: {
                         baseUrl: 'boards/:boardId/cards/:cardId',
-                        urlParams: { boardId: boardId!, cardId: newCard._id }
+                        urlParams: { boardId: boardId!, cardId: newCard.id }
                       },
                       method: 'patch',
                       payload: {
@@ -182,11 +194,11 @@ export default function CardsContent() {
                     },
                     {
                       onSuccess(data, variables, context) {
-                        if (data._id) {
-                          // toogleCard({ cardId: data._id })
+                        if (data.id) {
+                          // toogleCard({ cardId: data.id })
                           dispatch(
                             workspaceActions.updateWorkspaceStore({
-                              [data._id]: data
+                              [data.id]: data
                             })
                           )
                         }
@@ -194,7 +206,7 @@ export default function CardsContent() {
                       onError: () => {
                         dispatch(
                           workspaceActions.updateWorkspaceStore({
-                            cards: { [oldCard._id]: oldCard }
+                            cards: { [oldCard.id]: oldCard }
                           })
                         )
                       }
@@ -216,8 +228,8 @@ export default function CardsContent() {
                   >
                     {options?.map((option, index) => (
                       <Draggable
-                        key={option._id}
-                        draggableId={option._id}
+                        key={option.id}
+                        draggableId={option.id}
                         index={index}
                       >
                         {dragProvided => (
@@ -236,36 +248,15 @@ export default function CardsContent() {
                                   variant='transparent'
                                   aria-label='Settings'
                                   className='h-[30px] w-[30px] bg-gray-100 text-gray-600'
-                                  onClick={() => {
-                                    // const timeStamp =
-                                    //   new Date().getMilliseconds()
-                                    // createCard({
-                                    //   url: {
-                                    //     baseUrl:
-                                    //       '/workspace/boards/:boardId/cards',
-                                    //     urlParams: { boardId: boardId! }
-                                    //   },
-                                    //   method: 'post',
-                                    //   payload: {
-                                    //     title: 'anything bro' + timeStamp,
-                                    //     properties: {
-                                    //       [propertyRoot._id]: option._id
-                                    //     }
-                                    //   }
-                                    // }).then(data => {
-                                    //   if (data.data?._id) {
-                                    //     toogleCard({ cardId: data.data._id })
-                                    //   }
-                                    // })
-                                  }}
+                                  onClick={() => {}}
                                 >
                                   <IconPlus size={16} stroke={1.5} />
                                 </ActionIcon>
                               </div>
                             </div>
                             <CardOptions
-                              propertyId={propertyRoot._id}
-                              optionId={option._id}
+                              propertyId={propertyRoot.id}
+                              optionId={option.id}
                             />
                           </div>
                         )}

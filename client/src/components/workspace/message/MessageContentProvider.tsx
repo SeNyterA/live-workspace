@@ -4,7 +4,8 @@ import useAppParams from '../../../hooks/useAppParams'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
-import { TMessage } from '../../../types'
+import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
+import { extractApi, TMessage } from '../../../types'
 
 export type TGroupedMessage = {
   userId: string
@@ -30,7 +31,7 @@ export const groupMessages = (messages: TMessage[]): TGroupedMessage[] => {
       currentGroup.messages.push(message)
     } else {
       currentGroup = {
-        userId: message.createdById,
+        userId: message.createdById!,
         messages: [message]
       }
       groupedMessages.push(currentGroup)
@@ -49,33 +50,6 @@ export default function MessageContentProvider({
   const targetId = channelId || groupId || directId || ''
   const dispatch = useDispatch()
 
-  const { data: workpsaceMessages, refetch } = useAppQuery({
-    key: 'workpsaceMessages',
-    url: {
-      baseUrl: 'workspaces/:workspaceId/messages',
-      urlParams: {
-        workspaceId: targetId
-      }
-    },
-    options: {
-      queryKey: [targetId],
-      enabled: !!targetId
-    },
-    onSucess({ messages, remainingCount }) {
-      dispatch(
-        workspaceActions.updateWorkspaceStore({
-          messages: messages.reduce(
-            (pre, next) => ({
-              ...pre,
-              [next._id]: next
-            }),
-            {}
-          )
-        })
-      )
-    }
-  })
-
   useAppQuery({
     key: 'workspace',
     url: {
@@ -92,18 +66,18 @@ export default function MessageContentProvider({
 
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace._id]: workspace },
+          workspaces: { [workspace.id]: workspace },
           members: __members.reduce(
             (pre, next) => ({
               ...pre,
-              [next._id]: next
+              [`${next.workspaceId}_${next.userId}`]: next
             }),
             {}
           ),
           users: __user.reduce(
             (pre, next) => ({
               ...pre,
-              ...(!!next && { [next._id]: next })
+              ...(!!next && { [next.id]: next })
             }),
             {}
           )
@@ -115,7 +89,7 @@ export default function MessageContentProvider({
   const messages =
     useAppSelector(state =>
       Object.values(state.workspace.messages)
-        .filter(e => targetId === e.targetId && e.isAvailable)
+        .filter(e => targetId === e.workspaceId && e.isAvailable)
         .sort(
           (a, b) =>
             new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()

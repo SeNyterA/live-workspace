@@ -1,11 +1,4 @@
-import {
-  Avatar,
-  Badge,
-  Divider,
-  Loader,
-  NavLink,
-  ScrollArea
-} from '@mantine/core'
+import { Avatar, Badge, Divider, Loader, NavLink } from '@mantine/core'
 import { Link } from '@mantine/tiptap'
 import Highlight from '@tiptap/extension-highlight'
 import Mention from '@tiptap/extension-mention'
@@ -16,12 +9,14 @@ import StarterKit from '@tiptap/starter-kit'
 import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { useDispatch } from 'react-redux'
+import { Fragment } from 'react/jsx-runtime'
 import useAppParams from '../../../../hooks/useAppParams'
 import { workspaceActions } from '../../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../../redux/store'
 import Watching from '../../../../redux/Watching'
 import { useAppQuery } from '../../../../services/apis/useAppQuery'
 import { updateLabelMention } from '../../../../utils/helper'
+import Attachments from '../detail/Attachments'
 
 export default function PinedMesages() {
   const { channelId, groupId, directId } = useAppParams()
@@ -40,7 +35,7 @@ export default function PinedMesages() {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           messages: messages.reduce(
-            (acc, cur) => ({ ...acc, [cur._id]: cur }),
+            (acc, cur) => ({ ...acc, [cur.id]: cur }),
             {}
           )
         })
@@ -49,7 +44,12 @@ export default function PinedMesages() {
   })
 
   const pinedMessages = useAppSelector(state =>
-    Object.values(state.workspace.messages).filter(e => e.isPinned)
+    Object.values(state.workspace.messages)
+      .filter(e => e.isPinned && e.workspaceId === workspaceId)
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      )
   )
 
   return (
@@ -73,10 +73,16 @@ export default function PinedMesages() {
       }}
     >
       {pinedMessages?.map((message, index) => (
-        <>
+        <Fragment key={message.id}>
           <Watching
-            key={message._id}
-            watchingFn={state => state.workspace.users[message.createdById]}
+            key={message.id}
+            watchingFn={state => ({
+              ...state.workspace.users[message.createdById!],
+              avatar:
+                state.workspace.files[
+                  state.workspace.users[message.createdById!].avatarId!
+                ]
+            })}
           >
             {createBy => (
               <div className='flex gap-2 rounded first:mt-2'>
@@ -104,6 +110,7 @@ export default function PinedMesages() {
                       )
                     }}
                   />
+                  <Attachments messageId={message.id} />
                 </div>
               </div>
             )}
@@ -111,7 +118,7 @@ export default function PinedMesages() {
           {index < pinedMessages.length - 1 && (
             <Divider className='my-2' variant='dashed' />
           )}
-        </>
+        </Fragment>
       ))}
     </NavLink>
   )

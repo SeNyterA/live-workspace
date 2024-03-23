@@ -5,9 +5,10 @@ import {
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets'
+import { MemberStatus } from '@prisma/client'
 import { Server, Socket } from 'socket.io'
 import { RedisService } from 'src/modules/redis/redis.service'
-import { WorkspaceService } from '../workspace/workspace.service'
+import { PrismaService } from '../prisma/prisma.service'
 export type TJwtUser = {
   email: string
   userName: string
@@ -28,10 +29,30 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server
   constructor(
-    private readonly workspaceService: WorkspaceService,
     private readonly jwtService: JwtService,
-    private readonly redisService: RedisService
+    private readonly redisService: RedisService,
+    private readonly prismaService: PrismaService
   ) {}
+
+  async subscribeToWorkspaces({
+    client,
+    user
+  }: {
+    user: TJwtUser
+    client: CustomSocket
+  }) {
+    const members = await this.prismaService.member.findMany({
+      where: {
+        userId: user.sub,
+        status: MemberStatus.Active,
+        workspace: {
+          isAvailable: true
+        }
+      }
+    })
+
+    client.join([...members.map(member => member.workspaceId), user.sub])
+  }
 
   async handleConnection(client: CustomSocket, ...args: any[]) {
     try {
@@ -45,7 +66,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!jwtUser?.sub) throw new Error('Invalid user')
       client.user = jwtUser
 
-      await this.workspaceService.subscribeToWorkspaces({
+      await this.subscribeToWorkspaces({
         client,
         user: jwtUser
       })

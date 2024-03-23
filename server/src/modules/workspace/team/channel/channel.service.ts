@@ -1,11 +1,24 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  forwardRef
+} from '@nestjs/common'
+
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import {
+  Member,
+  MemberRole,
+  MemberStatus,
+  MessageType,
+  Workspace,
+  WorkspaceType
+} from '@prisma/client'
 import { Server } from 'socket.io'
-import { Member } from 'src/entities/member.entity'
-import { Workspace, WorkspaceType } from 'src/entities/workspace.entity'
+
+import { Errors } from 'src/libs/errors'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
-import { Repository } from 'typeorm'
 import { TeamService } from '../team.service'
 
 @WebSocketGateway({
@@ -18,11 +31,9 @@ export class ChannelService {
   @WebSocketServer()
   server: Server
   constructor(
-    @InjectRepository(Workspace)
-    private readonly workspaceRepository: Repository<Workspace>,
-
     @Inject(forwardRef(() => TeamService))
-    private readonly teamService: TeamService
+    private readonly teamService: TeamService,
+    private readonly prismaService: PrismaService
   ) {}
 
   async createChannel({
@@ -36,15 +47,70 @@ export class ChannelService {
     teamId: string
     members?: Member[]
   }) {
-    console.log(members)
-    const channel = await this.teamService.createChildWorkspace({
-      user,
-      workspace,
-      teamId,
-      type: WorkspaceType.Channel,
-      members
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: user.sub,
+        workspaceId: teamId,
+        status: MemberStatus.Active,
+        role: MemberRole.Admin
+      }
     })
 
-    return { channel }
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const channel = await this.prismaService.workspace.create({
+      data: {
+        ...workspace,
+        workspaceParentId: teamId,
+        type: WorkspaceType.Channel,
+        createdById: user.sub,
+        modifiedById: user.sub,
+        messages: {
+          createMany: {
+            data: [
+              {
+                content: {
+                  type: 'doc',
+                  content: [
+                    {
+                      type: 'heading',
+                      attrs: {
+                        textAlign: 'left',
+                        level: 4
+                      },
+                      content: [
+                        {
+                          type: 'text',
+                          text: 'Welcome to channel'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                type: MessageType.System
+              }
+            ]
+          }
+        },
+
+        members: {
+          createMany: {
+            data: [
+              {
+                role: MemberRole.Admin,
+                userId: user.sub,
+                status: MemberStatus.Active
+              }
+            ]
+          }
+        }
+      }
+    })
+
+    this.server.to(teamId).emit('workspace', { workspace: channel })
+
+    return channel
   }
 }

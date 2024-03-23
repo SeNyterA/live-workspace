@@ -1,9 +1,11 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { TFile } from '../../types/file'
-import { TMember } from '../../types/member'
-import { TMessage } from '../../types/message'
-import { TUser } from '../../types/user'
-import { TWorkspace } from '../../types/workspace'
+import {
+  TFileExtra,
+  TMemberExtra,
+  TMessageExtra,
+  TUserExtra,
+  TWorkspaceExtra
+} from '../../types'
 import { replaceDynamicValues } from './common'
 import http from './http'
 import { TMemberApi } from './mutations/member.api'
@@ -22,14 +24,14 @@ type ApiQueryType = {
         param2: string
       }
     }
-    response: TUser
+    response: TUserExtra
   }
 
   login: {
     url: {
       baseUrl: '/auth/profile'
     }
-    response: TUser
+    response: TUserExtra
   }
 
   verify: {
@@ -39,7 +41,7 @@ type ApiQueryType = {
         token: string
       }
     }
-    response: TUser
+    response: TUserExtra
   }
 
   //workspace
@@ -50,14 +52,14 @@ type ApiQueryType = {
         workspaceId: string
       }
     }
-    response: { workspace: TWorkspace; members: TMember[] }
+    response: { workspace: TWorkspaceExtra; members: TMemberExtra[] }
   }
 
   workspaces: {
     url: {
       baseUrl: '/workspaces'
     }
-    response: TWorkspace[]
+    response: TWorkspaceExtra[]
   }
 
   workspaceFiles: {
@@ -67,7 +69,7 @@ type ApiQueryType = {
         workspaceId: string
       }
     }
-    response: TFile[]
+    response: TFileExtra[]
   }
 
   board: {
@@ -77,7 +79,7 @@ type ApiQueryType = {
         boardId: string
       }
     }
-    response: TWorkspace
+    response: TWorkspaceExtra
   }
 
   targetMembers: {
@@ -91,8 +93,8 @@ type ApiQueryType = {
       }
     }
     response: {
-      members: TMember[]
-      users: TUser[]
+      members: TMemberExtra[]
+      users: TUserExtra[]
     }
   }
 
@@ -102,10 +104,14 @@ type ApiQueryType = {
       urlParams: {
         workspaceId: string
       }
+      queryParams?: {
+        fromId?: string
+        size?: number
+      }
     }
     response: {
-      messages: TMessage[]
-      remainingCount: number
+      messages: TMessageExtra[]
+      isCompleted: boolean
     }
   }
 
@@ -116,7 +122,7 @@ type ApiQueryType = {
         workspaceId: string
       }
     }
-    response: TMessage[]
+    response: TMessageExtra[]
   }
 
   findUsersByKeyword: {
@@ -129,7 +135,7 @@ type ApiQueryType = {
       }
     }
     response: {
-      users: TUser[]
+      users: TUserExtra[]
     }
   }
 
@@ -141,7 +147,7 @@ type ApiQueryType = {
       }
     }
     response: {
-      user: TUser
+      user: TUserExtra
     }
   }
 
@@ -197,10 +203,12 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
 }
 
 export const appGetFn = async <T extends keyof ApiQueryType>({
-  url
-}: Omit<ApiQueryType[T], 'response'> & { key: T }): Promise<
-  ApiQueryType[T]['response']
-> => {
+  url,
+  onSucess
+}: Omit<ApiQueryType[T], 'response'> & {
+  key: T
+  onSucess?: (data: ApiQueryType[T]['response']) => void
+}): Promise<ApiQueryType[T]['response']> => {
   const urlApi = `${replaceDynamicValues(
     url.baseUrl,
     (url as any)?.urlParams || {}
@@ -210,6 +218,7 @@ export const appGetFn = async <T extends keyof ApiQueryType>({
     const response = await http.get(urlApi, {
       params: (url as any)?.queryParams
     })
+    onSucess && onSucess(response.data)
     return response.data
   } catch (error) {
     console.error('Error making API request:', error)

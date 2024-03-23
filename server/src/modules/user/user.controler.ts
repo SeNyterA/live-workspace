@@ -14,7 +14,7 @@ export class UserController {
     return this.userService.findByKeyword({
       keyword,
       skip: (Number(page || 1) - 1) * (Number(pageSize) || 0),
-      take: Number(pageSize) || 0
+      take: Number(pageSize) || 10
     })
   }
 }

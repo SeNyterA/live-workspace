@@ -1,8 +1,13 @@
 import { JSONContent } from '@tiptap/react'
 import { getAppValue } from '../redux/store'
-import { EMemberRole, RoleWeights, TMember } from '../types'
-import { TOption, TProperty } from '../types/board'
-import { TWorkspace } from '../types/workspace'
+import {
+  EMemberRole,
+  RoleWeights,
+  TMember,
+  TProperty,
+  TPropertyOption,
+  TWorkspace
+} from '../types'
 
 export const cleanObj = <T extends Record<string, any>>(
   params: T
@@ -70,42 +75,6 @@ export const updateLabelMention = (json: JSONContent): JSONContent => {
   return traverseAndUpdate(updatedJson)
 }
 
-export const extractWorkspace = (workspace: TWorkspace) => {
-  // Extract users from members and remove user from each member
-  const users = workspace.members?.map(member => member.user!)
-  const members = workspace.members?.map(
-    ({ user, ...member }) => member
-  ) as TMember[]
-
-  // Extract options from properties and remove options from each property
-  const options = workspace.properties
-    ?.map(property => property.options)
-    .flat() as TOption[] | undefined
-  const properties = workspace.properties?.map(
-    ({ options, ...property }) => property
-  ) as TProperty[] | undefined
-
-  // Extract cards
-  const cards = workspace.cards
-
-  // Remove members, properties, and cards from workspace
-  const {
-    members: _,
-    properties: __,
-    cards: ___,
-    ...workspaceWithoutRelations
-  } = workspace
-
-  return {
-    workspace: workspaceWithoutRelations,
-    members,
-    users,
-    properties,
-    options,
-    cards
-  }
-}
-
 export const arrayToObject = <
   T extends { [key in K]?: string },
   K extends keyof T
@@ -121,6 +90,16 @@ export const arrayToObject = <
       return obj
     },
     {} as { [key: string]: T }
+  )
+}
+
+export const membersToObject = (members: TMember[]) => {
+  return members.reduce(
+    (obj, member) => {
+      obj[`${member.workspaceId}_${member.userId}`] = member
+      return obj
+    },
+    {} as { [key: string]: TMember }
   )
 }
 
@@ -144,12 +123,4 @@ export const hasPermissionToOperate = ({
     }
   }
   return { operatorRole, targetRole, enabled: false }
-}
-
-export const parseMember = (_member: TMember) => {
-  const { user, ...member } = _member
-  return {
-    member,
-    user
-  }
 }

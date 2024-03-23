@@ -5,11 +5,6 @@ export default function MemberRole({ member }: { member: TMember }) {
   const getRoleColor = (role: EMemberRole) => {
     if (member.status === EMemberStatus.Active)
       switch (role) {
-        case EMemberRole.Owner:
-          return {
-            color: 'green',
-            title: 'Owner'
-          }
         case EMemberRole.Admin:
           return {
             color: 'red',
@@ -27,10 +22,10 @@ export default function MemberRole({ member }: { member: TMember }) {
         title: 'Invited'
       }
     }
-    if ([EMemberStatus.Kicked, EMemberStatus.Left].includes(member.status)) {
+    if ([EMemberStatus.Kicked, EMemberStatus.Leaved].includes(member.status)) {
       return {
         color: 'gray',
-        title: 'Left'
+        title: 'Leaved'
       }
     }
   }

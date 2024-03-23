@@ -1,10 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
-import { Card } from 'src/entities/board/card.entity'
-import { Member } from 'src/entities/member.entity'
-import { Workspace } from 'src/entities/workspace.entity'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { BoardService } from './board.service'
+import { Card, Member, Workspace } from '@prisma/client'
 
 @Controller()
 export class BoardController {
@@ -41,6 +39,23 @@ export class BoardController {
       user,
       card,
       cardId
+    })
+  }
+
+  @Patch('boards/:boardId/properies/:propertyId/options/:optionId')
+  updateOption(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Param('propertyId') propertyId: string,
+    @Param('optionId') optionId: string,
+    @Body() { order }: { order: number }
+  ) {
+    return this.boardService.updateColumnPosition({
+      boardId,
+      user,
+      optionId,
+      propertyId,
+      order
     })
   }
 }

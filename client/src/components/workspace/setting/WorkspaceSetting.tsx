@@ -2,6 +2,7 @@ import { Avatar, Drawer, Tabs } from '@mantine/core'
 import { useDispatch } from 'react-redux'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
+import Watching from '../../../redux/Watching'
 import InfoSetting from './InfoSetting'
 import MembersSetting from './MembersSetting'
 
@@ -27,13 +28,16 @@ export default function WorkspaceSetting() {
       opened={!!workspaceSettingId && workspaceSettingId !== 'personal'}
       title={
         <div className='flex items-center justify-center gap-1 text-lg'>
-          {workspace?.avatar?.path && (
-            <Avatar
-              src={workspace?.avatar?.path}
-              size={28}
-              className='rounded'
-            />
-          )}
+          <Watching
+            watchingFn={state =>
+              state.workspace.files[workspace?.avatarId!].path
+            }
+          >
+            {path =>
+              !!path && <Avatar src={path} size={28} className='rounded' />
+            }
+          </Watching>
+
           <p className='h-fit leading-[18px]'>{workspace?.title}</p>
         </div>
       }

@@ -12,14 +12,15 @@ function CardItem({ card }: { card: TCard }) {
   return (
     <div
       className='flex flex-col rounded bg-gray-100 px-2 py-1'
-      id={card._id}
+      id={card.id}
       onClick={() => {
         toogleCard({
-          cardId: card._id
+          cardId: card.id
         })
       }}
     >
       <Image
+        loading='lazy'
         className='mt-1 rounded-lg'
         src={
           'https://s3.ap-southeast-1.amazonaws.com/liveworkspace.senytera/1709031245746_ca114960-a6a3-4acd-8b63-02f5a9155ed0_wallpapersden.com_stitched_woman_face_wxl.jpg'

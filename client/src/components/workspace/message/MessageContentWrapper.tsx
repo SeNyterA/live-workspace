@@ -7,11 +7,10 @@ import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { useAppEmitSocket } from '../../../services/socket/useAppEmitSocket'
-import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
+import SendMessage from './create-message/SendMessage'
 import Info from './info/Info'
 import MessageContent from './MessageContent'
 import MessageContentProvider from './MessageContentProvider'
-import SendMessage from './SendMessage'
 import Thread from './thread/Thread'
 
 export default function MessageContentWrapper() {
@@ -24,18 +23,8 @@ export default function MessageContentWrapper() {
     'sendWorkspaceMessage'
   )
 
-  useAppOnSocket({
-    key: 'message',
-    resFunc: ({ message }) => {
-      dispatch(
-        workspaceActions.updateWorkspaceStore({
-          messages: { [message._id]: message }
-        })
-      )
-    }
-  })
   const workspace = useAppSelector(state =>
-    Object.values(state.workspace.workspaces).find(e => e._id === channelId)
+    Object.values(state.workspace.workspaces).find(e => e.id === channelId)
   )
 
   return (
@@ -69,7 +58,7 @@ export default function MessageContentWrapper() {
           </div>
           <Divider variant='dashed' />
 
-          <MessageContent key={workspaceId} loadMore={loadFromId => {}} />
+          <MessageContent key={workspaceId} />
 
           <SendMessage
             targetId={channelId || ''}
@@ -86,8 +75,9 @@ export default function MessageContentWrapper() {
                   payload: {
                     message: {
                       content: value,
-
-                      attachments: files
+                      attachments: files.map(file => ({
+                        fileId: file.id
+                      }))
                     } as any
                   }
                 },
@@ -95,7 +85,7 @@ export default function MessageContentWrapper() {
                   onSuccess(message) {
                     dispatch(
                       workspaceActions.updateWorkspaceStore({
-                        messages: { [message._id]: message }
+                        messages: { [message.id]: message }
                       })
                     )
                     socketEmit({
@@ -132,7 +122,7 @@ export default function MessageContentWrapper() {
                 onSuccess(message) {
                   dispatch(
                     workspaceActions.updateWorkspaceStore({
-                      messages: { [message._id]: message }
+                      messages: { [message.id]: message }
                     })
                   )
                   socketEmit({

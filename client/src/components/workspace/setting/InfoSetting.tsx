@@ -10,8 +10,14 @@ import {
 } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useAppSelector } from '../../../redux/store'
+import Watching from '../../../redux/Watching'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { EMemberRole, EWorkspaceStatus, EWorkspaceType } from '../../../types'
+import {
+  EMemberRole,
+  EMemberStatus,
+  EWorkspaceStatus,
+  EWorkspaceType
+} from '../../../types'
 
 const Title = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
@@ -38,7 +44,7 @@ const Title = ({ isDisabled }: { isDisabled: boolean }) => {
           method: 'patch',
           url: {
             baseUrl: `workspaces/:workspaceId`,
-            urlParams: { workspaceId: workspace?._id! }
+            urlParams: { workspaceId: workspace?.id! }
           },
           payload: { workspace: { title: e.target.value } as any }
         })
@@ -73,7 +79,7 @@ const Description = ({ isDisabled }: { isDisabled: boolean }) => {
           method: 'patch',
           url: {
             baseUrl: `workspaces/:workspaceId`,
-            urlParams: { workspaceId: workspace?._id! }
+            urlParams: { workspaceId: workspace?.id! }
           },
           payload: { workspace: { description: e.target.value } as any }
         })
@@ -109,7 +115,7 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
           method: 'patch',
           url: {
             baseUrl: `workspaces/:workspaceId`,
-            urlParams: { workspaceId: workspace?._id! }
+            urlParams: { workspaceId: workspace?.id! }
           },
           payload: { workspace: { displayUrl: e.target.value } as any }
         })
@@ -120,9 +126,10 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
 }
 
 const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
-  const workspace = useAppSelector(
-    state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
+  const workspaceId = useAppSelector(
+    state => state.workspace.workspaceSettingId
   )
+
   const { mutateAsync: updateWorkspace, isPending } =
     useAppMutation('updateWorkspace')
 
@@ -141,10 +148,10 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
             url: {
               baseUrl: `workspaces/:workspaceId`,
               urlParams: {
-                workspaceId: workspace?._id!
+                workspaceId: workspaceId!
               }
             },
-            payload: { workspace: { thumbnail: data } as any }
+            payload: { workspace: { thumbnailId: data.id } as any }
           })
         }
       }
@@ -178,14 +185,32 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
         className='mt-4 w-full'
         disabled={isPending || isDisabled || uploadPending}
       >
-        <Avatar
-          classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.thumbnail?.path}
-          className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
-          alt='Team thumbnail'
+        <Watching
+          watchingFn={state => {
+            const thumbnail =
+              state.workspace.files[
+                state.workspace.workspaces[workspaceId!].thumbnailId!
+              ]
+
+            console.log({
+              state
+            })
+            return thumbnail
+          }}
         >
-          Team thumbnail
-        </Avatar>
+          {thumbnail => {
+            return (
+              <Avatar
+                classNames={{ placeholder: 'rounded-lg' }}
+                src={thumbnail?.path}
+                className='h-40 w-full flex-1 rounded-lg border bg-gray-50'
+                alt='Team thumbnail'
+              >
+                Team thumbnail
+              </Avatar>
+            )
+          }}
+        </Watching>
       </Dropzone>
       <Input.Description className='mt-1'>
         This image is used for thumbnail
@@ -215,7 +240,7 @@ const WorkspaceStatus = ({ isDisabled }: { isDisabled: boolean }) => {
           url: {
             baseUrl: `workspaces/:workspaceId`,
             urlParams: {
-              workspaceId: workspace?._id!
+              workspaceId: workspace?.id!
             }
           },
           payload: { workspace: { status: value } as any }
@@ -274,14 +299,17 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
             url: {
               baseUrl: `workspaces/:workspaceId`,
               urlParams: {
-                workspaceId: workspace?._id!
+                workspaceId: workspace?.id!
               }
             },
-            payload: { workspace: { avatar: data } as any }
+            payload: { workspace: { avatarId: data.id } as any }
           })
         }
       }
     }
+  )
+  const avatar = useAppSelector(
+    state => state.workspace.files[workspace?.avatarId!]
   )
 
   return (
@@ -314,22 +342,22 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
       >
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.avatar?.path}
+          src={avatar?.path}
           className='h-32 w-32 rounded-lg'
         />
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.avatar?.path}
+          src={avatar?.path}
           className='h-24 w-24 rounded-lg'
         />
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.avatar?.path}
+          src={avatar?.path}
           className='h-16 w-16 rounded-lg'
         />
         <Avatar
           classNames={{ placeholder: 'rounded-lg' }}
-          src={workspace?.avatar?.path}
+          src={avatar?.path}
           className='!h-8 !w-8 rounded-lg'
           size={32}
         />
@@ -346,11 +374,13 @@ export default function InfoSetting() {
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
   const enabled = useAppSelector(state =>
-    Object.values(state.workspace.members).find(
-      member =>
-        member.userId === state.auth.userInfo?._id &&
-        [EMemberRole.Owner, EMemberRole.Admin].includes(member.role)
-    )
+    Object.values(state.workspace.members).find(member => {
+      return (
+        member.userId === state.auth.userInfo?.id &&
+        [EMemberRole.Admin].includes(member.role) &&
+        member.status === EMemberStatus.Active
+      )
+    })
   )
 
   return (

@@ -29,7 +29,7 @@ function UserCombobox({
   onPick?: (userId: string) => void
   textInputProps?: TextInputProps
 }) {
-  const userId = useAppSelector(state => state.auth.userInfo?._id)
+  const userId = useAppSelector(state => state.auth.userInfo?.id)
   const combobox = useCombobox({
     onDropdownClose: () => {}
   })
@@ -49,7 +49,7 @@ function UserCombobox({
     onSucess(data) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          users: arrayToObject(data.users, '_id')
+          users: arrayToObject(data.users, 'id')
         })
       )
     }
@@ -87,12 +87,12 @@ function UserCombobox({
               <Combobox.Empty>Nothing found</Combobox.Empty>
             ) : (
               userData?.users
-                .filter(e => userId !== e._id)
+                .filter(e => userId !== e.id)
                 .map(item => (
-                  <Combobox.Option value={item._id} key={item._id}>
+                  <Combobox.Option value={item.id} key={item.id}>
                     <div
                       className='mt-3 flex flex-1 items-center gap-2 first:mt-0'
-                      key={item._id}
+                      key={item.id}
                     >
                       <Avatar src={item.avatar?.path} />
                       <div className='flex flex-1 flex-col justify-center'>
@@ -101,7 +101,7 @@ function UserCombobox({
                           {item.email}
                         </p>
                       </div>
-                      {usersSelectedId.includes(item._id) && (
+                      {usersSelectedId.includes(item.id) && (
                         <CheckIcon size={12} />
                       )}
                     </div>

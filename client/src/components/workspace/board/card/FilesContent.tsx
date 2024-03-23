@@ -9,7 +9,13 @@ export default function FilesContent({ urls }: { urls?: string[] }) {
       {images.map(image => (
         <div className='relative' key={image.url}>
           <CloseButton className='absolute right-1 top-1' />
-          <Image className='mt-1' radius='md' src={image.url} fit='contain' />
+          <Image
+            loading='lazy'
+            className='mt-1'
+            radius='md'
+            src={image.url}
+            fit='contain'
+          />
         </div>
       ))}
       <div className='flex flex-wrap gap-2'>

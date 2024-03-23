@@ -8,7 +8,7 @@ export default forwardRef((props, ref) => {
   const selectItem = index => {
     const item = props.items[index]
     if (item) {
-      props.command({ id: item._id, label: item.userName })
+      props.command({ id: item.id, label: item.userName })
     }
   }
 
@@ -62,7 +62,7 @@ export default forwardRef((props, ref) => {
           >
             <div
               className='mt-2 flex max-w-full flex-1 items-center gap-1 first:mt-0'
-              key={user?._id}
+              key={user?.id}
             >
               <Avatar src={user?.avatar?.path} size={32} className='' />
 

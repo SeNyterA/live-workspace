@@ -1,40 +1,142 @@
 import { Loader, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useInView } from 'react-intersection-observer'
-import useRenderCount from '../../../hooks/useRenderCount'
+import { useDispatch } from 'react-redux'
+import useAppParams from '../../../hooks/useAppParams'
+import { workspaceActions } from '../../../redux/slices/workspace.slice'
+import { appGetFn, useAppQuery } from '../../../services/apis/useAppQuery'
+import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
+import { extractApi } from '../../../types'
 import { useMessageContent } from './MessageContentProvider'
 import MessageGroup from './MessageGroup'
 
-export default function MessageContent({
-  loadMore,
-  isLoading,
-  remainingCount
-}: {
-  loadMore?: (fromId?: string) => void
-  isLoading?: boolean
-  remainingCount?: number
-}) {
-  useRenderCount('MessageContent')
+export default function MessageContent() {
+  const dispatch = useDispatch()
   const { messages, groupedMessages } = useMessageContent()
-  const lastMessageIdRef = useRef<string>()
-  const loadMoreMessageIdRef = useRef<string>()
-  const { scrollableRef } = useScrollIntoView<HTMLDivElement, HTMLDivElement>({
+  const { channelId, directId, groupId } = useAppParams()
+  const targetId = channelId || groupId || directId || ''
+
+  const { scrollableRef, targetRef, scrollIntoView } = useScrollIntoView<
+    HTMLDivElement,
+    HTMLDivElement
+  >({
     duration: 300
   })
-  const loadMoreRef = useRef<boolean>(false)
-  const bottomRef = useRef<boolean>(false)
 
+  const loadMoreMessageIdRef = useRef<string>()
+
+  const bottomRef = useRef<boolean>(false)
   const { ref: loadMoreObserverRef, inView: loadMoreInView } = useInView({
     threshold: 0,
     onChange: inView => {
-      loadMoreRef.current = inView
+      if (inView && !!loadMoreMessageIdRef.current) {
+        loadMoreMessageIdRef.current = messages[0].id
+
+        appGetFn({
+          key: 'workpsaceMessages',
+          url: {
+            baseUrl: 'workspaces/:workspaceId/messages',
+            urlParams: {
+              workspaceId: targetId
+            },
+            queryParams: {
+              size: 50,
+              fromId: messages[0].id
+            }
+          },
+          onSucess({ messages }) {
+            dispatch(
+              workspaceActions.updateWorkspaceStore(
+                extractApi({
+                  messages: messages
+                })
+              )
+            )
+
+            setTimeout(() => {
+              targetRef.current = document.getElementById(
+                loadMoreMessageIdRef.current!
+              ) as any
+
+              scrollIntoView()
+            }, 0)
+          }
+        })
+      }
     }
   })
-  const { ref: bottomObserverRef } = useInView({
+  const { ref: bottomObserverRef, inView: bottomInview } = useInView({
     threshold: 0,
     onChange: inView => {
       bottomRef.current = inView
+    }
+  })
+
+  useAppOnSocket({
+    key: 'reaction',
+    resFunc({ reaction }) {
+      console.log({ reaction })
+      dispatch(
+        workspaceActions.updateWorkspaceStore({
+          reactions: { [`${reaction.messageId}_${reaction.userId}`]: reaction }
+        })
+      )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'message',
+    resFunc: ({ message }) => {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({ messages: [message] })
+        )
+      )
+
+      setTimeout(() => {
+        if (true) {
+          targetRef.current = document.getElementById(message.id) as any
+          scrollIntoView()
+        }
+      }, 200)
+    }
+  })
+
+  const { isPending } = useAppQuery({
+    key: 'workpsaceMessages',
+    url: {
+      baseUrl: 'workspaces/:workspaceId/messages',
+      urlParams: {
+        workspaceId: targetId
+      },
+      queryParams: {
+        size: 50
+      }
+    },
+    options: {
+      queryKey: [targetId],
+      enabled: !!targetId,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false
+    },
+    onSucess({ messages }) {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            messages
+          })
+        )
+      )
+      if (!loadMoreMessageIdRef.current) {
+        setTimeout(() => {
+          scrollToBottom()
+        }, 0)
+
+        setTimeout(() => {
+          loadMoreMessageIdRef.current = messages[messages.length - 1].id
+        }, 1000)
+      }
     }
   })
 
@@ -52,63 +154,6 @@ export default function MessageContent({
     }
   }
 
-  useLayoutEffect(() => {
-    if (!lastMessageIdRef.current && messages) {
-      scrollToBottom()
-    }
-  }, [messages])
-
-  useEffect(() => {
-    if (!lastMessageIdRef.current && messages) {
-      scrollToBottom()
-    }
-
-    if (bottomRef.current) {
-      scrollToBottom()
-    }
-
-    if (
-      lastMessageIdRef.current &&
-      loadMoreMessageIdRef.current &&
-      lastMessageIdRef.current !== loadMoreMessageIdRef.current
-    ) {
-      const messContent = document.querySelector(
-        `#id_${loadMoreMessageIdRef.current}`
-      )
-
-      if (messContent) {
-        const { top } = messContent.getBoundingClientRect()
-        scrollTo(top)
-        loadMoreMessageIdRef.current = undefined
-      }
-    }
-
-    const timeOut = setTimeout(() => {
-      if (messages.length > 0) lastMessageIdRef.current = messages[0]._id
-    }, 0)
-    return () => {
-      clearTimeout(timeOut)
-    }
-  }, [messages])
-
-  //#region read messageId
-  const makeAsReadMessageId = useRef<{
-    messageId: string
-  }>()
-
-  useEffect(() => {
-    if (
-      loadMoreInView &&
-      lastMessageIdRef.current &&
-      !isLoading &&
-      loadMore &&
-      remainingCount
-    ) {
-      loadMoreMessageIdRef.current = lastMessageIdRef.current
-      loadMore(lastMessageIdRef.current)
-    }
-  }, [loadMoreInView])
-
   return (
     <div className='relative flex-1'>
       {messages.length > 0 && (
@@ -119,26 +164,22 @@ export default function MessageContent({
           onCompositionStart={e => console.log(e)}
           onCompositionEnd={e => console.log(e)}
         >
-          {remainingCount ? (
-            <div className='relative'>
-              <div
-                ref={loadMoreObserverRef}
-                className='flex items-center justify-center'
-              >
-                {isLoading && <Loader size='xs' type='dots' />}
-              </div>
-              <div
-                ref={loadMoreObserverRef}
-                className='absolute inset-0 bottom-[-100px] z-[-10] flex items-center justify-center bg-black'
-              />
+          <div className='relative'>
+            <div
+              ref={loadMoreObserverRef}
+              className='flex items-center justify-center'
+            >
+              {isPending && <Loader size='xs' type='dots' />}
             </div>
-          ) : (
-            <></>
-          )}
+            <div
+              ref={loadMoreObserverRef}
+              className='absolute inset-0 bottom-[-400px] z-[-10] flex items-center justify-center'
+            />
+          </div>
 
           {groupedMessages.map(groupMessage => (
             <MessageGroup
-              key={groupMessage.messages[0]._id}
+              key={groupMessage.messages[0].id}
               messageGroup={groupMessage}
               scrollableRef={scrollableRef}
             />

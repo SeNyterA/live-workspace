@@ -4,7 +4,7 @@ import useAppControlParams from '../../../../hooks/useAppControlParams'
 import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
 import { useAppEmitSocket } from '../../../../services/socket/useAppEmitSocket'
-import SendMessage from '../../message/SendMessage'
+import SendMessage from '../../message/create-message/SendMessage'
 import Editor from '../description/Editor'
 import CardTitle from './CardTitle'
 import Properties from './Properties'
@@ -13,7 +13,7 @@ export default function DetailCard() {
   const { toogleCard } = useAppControlParams()
   const { cardId } = useAppParams()
   const card = useAppSelector(state =>
-    Object.values(state.workspace.cards).find(e => e._id === cardId)
+    Object.values(state.workspace.cards).find(e => e.id === cardId)
   )
 
   const dispatch = useDispatch()
@@ -55,7 +55,7 @@ console.log({card})
                 <div className='h-[1000px]'></div>
                 <SendMessage
                   classNames={{ rootWrapper: 'sticky bottom-0' }}
-                  targetId={card._id}
+                  targetId={card.id}
                   createMessage={async ({ files, value }) => {}}
                 />
               </ScrollArea>

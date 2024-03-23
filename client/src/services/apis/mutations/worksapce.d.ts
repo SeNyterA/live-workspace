@@ -1,4 +1,4 @@
-import { TWorkspace } from '../../../types/workspace'
+import { TWorkspace } from '../../../types'
 
 export type TWorkspaceMutationApi = {
   updateWorkspace: {

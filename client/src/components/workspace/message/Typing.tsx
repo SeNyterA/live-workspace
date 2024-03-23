@@ -21,7 +21,7 @@ export default function Typing({ messRefId }: { messRefId?: string }) {
       .map(e => e.userId)
 
     return Object.values(state.workspace.users).filter(
-      user => usersId?.includes(user._id)
+      user => usersId?.includes(user.id)
     )
   })
   const usersText = usersTyping?.map(user => user.userName).join(', ')

@@ -8,7 +8,9 @@ export default function useClassifyMember({
 }) {
   const members = useAppSelector(state =>
     Object.values(state.workspace.members)
-      .filter(member => member.targetId === state.workspace.workspaceSettingId)
+      .filter(
+        member => member.workspaceId === state.workspace.workspaceSettingId
+      )
       .map(member => ({
         ...member,
         user: state.workspace.users[member.userId]
@@ -26,16 +28,12 @@ export default function useClassifyMember({
     activeMembers:
       members?.filter(
         member =>
-          member.status === EMemberStatus.Active &&
-          member.isAvailable &&
-          member.user.isAvailable
+          member.status === EMemberStatus.Active && member.user.isAvailable
       ) || [],
     invitedMembers:
       members?.filter(
         member =>
-          member.status === EMemberStatus.Invited &&
-          member.isAvailable &&
-          member.user.isAvailable
+          member.status === EMemberStatus.Invited && member.user.isAvailable
       ) || [],
     blockedMembers:
       members?.filter(
@@ -43,10 +41,8 @@ export default function useClassifyMember({
           [
             EMemberStatus.Declined,
             EMemberStatus.Kicked,
-            EMemberStatus.Left
-          ].includes(member.status) ||
-          !member.isAvailable ||
-          !member.user.isAvailable
+            EMemberStatus.Leaved
+          ].includes(member.status) || !member.user.isAvailable
       ) || []
   }
 }

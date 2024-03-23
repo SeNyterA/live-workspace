@@ -1,13 +1,18 @@
 import { useEffect } from 'react'
-import { TCard, TOption } from '../../types/board'
-import { TMessage } from '../../types/message'
-import { TWorkspace } from '../../types/workspace'
+import {
+  TCardExtra,
+  TMessageExtra,
+  TPropertyOptionExtra,
+  TReaction,
+  TReactionExtra,
+  TWorkspaceExtra
+} from '../../types'
 import { useSocketContext } from './SocketProvider'
 
 export type ApiSocketType = {
   message: {
     response: {
-      message: TMessage
+      message: TMessageExtra
       action: 'create' | 'update' | 'delete'
     }
   }
@@ -26,7 +31,8 @@ export type ApiSocketType = {
 
   workspace: {
     response: {
-      workspace: TWorkspace
+      workspace: TWorkspaceExtra
+      action?: 'create' | 'update' | 'delete'
     }
   }
 
@@ -39,14 +45,19 @@ export type ApiSocketType = {
 
   option: {
     response: {
-      option: TOption
+      option: TPropertyOptionExtra
       mode: 'create' | 'update' | 'delete'
     }
   }
   card: {
     response: {
-      card: TCard
+      card: TCardExtra
       mode: 'create' | 'update' | 'delete'
+    }
+  }
+  reaction: {
+    response: {
+      reaction: TReactionExtra
     }
   }
 }

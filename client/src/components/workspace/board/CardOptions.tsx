@@ -16,7 +16,7 @@ export default function CardOptions({
   const cards = useAppSelector(state =>
     Object.values(state.workspace.cards).filter(
       card =>
-        card.boardId === boardId &&
+        card.workspaceId === boardId &&
         card.properties?.[propertyId] === optionId &&
         card.title.toLowerCase().includes(searchValue?.toLowerCase() || '')
     )
@@ -42,7 +42,7 @@ export default function CardOptions({
           ref={dropProvided.innerRef}
         >
           {cards?.map((card, index) => (
-            <Draggable key={card._id} draggableId={card._id} index={index}>
+            <Draggable key={card.id} draggableId={card.id} index={index}>
               {dragProvided => (
                 <div
                   className='py-1'
