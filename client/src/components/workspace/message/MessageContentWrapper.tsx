@@ -37,16 +37,17 @@ export default function MessageContentWrapper() {
               size='sm'
               placeholder='Search on'
               leftSection={<IconSearch size={14} />}
-              className='flex h-[30px] max-w-[230px] flex-1 items-center rounded bg-gray-100'
+              className='flex h-[30px] max-w-[230px] flex-1 items-center rounded bg-gray-100 bg-gray-400/20'
               classNames={{
-                input: 'bg-transparent border-none min-h-[20px] h-[20px]'
+                input:
+                  'bg-transparent text-gray-100 border-none min-h-[20px] h-[20px]'
               }}
             />
 
             <ActionIcon
               variant='light'
               size={30}
-              className='bg-gray-100'
+              className='bg-gray-400/20'
               onClick={() => setOpenInfo(e => !e)}
             >
               <IconChevronRight
@@ -56,11 +57,14 @@ export default function MessageContentWrapper() {
               />
             </ActionIcon>
           </div>
-          <Divider variant='dashed' />
+          <Divider variant='dashed' className='mx-4 border-gray-200/20' />
 
           <MessageContent key={workspaceId} />
 
           <SendMessage
+          classNames={{
+            rootWrapper:'mx-2'
+          }}
             targetId={channelId || ''}
             createMessage={({ files, value }) => {
               sendWorkspaceMessage(
@@ -137,7 +141,7 @@ export default function MessageContentWrapper() {
 
         {openInfo && (
           <>
-            <Divider orientation='vertical' variant='dashed' />
+            <Divider orientation='vertical' variant='dashed' className='border-gray-200/20' />
             <Info />
           </>
         )}

@@ -17,7 +17,7 @@ export default function BoardContent() {
             <BoardHeader />
             <ActionIcon
               variant='light'
-              className='h-[30px] w-[30px] bg-gray-100'
+              className='h-[30px] w-[30px] bg-gray-400/20'
               onClick={() => setOpenInfo(e => !e)}
             >
               <IconChevronRight
@@ -27,13 +27,12 @@ export default function BoardContent() {
               />
             </ActionIcon>
           </div>
-          <Divider variant='dashed' />
+          <Divider variant='dashed' className='mx-4 border-gray-200/20' />
           <CardsContent />
         </div>
 
         {openInfo && (
           <>
-            <Divider orientation='vertical' variant='dashed' />
             <Info />
           </>
         )}

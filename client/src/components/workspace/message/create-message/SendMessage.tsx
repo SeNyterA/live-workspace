@@ -205,9 +205,15 @@ export default function SendMessage({
   return (
     <div className={`rootWrapper relative h-28 ${classNames?.rootWrapper}`}>
       <div
-        className={`editorWapper absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-300 bg-white ${classNames?.editorWrapper}`}
+        className={`editorWapper absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-200/40 ${classNames?.editorWrapper}`}
       >
-        <RichTextEditor editor={editor} className='border-none text-sm'>
+        <RichTextEditor
+          editor={editor}
+          className='border-none text-sm'
+          classNames={{
+            content: 'bg-transparent border-none text-sm'
+          }}
+        >
           {editor && (
             <BubbleMenu
               editor={editor}
@@ -268,7 +274,8 @@ export default function SendMessage({
             {props => (
               <Button
                 size='compact-sm'
-                variant='white'
+                variant='transparent'
+                className='bg-blue-400/20'
                 {...props}
                 loading={isPending}
               >
@@ -278,8 +285,9 @@ export default function SendMessage({
           </FileButton>
           <Divider orientation='vertical' />
           <Button
-            variant='light'
+            variant='transparent'
             size='compact-sm'
+            className='bg-blue-400/20'
             onClick={() => {
               _createMessage()
             }}

@@ -47,7 +47,7 @@ export default function TeamList() {
                 key={team.id}
                 className={`relative mx-auto mt-2 flex h-fit w-fit items-center justify-center p-0 first:mt-0 ${
                   teamId === team.id
-                    ? 'rounded-full ring-1 ring-offset-2'
+                    ? 'rounded-full ring-2 ring-offset-2 ring-blue-400'
                     : 'rounded-full '
                 }`}
                 variant='light'

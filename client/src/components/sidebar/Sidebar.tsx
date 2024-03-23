@@ -38,7 +38,7 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
   return (
     <NavLink
       classNames={{ label: 'truncate max-w-[220px] block flex-1' }}
-      className='p-1 pl-3'
+      className='p-1 pl-3 hover:bg-blue-400/10'
       label={
         <div className='flex items-center gap-2'>
           <span className='flex-1 truncate'>
@@ -76,7 +76,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className='flex w-72 flex-col gap-2 px-4 py-3'>
+      <div className='mb-6 flex w-72 flex-col gap-2 rounded-lg bg-white/10 px-4 py-3 '>
         <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
         <p className='line-clamp-3 text-gray-500'>
           {team ? team?.description : 'Wellcome to workspace'}
@@ -92,12 +92,13 @@ export default function Sidebar() {
 
         <div className='flex items-center justify-center gap-2'>
           <Input
-            className='flex h-[30px] flex-1 items-center rounded bg-gray-100'
+            className='flex h-[30px] flex-1 items-center rounded bg-gray-400/10'
             size='sm'
             placeholder='Search on workspace'
             leftSection={<IconSearch size={16} />}
             classNames={{
-              input: 'bg-transparent border-none min-h-[20px] h-[20px]'
+              input:
+                'bg-transparent text-gray-100 border-none min-h-[20px] h-[20px]'
             }}
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
@@ -107,6 +108,7 @@ export default function Sidebar() {
             size={30}
             variant='light'
             color='gray'
+            className='bg-gray-400/10'
             onClick={() =>
               dispatch(
                 workspaceActions.toggleWorkspaceSetting({
@@ -131,7 +133,7 @@ export default function Sidebar() {
             {team && (
               <>
                 <NavLink
-                  className='sticky top-0 z-10 mb-1 bg-white p-1'
+                  className='sticky top-0 z-10 mb-1 p-1 hover:bg-blue-400/10'
                   label='Boards'
                   leftSection={<IconLayoutKanban size={16} stroke={1.5} />}
                   active={path.pathname.includes('board')}
@@ -159,7 +161,7 @@ export default function Sidebar() {
                   </Watching>
 
                   <NavLink
-                    className='mb-2 p-1 pl-3 opacity-70'
+                    className='mb-2 p-1 pl-3 opacity-70 hover:bg-blue-400/20'
                     label={`Create board`}
                     rightSection={<IconPlus size={16} stroke={1.5} />}
                     onClick={() => {
@@ -169,7 +171,7 @@ export default function Sidebar() {
                 </NavLink>
 
                 <NavLink
-                  className='sticky top-0 z-10 mb-1 bg-white p-1'
+                  className='sticky top-0 z-10 mb-1 p-1 hover:bg-blue-400/10'
                   label='Channels'
                   leftSection={<IconHash size='1rem' stroke={1.5} />}
                   active={path.pathname.includes('channel')}
@@ -194,7 +196,7 @@ export default function Sidebar() {
                   </Watching>
 
                   <NavLink
-                    className='mb-2 p-1 pl-3 opacity-70'
+                    className='mb-2 p-1 pl-3 opacity-70 hover:bg-blue-400/20'
                     label={`Create channel`}
                     rightSection={<IconPlus size={16} stroke={1.5} />}
                     onClick={() => {
@@ -203,12 +205,12 @@ export default function Sidebar() {
                   />
                 </NavLink>
 
-                <Divider variant='dashed' />
+                <Divider variant='dashed' className='border-gray-200/20' />
               </>
             )}
 
             <NavLink
-              className='sticky top-0 z-10 mb-1 bg-white p-1'
+              className='sticky top-0 z-10 mb-1 p-1 hover:bg-blue-400/10'
               label='Groups'
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={!!groupId}
@@ -232,7 +234,7 @@ export default function Sidebar() {
               </Watching>
 
               <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
+                className='mb-2 p-1 pl-3 opacity-70 hover:bg-blue-400/20'
                 label={`Create group`}
                 rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {
@@ -242,7 +244,7 @@ export default function Sidebar() {
             </NavLink>
 
             <NavLink
-              className='sticky top-0 z-10 mb-1 bg-white p-1'
+              className='sticky top-0 z-10 mb-1 p-1 hover:bg-blue-400/10'
               label='Drirects'
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={!!directId}
@@ -266,7 +268,7 @@ export default function Sidebar() {
               </Watching>
 
               <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
+                className='mb-2 p-1 pl-3 opacity-70 hover:bg-blue-400/20'
                 label={`Create direct`}
                 rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {

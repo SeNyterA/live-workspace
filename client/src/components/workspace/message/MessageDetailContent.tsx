@@ -115,7 +115,7 @@ function MessageDetailContent({
       </Menu>
 
       <div
-        className={`group relative w-fit rounded bg-gray-100 p-1 ${
+        className={`group relative w-fit rounded bg-gray-400/20 p-1 ${
           message.replyToId && 'cursor-pointer'
         }`}
         key={message.id}

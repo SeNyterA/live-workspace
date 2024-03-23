@@ -35,7 +35,7 @@ function Reactions({
       {reactionsByUnified.map((reactions, index) => (
         <div
           key={reactions.toString()}
-          className={`cursor-pointer rounded bg-white p-0.5 transition hover:ring-1 hover:ring-blue-500 ${reactions.some(e => e.userId === getAppValue(state => state.auth.userInfo?.id)) && 'ring-1 ring-gray-300'}`}
+          className={`cursor-pointer rounded bg-blue-400/20 p-0.5 transition hover:ring-1 hover:ring-blue-500 ${reactions.some(e => e.userId === getAppValue(state => state.auth.userInfo?.id)) && 'ring-1 ring-gray-300/20'}`}
           onClick={() => {
             reactMessage({
               url: {
@@ -53,7 +53,7 @@ function Reactions({
           }}
         >
           {reactions[0].native}{' '}
-          <span className='text-xs text-gray-700'>{reactions.length}</span>
+          <span className='text-xs'>{reactions.length}</span>
         </div>
       ))}
     </div>

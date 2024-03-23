@@ -1,4 +1,4 @@
-import { Divider, LoadingOverlay } from '@mantine/core'
+import { LoadingOverlay } from '@mantine/core'
 import { createContext, ReactNode, useContext, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../hooks/useAppParams'
@@ -86,20 +86,22 @@ export default function Layout({ children }: { children: ReactNode }) {
   })
 
   return (
-    <div className='relative flex h-screen w-screen flex-col text-sm'>
+    <div className='relative flex h-screen w-screen flex-col bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat text-sm text-gray-100'>
       <LoadingOverlay
         visible={isPending}
+        classNames={{
+          overlay: 'bg-black/50'
+        }}
         overlayProps={{ radius: 'sm', blur: 2 }}
       />
       <AppHeader />
-      <Divider variant='dashed' />
-      <div className='flex flex-1'>
+
+      <div className='flex flex-1 bg-black/80'>
         <TeamList />
 
-        <Divider variant='dashed' orientation='vertical' />
         <div className='flex flex-1'>
           <Sidebar />
-          <Divider variant='dashed' orientation='vertical' />
+
           <layoutContext.Provider
             value={{
               thread,
