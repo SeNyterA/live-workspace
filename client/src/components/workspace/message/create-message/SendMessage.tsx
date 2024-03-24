@@ -92,7 +92,7 @@ export default function SendMessage({
   }
 
   const editor = useEditor({
-    onUpdate({}) {
+    onUpdate() {
       typing(targetId)
     },
 
@@ -302,8 +302,9 @@ export default function SendMessage({
       >
         <Typing messRefId={targetId} />
         <span>
-          Press <kbd className='bg-gray-400/30 rounded-sm'>⌘Enter</kbd> or{' '}
-          <kbd className='bg-gray-400/30 rounded-sm'>Alt Enter</kbd> to quickly send
+          Press <kbd className='rounded-sm bg-gray-400/30'>⌘Enter</kbd> or{' '}
+          <kbd className='rounded-sm bg-gray-400/30'>Alt Enter</kbd> to quickly
+          send
         </span>
       </p>
     </div>
