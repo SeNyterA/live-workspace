@@ -4,13 +4,13 @@ import { Redis } from 'ioredis'
 @Injectable()
 export class RedisService {
   readonly redisClient: Redis
-  // readonly subRedis: Redis
+  readonly subRedis: Redis
 
   constructor() {
     this.redisClient = new Redis(process.env.REDIS_URL, {
       password: process.env.REDIS_PASSWORD
     })
-    // this.subRedis = this.redisClient.duplicate()
+    this.subRedis = this.redisClient.duplicate()
   }
 
   async getKeysByPattern(pattern: string): Promise<string[]> {
@@ -25,10 +25,6 @@ export class RedisService {
     })
   }
 
-  // await this.redisService.redisClient.set(
-  //   `presence:${jwtUser.sub}`,
-  //   'online'
-  // )
   async getUsersPresence(userIds: string[]) {
     const usersPresence: { [userId: string]: any } = {}
     for (const userId of userIds) {

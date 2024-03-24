@@ -1,31 +1,23 @@
-import { useState } from 'react'
-import { useAppSelector } from '../../../redux/store'
-import {
-  ApiSocketType,
-  useAppOnSocket
-} from '../../../services/socket/useAppOnSocket'
+import { getAppValue, useAppSelector } from '../../../redux/store'
 
-export default function Typing({ messRefId }: { messRefId?: string }) {
-  const [userTypings, setUserTypings] =
-    useState<ApiSocketType['typing']['response'][]>()
-  useAppOnSocket({
-    key: 'typing',
-    resFunc: ({ targetId, userId, type }) => {
-      setUserTypings([...(userTypings || []), { targetId, userId, type }])
-    }
-  })
-
+export default function Typing({ targetId }: { targetId?: string }) {
   const usersTyping = useAppSelector(state => {
-    const usersId = userTypings
-      ?.filter(e => e.targetId === messRefId && e.type === 1)
-      .map(e => e.userId)
-
-    return Object.values(state.workspace.users).filter(
-      user => usersId?.includes(user.id)
-    )
+    return Object.entries(state.workspace.typing[targetId!])
   })
-  const usersText = usersTyping?.map(user => user.userName).join(', ')
-  const displayText = !!usersText && `${usersText} typing`
 
-  return <span>{displayText}</span>
+  console.log(targetId)
+
+  const users = usersTyping
+    ?.filter(([_, value]) => value)
+    .map(([key]) =>
+      getAppValue(
+        state =>
+          state.workspace.users[key]?.nickName ||
+          state.workspace.users[key]?.userName
+      )
+    )
+    .filter(e => !!e)
+    .join(', ')
+
+  return <span>{!!users && `${users} is typing.`}</span>
 }

@@ -26,7 +26,7 @@ export type ApiSocketType = {
     response: {
       targetId: string
       userId: string
-      type: 1 | 0
+      isTyping: boolean
     }
   }
 

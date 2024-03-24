@@ -300,7 +300,7 @@ export default function SendMessage({
       <p
         className={`info-wrapper absolute bottom-1 left-4 right-3 flex justify-between text-xs text-gray-300 ${classNames?.infoWrapper}`}
       >
-        <Typing messRefId={targetId} />
+        <Typing targetId={targetId} />
         <span>
           Press <kbd className='rounded-sm bg-gray-400/30'>⌘Enter</kbd> or{' '}
           <kbd className='rounded-sm bg-gray-400/30'>Alt Enter</kbd> to quickly

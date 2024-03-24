@@ -81,7 +81,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className='mb-4 flex w-72 flex-col gap-2 rounded-lg bg-cyan-900/30 px-4 py-3 shadow-lg '>
+      <div className='mb-4 flex w-72 flex-col gap-2 rounded-lg bg-gray-800/40 px-4 py-3 shadow-custom'>
         <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
         <p className='line-clamp-3 text-gray-500'>
           {team ? team?.description : 'Wellcome to workspace'}

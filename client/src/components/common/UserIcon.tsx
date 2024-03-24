@@ -11,7 +11,6 @@ export default function UserIcon({
   size?: number
   zIndex?: number
 }) {
-  console.log(user)
   const avatar = useAppSelector(state => state.workspace.files[user?.avatarId!])
   const presence = useAppSelector(state => state.workspace.presents[user?.id!])
   return (

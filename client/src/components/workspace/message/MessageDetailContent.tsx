@@ -1,6 +1,6 @@
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
-import { ActionIcon, Menu } from '@mantine/core'
+import { ActionIcon, Avatar, AvatarGroup, Menu } from '@mantine/core'
 import { Link } from '@mantine/tiptap'
 import {
   IconBrandThreads,

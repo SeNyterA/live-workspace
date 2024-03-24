@@ -33,6 +33,11 @@ type TWorkpsaceStore = {
   attachments: TAttachments
   settingPosition?: 'left' | 'right'
   presents: { [userId: string]: string }
+  typing: {
+    [workspaceId: string]: {
+      [userId: string]: boolean
+    }
+  }
 }
 
 const initialState: TWorkpsaceStore = {
@@ -49,7 +54,8 @@ const initialState: TWorkpsaceStore = {
   userReadedMessages: {},
   unreadCount: {},
   presents: {},
-  propertiesTracking: {}
+  propertiesTracking: {},
+  typing: {}
 }
 const workspaceSlice = createSlice({
   name: 'workspace',
@@ -76,6 +82,21 @@ const workspaceSlice = createSlice({
       state.workspaceSettingId = action.payload.workspaceSettingId
       if (action.payload.settingPosition)
         state.settingPosition = action.payload.settingPosition
+    },
+
+    toogleTyping: (
+      state,
+      action: PayloadAction<{
+        userId: string
+        workpsaceId: string
+        isTyping: boolean
+      }>
+    ) => {
+      if (!state.typing[action.payload.workpsaceId])
+        state.typing[action.payload.workpsaceId] = {}
+
+      state.typing[action.payload.workpsaceId][action.payload.userId] =
+        action.payload.isTyping
     }
   }
 })

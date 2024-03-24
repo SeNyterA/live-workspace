@@ -32,6 +32,23 @@ export class MessageService {
     this.server.to([message.workspaceId]).emit('message', { message })
   }
 
+  async incrUnreadMsgs({ message }: { message: Message }) {
+    const members = await this.prismaService.member.findMany({
+      where: {
+        workspaceId: message.workspaceId,
+        status: MemberStatus.Active
+      }
+    })
+
+    members.forEach(async member => {
+      await this.redisService.redisClient.hincrby(
+        `unread:${member.userId}`,
+        message.workspaceId,
+        1
+      )
+    })
+  }
+
   async createMessage({
     user,
     targetId,
@@ -75,6 +92,7 @@ export class MessageService {
     })
 
     this.server.to([targetId]).emit('message', { message: newMessage })
+    this.incrUnreadMsgs({ message: newMessage })
 
     return newMessage
   }

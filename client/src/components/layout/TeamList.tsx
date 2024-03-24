@@ -42,7 +42,7 @@ export default function TeamList() {
           <Avatar size={36} />
         </ActionIcon>
 
-        <Divider variant='dashed' className='mx-4' />
+        <Divider variant='dashed' className='mx-4 border-gray-400/20' />
         <div className='relative flex-1'>
           <ScrollArea
             className='absolute inset-0'
@@ -69,8 +69,8 @@ export default function TeamList() {
                   key={team.id}
                   className={`relative h-fit w-fit ${
                     teamId === team.id
-                      ? 'rounded-full ring-2 ring-blue-400'
-                      : 'rounded-full '
+                      ? 'rounded-full ring-2 ring-blue-400 shadow-custom'
+                      : 'rounded-full'
                   }`}
                   variant='light'
                   size='md'
@@ -97,7 +97,7 @@ export default function TeamList() {
             ))}
           </ScrollArea>
         </div>
-        <Divider variant='dashed' className='mx-4' />
+        <Divider variant='dashed' className='mx-4 border-gray-400/20' />
 
         <ActionIcon
           className='m mx-auto flex h-fit w-fit items-center justify-center rounded-full p-0'
