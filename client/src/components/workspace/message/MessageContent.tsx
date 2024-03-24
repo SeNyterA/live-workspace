@@ -26,15 +26,13 @@ export default function MessageContent() {
     duration: 300
   })
 
-  const loadMoreMessageIdRef = useRef<string>()
-
   const bottomRef = useRef<boolean>(false)
-  const { ref: loadMoreObserverRef, inView: loadMoreInView } = useInView({
+  const isCompleteRef = useRef<boolean>(false)
+
+  const { ref: loadMoreObserverRef, inView: loardMoreInview } = useInView({
     threshold: 0,
     onChange: inView => {
-      if (inView && !!loadMoreMessageIdRef.current) {
-        loadMoreMessageIdRef.current = messages[0].id
-
+      if (inView && !isCompleteRef.current && messages.length > 0) {
         appGetFn({
           key: 'workpsaceMessages',
           url: {
@@ -47,7 +45,10 @@ export default function MessageContent() {
               fromId: messages[0].id
             }
           },
-          onSucess({ messages }) {
+          onSucess({ messages, isCompleted }) {
+            // if (isCompleted) {
+            //   isCompleteRef.current = true
+            // }
             dispatch(
               workspaceActions.updateWorkspaceStore(
                 extractApi({
@@ -55,19 +56,12 @@ export default function MessageContent() {
                 })
               )
             )
-
-            setTimeout(() => {
-              targetRef.current = document.getElementById(
-                loadMoreMessageIdRef.current!
-              ) as any
-
-              scrollIntoView()
-            }, 0)
           }
         })
       }
     }
   })
+
   const { ref: bottomObserverRef, inView: bottomInview } = useInView({
     threshold: 0,
     onChange: inView => {
@@ -96,6 +90,10 @@ export default function MessageContent() {
         )
       )
 
+      if (bottomRef.current) {
+        scrollToBottom()
+      }
+
       // if (message.workspaceId === targetId) {
       //   emitScoket({
       //     key: 'readedMessage',
@@ -103,13 +101,6 @@ export default function MessageContent() {
       //     workspaceId: targetId
       //   })
       // }
-
-      setTimeout(() => {
-        if (true) {
-          targetRef.current = document.getElementById(message.id) as any
-          scrollIntoView()
-        }
-      }, 200)
     }
   })
 
@@ -138,29 +129,19 @@ export default function MessageContent() {
           })
         )
       )
-      if (!loadMoreMessageIdRef.current) {
-        setTimeout(() => {
-          scrollToBottom()
-        }, 0)
-
-        setTimeout(() => {
-          loadMoreMessageIdRef.current = messages[messages.length - 1].id
-        }, 1000)
-      }
     }
   })
 
-  const scrollToBottom = () => {
+  const scrollToTop = () => {
     const scrollableDiv = scrollableRef.current
     if (scrollableDiv) {
       scrollableDiv.scrollTop = scrollableDiv.scrollHeight
     }
   }
-
-  const scrollTo = (to: number) => {
+  const scrollToBottom = () => {
     const scrollableDiv = scrollableRef.current
     if (scrollableDiv) {
-      scrollableDiv.scrollTop = to
+      scrollableDiv.scrollTop = 0
     }
   }
 
@@ -173,7 +154,24 @@ export default function MessageContent() {
           scrollbarSize={6}
           onCompositionStart={e => console.log(e)}
           onCompositionEnd={e => console.log(e)}
+          classNames={{ viewport: 'scale-y-[-1]' }}
         >
+          <div className='relative'>
+            <div
+              ref={bottomObserverRef}
+              className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center bg-black'
+            />
+          </div>
+          <div className='scale-y-[-1]'>
+            {groupedMessages.map(groupMessage => (
+              <MessageGroup
+                key={groupMessage.messages[0].id}
+                messageGroup={groupMessage}
+                scrollableRef={scrollableRef}
+              />
+            ))}
+          </div>
+
           <div className='relative'>
             <div
               ref={loadMoreObserverRef}
@@ -183,22 +181,7 @@ export default function MessageContent() {
             </div>
             <div
               ref={loadMoreObserverRef}
-              className='absolute inset-0 bottom-[-400px] z-[-10] flex items-center justify-center'
-            />
-          </div>
-
-          {groupedMessages.map(groupMessage => (
-            <MessageGroup
-              key={groupMessage.messages[0].id}
-              messageGroup={groupMessage}
-              scrollableRef={scrollableRef}
-            />
-          ))}
-
-          <div className='relative'>
-            <div
-              ref={bottomObserverRef}
-              className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center'
+              className='absolute inset-0 bottom-[-400px] z-[-10] flex items-center justify-center bg-black'
             />
           </div>
         </ScrollArea>

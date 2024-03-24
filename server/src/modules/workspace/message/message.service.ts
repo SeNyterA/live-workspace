@@ -98,7 +98,6 @@ export class MessageService {
         }
       }
     })
-    console.log(newMessage)
 
     this.server.to([targetId]).emit('message', { message: newMessage })
     this.incrUnreadMsgs({ message: newMessage })
