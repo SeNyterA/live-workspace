@@ -5,6 +5,7 @@ import {
   EMemberRole,
   TCard,
   TMember,
+  TMemberExtra,
   TMessage,
   TPropertyOption,
   TUser,
@@ -287,8 +288,8 @@ export type ApiMutationType = {
       }
     }
     method: 'post'
-    payload: { member: TMember }
-    response: { member: TMember }
+    payload: { userId: string }
+    response: TMemberExtra
   }
 } & TChannelMutationApi &
   TUploadMutionApi &

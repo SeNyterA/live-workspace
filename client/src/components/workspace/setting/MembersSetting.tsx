@@ -3,32 +3,26 @@ import {
   Badge,
   Button,
   Divider,
-  Indicator,
   Loader,
   ScrollArea,
-  Select,
   TextInput
 } from '@mantine/core'
 import { IconPlus, IconSearch } from '@tabler/icons-react'
 import { memo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { getAppValue, useAppSelector } from '../../../redux/store'
+import { workspaceActions } from '../../../redux/slices/workspace.slice'
+import { getAppValue } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
-import {
-  EMemberRole,
-  EMemberStatus,
-  RoleWeights,
-  TMember,
-  TUser
-} from '../../../types'
-import { hasPermissionToOperate } from '../../../utils/helper'
+import { extractApi, TMember, TUser } from '../../../types'
 import MemberRole from '../../common/MemberRole'
+import UserIcon from '../../common/UserIcon'
 import useClassifyMember from './useClassifyMember'
 
 const User = memo(({ user }: { user: TUser }) => {
   const { mutateAsync, isPending } = useAppMutation('addWorkspaceMember')
+  const dispatch = useDispatch()
   return (
     <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
       <Watching
@@ -48,27 +42,37 @@ const User = memo(({ user }: { user: TUser }) => {
       <Button
         variant='outline'
         color='gray'
-        className='h-[30px] min-h-[30px] border-none border-gray-100 bg-gray-100'
+        className='h-[30px] min-h-[30px] border-none border-gray-100 bg-gray-400/10 hover:bg-gray-200/10'
         disabled={isPending}
         loading={isPending}
         onClick={() =>
-          mutateAsync({
-            url: {
-              baseUrl: '/workspaces/:workspaceId/members',
-              urlParams: {
-                workspaceId: getAppValue(
-                  state => state.workspace.workspaceSettingId
-                )!
+          mutateAsync(
+            {
+              url: {
+                baseUrl: '/workspaces/:workspaceId/members',
+                urlParams: {
+                  workspaceId: getAppValue(
+                    state => state.workspace.workspaceSettingId
+                  )!
+                }
+              },
+              method: 'post',
+              payload: {
+                userId: user.id
               }
             },
-            method: 'post',
-            payload: {
-              member: {
-                userId: user.id,
-                role: EMemberRole.Member
-              } as any
+            {
+              onSuccess(data, variables, context) {
+                dispatch(
+                  workspaceActions.updateWorkspaceStore(
+                    extractApi({
+                      members: [data]
+                    })
+                  )
+                )
+              }
             }
-          })
+          )
         }
       >
         Add
@@ -78,148 +82,12 @@ const User = memo(({ user }: { user: TUser }) => {
   )
 })
 
-const Member = memo(({ member }: { member: TMember }) => {
-  const dispatch = useDispatch()
-  const { mutateAsync: editWorkspaceMember, isPending } = useAppMutation(
-    'editWorkspaceMember',
-    {
-      mutationOptions: {
-        onSuccess(data, variables, context) {
-          // const { member, user } = parseMember(data.member)
-          // dispatch(
-          //   workspaceActions.updateWorkspaceStore({
-          //     members: { [`${member.workspaceId}_${member.userId}`]: member },
-          //     users: { [user!.id]: user! }
-          //   })
-          // )
-        }
-      }
-    }
-  )
-
-  const { enabled, operatorWeight } = hasPermissionToOperate({
-    operatorRole:
-      getAppValue(
-        state =>
-          Object.values(state.workspace.members).find(
-            e =>
-              e.userId === state.auth.userInfo?.id &&
-              e.workspaceId === state.workspace.workspaceSettingId
-          )?.role
-      ) || EMemberRole.Member,
-    targetRole: member.role
-  })
-
-  const user = useAppSelector(state => state.workspace.users[member.userId])
-  return (
-    <>
-      <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
-        <Indicator
-          inline
-          size={16}
-          offset={3}
-          position='bottom-end'
-          color='yellow'
-          withBorder
-          zIndex={1}
-        >
-          <Watching
-            watchingFn={state =>
-              state.workspace.files[
-                state.workspace.users[member.userId].avatarId!
-              ]?.path
-            }
-          >
-            {path => !!path && <Avatar src={path} size={32} />}
-          </Watching>
-        </Indicator>
-
-        <div className='flex flex-1 flex-col justify-center pt-1'>
-          <p className='max-w-[150px] truncate text-sm font-medium leading-4'>
-            {user?.userName}
-          </p>
-          <p className='leading-2 truncate text-xs text-gray-500'>
-            {user?.email}
-          </p>
-        </div>
-
-        {member.status === EMemberStatus.Invited ? (
-          <div className='flex h-[30px] min-h-[30px] items-center justify-center rounded border-none border-gray-100 bg-gray-100 px-4'>
-            Invited
-          </div>
-        ) : (
-          <Select
-            disabled={!enabled || isPending}
-            rightSection={isPending && <Loader size={12} />}
-            classNames={{
-              input:
-                'border-gray-100 border-none bg-gray-100 min-h-[30px] h-[30px]',
-              dropdown: 'pr-2'
-            }}
-            className='w-28'
-            data={[
-              {
-                group: 'Role',
-                items: [
-                  { label: EMemberRole.Member, value: EMemberRole.Member },
-                  {
-                    label: EMemberRole.Admin,
-                    value: EMemberRole.Admin,
-                    disabled:
-                      (operatorWeight || 0) < RoleWeights[EMemberRole.Admin]
-                  }
-                ]
-              },
-              {
-                group: 'Remove',
-                items: [{ label: 'Kick', value: 'Kick' }]
-              }
-            ]}
-            value={member.role}
-            onChange={role => {
-              editWorkspaceMember({
-                url: {
-                  baseUrl: '/workspaces/:workspaceId/members/:memberId',
-                  urlParams: {
-                    workspaceId: member.workspaceId,
-                    memberId: `${member.workspaceId}_${member.userId}`
-                  }
-                },
-                method: 'patch',
-                payload: {
-                  member: {
-                    role: role
-                  } as any
-                }
-              })
-            }}
-          />
-        )}
-      </div>
-    </>
-  )
-})
-
-const Member_ = ({ member }: { member: TMember }) => {
+const Member = ({ member }: { member: TMember }) => {
   return (
     <Watching watchingFn={state => state.workspace.users[member.userId]}>
       {user => (
         <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
-          <Indicator
-            inline
-            size={16}
-            offset={3}
-            position='bottom-end'
-            color='yellow'
-            withBorder
-            zIndex={1}
-          >
-            <Watching
-              watchingFn={state => state.workspace.files[user?.avatarId!]}
-            >
-              {file => <Avatar src={file?.path} size={32} />}
-            </Watching>
-          </Indicator>
+          <UserIcon user={user} />
 
           <div className='flex flex-1 flex-col justify-center'>
             <p className='max-w-[150px] truncate font-medium leading-4'>
@@ -313,7 +181,7 @@ export default function MembersSetting() {
       {invitedMembers.length > 0 && (
         <>
           {invitedMembers.map(member => (
-            <Member_
+            <Member
               member={member}
               key={`${member.workspaceId}_${member.userId}`}
             />
@@ -325,7 +193,7 @@ export default function MembersSetting() {
         <>
           <Divider className='mt-3 border-gray-100/20' variant='dashed' />
           {activeMembers.map(member => (
-            <Member_
+            <Member
               member={member}
               key={`${member.workspaceId}_${member.userId}`}
             />
@@ -337,7 +205,7 @@ export default function MembersSetting() {
         <>
           <Divider className='mt-3' variant='dashed' />
           {blockedMembers.map(member => (
-            <Member_
+            <Member
               member={member}
               key={`${member.workspaceId}_${member.userId}`}
             />

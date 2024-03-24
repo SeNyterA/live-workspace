@@ -1,7 +1,7 @@
 import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
 import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
-import { EMemberStatus } from '../../../../types'
+import { EMemberStatus, RoleWeights } from '../../../../types'
 import MemberRole from '../../../common/MemberRole'
 import UserIcon from '../../../common/UserIcon'
 
@@ -15,21 +15,14 @@ export default function Members() {
       .map(member => ({
         member,
         user: {
-          ...state.workspace.users[member.userId],
-          avatar:
-            state.workspace.files[
-              state.workspace.users[member.userId].avatarId!
-            ]
+          ...state.workspace.users[member.userId]
         }
       }))
   )
 
-  const enableMembers = members
-    ?.filter(
-      ({ member, user }) =>
-        user?.isAvailable && member.status === EMemberStatus.Active
-    )
-    .sort((a, b) => (a.member.role > b.member.role ? -1 : 1))
+  const enableMembers = members?.sort(
+    (a, b) => RoleWeights[b.member.role] - RoleWeights[a.member.role]
+  )
 
   return (
     <NavLink
@@ -53,7 +46,7 @@ export default function Members() {
       {!!enableMembers?.length &&
         enableMembers?.map(({ member, user }) => (
           <div
-            className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
+            className='mt-2 flex max-w-full flex-1 items-center gap-3 shadow-custom first:mt-0'
             key={user?.id}
           >
             {/* <Indicator
@@ -68,13 +61,13 @@ export default function Members() {
               <Avatar src={user?.avatar?.path} size={32} />
             </Indicator> */}
 
-            <UserIcon user={user} size={32}/>
+            <UserIcon user={user} size={32} />
 
             <div className='flex flex-1 flex-col justify-center'>
               <p className='max-w-[150px] truncate font-medium leading-4'>
                 {user?.userName}
               </p>
-              <p className='leading-2 max-w-[150px] truncate text-xs text-gray-500'>
+              <p className='leading-2 max-w-[150px] truncate text-xs text-gray-300'>
                 {user?.email}
               </p>
             </div>

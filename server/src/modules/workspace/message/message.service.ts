@@ -42,6 +42,8 @@ export class MessageService {
 
     members.forEach(async member => {
       {
+        if (member.userId === message.createdById) return
+
         const count = await this.redisService.redisClient.hincrby(
           `unread:${member.userId}`,
           message.workspaceId,
@@ -96,6 +98,7 @@ export class MessageService {
         }
       }
     })
+    console.log(newMessage)
 
     this.server.to([targetId]).emit('message', { message: newMessage })
     this.incrUnreadMsgs({ message: newMessage })

@@ -1,7 +1,16 @@
-import { Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post
+} from '@nestjs/common'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { MemberService } from './member.service'
+import { Member } from '@prisma/client'
 
 @Controller()
 export class MemberController {
@@ -12,7 +21,7 @@ export class MemberController {
     return this.memberService.getInvitions({ user })
   }
 
-  @Post('workspace/:workspaceId/accept-invition')
+  @Post('workspaces/:workspaceId/accept-invition')
   acceptInvition(
     @HttpUser() user: TJwtUser,
     @Param('workspaceId') workspaceId: string
@@ -23,7 +32,7 @@ export class MemberController {
     })
   }
 
-  @Post('workspace/:workspaceId/decline-invition')
+  @Post('workspaces/:workspaceId/decline-invition')
   declineInvition(
     @HttpUser() user: TJwtUser,
     @Param('workspaceId') workspaceId: string
@@ -34,7 +43,7 @@ export class MemberController {
     })
   }
 
-  @Delete('workspace/:workspaceId/members')
+  @Delete('workspaces/:workspaceId/members')
   leaveWorkspace(
     @HttpUser() user: TJwtUser,
     @Param('workspaceId') workspaceId: string
@@ -45,19 +54,26 @@ export class MemberController {
     })
   }
 
-  @Get('workspace/:workspaceId/members')
+  @Get('workspaces/:workspaceId/members')
   workspaceMembers(
     @HttpUser() user: TJwtUser,
     @Param('workspaceId') workspaceId: string
   ) {}
 
-  @Post('workspace/:workspaceId/members')
+  @Post('workspaces/:workspaceId/members')
   inviteMember(
     @HttpUser() user: TJwtUser,
-    @Param('workspaceId') workspaceId: string
-  ) {}
+    @Param('workspaceId') workspaceId: string,
+    @Body() { userId }: Member
+  ) {
+    return this.memberService.inviteMember({
+      user,
+      workspaceId,
+      memberUserId: userId
+    })
+  }
 
-  @Patch('workspace/:workspaceId/members/:memberId')
+  @Patch('workspaces/:workspaceId/members/:memberId')
   updateWorkspaceMember(
     @HttpUser() user: TJwtUser,
     @Param('workspaceId') workspaceId: string

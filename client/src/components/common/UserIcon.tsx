@@ -22,7 +22,7 @@ export default function UserIcon({
       color={presence === 'online' ? 'green' : 'gray'}
       processing={presence === 'online'}
       zIndex={zIndex}
-      disabled={!user}
+      disabled={!user || !presence}
       className='h-fit w-fit'
     >
       <Avatar src={avatar?.path} size={size}>

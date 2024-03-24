@@ -123,6 +123,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   useAppOnSocket({
     key: 'unread',
     resFunc: data => {
+      console.log(data)
       dispatch(
         workspaceActions.updateWorkspaceStore({
           unreads: {
@@ -142,7 +143,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur' />
+      <div className='fixed inset-0 bg-[url(/auth-bg-2.jpg)] bg-cover bg-center bg-no-repeat blur' />
       {/* <div className='fixed inset-0 bg-slate-950 bg-cover bg-center bg-no-repeat blur' /> */}
       <div className='fixed inset-0 flex h-screen w-screen flex-col text-sm text-gray-100'>
         <LoadingOverlay

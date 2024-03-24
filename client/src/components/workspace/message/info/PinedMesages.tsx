@@ -112,7 +112,7 @@ export default function PinedMesages() {
             )}
           </Watching>
           {index < pinedMessages.length - 1 && (
-            <Divider className='my-2' variant='dashed' />
+            <Divider className='my-2 border-gray-200/20' variant='dashed' />
           )}
         </Fragment>
       ))}

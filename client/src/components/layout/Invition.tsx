@@ -35,7 +35,7 @@ export default function Invition({ invition }: { invition: TMemberExtra }) {
             acceptInvition({
               method: 'post',
               url: {
-                baseUrl: '/workspace/:workspaceId/accept-invition',
+                baseUrl: '/workspaces/:workspaceId/accept-invition',
                 urlParams: {
                   workspaceId: invition.workspaceId
                 }
