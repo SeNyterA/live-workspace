@@ -1,4 +1,3 @@
-import { JwtService } from '@nestjs/jwt'
 import {
   MessageBody,
   SubscribeMessage,
@@ -25,11 +24,10 @@ export interface CustomSocket extends Socket {
     origin: '*'
   }
 })
-export class SocketGateway {
+export class MessageGateway {
   @WebSocketServer()
   server: Server
   constructor(
-    private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
     private readonly prismaService: PrismaService
   ) {
@@ -95,14 +93,27 @@ export class SocketGateway {
     this.redisService.redisClient.del(`typing:${targetId}:${user.sub}`)
   }
 
-  @SubscribeMessage('checkpointMessage')
-  async checkpointMessage(
+  @SubscribeMessage('readedMessage')
+  async readedMessage(
     @WsUser() user: TJwtUser,
     @MessageBody()
     { messageId, workspaceId }: { messageId: string; workspaceId: string }
   ) {
-    const hashKey = `${user.sub}:${messageId}`
-    const fieldValue = JSON.stringify({ workspaceId })
-    await this.redisService.redisClient.hset('messageCheckpoint', hashKey, fieldValue)
+    this.redisService.redisClient.hset(
+      `messageCheckpoint:${workspaceId}`,
+      user.sub,
+      messageId
+    )
+    this.redisService.redisClient.hset(`unread:${user.sub}`, workspaceId, 0)
+
+    this.server.to([workspaceId]).emit('checkpointMessage', {
+      userId: user.sub,
+      messageId,
+      workspaceId
+    })
+    this.server.to([user.sub]).emit('unread', {
+      workspaceId,
+      count: 0
+    })
   }
 }

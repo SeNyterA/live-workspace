@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_GUARD } from '@nestjs/core'
+import { RemovePasswordMiddleware } from './middlewares/removePassword.middleware'
 import { AuthGuard } from './modules/auth/auth.guard'
 import { AuthModule } from './modules/auth/auth.module'
 import { AWSModule } from './modules/aws/aws.module'
@@ -11,7 +12,6 @@ import { SocketModule } from './modules/socket/socket.module'
 import { UserModule } from './modules/user/user.module'
 import { MessageModule } from './modules/workspace/message/message.module'
 import { WorkspaceModule } from './modules/workspace/workspace.module'
-import { RemovePasswordMiddleware } from './middlewares/removePassword.middleware'
 
 @Module({
   imports: [

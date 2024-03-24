@@ -1,15 +1,12 @@
 import { JwtService } from '@nestjs/jwt'
 import {
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer
 } from '@nestjs/websockets'
 import { MemberStatus } from '@prisma/client'
 import { Server, Socket } from 'socket.io'
-import { WsUser } from 'src/decorators/users.decorator'
 import { RedisService } from 'src/modules/redis/redis.service'
 import { PrismaService } from '../prisma/prisma.service'
 export type TJwtUser = {
@@ -35,9 +32,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
     private readonly prismaService: PrismaService
-  ) {
-    this.listenDeleteKey()
-  }
+  ) {}
 
   async subscribeToWorkspaces({
     client,
@@ -66,26 +61,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return members
   }
 
-  // async listenDeleteKey() {
-  //   this.redisService.subRedis.on(
-  //     'pmessage',
-  //     async (pattern, channel, message) => {
-  //       console.log(pattern, channel, message)
-  //       const [prefix] = message.split(':')
-  //       if (prefix === 'typing') {
-  //         const [, targetId, userId] = message.split(':')
-  //         this.toggleTyping({ targetId, userId, isTyping: false })
-  //       }
-  //       if (prefix === 'presence') {
-  //         const userId = message.split(':')[1]
-  //         this.server.emit('userPresence', { [userId]: Date.now().toString() })
-  //       }
-  //     }
-  //   )
-
-  //   this.redisService.subRedis.psubscribe('__keyevent@0__:expired')
-  // }
-
   async handleConnection(client: CustomSocket, ...args: any[]) {
     try {
       if (!client?.handshake?.auth?.token) throw new Error('Missing token')
@@ -96,6 +71,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       )
 
       if (!jwtUser?.sub) throw new Error('Invalid user')
+
+      const validUser = await this.prismaService.user.findUnique({
+        where: {
+          id: jwtUser.sub,
+          isAvailable: true
+        }
+      })
+      if (!validUser) throw new Error('Invalid user')
+
       client.user = jwtUser
 
       const members = await this.subscribeToWorkspaces({
@@ -135,44 +119,5 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
         })
       this.redisService.redisClient.set(`presence:${userId}`, now)
     } catch (error) {}
-  }
-
-  async toggleTyping({
-    targetId,
-    isTyping,
-    userId
-  }: {
-    targetId: string
-    userId: string
-    isTyping: boolean
-  }) {
-    this.server.to([targetId]).emit('typing', {
-      userId,
-      targetId,
-      isTyping
-    })
-  }
-
-  @SubscribeMessage('startTyping')
-  async startTyping(
-    @WsUser() user: TJwtUser,
-    @MessageBody() { targetId }: { targetId: string }
-  ) {
-    this.toggleTyping({ targetId, userId: user.sub, isTyping: true })
-    this.redisService.redisClient.set(
-      `typing:${targetId}:${user.sub}`,
-      '',
-      'EX',
-      3
-    )
-  }
-
-  @SubscribeMessage('stopTyping')
-  async stopTyping(
-    @WsUser() user: TJwtUser,
-    @MessageBody() { targetId }: { targetId: string }
-  ) {
-    this.toggleTyping({ targetId, userId: user.sub, isTyping: false })
-    this.redisService.redisClient.del(`typing:${targetId}:${user.sub}`)
   }
 }

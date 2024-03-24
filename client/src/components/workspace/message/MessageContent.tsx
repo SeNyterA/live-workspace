@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux'
 import useAppParams from '../../../hooks/useAppParams'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { appGetFn, useAppQuery } from '../../../services/apis/useAppQuery'
+import { useAppEmitSocket } from '../../../services/socket/useAppEmitSocket'
 import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
 import { extractApi } from '../../../types'
 import { useMessageContent } from './MessageContentProvider'
@@ -16,6 +17,7 @@ export default function MessageContent() {
   const { messages, groupedMessages } = useMessageContent()
   const { channelId, directId, groupId } = useAppParams()
   const targetId = channelId || groupId || directId || ''
+  const emitScoket = useAppEmitSocket()
 
   const { scrollableRef, targetRef, scrollIntoView } = useScrollIntoView<
     HTMLDivElement,
@@ -93,6 +95,14 @@ export default function MessageContent() {
           extractApi({ messages: [message] })
         )
       )
+
+      // if (message.workspaceId === targetId) {
+      //   emitScoket({
+      //     key: 'readedMessage',
+      //     messageId: message.id,
+      //     workspaceId: targetId
+      //   })
+      // }
 
       setTimeout(() => {
         if (true) {

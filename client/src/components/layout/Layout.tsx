@@ -120,6 +120,26 @@ export default function Layout({ children }: { children: ReactNode }) {
     }
   })
 
+  useAppOnSocket({
+    key: 'unread',
+    resFunc: data => {
+      dispatch(
+        workspaceActions.updateWorkspaceStore({
+          unreads: {
+            [data.workspaceId]: data.count
+          }
+        })
+      )
+    }
+  })
+
+  useAppOnSocket({
+    key: 'checkpointMessage',
+    resFunc: data => {
+      console.log(data)
+    }
+  })
+
   return (
     <>
       <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur' />

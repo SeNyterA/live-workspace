@@ -52,6 +52,7 @@ export default function TeamList() {
             {teams?.map(team => (
               <Indicator
                 inline
+                disabled
                 processing
                 color='#F3F4F6'
                 size={12}

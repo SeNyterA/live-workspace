@@ -31,11 +31,11 @@ import CreateWorkspace, {
 
 function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
   const { channelId, groupId, directId, boardId } = useAppParams()
-  const unreadCount = useAppSelector(
-    state => state.workspace.unreadCount[workspace.id]
-  )
+  const targetId = channelId || groupId || directId || boardId
   const { switchTo } = useAppControlParams()
-
+  const unReadCount = useAppSelector(
+    state => state.workspace.unreads[workspace.id]
+  )
   return (
     <NavLink
       classNames={{
@@ -48,12 +48,17 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
           <span className='flex-1 truncate'>
             {workspace.title || workspace.id}
           </span>
-          {unreadCount && (
+          {/* {unReadCount && (
             <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center text-xs leading-4 text-gray-800'>
-              {unreadCount}
+              {unReadCount}
             </span>
-          )}
-          <Indicator processing className='mr-2' />
+          )} */}
+
+          <Indicator
+            processing
+            disabled={!unReadCount || workspace.id === targetId}
+            className='mr-2'
+          />
         </div>
       }
       active={[channelId, groupId, directId, boardId].includes(workspace.id)}

@@ -5,8 +5,6 @@ export default function Typing({ targetId }: { targetId?: string }) {
     return Object.entries(state.workspace.typing[targetId!])
   })
 
-  console.log(targetId)
-
   const users = usersTyping
     ?.filter(([_, value]) => value)
     .map(([key]) =>

@@ -41,11 +41,17 @@ export class MessageService {
     })
 
     members.forEach(async member => {
-      await this.redisService.redisClient.hincrby(
-        `unread:${member.userId}`,
-        message.workspaceId,
-        1
-      )
+      {
+        const count = await this.redisService.redisClient.hincrby(
+          `unread:${member.userId}`,
+          message.workspaceId,
+          1
+        )
+        this.server.to([member.userId]).emit('unread', {
+          workspaceId: message.workspaceId,
+          count
+        })
+      }
     })
   }
 

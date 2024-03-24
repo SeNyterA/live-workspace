@@ -30,10 +30,6 @@ export type ApiSocketType = {
     }
   }
 
-  userReadedMessage: {
-    response: string
-  }
-
   workspace: {
     response: {
       workspace: TWorkspaceExtra
@@ -44,13 +40,6 @@ export type ApiSocketType = {
   workspaces: {
     response: {
       workspaces: TWorkspaceExtra[]
-    }
-  }
-
-  unReadCount: {
-    response: {
-      count: number
-      targetId: string
     }
   }
 
@@ -69,6 +58,20 @@ export type ApiSocketType = {
   reaction: {
     response: {
       reaction: TReactionExtra
+    }
+  }
+
+  unread: {
+    response: {
+      workspaceId: string
+      count: number
+    }
+  }
+  checkpointMessage: {
+    response: {
+      userId: string
+      messageId: string
+      workspaceId: string
     }
   }
 }

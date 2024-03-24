@@ -38,6 +38,9 @@ type TWorkpsaceStore = {
       [userId: string]: boolean
     }
   }
+  unreads: {
+    [workspaceId: string]: number
+  }
 }
 
 const initialState: TWorkpsaceStore = {
@@ -55,7 +58,8 @@ const initialState: TWorkpsaceStore = {
   unreadCount: {},
   presents: {},
   propertiesTracking: {},
-  typing: {}
+  typing: {},
+  unreads: {}
 }
 const workspaceSlice = createSlice({
   name: 'workspace',
