@@ -189,11 +189,13 @@ export default function MessageContent() {
           </div>
 
           <div className='relative flex w-full scale-y-[-1] items-center justify-center'>
-            {isPending && <Loader size='xs' type='dots' className='my-2' />}
+            {isPending && !messages.length && (
+              <Loader size='xs' type='dots' className='my-2' />
+            )}
             <div
               ref={loadMoreObserverRef}
               className='invisible absolute inset-0 bottom-[-800px] -z-10 flex justify-center bg-black'
-            ></div>
+            />
           </div>
         </ScrollArea>
       )}

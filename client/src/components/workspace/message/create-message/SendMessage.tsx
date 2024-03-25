@@ -205,7 +205,7 @@ export default function SendMessage({
   return (
     <div className={`rootWrapper relative h-28 ${classNames?.rootWrapper}`}>
       <div
-        className={`editorWapper absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-200/40 ${classNames?.editorWrapper}`}
+        className={`editorWapper absolute bottom-6 bg-[#101b24]/95 left-2 right-2 z-10 rounded-md border border-dashed border-gray-200/40 ${classNames?.editorWrapper}`}
       >
         <RichTextEditor
           editor={editor}

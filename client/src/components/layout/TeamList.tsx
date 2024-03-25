@@ -50,51 +50,57 @@ export default function TeamList() {
             classNames={{ viewport: 'py-1 teamlist-viewport' }}
           >
             {teams?.map(team => (
-              <Indicator
-                inline
-                disabled
-                processing
-                color='#F3F4F6'
-                size={12}
-                offset={5}
-                zIndex={1}
-                className='mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-1'
-                classNames={
-                  {
-                    // indicator:
-                    //   'bg-white before:content-[attr(data-before)] before:block before:bg-white'
-                  }
-                }
+              <Watching
+                watchingFn={state => {
+                  return Object.values(state.workspace.workspaces)
+                    .filter(e => e.workspaceParentId === team.id)
+                    .some(e => !!state.workspace.unreads[e.id])
+                }}
               >
-                <ActionIcon
-                  key={team.id}
-                  className={`relative h-fit w-fit ${
-                    teamId === team.id
-                      ? 'rounded-full ring-2 ring-blue-400 shadow-custom'
-                      : 'rounded-full'
-                  }`}
-                  variant='light'
-                  size='md'
-                  onClick={() => {
-                    switchTeam({ teamId: team.id })
-                  }}
-                >
-                  <Watching
-                    watchingFn={state => state.workspace.files[team.avatarId!]}
+                {enable => (
+                  <Indicator
+                    inline
+                    disabled={!enable}
+                    processing
+                    color='white'
+                    size={12}
+                    offset={5}
+                    zIndex={1}
+                    className='mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-1'
                   >
-                    {avatar => (
-                      <Avatar
-                        radius='sm'
-                        size={36}
-                        className={teamId === team.id ? 'rounded' : ''}
-                        src={avatar?.path}
+                    <ActionIcon
+                      key={team.id}
+                      className={`relative h-fit w-fit ${
+                        teamId === team.id
+                          ? 'rounded-full shadow-custom ring-2 ring-blue-400'
+                          : 'rounded-full'
+                      }`}
+                      variant='light'
+                      size='md'
+                      onClick={() => {
+                        switchTeam({ teamId: team.id })
+                      }}
+                    >
+                      <Watching
+                        watchingFn={state =>
+                          state.workspace.files[team.avatarId!]
+                        }
                       >
-                        {team.title?.slice(0, 1)}
-                      </Avatar>
-                    )}
-                  </Watching>
-                </ActionIcon>
-              </Indicator>
+                        {avatar => (
+                          <Avatar
+                            radius='sm'
+                            size={36}
+                            className={teamId === team.id ? 'rounded' : ''}
+                            src={avatar?.path}
+                          >
+                            {team.title?.slice(0, 1)}
+                          </Avatar>
+                        )}
+                      </Watching>
+                    </ActionIcon>
+                  </Indicator>
+                )}
+              </Watching>
             ))}
           </ScrollArea>
         </div>
