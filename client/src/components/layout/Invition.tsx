@@ -55,7 +55,7 @@ export default function Invition({ invition }: { invition: TMemberExtra }) {
             declineInvition({
               method: 'post',
               url: {
-                baseUrl: '/workspace/:workspaceId/decline-invition',
+                baseUrl: '/workspaces/:workspaceId/decline-invition',
                 urlParams: {
                   workspaceId: invition.workspaceId
                 }
