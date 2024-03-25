@@ -1,63 +1,19 @@
 import { ActionIcon, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { result } from 'lodash'
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult
+} from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import useRenderCount from '../../../hooks/useRenderCount'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
-import { TPropertyOption } from '../../../types'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
-
-const getOptionWithNewOrder = ({
-  draggableId,
-  to,
-  from,
-  options
-}: {
-  options?: TPropertyOption[]
-  from: number
-  to?: number
-  draggableId: string
-}) => {
-  try {
-    const optionTaget = options?.find(e => e.id === draggableId)
-
-    if (!optionTaget) return
-
-    if (to === from || to === undefined) return
-
-    const optionBefore = options?.[to - 1]
-    const optionAfter = options?.[to]
-
-    if (to === 0 && optionAfter) {
-      return {
-        newOption: { ...optionTaget, order: optionAfter.order / 2 },
-        oldOption: optionTaget
-      }
-    }
-
-    if (to === (options || []).length - 1 && optionBefore) {
-      return {
-        newOption: { ...optionTaget, order: optionBefore.order + 0.5 },
-        oldOption: optionTaget
-      }
-    }
-
-    if (optionAfter && optionBefore) {
-      return {
-        newOption: {
-          ...optionTaget,
-          order: (optionAfter.order + optionBefore.order) / 2
-        },
-        oldOption: optionTaget
-      }
-    }
-  } catch (error) {
-    return
-  }
-}
 
 const getNewOptionOrder = ({
   from,
@@ -79,6 +35,7 @@ const getNewOptionOrder = ({
 
   if (options.length === 0) return
 
+  console.log({ to, length: options.length })
   if (to === 0)
     return { oldOption: options[from], newOrder: options[0].order / 2 }
   if (to === options.length - 1)
@@ -96,28 +53,61 @@ const getNewOptionOrder = ({
   }
 }
 
-const getCardUpdated = ({
-  cardId,
-  optionId,
-  trackingId
-}: {
-  trackingId: string
-  cardId: string
-  optionId: string
-}) => {
-  const card = getAppValue(state => state.workspace.cards[cardId])
+const getNewCard = (result: DropResult, propertyId: string) => {
+  if (!result.destination) return
+  if (
+    result.source.droppableId === result.destination.droppableId &&
+    result.source.index === result.destination.index
+  )
+    return
+  const card = getAppValue(state => state.workspace.cards[result.draggableId])
   if (!card) return
 
-  return {
-    newCard: {
-      ...card,
-      properties: {
-        ...card.properties,
-        [trackingId]: optionId
+  const cards =
+    getAppValue(state =>
+      Object.values(state.workspace.cards)
+        .filter(
+          card =>
+            card.properties?.[propertyId] === result.destination?.droppableId
+        )
+        .sort((a, b) => a.order - b.order)
+    ) || []
+  let newOrder: number
+
+  if (result.destination.droppableId !== result.source.droppableId) {
+    if (result.destination.index === 0) {
+      if (cards.length === 0) {
+        newOrder = new Date().getTime()
+      } else {
+        newOrder = cards[0].order / 2
       }
-    },
-    oldCard: card
+    } else if (result.destination.index === cards.length) {
+      newOrder = new Date().getTime()
+    } else {
+      newOrder =
+        (cards[result.destination.index].order +
+          cards[result.destination.index - 1].order) /
+        2
+    }
+  } else {
+    if (result.destination.index === 0) {
+      newOrder = cards[0].order / 2
+    } else if (result.destination.index === cards.length - 1) {
+      newOrder = cards[cards.length - 1].order + 0.5
+    } else if (result.destination.index < result.source.index) {
+      newOrder =
+        (cards[result.destination.index].order +
+          cards[result.destination.index - 1].order) /
+        2
+    } else {
+      newOrder =
+        (cards[result.destination.index].order +
+          cards[result.destination.index + 1].order) /
+        2
+    }
   }
+
+  return { newOrder, oldCard: card }
 }
 
 export default function CardsContent() {
@@ -149,6 +139,7 @@ export default function CardsContent() {
           >
             <DragDropContext
               onDragEnd={result => {
+                console.log(result)
                 if (result.type === 'column') {
                   console.log({ result })
 
@@ -207,27 +198,40 @@ export default function CardsContent() {
                   )
                 }
                 if (result.type === 'card') {
-                  const data = getCardUpdated({
-                    cardId: result.draggableId,
-                    optionId: result.destination?.droppableId || '',
-                    trackingId: trackingId!
-                  })
+                  getNewCard(result, trackingId!)
+
+                  const data = getNewCard(result, trackingId!)
                   if (!data) return
-                  const { newCard, oldCard } = data
+                  const { newOrder, oldCard } = data
                   dispatch(
                     workspaceActions.updateWorkspaceStore({
-                      cards: { [newCard.id]: newCard }
+                      cards: {
+                        [oldCard.id]: {
+                          ...oldCard,
+                          properties: {
+                            ...oldCard.properties,
+                            [trackingId!]: result.destination?.droppableId
+                          },
+                          order: newOrder
+                        }
+                      }
                     })
                   )
                   updateCard(
                     {
                       url: {
                         baseUrl: 'boards/:boardId/cards/:cardId',
-                        urlParams: { boardId: boardId!, cardId: newCard.id }
+                        urlParams: { boardId: boardId!, cardId: oldCard.id }
                       },
                       method: 'patch',
                       payload: {
-                        card: { properties: newCard.properties } as any
+                        card: {
+                          properties: {
+                            ...oldCard.properties,
+                            [trackingId!]: result.destination?.droppableId
+                          },
+                          order: newOrder
+                        } as any
                       }
                     },
                     {

@@ -84,6 +84,7 @@ export const generateBoardData = ({
     {
       title: 'Fix login page UI',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -92,6 +93,7 @@ export const generateBoardData = ({
     {
       title: 'Implement backend authentication',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -100,6 +102,7 @@ export const generateBoardData = ({
     {
       title: 'Design landing page',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -108,6 +111,7 @@ export const generateBoardData = ({
     {
       title: 'Add forgot password functionality',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -116,6 +120,7 @@ export const generateBoardData = ({
     {
       title: 'Optimize database queries',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -124,6 +129,7 @@ export const generateBoardData = ({
     {
       title: 'Update documentation',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -132,6 +138,7 @@ export const generateBoardData = ({
     {
       title: 'Refactor CSS codebase',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -140,6 +147,7 @@ export const generateBoardData = ({
     {
       title: 'Fix email sending issue',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -148,6 +156,7 @@ export const generateBoardData = ({
     {
       title: 'Implement user profile settings',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -156,6 +165,7 @@ export const generateBoardData = ({
     {
       title: 'Conduct user testing',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -164,6 +174,7 @@ export const generateBoardData = ({
     {
       title: 'Update website images',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -172,6 +183,7 @@ export const generateBoardData = ({
     {
       title: 'Fix broken links',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -180,6 +192,7 @@ export const generateBoardData = ({
     {
       title: 'Optimize frontend performance',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -188,6 +201,7 @@ export const generateBoardData = ({
     {
       title: 'Add new feature: Dark mode',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -196,6 +210,7 @@ export const generateBoardData = ({
     {
       title: 'Integrate payment gateway',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -204,6 +219,7 @@ export const generateBoardData = ({
     {
       title: 'Fix broken API endpoints',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -212,6 +228,7 @@ export const generateBoardData = ({
     {
       title: 'Create user onboarding tutorial',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -220,6 +237,7 @@ export const generateBoardData = ({
     {
       title: 'Update terms of service',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -228,6 +246,7 @@ export const generateBoardData = ({
     {
       title: 'Fix responsive design issues',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -236,6 +255,7 @@ export const generateBoardData = ({
     {
       title: 'Implement email notifications',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -244,6 +264,7 @@ export const generateBoardData = ({
     {
       title: 'Design new logo',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -252,6 +273,7 @@ export const generateBoardData = ({
     {
       title: 'Update admin dashboard UI',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -260,6 +282,7 @@ export const generateBoardData = ({
     {
       title: 'Fix security vulnerabilities',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -268,6 +291,7 @@ export const generateBoardData = ({
     {
       title: 'Add social media sharing functionality',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -276,6 +300,7 @@ export const generateBoardData = ({
     {
       title: 'Create automated tests',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -284,6 +309,7 @@ export const generateBoardData = ({
     {
       title: 'Update privacy policy',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -292,6 +318,7 @@ export const generateBoardData = ({
     {
       title: 'Fix broken login API',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -300,6 +327,7 @@ export const generateBoardData = ({
     {
       title: 'Implement two-factor authentication',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -308,6 +336,7 @@ export const generateBoardData = ({
     {
       title: 'Optimize server response time',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -316,6 +345,7 @@ export const generateBoardData = ({
     {
       title: 'Update user interface text',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -324,6 +354,7 @@ export const generateBoardData = ({
     {
       title: 'Fix broken signup form',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -332,6 +363,7 @@ export const generateBoardData = ({
     {
       title: 'Implement file upload functionality',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -340,6 +372,7 @@ export const generateBoardData = ({
     {
       title: 'Add support for multiple languages',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -348,6 +381,7 @@ export const generateBoardData = ({
     {
       title: 'Create user feedback survey',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -356,6 +390,7 @@ export const generateBoardData = ({
     {
       title: 'Update FAQ section',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -364,6 +399,7 @@ export const generateBoardData = ({
     {
       title: 'Fix broken checkout process',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -372,6 +408,7 @@ export const generateBoardData = ({
     {
       title: 'Implement live chat support',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -380,6 +417,7 @@ export const generateBoardData = ({
     {
       title: 'Design email templates',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -388,6 +426,7 @@ export const generateBoardData = ({
     {
       title: 'Update product pricing',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -396,6 +435,7 @@ export const generateBoardData = ({
     {
       title: 'Fix broken password reset functionality',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -404,6 +444,7 @@ export const generateBoardData = ({
     {
       title: 'Add subscription plans',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -412,6 +453,7 @@ export const generateBoardData = ({
     {
       title: 'Create user testimonials section',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -420,6 +462,7 @@ export const generateBoardData = ({
     {
       title: 'Update product images',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -428,6 +471,7 @@ export const generateBoardData = ({
     {
       title: 'Fix broken contact form',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -436,6 +480,7 @@ export const generateBoardData = ({
     {
       title: 'Implement feedback submission feature',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -444,6 +489,7 @@ export const generateBoardData = ({
     {
       title: 'Design newsletter templates',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -452,6 +498,7 @@ export const generateBoardData = ({
     {
       title: 'Update product descriptions',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -460,6 +507,7 @@ export const generateBoardData = ({
     {
       title: 'Fix broken product search functionality',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -468,6 +516,7 @@ export const generateBoardData = ({
     {
       title: 'Add product comparison feature',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -476,6 +525,7 @@ export const generateBoardData = ({
     {
       title: 'Create product demo videos',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`
@@ -484,6 +534,7 @@ export const generateBoardData = ({
     {
       title: 'Update customer support documentation',
       workspaceId: boardId,
+      order: Math.random() * 100,
       properties: {
         [properties[0].id]: options[Math.floor(Math.random() * 6)].id,
         [properties[1].id]: `${(Math.random() * 100) % 100}%`

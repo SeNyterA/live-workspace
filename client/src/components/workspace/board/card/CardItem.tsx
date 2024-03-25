@@ -27,8 +27,7 @@ function CardItem({ card }: { card: TCard }) {
         }
       />
       <p className='line-clamp-2 flex-1 rounded'>
-        {card.title}On the other hand, we denounce with righteous indignation
-        and dislike men who are so
+        {card.title} {card.order}
       </p>
 
       <div className='flex items-center text-gray-600'>

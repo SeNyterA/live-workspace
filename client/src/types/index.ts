@@ -191,6 +191,7 @@ export type TCard = {
   createdAt: Date
   updatedAt: Date
   isAvailable: boolean
+  order: number
   detail?: any
   properties?: any
   thumbnailId?: string

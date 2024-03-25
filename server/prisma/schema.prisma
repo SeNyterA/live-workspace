@@ -231,6 +231,7 @@ model Card {
   isAvailable Boolean  @default(true)
   detail      Json?
   properties  Json?
+  order       Float    @default(1.0)
 
   thumbnail   File?   @relation("CardThumbnail", fields: [thumbnailId], references: [id])
   thumbnailId String?

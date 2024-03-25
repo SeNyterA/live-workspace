@@ -48,7 +48,7 @@ export default function BoardHeader() {
         />
       </label>
 
-      <label className='flex cursor-pointer items-center justify-center gap-1 rounded'>
+      {/* <label className='flex cursor-pointer items-center justify-center gap-1 rounded'>
         <p className='ml-1'>Sort by:</p>
         <Select
           classNames={{
@@ -68,7 +68,7 @@ export default function BoardHeader() {
             propertyCheckingId && setSortBy(propertyCheckingId as any)
           }
         />
-      </label>
+      </label> */}
 
       <Input
         className='flex h-[30px] items-center rounded bg-gray-400/20'

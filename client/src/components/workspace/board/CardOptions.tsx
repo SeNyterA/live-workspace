@@ -13,6 +13,26 @@ export default function CardOptions({
 }) {
   const { boardId } = useAppParams()
   const { sortBy, searchValue } = useBoard()
+  // const cards = useAppSelector(state =>
+  //   Object.values(state.workspace.cards).filter(
+  //     card =>
+  //       card.workspaceId === boardId &&
+  //       card.properties?.[propertyId] === optionId &&
+  //       card.title.toLowerCase().includes(searchValue?.toLowerCase() || '')
+  //   )
+  // )?.sort((a, b) => {
+  //   switch (sortBy) {
+  //     case 'label':
+  //       return a.title.localeCompare(b.title)
+  //     case 'createdAt':
+  //       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  //     case 'updatedAt':
+  //       return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+  //     default:
+  //       return a.title.localeCompare(b.title)
+  //   }
+  // })
+
   const cards = useAppSelector(state =>
     Object.values(state.workspace.cards).filter(
       card =>
@@ -20,18 +40,7 @@ export default function CardOptions({
         card.properties?.[propertyId] === optionId &&
         card.title.toLowerCase().includes(searchValue?.toLowerCase() || '')
     )
-  )?.sort((a, b) => {
-    switch (sortBy) {
-      case 'label':
-        return a.title.localeCompare(b.title)
-      case 'createdAt':
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      case 'updatedAt':
-        return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
-      default:
-        return a.title.localeCompare(b.title)
-    }
-  })
+  )?.sort((a, b) => a.order - b.order)
 
   return (
     <Droppable droppableId={optionId} type='card'>
