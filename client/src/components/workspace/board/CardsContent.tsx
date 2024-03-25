@@ -83,9 +83,16 @@ const getNewOptionOrder = ({
     return { oldOption: options[from], newOrder: options[0].order / 2 }
   if (to === options.length - 1)
     return { oldOption: options[from], newOrder: options[to].order + 0.5 }
-  return {
-    oldOption: options[from],
-    newOrder: (options[to].order + options[to - 1].order) / 2
+  if (from > to)
+    return {
+      oldOption: options[from],
+      newOrder: (options[to].order + options[to - 1].order) / 2
+    }
+  if (from < to) {
+    return {
+      oldOption: options[from],
+      newOrder: (options[to].order + options[to + 1].order) / 2
+    }
   }
 }
 
@@ -274,7 +281,7 @@ export default function CardsContent() {
                               className='sticky top-0'
                             >
                               <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-black bg-gray-900/90 px-2 pr-1'>
-                                <span>{option.title}</span>
+                                <span>{option.title + option.order}</span>
                                 <ActionIcon
                                   variant='transparent'
                                   aria-label='Settings'
