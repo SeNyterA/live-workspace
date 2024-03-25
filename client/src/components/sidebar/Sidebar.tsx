@@ -24,7 +24,12 @@ import useAppParams from '../../hooks/useAppParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import { EWorkspaceType, TWorkspace } from '../../types'
+import {
+  EMemberRole,
+  EMemberStatus,
+  EWorkspaceType,
+  TWorkspace
+} from '../../types'
 import CreateWorkspace, {
   getDefaultValue
 } from '../workspace/create/CreateWorkspace'
@@ -149,7 +154,7 @@ export default function Sidebar() {
                   active={path.pathname.includes('board')}
                   defaultOpened={!!boardId}
                   classNames={{
-                    children: 'pl-5'
+                    children: 'pl-5 mb-2'
                   }}
                 >
                   <Watching
@@ -170,14 +175,30 @@ export default function Sidebar() {
                     )}
                   </Watching>
 
-                  <NavLink
-                    className='mb-2 p-1 pl-3 opacity-70 hover:bg-blue-400/20'
-                    label={`Create board`}
-                    rightSection={<IconPlus size={16} stroke={1.5} />}
-                    onClick={() => {
-                      setToggle(EWorkspaceType.Board)
-                    }}
-                  />
+                  <Watching
+                    watchingFn={state =>
+                      !!Object.values(state.workspace.members).find(
+                        e =>
+                          e.workspaceId === teamId &&
+                          e.role === EMemberRole.Admin &&
+                          e.status === EMemberStatus.Active &&
+                          e.userId === state.auth.userInfo?.id
+                      )
+                    }
+                  >
+                    {canCreate =>
+                      canCreate && (
+                        <NavLink
+                          className='p-1 pl-3 opacity-70 hover:bg-blue-400/20'
+                          label={`Create board`}
+                          rightSection={<IconPlus size={16} stroke={1.5} />}
+                          onClick={() => {
+                            setToggle(EWorkspaceType.Board)
+                          }}
+                        />
+                      )
+                    }
+                  </Watching>
                 </NavLink>
 
                 <NavLink
@@ -186,6 +207,9 @@ export default function Sidebar() {
                   leftSection={<IconHash size='1rem' stroke={1.5} />}
                   active={path.pathname.includes('channel')}
                   defaultOpened={!!channelId}
+                  classNames={{
+                    children: 'pl-5 mb-2'
+                  }}
                 >
                   <Watching
                     watchingFn={state =>
@@ -205,14 +229,30 @@ export default function Sidebar() {
                     )}
                   </Watching>
 
-                  <NavLink
-                    className='mb-2 p-1 pl-3 opacity-70 hover:bg-blue-400/20'
-                    label={`Create channel`}
-                    rightSection={<IconPlus size={16} stroke={1.5} />}
-                    onClick={() => {
-                      setToggle(EWorkspaceType.Channel)
-                    }}
-                  />
+                  <Watching
+                    watchingFn={state =>
+                      Object.values(state.workspace.members).find(
+                        e =>
+                          e.workspaceId === teamId &&
+                          e.role === EMemberRole.Admin &&
+                          e.status === EMemberStatus.Active &&
+                          e.userId === state.auth.userInfo?.id
+                      )
+                    }
+                  >
+                    {canCreate =>
+                      canCreate && (
+                        <NavLink
+                          className='p-1 pl-3 opacity-70 hover:bg-blue-400/20'
+                          label={`Create channel`}
+                          rightSection={<IconPlus size={16} stroke={1.5} />}
+                          onClick={() => {
+                            setToggle(EWorkspaceType.Channel)
+                          }}
+                        />
+                      )
+                    }
+                  </Watching>
                 </NavLink>
 
                 <Divider variant='dashed' className='border-gray-200/20' />
@@ -225,7 +265,9 @@ export default function Sidebar() {
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={!!groupId}
               defaultOpened={!!groupId}
-              classNames={{ children: 'w-full' }}
+              classNames={{
+                children: 'pl-5 mb-2'
+              }}
             >
               <Watching
                 watchingFn={state =>
@@ -244,7 +286,7 @@ export default function Sidebar() {
               </Watching>
 
               <NavLink
-                className='mb-2 p-1 pl-3 opacity-70 hover:bg-blue-400/20'
+                className='p-1 pl-3 opacity-70 hover:bg-blue-400/20'
                 label={`Create group`}
                 rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {
@@ -259,7 +301,9 @@ export default function Sidebar() {
               leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
               active={!!directId}
               defaultOpened={!!directId}
-              classNames={{ children: 'w-full' }}
+              classNames={{
+                children: 'pl-5 mb-2'
+              }}
             >
               <Watching
                 watchingFn={state =>
@@ -278,7 +322,7 @@ export default function Sidebar() {
               </Watching>
 
               <NavLink
-                className='mb-2 p-1 pl-3 opacity-70 hover:bg-blue-400/20'
+                className='p-1 pl-3 opacity-70 hover:bg-blue-400/20'
                 label={`Create direct`}
                 rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {

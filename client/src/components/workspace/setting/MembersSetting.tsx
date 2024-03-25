@@ -17,7 +17,7 @@ import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
 import { extractApi, TMember, TUser } from '../../../types'
 import MemberRole from '../../common/MemberRole'
-import UserIcon from '../../common/UserIcon'
+import UserAvatar from '../../common/UserAvatar'
 import useClassifyMember from './useClassifyMember'
 
 const User = memo(({ user }: { user: TUser }) => {
@@ -87,7 +87,7 @@ const Member = ({ member }: { member: TMember }) => {
     <Watching watchingFn={state => state.workspace.users[member.userId]}>
       {user => (
         <div className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'>
-          <UserIcon user={user} />
+          <UserAvatar user={user} />
 
           <div className='flex flex-1 flex-col justify-center'>
             <p className='max-w-[150px] truncate font-medium leading-4'>

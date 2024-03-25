@@ -17,7 +17,7 @@ import { useAppSelector } from '../../../../redux/store'
 import Watching from '../../../../redux/Watching'
 import { useAppQuery } from '../../../../services/apis/useAppQuery'
 import { updateLabelMention } from '../../../../utils/helper'
-import UserIcon from '../../../common/UserIcon'
+import UserAvatar from '../../../common/UserAvatar'
 import Attachments from '../detail/Attachments'
 
 export default function PinedMesages() {
@@ -82,7 +82,7 @@ export default function PinedMesages() {
           >
             {createBy => (
               <div className='flex gap-2 rounded first:mt-2'>
-                <UserIcon user={createBy} />
+                <UserAvatar user={createBy} />
 
                 <div className='flex-1'>
                   <p className='font-medium'>

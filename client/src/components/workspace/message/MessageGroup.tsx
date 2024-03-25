@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { useAppSelector } from '../../../redux/store'
 import { EMessageType } from '../../../types'
-import UserIcon from '../../common/UserIcon'
+import UserAvatar from '../../common/UserAvatar'
 import { TGroupedMessage } from './MessageContentProvider'
 import MessageDetailContent from './MessageDetailContent'
 
@@ -36,7 +36,7 @@ export default function MessageGroup({
         isOwner ? 'justify-end' : 'justify-start'
       } ${classNames?.wrapper}`}
     >
-      {!isOwner && <UserIcon user={createdByUser} />}
+      {!isOwner && <UserAvatar user={createdByUser} />}
 
       <div className={`flex flex-col ${isOwner ? 'items-end' : 'items-start'}`}>
         {!isOwner && (

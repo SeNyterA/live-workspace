@@ -59,6 +59,36 @@ const getOptionWithNewOrder = ({
   }
 }
 
+const getNewOptionOrder = ({
+  from,
+  to,
+  trackingId
+}: {
+  from: number
+  to?: number
+  trackingId: string
+}) => {
+  if (to === from || to === undefined) return
+
+  const options =
+    getAppValue(state =>
+      Object.values(state.workspace.options)
+        .filter(option => option.propertyId === trackingId)
+        .sort((a, b) => a.order - b.order)
+    ) || []
+
+  if (options.length === 0) return
+
+  if (to === 0)
+    return { oldOption: options[from], newOrder: options[0].order / 2 }
+  if (to === options.length - 1)
+    return { oldOption: options[from], newOrder: options[to].order + 0.5 }
+  return {
+    oldOption: options[from],
+    newOrder: (options[to].order + options[to - 1].order) / 2
+  }
+}
+
 const getCardUpdated = ({
   cardId,
   optionId,
@@ -114,20 +144,21 @@ export default function CardsContent() {
               onDragEnd={result => {
                 if (result.type === 'column') {
                   console.log({ result })
-                  const data = getOptionWithNewOrder({
-                    draggableId: result.draggableId,
+
+                  const data = getNewOptionOrder({
                     from: result.source.index,
-                    to: result.destination?.index || 0,
-                    options
+                    to: result.destination?.index,
+                    trackingId: trackingId!
                   })
 
-                  console.log({ data })
                   if (!data) return
 
-                  const { newOption, oldOption } = data
+                  const { newOrder, oldOption } = data
                   dispatch(
                     workspaceActions.updateWorkspaceStore({
-                      options: { [newOption.id]: newOption }
+                      options: {
+                        [oldOption.id]: { ...oldOption, order: newOrder }
+                      }
                     })
                   )
 
@@ -140,11 +171,11 @@ export default function CardsContent() {
                         urlParams: {
                           boardId: boardId!,
                           propertyId: trackingId!,
-                          optionId: newOption.id
+                          optionId: oldOption.id
                         }
                       },
                       payload: {
-                        order: newOption.order
+                        order: newOrder
                       }
                     },
                     {
@@ -242,7 +273,7 @@ export default function CardsContent() {
                               {...dragProvided.dragHandleProps}
                               className='sticky top-0'
                             >
-                              <div className='flex h-9 items-center justify-between rounded border border-gray-300 px-2 pr-1 bg-gray-900/90 bg-black'>
+                              <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-black bg-gray-900/90 px-2 pr-1'>
                                 <span>{option.title}</span>
                                 <ActionIcon
                                   variant='transparent'
