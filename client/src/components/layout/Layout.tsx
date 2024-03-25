@@ -144,7 +144,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur' />
-      {/* <div className='fixed inset-0 bg-slate-950 bg-cover bg-center bg-no-repeat blur' /> */}
+      {/* <div className='fixed inset-0 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-slate-500 to-90% bg-cover bg-center bg-no-repeat blur' /> */}
       <div className='fixed inset-0 flex h-screen w-screen flex-col text-sm text-gray-100'>
         <LoadingOverlay
           visible={isPending}

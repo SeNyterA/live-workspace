@@ -1,11 +1,11 @@
 import { Loader, ScrollArea } from '@mantine/core'
 import { useScrollIntoView } from '@mantine/hooks'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../../hooks/useAppParams'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
-import { appGetFn, useAppQuery } from '../../../services/apis/useAppQuery'
+import { useAppQuery } from '../../../services/apis/useAppQuery'
 import { useAppEmitSocket } from '../../../services/socket/useAppEmitSocket'
 import { useAppOnSocket } from '../../../services/socket/useAppOnSocket'
 import { extractApi } from '../../../types'
@@ -17,7 +17,7 @@ export default function MessageContent() {
   const { messages, groupedMessages } = useMessageContent()
   const { channelId, directId, groupId } = useAppParams()
   const targetId = channelId || groupId || directId || ''
-  const emitScoket = useAppEmitSocket()
+  const emitSocket = useAppEmitSocket()
 
   const { scrollableRef, targetRef, scrollIntoView } = useScrollIntoView<
     HTMLDivElement,
@@ -28,36 +28,40 @@ export default function MessageContent() {
 
   const bottomRef = useRef<boolean>(false)
   const isCompleteRef = useRef<boolean>(false)
+  const loadMoreLoadingRef = useRef<boolean>(false)
+  const [loadBeforeId, setLoadBeforeId] = useState<string>()
+  const messageLastId = useRef<string>()
 
-  const { ref: loadMoreObserverRef, inView: loardMoreInview } = useInView({
+  const { ref: loadMoreObserverRef } = useInView({
     threshold: 0,
     onChange: inView => {
-      if (inView && !isCompleteRef.current && messages.length > 0) {
-        appGetFn({
-          key: 'workpsaceMessages',
-          url: {
-            baseUrl: 'workspaces/:workspaceId/messages',
-            urlParams: {
-              workspaceId: targetId
-            },
-            queryParams: {
-              size: 50,
-              fromId: messages[0].id
-            }
-          },
-          onSucess({ messages, isCompleted }) {
-            // if (isCompleted) {
-            //   isCompleteRef.current = true
-            // }
-            dispatch(
-              workspaceActions.updateWorkspaceStore(
-                extractApi({
-                  messages: messages
-                })
-              )
-            )
-          }
-        })
+      if (inView && !isCompleteRef.current && !loadMoreLoadingRef.current) {
+        setLoadBeforeId(messages[0].id)
+        // appGetFn({
+        //   key: 'workpsaceMessages',
+        //   url: {
+        //     baseUrl: 'workspaces/:workspaceId/messages',
+        //     urlParams: {
+        //       workspaceId: targetId
+        //     },
+        //     queryParams: {
+        //       size: 50,
+        //       fromId: messages[0].id
+        //     }
+        //   },
+        //   onSucess({ messages, isCompleted }) {
+        //     if (isCompleted) {
+        //       isCompleteRef.current = true
+        //     }
+        //     dispatch(
+        //       workspaceActions.updateWorkspaceStore(
+        //         extractApi({
+        //           messages: messages
+        //         })
+        //       )
+        //     )
+        //   }
+        // }).finally(() => {})
       }
     }
   })
@@ -93,14 +97,6 @@ export default function MessageContent() {
       if (bottomRef.current) {
         scrollToBottom()
       }
-
-      // if (message.workspaceId === targetId) {
-      //   emitScoket({
-      //     key: 'readedMessage',
-      //     messageId: message.id,
-      //     workspaceId: targetId
-      //   })
-      // }
     }
   })
 
@@ -112,7 +108,8 @@ export default function MessageContent() {
         workspaceId: targetId
       },
       queryParams: {
-        size: 50
+        size: 100,
+        fromId: loadBeforeId
       }
     },
     options: {
@@ -121,7 +118,8 @@ export default function MessageContent() {
       refetchOnMount: false,
       refetchOnWindowFocus: false
     },
-    onSucess({ messages }) {
+    onSucess({ messages, isCompleted }) {
+      isCompleteRef.current = isCompleted
       dispatch(
         workspaceActions.updateWorkspaceStore(
           extractApi({
@@ -131,6 +129,9 @@ export default function MessageContent() {
       )
     }
   })
+  useEffect(() => {
+    loadMoreLoadingRef.current = isPending
+  }, [isPending])
 
   const scrollToTop = () => {
     const scrollableDiv = scrollableRef.current
@@ -145,24 +146,39 @@ export default function MessageContent() {
     }
   }
 
+  useEffect(() => {
+    if (
+      !!messages.length &&
+      messageLastId.current !== messages[messages.length - 1].id
+    ) {
+      messageLastId.current = messages[messages.length - 1].id
+      emitSocket({
+        key: 'readedMessage',
+        messageId: messages[messages.length - 1].id,
+        workspaceId: targetId
+      })
+    }
+  }, [messages])
+
   return (
     <div className='relative flex-1'>
       {messages.length > 0 && (
         <ScrollArea
           className='absolute inset-0 overflow-hidden'
           viewportRef={scrollableRef}
-          scrollbarSize={6}
+          scrollbarSize={0}
           onCompositionStart={e => console.log(e)}
           onCompositionEnd={e => console.log(e)}
           classNames={{ viewport: 'scale-y-[-1]' }}
         >
-          <div className='relative'>
+          <div className='relative scale-y-[-1]'>
             <div
               ref={bottomObserverRef}
-              className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center bg-black'
+              className='absolute inset-0 top-[-300px] z-[-10] flex items-center justify-center'
             />
           </div>
-          <div className='scale-y-[-1]'>
+
+          <div className='z-10 scale-y-[-1]'>
             {groupedMessages.map(groupMessage => (
               <MessageGroup
                 key={groupMessage.messages[0].id}
@@ -172,17 +188,12 @@ export default function MessageContent() {
             ))}
           </div>
 
-          <div className='relative'>
+          <div className='relative flex w-full scale-y-[-1] items-center justify-center'>
+            {isPending && <Loader size='xs' type='dots' className='my-2' />}
             <div
               ref={loadMoreObserverRef}
-              className='flex items-center justify-center'
-            >
-              {isPending && <Loader size='xs' type='dots' />}
-            </div>
-            <div
-              ref={loadMoreObserverRef}
-              className='absolute inset-0 bottom-[-400px] z-[-10] flex items-center justify-center bg-black'
-            />
+              className='invisible absolute inset-0 bottom-[-800px] -z-10 flex justify-center bg-black'
+            ></div>
           </div>
         </ScrollArea>
       )}

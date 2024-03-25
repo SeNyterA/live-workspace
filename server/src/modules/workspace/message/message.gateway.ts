@@ -99,18 +99,18 @@ export class MessageGateway {
     @MessageBody()
     { messageId, workspaceId }: { messageId: string; workspaceId: string }
   ) {
-    this.redisService.redisClient.hset(
-      `messageCheckpoint:${workspaceId}`,
-      user.sub,
-      messageId
-    )
+    // this.redisService.redisClient.hset(
+    //   `messageCheckpoint:${workspaceId}`,
+    //   user.sub,
+    //   messageId
+    // )
     this.redisService.redisClient.hset(`unread:${user.sub}`, workspaceId, 0)
 
-    this.server.to([workspaceId]).emit('checkpointMessage', {
-      userId: user.sub,
-      messageId,
-      workspaceId
-    })
+    // this.server.to([workspaceId]).emit('checkpointMessage', {
+    //   userId: user.sub,
+    //   messageId,
+    //   workspaceId
+    // })
     this.server.to([user.sub]).emit('unread', {
       workspaceId,
       count: 0

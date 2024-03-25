@@ -32,7 +32,7 @@ export default function MessageGroup({
 
   return (
     <div
-      className={`my-3 flex gap-2 px-4 first:mt-8 ${
+      className={`my-3 flex gap-2 px-4 ${
         isOwner ? 'justify-end' : 'justify-start'
       } ${classNames?.wrapper}`}
     >

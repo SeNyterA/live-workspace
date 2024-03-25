@@ -15,6 +15,7 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BsGithub, BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { auth, googleProvider } from '../../firebase/firebase'
 import { authActions } from '../../redux/slices/auth.slice'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
@@ -27,8 +28,28 @@ type TAuthForm = Pick<TUser, 'email' | 'userName'> & {
 
 export default function Authentication() {
   const [type, setType] = useState<'register' | 'login'>('login')
-  const { mutateAsync: login } = useAppMutation('login')
-  const { mutateAsync: loginWithSocial } = useAppMutation('loginWithSocial')
+  const navigate = useNavigate()
+  // const { redirect } = useAppQueryParams<{ redirect: string }>()
+  const { mutateAsync: login } = useAppMutation('login', {
+    mutationOptions: {
+      onSuccess(data) {
+        dispatch(authActions.loginSuccess(data))
+        // const redirect = new URLSearchParams(location.search).get('redirect')
+        // console.log(redirect)
+        // navigate(redirect || '/')
+      }
+    }
+  })
+  const { mutateAsync: loginWithSocial } = useAppMutation('loginWithSocial', {
+    mutationOptions: {
+      onSuccess(data) {
+        dispatch(authActions.loginSuccess(data))
+        // const redirect = new URLSearchParams(location.search).get('redirect')
+        // console.log(redirect)
+        // navigate(redirect || '/')
+      }
+    }
+  })
   const { mutateAsync: register } = useAppMutation('register')
   const dispatch = useDispatch()
 
@@ -59,18 +80,11 @@ export default function Authentication() {
               signInWithPopup(auth, googleProvider)
                 .then(async result => {
                   const token = await result.user.getIdToken()
-                  loginWithSocial(
-                    {
-                      url: { baseUrl: '/auth/loginWithSocial' },
-                      method: 'post',
-                      payload: { token }
-                    },
-                    {
-                      onSuccess(data) {
-                        dispatch(authActions.loginSuccess(data))
-                      }
-                    }
-                  )
+                  loginWithSocial({
+                    url: { baseUrl: '/auth/loginWithSocial' },
+                    method: 'post',
+                    payload: { token }
+                  })
                 })
                 .catch(error => {})
             }}
@@ -89,23 +103,16 @@ export default function Authentication() {
         <form
           onSubmit={handleSubmit(data => {
             if (type === 'login') {
-              login(
-                {
-                  method: 'post',
-                  url: {
-                    baseUrl: '/auth/login'
-                  },
-                  payload: {
-                    userNameOrEmail: data.email,
-                    password: data.password
-                  }
+              login({
+                method: 'post',
+                url: {
+                  baseUrl: '/auth/login'
                 },
-                {
-                  onSuccess(data) {
-                    dispatch(authActions.loginSuccess(data))
-                  }
+                payload: {
+                  userNameOrEmail: data.email,
+                  password: data.password
                 }
-              )
+              })
             }
 
             if (type === 'register') {

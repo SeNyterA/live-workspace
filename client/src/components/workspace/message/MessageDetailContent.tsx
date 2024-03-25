@@ -240,11 +240,11 @@ function MessageDetailContent({
             className='absolute right-0 top-0 translate-x-3 translate-y-[-8px] rounded text-yellow-500'
           />
         )}
-        <p
+        {/* <p
           className={`invisible absolute top-[50%] translate-y-[-50%] text-gray-300 group-hover:visible ${isOwner ? 'left-0 translate-x-[-110%]' : 'right-0 translate-x-[110%]'} text-xs text-gray-300 ${message.isPinned ? 'hidden' : ''}`}
         >
           {dayjs(message.createdAt).format('HH:mm')}
-        </p>
+        </p> */}
       </div>
     </div>
   )

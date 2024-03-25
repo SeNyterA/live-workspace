@@ -213,6 +213,7 @@ export default function SendMessage({
           classNames={{
             content: 'bg-transparent border-none text-sm'
           }}
+          autoFocus
         >
           {editor && (
             <BubbleMenu
@@ -241,6 +242,7 @@ export default function SendMessage({
                 _createMessage()
               }
             }}
+            autoFocus
           />
         </RichTextEditor>
 

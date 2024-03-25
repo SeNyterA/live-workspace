@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
 import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Login from '../components/auth/Login'
@@ -37,13 +35,23 @@ function PrivateRoute() {
   return isAuthenticated ? (
     <SocketProvider>{user && <Outlet />}</SocketProvider>
   ) : (
-    <Navigate to='/auth/login' />
+    <Navigate
+      to={`/auth/login?redirect=${location.pathname + location.search}`}
+    />
   )
 }
 
 function PublicOnlyRoute() {
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated)
-  return !isAuthenticated ? <Outlet /> : <Navigate to='/team/personal' />
+  return !isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate
+      to={
+        new URLSearchParams(location.search).get('redirect') || '/team/personal'
+      }
+    />
+  )
 }
 
 export default function useRouteElements() {
