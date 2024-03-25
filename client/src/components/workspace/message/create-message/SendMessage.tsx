@@ -251,7 +251,7 @@ export default function SendMessage({
             <Badge
               key={file.id}
               variant='transparent'
-              className='h-[26px] rounded bg-gray-100'
+              className='h-[26px] rounded bg-gray-400/20'
               rightSection={
                 <IconX
                   size={14}
