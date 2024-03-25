@@ -1,4 +1,4 @@
-import { ActionIcon, ScrollArea } from '@mantine/core'
+import { ActionIcon, Badge, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { result } from 'lodash'
 import {
@@ -285,7 +285,19 @@ export default function CardsContent() {
                               className='sticky top-0'
                             >
                               <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-black bg-gray-900/90 px-2 pr-1'>
-                                <span>{option.title + option.order}</span>
+                                <Badge
+                                  classNames={{
+                                    root: 'p-0 rounded-none bg-transparent'
+                                  }}
+                                  leftSection={
+                                    <div
+                                      className={`h-4 w-4 rounded`}
+                                      style={{ backgroundColor: option.color }}
+                                    />
+                                  }
+                                >
+                                  {option.title}
+                                </Badge>
                                 <ActionIcon
                                   variant='transparent'
                                   aria-label='Settings'

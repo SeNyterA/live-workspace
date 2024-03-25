@@ -4,6 +4,7 @@ import { AxiosRequestConfig } from 'axios'
 import {
   EMemberRole,
   TCard,
+  TCardExtra,
   TMember,
   TMemberExtra,
   TMessage,
@@ -264,7 +265,7 @@ export type ApiMutationType = {
     }
     method: 'patch'
     payload: { card: TCard }
-    response: TCard
+    response: TCardExtra
   }
 
   editWorkspaceMember: {
@@ -339,4 +340,27 @@ export const useAppMutation = <T extends keyof ApiMutationType>(
   })
 
   return mutation
+}
+export const appMutationFn = async <T extends keyof ApiMutationType>({
+  method,
+  key,
+  url,
+  isFormData,
+  config,
+  ...rest
+}: Omit<ApiMutationType[T], 'response'> & {
+  isFormData?: boolean
+  config?: AxiosRequestConfig
+  key: T
+}): Promise<ApiMutationType[T]['response']> => {
+  const _url = replaceDynamicValues(url.baseUrl, (url as any)?.urlParams || {})
+  const response = await http[method](
+    _url,
+    isFormData
+      ? objectToFormData((rest as any).payload)
+      : (rest as any).payload,
+    config
+  )
+
+  return response.data
 }

@@ -1,7 +1,8 @@
-import { Image } from '@mantine/core'
+import { Badge, Image } from '@mantine/core'
 import { IconCheckbox } from '@tabler/icons-react'
 import { memo } from 'react'
 import useAppControlParams from '../../../../hooks/useAppControlParams'
+import Watching from '../../../../redux/Watching'
 import { TCard } from '../../../../types'
 import { getItemsWithMatchingKey } from '../../../../utils/helper'
 
@@ -11,7 +12,7 @@ function CardItem({ card }: { card: TCard }) {
 
   return (
     <div
-      className='flex flex-col rounded bg-blue-400/20 px-2 py-1'
+      className='flex flex-col rounded bg-blue-400/20 p-2'
       id={card.id}
       onClick={() => {
         toogleCard({
@@ -19,16 +20,22 @@ function CardItem({ card }: { card: TCard }) {
         })
       }}
     >
-      <Image
-        loading='lazy'
-        className='mt-1 rounded-lg'
-        src={
-          'https://s3.ap-southeast-1.amazonaws.com/liveworkspace.senytera/1709031245746_ca114960-a6a3-4acd-8b63-02f5a9155ed0_wallpapersden.com_stitched_woman_face_wxl.jpg'
+      <Watching
+        watchingFn={state => state.workspace.files[card.thumbnailId!].path}
+      >
+        {path =>
+          !!path && (
+            <Image
+              loading='lazy'
+              className='aspect-video rounded-lg'
+              src={path}
+              alt='Card thumbnail'
+            />
+          )
         }
-      />
-      <p className='line-clamp-2 flex-1 rounded'>
-        {card.title} {card.order}
-      </p>
+      </Watching>
+
+      <p className='line-clamp-2 flex-1 rounded'>{card.title}</p>
 
       <div className='flex items-center text-gray-600'>
         {!!checkboxes.length && (
@@ -40,6 +47,15 @@ function CardItem({ card }: { card: TCard }) {
           </div>
         )}
       </div>
+
+      {/* <Badge
+        classNames={{ root: 'p-0 rounded-none bg-transparent' }}
+        leftSection={
+          <div className='h-4 w-4 rounded bg-white bg-yellow-400'></div>
+        }
+      >
+        sss
+      </Badge> */}
     </div>
   )
 }

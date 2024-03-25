@@ -1,19 +1,23 @@
-import { Image, ScrollArea, Select, TextInput } from '@mantine/core'
+import { Avatar, Input, ScrollArea, Select, TextInput } from '@mantine/core'
 import { DateTimePicker } from '@mantine/dates'
 import '@mantine/dates/styles.css'
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { Fragment, useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import useAppParams from '../../../../hooks/useAppParams'
-import { useAppSelector } from '../../../../redux/store'
+import { workspaceActions } from '../../../../redux/slices/workspace.slice'
+import { getAppValue, useAppSelector } from '../../../../redux/store'
 import Watching from '../../../../redux/Watching'
 import { useAppMutation } from '../../../../services/apis/mutations/useAppMutation'
-import { EPropertyType } from '../../../../types'
+import { EPropertyType, extractApi } from '../../../../types'
 
 dayjs.extend(customParseFormat)
 
 export default function Properties() {
   const { boardId, cardId } = useAppParams()
+  const dispatch = useDispatch()
   const card = useAppSelector(state =>
     Object.values(state.workspace.cards).find(e => e.id === cardId)
   )
@@ -22,7 +26,45 @@ export default function Properties() {
       e => e.workspaceId === boardId
     )
   )
-  const { mutateAsync: updateCard } = useAppMutation('updateCard')
+  const { mutateAsync: updateCard } = useAppMutation('updateCard', {
+    mutationOptions: {
+      onSuccess(data, variables, context) {
+        console.log(data)
+        dispatch(
+          workspaceActions.updateWorkspaceStore(
+            extractApi({
+              cards: [data]
+            })
+          )
+        )
+      }
+    }
+  })
+  const { mutateAsync: uploadFile, isPending: uploadPending } = useAppMutation(
+    'uploadFile',
+    {
+      config: {
+        headers: {
+          'Content-Type': undefined
+        }
+      },
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          updateCard({
+            method: 'patch',
+            url: {
+              baseUrl: 'boards/:boardId/cards/:cardId',
+              urlParams: {
+                cardId: cardId!,
+                boardId: boardId!
+              }
+            },
+            payload: { card: { thumbnailId: data.id } as any }
+          })
+        }
+      }
+    }
+  )
   const [tmpValue, setTmpValue] = useState<any>({})
 
   useEffect(() => {
@@ -32,14 +74,56 @@ export default function Properties() {
   }, [card?.properties])
 
   return (
-    <div className='relative flex w-80 flex-col rounded-lg bg-white p-3'>
-      <Image
-        loading='lazy'
-        className='rounded-lg'
-        src={
-          'https://s3.ap-southeast-1.amazonaws.com/liveworkspace.senytera/1709031245746_ca114960-a6a3-4acd-8b63-02f5a9155ed0_wallpapersden.com_stitched_woman_face_wxl.jpg'
+    <div className='relative flex w-80 flex-col rounded-lg bg-gray-900/90 p-3'>
+      <Dropzone
+        onDrop={files =>
+          uploadFile(
+            {
+              method: 'post',
+              isFormData: true,
+              url: {
+                baseUrl: '/upload'
+              },
+              payload: { file: files[0] }
+            },
+            {
+              onSuccess(data, variables, context) {
+                // setValue('thumbnail', data)
+              }
+            }
+          )
         }
-      />
+        multiple={false}
+        onReject={files => console.log('rejected files', files)}
+        maxSize={3 * 1024 * 1024}
+        accept={IMAGE_MIME_TYPE}
+        className='w-full'
+        disabled={uploadPending}
+      >
+        <Watching
+          watchingFn={state => {
+            const thumbnail =
+              state.workspace.files[state.workspace.cards[cardId!].thumbnailId!]
+            return thumbnail
+          }}
+        >
+          {thumbnail => {
+            return (
+              <Avatar
+                classNames={{ placeholder: 'rounded-lg' }}
+                src={thumbnail?.path}
+                className='h-40 w-full flex-1 rounded-lg border'
+                alt='Team thumbnail'
+              >
+                Team thumbnail
+              </Avatar>
+            )
+          }}
+        </Watching>
+      </Dropzone>
+      <Input.Description className='mt-1'>
+        This image is used for thumbnail
+      </Input.Description>
       <div className='relative mt-2 flex-1'>
         <ScrollArea
           className='absolute inset-0 right-[-8px] pr-2'
@@ -60,6 +144,13 @@ export default function Properties() {
                   {options => (
                     <Select
                       className='!mt-2 first:!mt-0'
+                      classNames={{
+                        input:
+                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                        dropdown:
+                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                        option: 'hover:bg-gray-700/90'
+                      }}
                       label={property.title}
                       description={property.title}
                       placeholder='Pick value'
@@ -70,23 +161,53 @@ export default function Properties() {
                       mt='md'
                       value={tmpValue[property.id]?.toString()}
                       onChange={value => {
-                        // setTmpValue(old => ({ ...old, [property.id]: value }))
-                        // updateCard({
-                        //   url: {
-                        //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                        //     urlParams: {
-                        //       boardId: boardId!,
-                        //       cardId: card?.id!
-                        //     }
-                        //   },
-                        //   method: 'patch',
-                        //   payload: {
-                        //     properties: {
-                        //       ...card?.properties,
-                        //       [property.id]: value
-                        //     }
-                        //   }
-                        // })
+                        const oldCard = getAppValue(
+                          state => state.workspace.cards[cardId!]
+                        )
+                        if (!oldCard) return
+                        dispatch(
+                          workspaceActions.updateWorkspaceStore({
+                            cards: {
+                              [cardId!]: {
+                                ...oldCard,
+                                properties: {
+                                  ...oldCard.properties,
+                                  [property.id]: value
+                                }
+                              }
+                            }
+                          })
+                        )
+                        updateCard(
+                          {
+                            url: {
+                              baseUrl: 'boards/:boardId/cards/:cardId',
+                              urlParams: {
+                                boardId: boardId!,
+                                cardId: card?.id!
+                              }
+                            },
+                            method: 'patch',
+                            payload: {
+                              card: {
+                                properties: {
+                                  ...oldCard?.properties,
+                                  [property.id]: value
+                                },
+                                order: new Date().getTime()
+                              } as any
+                            }
+                          },
+                          {
+                            onError(error, variables, context) {
+                              dispatch(
+                                workspaceActions.updateWorkspaceStore({
+                                  cards: { [cardId!]: oldCard }
+                                })
+                              )
+                            }
+                          }
+                        )
                       }}
                     />
                   )}
@@ -108,6 +229,13 @@ export default function Properties() {
                   children={data => (
                     <Select
                       className='!mt-2 first:!mt-0'
+                      classNames={{
+                        input:
+                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                        dropdown:
+                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                        option: 'hover:bg-gray-700/90'
+                      }}
                       label={property.title}
                       description={property.title}
                       placeholder='Pick value'
@@ -120,23 +248,53 @@ export default function Properties() {
                       mt='md'
                       value={tmpValue[property.id]?.toString()}
                       onChange={value => {
-                        // setTmpValue(old => ({ ...old, [property.id]: value }))
-                        // updateCard({
-                        //   url: {
-                        //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                        //     urlParams: {
-                        //       boardId: boardId!,
-                        //       cardId: card?.id!
-                        //     }
-                        //   },
-                        //   method: 'patch',
-                        //   payload: {
-                        //     properties: {
-                        //       ...card?.properties,
-                        //       [property.id]: value
-                        //     }
-                        //   }
-                        // })
+                        const oldCard = getAppValue(
+                          state => state.workspace.cards[cardId!]
+                        )
+                        if (!oldCard) return
+                        dispatch(
+                          workspaceActions.updateWorkspaceStore({
+                            cards: {
+                              [cardId!]: {
+                                ...oldCard,
+                                properties: {
+                                  ...oldCard.properties,
+                                  [property.id]: value
+                                }
+                              }
+                            }
+                          })
+                        )
+                        updateCard(
+                          {
+                            url: {
+                              baseUrl: 'boards/:boardId/cards/:cardId',
+                              urlParams: {
+                                boardId: boardId!,
+                                cardId: card?.id!
+                              }
+                            },
+                            method: 'patch',
+                            payload: {
+                              card: {
+                                properties: {
+                                  ...oldCard?.properties,
+                                  [property.id]: value
+                                },
+                                order: new Date().getTime()
+                              } as any
+                            }
+                          },
+                          {
+                            onError(error, variables, context) {
+                              dispatch(
+                                workspaceActions.updateWorkspaceStore({
+                                  cards: { [cardId!]: oldCard }
+                                })
+                              )
+                            }
+                          }
+                        )
                       }}
                     />
                   )}
@@ -150,35 +308,70 @@ export default function Properties() {
                 EPropertyType.Email
               ].includes(property.type) && (
                 <TextInput
+                  key={card?.properties?.[property.id]?.toString()}
                   className='!mt-2 first:!mt-0'
                   label={property.title}
                   description={property.title}
                   placeholder='Pick value'
                   mt='md'
-                  value={tmpValue[property.id]?.toString()}
-                  onBlur={value => {
-                    // updateCard({
-                    //   url: {
-                    //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                    //     urlParams: {
-                    //       boardId: boardId!,
-                    //       cardId: card?.id!
-                    //     }
-                    //   },
-                    //   method: 'patch',
-                    //   payload: {
-                    //     properties: {
-                    //       ...card?.properties,
-                    //       [property.id]: value.target.value
-                    //     }
-                    //   }
-                    // })
+                  defaultValue={card?.properties?.[property.id]?.toString()}
+                  classNames={{
+                    input:
+                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
                   }}
-                  onChange={value => {
-                    // setTmpValue(old => ({
-                    //   ...old,
-                    //   [property.id]: value.target.value
-                    // }))
+                  onBlur={e => {
+                    const oldCard = getAppValue(
+                      state => state.workspace.cards[cardId!]
+                    )
+                    if (
+                      !oldCard ||
+                      e.target.value ===
+                        card?.properties?.[property.id]?.toString()
+                    )
+                      return
+                    dispatch(
+                      workspaceActions.updateWorkspaceStore({
+                        cards: {
+                          [cardId!]: {
+                            ...oldCard,
+                            properties: {
+                              ...oldCard.properties,
+                              [property.id]: e.target.value
+                            }
+                          }
+                        }
+                      })
+                    )
+                    updateCard(
+                      {
+                        url: {
+                          baseUrl: 'boards/:boardId/cards/:cardId',
+                          urlParams: {
+                            boardId: boardId!,
+                            cardId: card?.id!
+                          }
+                        },
+                        method: 'patch',
+                        payload: {
+                          card: {
+                            properties: {
+                              ...oldCard?.properties,
+                              [property.id]: e.target.value
+                            },
+                            order: new Date().getTime()
+                          } as any
+                        }
+                      },
+                      {
+                        onError(error, variables, context) {
+                          dispatch(
+                            workspaceActions.updateWorkspaceStore({
+                              cards: { [cardId!]: oldCard }
+                            })
+                          )
+                        }
+                      }
+                    )
                   }}
                 />
               )}

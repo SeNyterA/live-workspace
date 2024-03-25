@@ -77,119 +77,232 @@ export default function Editor() {
       if (!boardId) return
       if (!cardId) return
 
-      updateCard({
-        url: {
-          baseUrl: 'boards/:boardId/cards/:cardId',
-          urlParams: {
-            boardId,
-            cardId
-          }
-        },
-        method: 'patch',
-        payload: { card: { detail: editor.getJSON() } as any }
-      })
+      // updateCard({
+      //   url: {
+      //     baseUrl: 'boards/:boardId/cards/:cardId',
+      //     urlParams: {
+      //       boardId,
+      //       cardId
+      //     }
+      //   },
+      //   method: 'patch',
+      //   payload: { card: { detail: editor.getJSON() } as any }
+      // })
     }
   })
 
-  useEffect(() => {
-    if (!card || !editor || !card.detail) return
-    editor.chain().setContent(card.detail).run()
-  }, [card, editor])
+  // useEffect(() => {
+  //   if (!card || !editor || !card.detail) return
+  //   editor.chain().setContent(card.detail).run()
+  // }, [card, editor])
 
   return (
-    <RichTextEditor editor={editor} className='border-none'>
+    <RichTextEditor
+      editor={editor}
+      className='border-none'
+      classNames={{
+        content: 'bg-transparent',
+        toolbar: 'bg-transparent',
+        controlsGroup: 'bg-transparent'
+      }}
+    >
       {editor?.isEditable && (
         // <BubbleMenu
         //   editor={editor}
         //   tippyOptions={{ arrow: true, placement: 'bottom-start' }}
         // >
-        <RichTextEditor.Toolbar sticky className='gap-2 border-none py-3'>
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Bold />
-            <RichTextEditor.Italic />
-            <RichTextEditor.Underline />
-            <RichTextEditor.Strikethrough />
-            <RichTextEditor.ClearFormatting />
-            <RichTextEditor.Highlight />
-            <RichTextEditor.CodeBlock />
+        <RichTextEditor.Toolbar sticky className='gap-0 border-none py-3'>
+          <RichTextEditor.Bold
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.Italic
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.Underline
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.Strikethrough
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.ClearFormatting
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.Highlight
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.CodeBlock
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
 
-            <FileButton
-              inputProps={{
-                value: ''
-              }}
-              onChange={async file => {
-                if (!file) return
-                const formData = new FormData()
-                formData.append('file', file)
+          <FileButton
+            inputProps={{
+              value: ''
+            }}
+            onChange={async file => {
+              if (!file) return
+              const formData = new FormData()
+              formData.append('file', file)
 
-                await uploadFile({
-                  method: 'post',
-                  isFormData: true,
-                  url: {
-                    baseUrl: '/upload'
-                  },
-                  payload: { file }
+              await uploadFile({
+                method: 'post',
+                isFormData: true,
+                url: {
+                  baseUrl: '/upload'
+                },
+                payload: { file }
+              })
+                .then(data => {
+                  editor.chain().focus().setImage({ src: data.path }).run()
                 })
-                  .then(data => {
-                    editor.chain().focus().setImage({ src: data.path }).run()
-                  })
-                  .catch(error => {
-                    console.error('File upload failed', error)
-                  })
-              }}
-              accept='image/png,image/jpeg'
-            >
-              {({ onClick }) => (
-                <ActionIcon
-                  size={26}
-                  variant='default'
-                  className=''
-                  onClick={onClick}
-                >
-                  <IconPhotoPlus size={16} />
-                </ActionIcon>
-              )}
-            </FileButton>
+                .catch(error => {
+                  console.error('File upload failed', error)
+                })
+            }}
+            accept='image/png,image/jpeg'
+          >
+            {({ onClick }) => (
+              <ActionIcon
+                size={26}
+                variant='default'
+                className='m-[2px] border-none bg-gray-400/20 text-gray-100 hover:bg-blue-400/40 data-[active]:bg-blue-50'
+                onClick={onClick}
+              >
+                <IconPhotoPlus size={16} />
+              </ActionIcon>
+            )}
+          </FileButton>
 
-            <ActionIcon
-              size={26}
-              variant='default'
-              className='rounded-l-none'
-              onClick={() => {
-                editor.chain().focus().toggleTaskList().run()
-              }}
-            >
-              <IconPhotoPlus size={16} />
-            </ActionIcon>
-          </RichTextEditor.ControlsGroup>
+          <ActionIcon
+            size={26}
+            variant='default'
+            onClick={() => {
+              editor.chain().focus().toggleTaskList().run()
+            }}
+            className='m-[2px] border-none bg-gray-400/20 text-gray-100 hover:bg-blue-400/40 data-[active]:bg-blue-50'
+          >
+            <IconPhotoPlus size={16} />
+          </ActionIcon>
 
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.H1 />
-            <RichTextEditor.H2 />
-            <RichTextEditor.H3 />
-            <RichTextEditor.H4 />
-          </RichTextEditor.ControlsGroup>
+          <RichTextEditor.H1
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.H2
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.H3
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.H4
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
 
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Blockquote />
-            <RichTextEditor.Hr />
-            <RichTextEditor.BulletList />
-            <RichTextEditor.OrderedList />
-            <RichTextEditor.Subscript />
-            <RichTextEditor.Superscript />
-          </RichTextEditor.ControlsGroup>
+          <RichTextEditor.Blockquote
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.Hr
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.BulletList
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.OrderedList
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.Subscript
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.Superscript
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
 
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Link />
-            <RichTextEditor.Unlink />
-          </RichTextEditor.ControlsGroup>
+          <RichTextEditor.Link
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.Unlink
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
 
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.AlignLeft />
-            <RichTextEditor.AlignCenter />
-            <RichTextEditor.AlignJustify />
-            <RichTextEditor.AlignRight />
-          </RichTextEditor.ControlsGroup>
+          <RichTextEditor.AlignLeft
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.AlignCenter
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.AlignJustify
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
+          <RichTextEditor.AlignRight
+            classNames={{
+              control:
+                'bg-gray-400/20 border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            }}
+          />
         </RichTextEditor.Toolbar>
         // </BubbleMenu>
       )}

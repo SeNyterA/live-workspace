@@ -335,6 +335,9 @@ export class BoardService {
       data: {
         ...card,
         modifiedById: user.sub
+      },
+      include: {
+        thumbnail: true
       }
     })
 

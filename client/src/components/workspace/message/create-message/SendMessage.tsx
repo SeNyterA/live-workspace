@@ -205,7 +205,7 @@ export default function SendMessage({
   return (
     <div className={`rootWrapper relative h-28 ${classNames?.rootWrapper}`}>
       <div
-        className={`editorWapper absolute bottom-6 bg-[#101b24]/95 left-2 right-2 z-10 rounded-md border border-dashed border-gray-200/40 ${classNames?.editorWrapper}`}
+        className={`editorWapper absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-200/40 bg-[#101b24]/95 ${classNames?.editorWrapper}`}
       >
         <RichTextEditor
           editor={editor}
@@ -220,16 +220,56 @@ export default function SendMessage({
               editor={editor}
               tippyOptions={{ arrow: true, placement: 'top-start' }}
             >
-              <RichTextEditor.ControlsGroup>
-                <RichTextEditor.Bold />
-                <RichTextEditor.Italic />
-                <RichTextEditor.Underline />
-                <RichTextEditor.Highlight />
-                <RichTextEditor.Strikethrough />
-                <RichTextEditor.Link />
-                <RichTextEditor.BulletList />
-                <RichTextEditor.OrderedList />
-              </RichTextEditor.ControlsGroup>
+              <div className='flex p-1 bg-black/90 rounded gap-1'>
+                <RichTextEditor.Bold
+                  classNames={{
+                    control:
+                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                  }}
+                />
+                <RichTextEditor.Italic
+                  classNames={{
+                    control:
+                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                  }}
+                />
+                <RichTextEditor.Underline
+                  classNames={{
+                    control:
+                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                  }}
+                />
+                <RichTextEditor.Highlight
+                  classNames={{
+                    control:
+                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                  }}
+                />
+                <RichTextEditor.Strikethrough
+                  classNames={{
+                    control:
+                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                  }}
+                />
+                <RichTextEditor.Link
+                  classNames={{
+                    control:
+                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                  }}
+                />
+                <RichTextEditor.BulletList
+                  classNames={{
+                    control:
+                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                  }}
+                />
+                <RichTextEditor.OrderedList
+                  classNames={{
+                    control:
+                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                  }}
+                />
+              </div>
             </BubbleMenu>
           )}
           <RichTextEditor.Content

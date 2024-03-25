@@ -18,7 +18,7 @@ export default function DetailCard() {
 
   const dispatch = useDispatch()
   const socketEmit = useAppEmitSocket()
-console.log({card})
+
   return (
     <>
       {!!cardId && !!card && (
@@ -29,28 +29,41 @@ console.log({card})
           opened={true}
           title={<CardTitle />}
           size='100%'
-          classNames={{
-            content: 'h-full flex flex-col bg-gray-100 rounded-lg',
-            body: 'flex-1',
-            header: 'flex bg-transparent py-3',
-            title: 'flex-1'
-          }}
+          // classNames={{
+          //   content: 'h-full flex flex-col bg-gray-100 rounded-lg',
+          //   body: 'flex-1',
+          //   header: 'flex bg-transparent py-3',
+          //   title: 'flex-1'
+          // }}
+          // overlayProps={{
+          //   color: '#000',
+          //   backgroundOpacity: 0.1,
+          //   blur: 1
+          // }}
+
           overlayProps={{
-            color: '#000',
-            backgroundOpacity: 0.1,
-            blur: 1
+            blur: '0.5'
+          }}
+          classNames={{
+            title: 'flex-1',
+            header: 'bg-transparent',
+            content: 'rounded-lg flex flex-col bg-black/80 h-full aspect-video',
+            inner: 'p-12',
+            body: 'flex flex-col flex-1 relative text-sm h-full',
+            root: 'text-gray-100',
+            overlay: 'bg-white/10 blur'
           }}
         >
           <div className='flex h-full gap-4'>
             <Properties />
 
-            <div className='relative flex flex-1 flex-col overflow-hidden rounded-lg bg-white'>
+            <div className='relative flex flex-1 flex-col overflow-hidden rounded-lg'>
               <ScrollArea className='absolute inset-0' scrollbarSize={6}>
                 <Editor />
               </ScrollArea>
             </div>
 
-            <div className='relative flex-1 rounded-lg bg-white p-3 px-2'>
+            <div className='relative flex-1 rounded-lg p-3 px-2'>
               <ScrollArea scrollbarSize={8} className='absolute inset-0'>
                 <div className='h-[1000px]'></div>
                 <SendMessage

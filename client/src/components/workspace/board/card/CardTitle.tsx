@@ -20,22 +20,22 @@ export default function CardTitle() {
       className='w-full px-0'
       classNames={{
         input:
-          'border bg-transparent border-transparent outline-none w-full focus:border-b-blue-400 hover:border-b-blue-400 border-dashed resize-none text-lg px-0 w-full truncate'
+          'border w-full bg-transparent text-gray-100 border-transparent outline-none w-full resize-none text-lg px-0 w-full truncate'
       }}
       value={value}
       onBlur={() => {
-        // value !== card?.title &&
-        //   updateCard({
-        //     url: {
-        //       baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-        //       urlParams: {
-        //         boardId: boardId!,
-        //         cardId: cardId!
-        //       }
-        //     },
-        //     method: 'patch',
-        //     payload: { title: value }
-        //   })
+        value !== card?.title &&
+          updateCard({
+            url: {
+              baseUrl: 'boards/:boardId/cards/:cardId',
+              urlParams: {
+                boardId: boardId!,
+                cardId: cardId!
+              }
+            },
+            method: 'patch',
+            payload: { card: { title: value } as any }
+          })
       }}
       onChange={e => {
         setValue(e.target.value)

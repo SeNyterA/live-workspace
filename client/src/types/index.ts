@@ -335,7 +335,7 @@ export const extractApi = ({
   workspaces
 }: {
   workspaces?: TWorkspaceExtra[]
-  cards?: TCardAttachmentExtra[]
+  cards?: TCardExtra[]
   messages?: TMessageExtra[]
   members?: TMemberExtra[]
   users?: TUserExtra[]
@@ -468,7 +468,7 @@ export const extractApi = ({
   }
 
   !!workspaces && extractWorkspaces(workspaces)
-  !!cards && extractCardsAttachments(cards)
+  !!cards && extractCards(cards)
   !!messages && extractMessages(messages)
   !!members && extractMembers(members)
   !!users && users.forEach(user => extractUser(user))
