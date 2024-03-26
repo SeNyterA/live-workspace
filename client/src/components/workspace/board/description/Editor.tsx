@@ -1,7 +1,7 @@
 import { ActionIcon, FileButton } from '@mantine/core'
 import { Link, RichTextEditor } from '@mantine/tiptap'
 import '@mantine/tiptap/styles.css'
-import { IconPhotoPlus } from '@tabler/icons-react'
+import { IconCheckbox, IconPhotoPlus } from '@tabler/icons-react'
 import CodeBlock from '@tiptap/extension-code-block'
 import Highlight from '@tiptap/extension-highlight'
 import Image from '@tiptap/extension-image'
@@ -185,7 +185,7 @@ export default function Editor() {
               <ActionIcon
                 size={26}
                 variant='default'
-                className='m-[2px] border-none bg-gray-400/20 text-gray-100 hover:bg-blue-400/40 data-[active]:bg-blue-50'
+                className='m-[2px] border-none bg-gray-400/20 !text-gray-100 hover:bg-blue-400/40 data-[active]:bg-blue-50'
                 onClick={onClick}
               >
                 <IconPhotoPlus size={16} />
@@ -199,9 +199,9 @@ export default function Editor() {
             onClick={() => {
               editor.chain().focus().toggleTaskList().run()
             }}
-            className='m-[2px] border-none bg-gray-400/20 text-gray-100 hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            className='m-[2px] border-none bg-gray-400/20 !text-gray-100 hover:bg-blue-400/40 data-[active]:bg-blue-50'
           >
-            <IconPhotoPlus size={16} />
+            <IconCheckbox size={16} />
           </ActionIcon>
 
           <RichTextEditor.H1

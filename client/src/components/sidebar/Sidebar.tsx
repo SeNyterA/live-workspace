@@ -82,28 +82,30 @@ export default function Sidebar() {
   const dispatch = useDispatch()
   const path = useLocation()
   const [toggle, setToggle] = useState<EWorkspaceType>()
-  const team = useAppSelector(state => ({
-    ...state.workspace.workspaces[teamId!],
-    thumbnail:
-      state.workspace.files[state.workspace.workspaces[teamId!]?.thumbnailId!]
-  }))
+  const team = useAppSelector(state => state.workspace.workspaces[teamId!])
   const [searchValue, setSearchValue] = useState('')
 
   return (
     <>
       <div className='mb-4 flex w-72 flex-col gap-2 rounded-lg bg-gray-800/40 px-4 py-3 shadow-custom'>
-        <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
+        <p className='text-xl'>{!!team ? team?.title : 'Personal'}</p>
         <p className='line-clamp-3 text-gray-500'>
           {team ? team?.description : 'Wellcome to workspace'}
         </p>
 
-        {!!team?.thumbnail?.path && (
-          <Image
-            loading='lazy'
-            src={team?.thumbnail?.path}
-            className='aspect-video w-full rounded-lg'
-          />
-        )}
+        <Watching
+          watchingFn={state => state.workspace.files[team?.thumbnailId!]?.path}
+        >
+          {path =>
+            path && (
+              <Image
+                loading='lazy'
+                src={path}
+                className='aspect-video w-full rounded-lg'
+              />
+            )
+          }
+        </Watching>
 
         <div className='flex items-center justify-center gap-2'>
           <Input
