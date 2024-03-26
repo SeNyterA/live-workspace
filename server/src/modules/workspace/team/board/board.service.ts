@@ -195,7 +195,7 @@ export class BoardService {
         members: {
           some: {
             userId: user.sub,
-            status: MemberStatus.Invited
+            status: MemberStatus.Active
           }
         }
       }
@@ -237,7 +237,7 @@ export class BoardService {
         members: {
           some: {
             userId: user.sub,
-            status: MemberStatus.Invited
+            status: MemberStatus.Active
           }
         },
         properties: {
@@ -304,6 +304,46 @@ export class BoardService {
     })
     this.server.to(boardId).emit('option', { option: optionUpdated })
     return optionUpdated
+  }
+
+  async createCard({
+    boardId,
+    user,
+    card
+  }: {
+    boardId: string
+    user: TJwtUser
+    card: Card
+  }) {
+    const board = await this.prismaService.workspace.findUnique({
+      where: {
+        id: boardId,
+        isAvailable: true,
+        members: {
+          some: {
+            userId: user.sub,
+            status: MemberStatus.Active
+          }
+        }
+      }
+    })
+
+    if (!board) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const cardCreated = await this.prismaService.card.create({
+      data: {
+        ...card,
+        workspaceId: boardId,
+        createdById: user.sub,
+        modifiedById: user.sub,
+        order: card?.order || new Date().getTime()
+      }
+    })
+
+    this.server.to(boardId).emit('card', { card: cardCreated })
+    return cardCreated
   }
 
   async updateCard({

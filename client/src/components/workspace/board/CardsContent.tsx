@@ -1,6 +1,5 @@
 import { ActionIcon, Badge, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
-import { result } from 'lodash'
 import {
   DragDropContext,
   Draggable,
@@ -8,10 +7,15 @@ import {
   DropResult
 } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
+import useAppControlParams from '../../../hooks/useAppControlParams'
 import useRenderCount from '../../../hooks/useRenderCount'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../../redux/store'
-import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
+import {
+  appMutationFn,
+  useAppMutation
+} from '../../../services/apis/mutations/useAppMutation'
+import { extractApi } from '../../../types'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
@@ -112,6 +116,7 @@ const getNewCard = (result: DropResult, propertyId: string) => {
 
 export default function CardsContent() {
   useRenderCount('CardsContent')
+  const { toogleCard } = useAppControlParams()
   const { trackingId, boardId } = useBoard()
   const { mutateAsync: updateColumnPosition } = useAppMutation(
     'updateColumnPosition'
@@ -302,7 +307,35 @@ export default function CardsContent() {
                                   variant='transparent'
                                   aria-label='Settings'
                                   className='h-[28px] w-[28px] bg-blue-400/20 text-white'
-                                  onClick={() => {}}
+                                  onClick={() => {
+                                    appMutationFn({
+                                      key: 'createCard',
+                                      url: {
+                                        baseUrl: 'boards/:boardId/cards',
+                                        urlParams: {
+                                          boardId: boardId!
+                                        }
+                                      },
+                                      method: 'post',
+                                      payload: {
+                                        card: {
+                                          title: 'New Card',
+                                          properties: {
+                                            [trackingId!]: option.id
+                                          }
+                                        }
+                                      }
+                                    }).then(result => {
+                                      dispatch(
+                                        workspaceActions.updateWorkspaceStore(
+                                          extractApi({
+                                            cards: [result]
+                                          })
+                                        )
+                                      )
+                                      toogleCard({ cardId: result.id })
+                                    })
+                                  }}
                                 >
                                   <IconPlus size={16} stroke={1.5} />
                                 </ActionIcon>

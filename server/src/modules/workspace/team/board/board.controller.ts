@@ -27,6 +27,19 @@ export class BoardController {
     return this.boardService.getBoardById({ user, workspaceId: boardId })
   }
 
+  @Post('boards/:boardId/cards')
+  createCard(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Body() { card }: { card: Card }
+  ) {
+    return this.boardService.createCard({
+      boardId,
+      user,
+      card
+    })
+  }
+
   @Patch('boards/:boardId/cards/:cardId')
   updateCard(
     @HttpUser() user: TJwtUser,
