@@ -1,6 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import { Member, MemberRole, MemberStatus, Workspace } from '@prisma/client'
+import {
+  Member,
+  MemberRole,
+  MemberStatus,
+  Workspace,
+  WorkspaceType
+} from '@prisma/client'
 import * as crypto from 'crypto-js'
 import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
@@ -156,7 +162,21 @@ export class WorkspaceService {
         isAvailable: true
       },
       include: {
-        avatar: true
+        avatar: true,
+        members: {
+          where: {
+            workspace: {
+              type: WorkspaceType.Direct
+            }
+          },
+          include: {
+            user: {
+              include: {
+                avatar: true
+              }
+            }
+          }
+        }
       }
     })
 

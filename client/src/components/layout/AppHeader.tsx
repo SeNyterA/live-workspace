@@ -10,7 +10,7 @@ export default function AppHeader() {
       <p className='text-xl font-semibold'>Live workspace - Senytera</p>
       <div className='flex flex-1 items-center justify-center'></div>
       <Notification />
-      <UserAvatar user={user} />
+      <UserAvatar user={user} isSetting={true}/>
     </div>
   )
 }

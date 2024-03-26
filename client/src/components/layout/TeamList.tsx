@@ -13,6 +13,7 @@ import useAppParams from '../../hooks/useAppParams'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
 import { EWorkspaceType } from '../../types'
+import UserAvatar from '../common/UserAvatar'
 import CreateWorkspace from '../workspace/create/CreateWorkspace'
 
 export default function TeamList() {
@@ -39,7 +40,18 @@ export default function TeamList() {
           variant='subtle'
           onClick={() => switchTeam({ teamId: 'personal' })}
         >
-          <Avatar size={36} />
+          <Watching
+            watchingFn={state => ({
+              userName: state.auth.userInfo?.userName,
+              path: state.workspace.files[state.auth.userInfo?.avatarId!].path
+            })}
+          >
+            {user => (
+              <Avatar size={36} src={user?.path}>
+                {user?.userName?.slice(0, 1)}
+              </Avatar>
+            )}
+          </Watching>
         </ActionIcon>
 
         <Divider variant='dashed' className='mx-4 border-gray-400/20' />

@@ -15,7 +15,7 @@ import { getAppValue } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
-import { extractApi, TMember, TUser } from '../../../types'
+import { EWorkspaceType, extractApi, TMember, TUser } from '../../../types'
 import MemberRole from '../../common/MemberRole'
 import UserAvatar from '../../common/UserAvatar'
 import useClassifyMember from './useClassifyMember'
@@ -147,20 +147,31 @@ export default function MembersSetting() {
       className='absolute inset-0 right-[-12px] pr-3'
       scrollbarSize={8}
     >
-      <TextInput
-        label='Search'
-        description='Atleast 3 characters required'
-        placeholder='senytera'
-        className='sticky top-0 z-[300] mt-4'
-        classNames={{
-          input:
-            'text-gray-100 bg-gray-400/20 border-gray-100/20 hover:border-blue-500/50 focus:border-blue-500/70'
-        }}
-        leftSection={<IconSearch size={16} />}
-        value={searchValue}
-        onChange={event => setSearchValue(event.currentTarget.value)}
-        rightSection={isLoading && <Loader size={12} />}
-      />
+      <Watching
+        watchingFn={state =>
+          state.workspace.workspaces[state.workspace.workspaceSettingId!]
+            .type === EWorkspaceType.Direct
+        }
+      >
+        {isDirect =>
+          isDirect || (
+            <TextInput
+              label='Search'
+              description='Atleast 3 characters required'
+              placeholder='senytera'
+              className='sticky top-0 z-[300] mt-4'
+              classNames={{
+                input:
+                  'text-gray-100 bg-gray-400/20 border-gray-100/20 hover:border-blue-500/50 focus:border-blue-500/70'
+              }}
+              leftSection={<IconSearch size={16} />}
+              value={searchValue}
+              onChange={event => setSearchValue(event.currentTarget.value)}
+              rightSection={isLoading && <Loader size={12} />}
+            />
+          )
+        }
+      </Watching>
 
       {validUsers.length > 0 && (
         <>

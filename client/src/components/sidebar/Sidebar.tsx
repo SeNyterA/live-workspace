@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Avatar,
   Divider,
   Drawer,
   Image,
@@ -50,9 +51,49 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
       className='overflow-visible p-1 pl-3 hover:bg-blue-400/10'
       label={
         <div className='flex items-center gap-2'>
-          <span className='flex-1 truncate'>
-            {workspace.title || workspace.id}
-          </span>
+          <p className='flex-1 truncate'>
+            {workspace.type === EWorkspaceType.Direct ? (
+              <Watching
+                watchingFn={state =>
+                  state.workspace.users[
+                    Object.values(state.workspace.members).find(
+                      e =>
+                        e.workspaceId === workspace.id &&
+                        e.userId !== state.auth.userInfo?.id
+                    )?.userId!
+                  ]
+                }
+              >
+                {user => (
+                  <>
+                    {/* <Watching
+                      watchingFn={state =>
+                        state.workspace.files[user?.avatarId!]?.path
+                      }
+                    >
+                      {path => !!path && <Avatar src={path} size={20} radius={4} />}
+                    </Watching> */}
+                    {workspace.title ||
+                      user?.nickName ||
+                      user?.userName ||
+                      user?.email}
+                  </>
+                )}
+              </Watching>
+            ) : (
+              <>
+                {/* <Watching
+                  watchingFn={state =>
+                    state.workspace.files[workspace?.avatarId!]?.path
+                  }
+                >
+                  {path => !!path && <Avatar src={path} size={20} radius={4} />}
+                </Watching> */}
+                {workspace.title || workspace.id}
+              </>
+            )}
+          </p>
+
           {/* {unReadCount && (
             <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center text-xs leading-4 text-gray-800'>
               {unReadCount}
@@ -120,23 +161,24 @@ export default function Sidebar() {
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
           />
-
-          <ActionIcon
-            size={30}
-            variant='light'
-            color='gray'
-            className='bg-gray-400/10'
-            onClick={() =>
-              dispatch(
-                workspaceActions.toggleWorkspaceSetting({
-                  settingPosition: 'left',
-                  workspaceSettingId: teamId!
-                })
-              )
-            }
-          >
-            <IconSettings size={16} />
-          </ActionIcon>
+          {!!team && (
+            <ActionIcon
+              size={30}
+              variant='light'
+              color='gray'
+              className='bg-gray-400/10'
+              onClick={() =>
+                dispatch(
+                  workspaceActions.toggleWorkspaceSetting({
+                    settingPosition: 'left',
+                    workspaceSettingId: teamId!
+                  })
+                )
+              }
+            >
+              <IconSettings size={16} />
+            </ActionIcon>
+          )}
         </div>
 
         <div className='relative flex-1'>

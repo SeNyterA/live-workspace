@@ -18,12 +18,18 @@ export default function UserAvatar({
   user,
   size = 36,
   zIndex = 1,
-  showSatus = true
+  showSatus = true,
+  showMenu = true,
+  radius = 999999,
+  isSetting = false
 }: {
   user?: TUser
   size?: number
   zIndex?: number
   showSatus?: boolean
+  radius?: number
+  showMenu?: boolean
+  isSetting?: boolean
 }) {
   const { switchTo } = useAppControlParams()
   const meId = useAppSelector(state => state.auth.userInfo?.id)
@@ -38,7 +44,7 @@ export default function UserAvatar({
         item: 'text-gray-100 hover:bg-blue-400/20',
         arrow: 'border-none'
       }}
-      disabled={!user}
+      disabled={!user || !showMenu || (user.id === meId && !isSetting)}
       width={230}
     >
       <Menu.Target>
@@ -53,7 +59,7 @@ export default function UserAvatar({
           disabled={!user || !presence || !showSatus}
           className='h-fit w-fit'
         >
-          <Avatar src={avatar?.path} size={size}>
+          <Avatar src={avatar?.path} size={size} radius={radius}>
             <span className='capitalize'>{user?.userName[0]}</span>
           </Avatar>
         </Indicator>

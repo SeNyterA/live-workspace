@@ -65,7 +65,7 @@ export default function MessageContentWrapper() {
             classNames={{
               rootWrapper: 'mx-2'
             }}
-            targetId={channelId || ''}
+            targetId={channelId || groupId || directId || ''}
             createMessage={({ files, value }) => {
               sendWorkspaceMessage(
                 {
