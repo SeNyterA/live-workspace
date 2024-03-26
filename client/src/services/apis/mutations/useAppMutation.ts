@@ -18,6 +18,7 @@ import { TUploadMutionApi } from '../upload.api'
 import { TBoardlMutationApi } from './board'
 import { TBoardApi } from './board.api'
 import { TChannelMutationApi } from './channel'
+import { TDirectApi } from './direct.api'
 import { TGroupMutationApi } from './group'
 import { TMemberApi } from './member.api'
 import { TMessageApi } from './message.api'
@@ -299,7 +300,8 @@ export type ApiMutationType = {
   TWorkspaceMutationApi &
   TMemberApi['muations'] &
   TMessageApi['muations'] &
-  TBoardApi['muations']
+  TBoardApi['muations'] &
+  TDirectApi['muations']
 
 export const useAppMutation = <T extends keyof ApiMutationType>(
   _key: T,

@@ -323,14 +323,14 @@ export default function Sidebar() {
                 )}
               </Watching>
 
-              <NavLink
+              {/* <NavLink
                 className='p-1 pl-3 opacity-70 hover:bg-blue-400/20'
                 label={`Create direct`}
                 rightSection={<IconPlus size={16} stroke={1.5} />}
                 onClick={() => {
                   setToggle(EWorkspaceType.Direct)
                 }}
-              />
+              /> */}
             </NavLink>
           </ScrollArea>
         </div>

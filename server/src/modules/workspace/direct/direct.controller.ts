@@ -1,14 +1,14 @@
 import { Body, Controller, Param, Post } from '@nestjs/common'
+import { Workspace } from '@prisma/client'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { DirectService } from './direct.service'
-import { Workspace } from '@prisma/client'
 
-@Controller('directs')
-export class GroupController {
+@Controller('')
+export class DirectController {
   constructor(private readonly directService: DirectService) {}
 
-  @Post('/:userTargetId')
+  @Post('directs/:userTargetId')
   createDirect(
     @HttpUser() user: TJwtUser,
     @Param('userTargetId') userTargetId: string,

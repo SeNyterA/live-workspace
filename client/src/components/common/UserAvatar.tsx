@@ -1,14 +1,17 @@
 import { Avatar, Indicator, Menu, rem, Text } from '@mantine/core'
 import {
-  IconArrowsLeftRight,
   IconLogout,
   IconMessageCircle,
   IconPhoto,
   IconSearch,
   IconSettings
 } from '@tabler/icons-react'
+import { useDispatch } from 'react-redux'
+import useAppControlParams from '../../hooks/useAppControlParams'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
-import { TUser } from '../../types'
+import { appMutationFn } from '../../services/apis/mutations/useAppMutation'
+import { EWorkspaceType, extractApi, TUser } from '../../types'
 import { lsActions } from '../../utils/auth'
 
 export default function UserAvatar({
@@ -22,9 +25,11 @@ export default function UserAvatar({
   zIndex?: number
   showSatus?: boolean
 }) {
+  const { switchTo } = useAppControlParams()
   const meId = useAppSelector(state => state.auth.userInfo?.id)
   const avatar = useAppSelector(state => state.workspace.files[user?.avatarId!])
   const presence = useAppSelector(state => state.workspace.presents[user?.id!])
+  const dispath = useDispatch()
   return (
     <Menu
       shadow='md'
@@ -107,6 +112,27 @@ export default function UserAvatar({
                   style={{ width: rem(14), height: rem(14) }}
                 />
               }
+              onClick={() => {
+                appMutationFn({
+                  key: 'createDirect',
+                  url: {
+                    baseUrl: 'directs/:userTargetId',
+                    urlParams: {
+                      userTargetId: user?.id!
+                    }
+                  },
+                  method: 'post'
+                }).then(data => {
+                  dispath(
+                    workspaceActions.updateWorkspaceStore(
+                      extractApi({
+                        workspaces: [data]
+                      })
+                    )
+                  )
+                  switchTo({ target: EWorkspaceType.Direct, targetId: data.id })
+                })
+              }}
             >
               Messages
             </Menu.Item>

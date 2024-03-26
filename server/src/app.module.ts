@@ -10,6 +10,7 @@ import { PrismaModule } from './modules/prisma/prisma.module'
 import { RedisModule } from './modules/redis/redis.module'
 import { SocketModule } from './modules/socket/socket.module'
 import { UserModule } from './modules/user/user.module'
+import { DirectModule } from './modules/workspace/direct/direct.module'
 import { MessageModule } from './modules/workspace/message/message.module'
 import { WorkspaceModule } from './modules/workspace/workspace.module'
 
@@ -24,7 +25,8 @@ import { WorkspaceModule } from './modules/workspace/workspace.module'
     SocketModule,
     RedisModule,
     AWSModule,
-    PrismaModule
+    PrismaModule,
+    DirectModule
   ],
   providers: [
     {
