@@ -4,7 +4,6 @@ import useAppControlParams from '../../../../hooks/useAppControlParams'
 import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
 import { useAppEmitSocket } from '../../../../services/socket/useAppEmitSocket'
-import SendMessage from '../../message/create-message/SendMessage'
 import Editor from '../description/Editor'
 import CardTitle from './CardTitle'
 import Properties from './Properties'
@@ -57,13 +56,13 @@ export default function DetailCard() {
           <div className='flex h-full gap-4'>
             <Properties />
 
-            <div className='relative flex flex-1 flex-col overflow-hidden rounded-lg'>
+            <div className='relative flex flex-1 flex-col overflow-hidden rounded-lg bg-black/80'>
               <ScrollArea className='absolute inset-0' scrollbarSize={6}>
-                <Editor />
+                <Editor card={card} />
               </ScrollArea>
             </div>
 
-            <div className='relative flex-1 rounded-lg p-3 px-2'>
+            {/* <div className='relative flex-1 rounded-lg p-3 px-2'>
               <ScrollArea scrollbarSize={8} className='absolute inset-0'>
                 <div className='h-[1000px]'></div>
                 <SendMessage
@@ -72,7 +71,7 @@ export default function DetailCard() {
                   createMessage={async ({ files, value }) => {}}
                 />
               </ScrollArea>
-            </div>
+            </div> */}
           </div>
         </Modal>
       )}

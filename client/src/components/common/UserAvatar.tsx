@@ -14,11 +14,13 @@ import { lsActions } from '../../utils/auth'
 export default function UserAvatar({
   user,
   size = 36,
-  zIndex = 1
+  zIndex = 1,
+  showSatus = true
 }: {
   user?: TUser
   size?: number
   zIndex?: number
+  showSatus?: boolean
 }) {
   const meId = useAppSelector(state => state.auth.userInfo?.id)
   const avatar = useAppSelector(state => state.workspace.files[user?.avatarId!])
@@ -43,7 +45,7 @@ export default function UserAvatar({
           color={presence === 'online' ? 'green' : 'gray'}
           processing={presence === 'online'}
           zIndex={zIndex}
-          disabled={!user || !presence}
+          disabled={!user || !presence || !showSatus}
           className='h-fit w-fit'
         >
           <Avatar src={avatar?.path} size={size}>
@@ -61,7 +63,9 @@ export default function UserAvatar({
           <p className='mt-2 break-all text-center text-lg font-semibold'>
             {user?.userName}
           </p>
-          <p className='break-all text-center text-sm text-gray-500'>{user?.email}</p>
+          <p className='break-all text-center text-sm text-gray-500'>
+            {user?.email}
+          </p>
         </div>
 
         <Menu.Label>Application</Menu.Label>

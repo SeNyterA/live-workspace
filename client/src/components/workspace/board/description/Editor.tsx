@@ -15,10 +15,10 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useEffect } from 'react'
-import useAppParams from '../../../../hooks/useAppParams.js'
-import { useAppSelector } from '../../../../redux/store.js'
+import { useDispatch } from 'react-redux'
+import { workspaceActions } from '../../../../redux/slices/workspace.slice.js'
 import { useAppMutation } from '../../../../services/apis/mutations/useAppMutation.js'
+import { extractApi, TCard } from '../../../../types/index.js'
 import suggestion from '../../message/create-message/suggestion.js'
 import './CodeBlock.scss'
 import './Mention.scss'
@@ -27,9 +27,8 @@ import './Tasklist.scss'
 const content =
   '<h2 style="text-align: center;">Welcome to Mantine rich text editor</h2><p><code>RichTextEditor</code> component focuses on usability and is designed to be as simple as possible to bring a familiar editing experience to regular users. <code>RichTextEditor</code> is based on <a href="https://tiptap.dev/" rel="noopener noreferrer" target="_blank">Tiptap.dev</a> and supports all of its features:</p><ul><li>General text formatting: <strong>bold</strong>, <em>italic</em>, <u>underline</u>, <s>strike-through</s> </li><li>Headings (h1-h6)</li><li>Sub and super scripts (<sup>&lt;sup /&gt;</sup> and <sub>&lt;sub /&gt;</sub> tags)</li><li>Ordered and bullet lists</li><li>Text align&nbsp;</li><li>And all <a href="https://tiptap.dev/extensions" target="_blank" rel="noopener noreferrer">other extensions</a></li></ul>'
 
-export default function Editor() {
-  const { boardId, cardId } = useAppParams()
-  const card = useAppSelector(state => state.workspace.cards[cardId!])
+export default function Editor({ card }: { card?: TCard }) {
+  const dispatch = useDispatch()
   const { mutateAsync: uploadFile } = useAppMutation('uploadFile', {
     config: {
       headers: {
@@ -37,10 +36,23 @@ export default function Editor() {
       }
     }
   })
-  const { mutateAsync: updateCard } = useAppMutation('updateCard')
+  const { mutateAsync: updateCard } = useAppMutation('updateCard', {
+    mutationOptions: {
+      onSuccess(data, variables, context) {
+        dispatch(
+          workspaceActions.updateWorkspaceStore(
+            extractApi({
+              cards: [data]
+            })
+          )
+        )
+      }
+    }
+  })
 
   const editor = useEditor({
-    // editable:false,
+    // editable: false,
+
     extensions: [
       StarterKit,
       Underline,
@@ -71,30 +83,25 @@ export default function Editor() {
         allowBase64: true
       })
     ],
+    content: card?.detail,
 
-    content,
     onBlur({ editor }) {
-      if (!boardId) return
-      if (!cardId) return
-
-      // updateCard({
-      //   url: {
-      //     baseUrl: 'boards/:boardId/cards/:cardId',
-      //     urlParams: {
-      //       boardId,
-      //       cardId
-      //     }
-      //   },
-      //   method: 'patch',
-      //   payload: { card: { detail: editor.getJSON() } as any }
-      // })
+      if (!card) return
+      if (JSON.stringify(editor.getJSON()) !== JSON.stringify(card.detail)) {
+        updateCard({
+          url: {
+            baseUrl: 'boards/:boardId/cards/:cardId',
+            urlParams: {
+              boardId: card.workspaceId,
+              cardId: card.id
+            }
+          },
+          method: 'patch',
+          payload: { card: { detail: editor.getJSON() } as any }
+        })
+      }
     }
   })
-
-  // useEffect(() => {
-  //   if (!card || !editor || !card.detail) return
-  //   editor.chain().setContent(card.detail).run()
-  // }, [card, editor])
 
   return (
     <RichTextEditor
@@ -102,16 +109,18 @@ export default function Editor() {
       className='border-none'
       classNames={{
         content: 'bg-transparent',
-        toolbar: 'bg-transparent',
         controlsGroup: 'bg-transparent'
       }}
     >
       {editor?.isEditable && (
         // <BubbleMenu
         //   editor={editor}
-        //   tippyOptions={{ arrow: true, placement: 'bottom-start' }}
+        //   tippyOptions={{ arrow: true, placement: 'top-start' }}
         // >
-        <RichTextEditor.Toolbar sticky className='gap-0 border-none py-3'>
+        <RichTextEditor.Toolbar
+          sticky
+          className='gap-0 border-none bg-transparent'
+        >
           <RichTextEditor.Bold
             classNames={{
               control:

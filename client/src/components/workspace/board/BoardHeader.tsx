@@ -82,13 +82,13 @@ export default function BoardHeader() {
         onChange={e => setSearchValue(e.currentTarget.value)}
       />
 
-      <ActionIcon
+      {/* <ActionIcon
         variant='transparent'
         aria-label='Settings'
         className='h-[30px] w-[30px] bg-gray-400/20'
       >
         <IconFilter size={16} stroke={1.5} />
-      </ActionIcon>
+      </ActionIcon> */}
     </>
   )
 }

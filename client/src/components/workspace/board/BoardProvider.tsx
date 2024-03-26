@@ -126,6 +126,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
         setSortBy: value => {
           setSortBy(value)
         },
+
         setTrackingId: value => {
           if (
             properties?.find(
