@@ -45,7 +45,7 @@ export default function UserAvatar({
       shadow='md'
       position='bottom-start'
       classNames={{
-        item: 'text-gray-100 hover:bg-blue-400/20',
+        item: 'text-gray-100 hover:bg-blue-400/20 bg-transparent flex justify-between items-center',
         arrow: 'border-none'
       }}
       disabled={!user || !showMenu || (user.id === meId && !isSetting)}

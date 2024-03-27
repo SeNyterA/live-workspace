@@ -1,4 +1,4 @@
-import { Modal } from '@mantine/core'
+import { Drawer, Modal } from '@mantine/core'
 import { useState } from 'react'
 import { useAppSelector } from '../../redux/store'
 import UserAvatar from '../common/UserAvatar'
@@ -20,7 +20,7 @@ export default function AppHeader() {
           setSettingProfile(true)
         }}
       />
-      <Modal
+      <Drawer
         opened={settingProfile}
         onClose={() => {
           setSettingProfile(false)
@@ -28,6 +28,7 @@ export default function AppHeader() {
         overlayProps={{
           blur: '0.5'
         }}
+      
         classNames={{
           header: 'bg-transparent',
           content: 'rounded-lg flex flex-col bg-black/80',
@@ -36,8 +37,8 @@ export default function AppHeader() {
           root: 'text-gray-100',
           overlay: 'bg-white/10 blur'
         }}
-        // centered
-        size={376}
+        position='right'
+        size={576}
         title={
           <div className='flex items-center justify-center gap-1 text-lg'>
             Profile setting
@@ -45,7 +46,7 @@ export default function AppHeader() {
         }
       >
         <SettingProfile />
-      </Modal>
+      </Drawer>
     </div>
   )
 }

@@ -30,7 +30,7 @@ const Field = ({
           className='mt-4'
           classNames={{
             input:
-              'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+              'disabled:bg-gray-400/10 disabled:opacity-100 disabled:text-gray-100 text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
           }}
           defaultValue={value}
           key={value}
@@ -56,7 +56,7 @@ const Field = ({
           className='mt-4'
           classNames={{
             input:
-              'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+              'disabled:bg-gray-400/10 disabled:opacity-100 disabled:text-gray-100 text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
           }}
           defaultValue={value}
           key={value}
@@ -144,7 +144,7 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
           classNames={{ placeholder: 'rounded-lg' }}
           src={avatar?.path}
           className='rounded-lg'
-          size={334}
+          size={100}
         />
       </Dropzone>
       <Input.Description className='mt-1'>
@@ -157,11 +157,14 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
 export default function SettingProfile() {
   const user = useAppSelector(state => state.auth.userInfo)
   return (
-    <>
-      <WorkspaceAvatar isDisabled={false} />
-      <Field name='nickName' value={user?.nickName} />
-      <Field name='email' value={user?.email} isDisabled />
-      <Field name='userName' value={user?.userName} isDisabled />
-    </>
+    <div className='flex gap-3'>
+      <div className='w-52'></div>
+      <div className='flex-1'>
+        <WorkspaceAvatar isDisabled={false} />
+        <Field name='nickName' value={user?.nickName} />
+        <Field name='email' value={user?.email} isDisabled />
+        <Field name='userName' value={user?.userName} isDisabled />
+      </div>
+    </div>
   )
 }

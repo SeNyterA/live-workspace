@@ -23,7 +23,7 @@ export default function Notification() {
       }}
     >
       <Popover.Target>
-        <ActionIcon className='bg-transparent text-gray-500'>
+        <ActionIcon className='bg-transparent text-gray-500 hover:bg-gray-400/20'>
           <IconBell size={24} />
         </ActionIcon>
       </Popover.Target>
