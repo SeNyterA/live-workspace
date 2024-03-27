@@ -15,6 +15,7 @@ import {
 import { replaceDynamicValues } from '../common'
 import http from '../http'
 import { TUploadMutionApi } from '../upload.api'
+import { TAuthApi } from './auth.api'
 import { TBoardlMutationApi } from './board'
 import { TBoardApi } from './board.api'
 import { TChannelMutationApi } from './channel'
@@ -301,7 +302,8 @@ export type ApiMutationType = {
   TMemberApi['muations'] &
   TMessageApi['muations'] &
   TBoardApi['muations'] &
-  TDirectApi['muations']
+  TDirectApi['muations'] &
+  TAuthApi['muations']
 
 export const useAppMutation = <T extends keyof ApiMutationType>(
   _key: T,

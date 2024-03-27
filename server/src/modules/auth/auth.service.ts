@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException
 } from '@nestjs/common'
@@ -9,6 +10,8 @@ import * as crypto from 'crypto-js'
 import { Errors } from 'src/libs/errors'
 import { MailService } from '../mail/mail.service'
 import { PrismaService } from '../prisma/prisma.service'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import { Server } from 'socket.io'
 
 export type FirebaseUserTokenData = {
   name: string
@@ -31,8 +34,15 @@ export type FirebaseUserTokenData = {
   }
 }
 
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 @Injectable()
 export class AuthService {
+  @WebSocketServer()
+  server: Server
   constructor(
     private jwtService: JwtService,
     private readonly prismaService: PrismaService,
@@ -219,5 +229,31 @@ export class AuthService {
       where: { id: id },
       include: { avatar: true }
     })
+  }
+
+  async _emitProfileUpdated(user: User) {
+    const members = await this.prismaService.member.findMany({
+      where: {
+        userId: user.id
+      }
+    })
+
+    this.server
+      .to(members.map(e => e.workspaceId))
+      .emit('profileUpdated', { user })
+  }
+  async updateProfile({ id, user }: { id: string; user: User }) {
+    const profileUpdated = await this.prismaService.user.update({
+      where: { id: id, isAvailable: true },
+      data: user,
+      include: { avatar: true }
+    })
+
+    if (!profileUpdated) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    this._emitProfileUpdated(profileUpdated)
+    return profileUpdated
   }
 }

@@ -1,3 +1,4 @@
+import { on } from 'events'
 import { Avatar, Indicator, Menu, rem, Text } from '@mantine/core'
 import {
   IconLogout,
@@ -6,6 +7,7 @@ import {
   IconSearch,
   IconSettings
 } from '@tabler/icons-react'
+import { set } from 'lodash'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
@@ -21,7 +23,8 @@ export default function UserAvatar({
   showSatus = true,
   showMenu = true,
   radius = 999999,
-  isSetting = false
+  isSetting = false,
+  onOpenSettingProfile
 }: {
   user?: TUser
   size?: number
@@ -30,6 +33,7 @@ export default function UserAvatar({
   radius?: number
   showMenu?: boolean
   isSetting?: boolean
+  onOpenSettingProfile?: () => void
 }) {
   const { switchTo } = useAppControlParams()
   const meId = useAppSelector(state => state.auth.userInfo?.id)
@@ -86,6 +90,9 @@ export default function UserAvatar({
               leftSection={
                 <IconSettings style={{ width: rem(14), height: rem(14) }} />
               }
+              onClick={() => {
+                onOpenSettingProfile?.()
+              }}
             >
               Settings
             </Menu.Item>
