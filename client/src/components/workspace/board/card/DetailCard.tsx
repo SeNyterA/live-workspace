@@ -28,18 +28,6 @@ export default function DetailCard() {
           opened={true}
           title={<CardTitle />}
           size='100%'
-          // classNames={{
-          //   content: 'h-full flex flex-col bg-gray-100 rounded-lg',
-          //   body: 'flex-1',
-          //   header: 'flex bg-transparent py-3',
-          //   title: 'flex-1'
-          // }}
-          // overlayProps={{
-          //   color: '#000',
-          //   backgroundOpacity: 0.1,
-          //   blur: 1
-          // }}
-
           overlayProps={{
             blur: '0.5'
           }}

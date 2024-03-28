@@ -1,9 +1,7 @@
 import {
-  Autocomplete,
   Avatar,
   Button,
   Input,
-  Popover,
   ScrollArea,
   Select,
   TextInput
@@ -13,7 +11,7 @@ import '@mantine/dates/styles.css'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../../../hooks/useAppParams'
 import { workspaceActions } from '../../../../redux/slices/workspace.slice'
@@ -75,13 +73,12 @@ export default function Properties() {
       }
     }
   )
-  const [tmpValue, setTmpValue] = useState<any>({})
 
-  useEffect(() => {
-    if (card?.properties) {
-      setTmpValue(card.properties)
-    }
-  }, [card?.properties])
+  // useEffect(() => {
+  //   if (card?.properties) {
+  //     setTmpValue(card.properties)
+  //   }
+  // }, [card?.properties])
 
   return (
     <div className='relative flex w-80 flex-col rounded-lg bg-gray-900/90 p-3'>
@@ -169,7 +166,7 @@ export default function Properties() {
                         label: option.title
                       }))}
                       mt='md'
-                      value={tmpValue[property.id]?.toString()}
+                      value={card?.properties?.[property.id]?.toString()}
                       onChange={value => {
                         const oldCard = getAppValue(
                           state => state.workspace.cards[cardId!]
@@ -256,7 +253,7 @@ export default function Properties() {
                           value: e.user.id
                         }))}
                       mt='md'
-                      value={tmpValue[property.id]?.toString()}
+                      value={card?.properties?.[property.id]?.toString()}
                       onChange={value => {
                         const oldCard = getAppValue(
                           state => state.workspace.cards[cardId!]
@@ -428,26 +425,6 @@ export default function Properties() {
           <Button className='mt-2 bg-gray-400/20'>Create</Button>
 
           <SettingProperty />
-
-          {/* <Autocomplete
-            onChange={e => console.log(e)}
-            onSelect={e=>console.log(e)}
-            label='Your favorite library'
-            placeholder='Pick value or enter anything'
-            data={[
-              { group: 'Frontend', items: ['React', 'Angular'] },
-              { group: 'Backend', items: ['Express', 'Django'] }
-            ]}
-          /> */}
-
-          {/* <Select
-            classNames={{
-              input:
-                'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
-              dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-              option: 'hover:bg-gray-700/90'
-            }}
-          ></Select> */}
         </ScrollArea>
       </div>
     </div>
