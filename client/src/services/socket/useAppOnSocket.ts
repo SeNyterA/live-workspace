@@ -4,6 +4,7 @@ import {
   TMessageExtra,
   TPropertyOptionExtra,
   TReactionExtra,
+  TUserExtra,
   TWorkspaceExtra
 } from '../../types'
 import { useSocketContext } from './SocketProvider'
@@ -72,6 +73,11 @@ export type ApiSocketType = {
       userId: string
       messageId: string
       workspaceId: string
+    }
+  }
+  user: {
+    response: {
+      user: TUserExtra
     }
   }
 }

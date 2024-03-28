@@ -1,3 +1,4 @@
+import { on } from 'events'
 import { Avatar, Indicator, Menu, rem, Text } from '@mantine/core'
 import {
   IconLogout,
@@ -6,6 +7,7 @@ import {
   IconSearch,
   IconSettings
 } from '@tabler/icons-react'
+import { set } from 'lodash'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
@@ -21,7 +23,8 @@ export default function UserAvatar({
   showSatus = true,
   showMenu = true,
   radius = 999999,
-  isSetting = false
+  isSetting = false,
+  onOpenSettingProfile
 }: {
   user?: TUser
   size?: number
@@ -30,6 +33,7 @@ export default function UserAvatar({
   radius?: number
   showMenu?: boolean
   isSetting?: boolean
+  onOpenSettingProfile?: () => void
 }) {
   const { switchTo } = useAppControlParams()
   const meId = useAppSelector(state => state.auth.userInfo?.id)
@@ -41,7 +45,7 @@ export default function UserAvatar({
       shadow='md'
       position='bottom-start'
       classNames={{
-        item: 'text-gray-100 hover:bg-blue-400/20',
+        item: 'text-gray-100 hover:bg-blue-400/20 bg-transparent flex justify-between items-center',
         arrow: 'border-none'
       }}
       disabled={!user || !showMenu || (user.id === meId && !isSetting)}
@@ -71,10 +75,15 @@ export default function UserAvatar({
             <span className='capitalize'>{user?.userName[0]}</span>
           </Avatar>
 
-          <p className='mt-2 break-all text-center text-lg font-semibold'>
-            {user?.userName}
+          {!!user?.nickName && (
+            <p className='mt-2 break-all text-center text-lg font-semibold'>
+              {user?.nickName}
+            </p>
+          )}
+          <p className='break-all text-center text-sm text-gray-300'>
+            @{user?.userName}
           </p>
-          <p className='break-all text-center text-sm text-gray-500'>
+          <p className='break-all text-center text-sm text-gray-300'>
             {user?.email}
           </p>
         </div>
@@ -86,6 +95,9 @@ export default function UserAvatar({
               leftSection={
                 <IconSettings style={{ width: rem(14), height: rem(14) }} />
               }
+              onClick={() => {
+                onOpenSettingProfile?.()
+              }}
             >
               Settings
             </Menu.Item>

@@ -100,6 +100,19 @@ export default function Layout({ children }: { children: ReactNode }) {
   })
 
   useAppOnSocket({
+    key: 'user',
+    resFunc: ({ user }) => {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            users: [user]
+          })
+        )
+      )
+    }
+  })
+
+  useAppOnSocket({
     key: 'userPresence',
     resFunc: data => {
       dispatch(workspaceActions.updateWorkspaceStore({ presents: data }))
