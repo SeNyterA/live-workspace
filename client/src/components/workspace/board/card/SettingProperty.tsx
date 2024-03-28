@@ -333,7 +333,12 @@ export default function SettingProperty() {
               />
             )}
 
-            <Button className='ml-auto w-40 bg-gray-400 bg-gray-400/20'>
+            <Button
+              className='ml-auto w-40 bg-gray-400 bg-gray-400/20'
+              onClick={form.handleSubmit(data => {
+                console.log({ data })
+              })}
+            >
               Update
             </Button>
           </div>
