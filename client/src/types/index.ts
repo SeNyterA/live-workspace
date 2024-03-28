@@ -210,6 +210,7 @@ export type TCardExtra = TCard & {
 export type TProperty = {
   id: string
   title: string
+  description?: string
   createdAt: Date
   updatedAt: Date
   isAvailable: boolean

@@ -8,6 +8,19 @@ body {
   overflow: hidden;
 }
 
+@layer components {
+  .primary-button {
+    @apply rounded bg-blue-500 px-4 py-2 font-bold text-white;
+  }
+
+  .card {
+    background-color: theme('colors.white');
+    border-radius: theme('borderRadius.lg');
+    padding: theme('spacing.6');
+    box-shadow: theme('boxShadow.xl');
+  }
+}
+
 blockquote,
 dl,
 dd,
@@ -44,4 +57,10 @@ pre {
 
 .customscroll::-webkit-scrollbar-thumb:hover {
   background-color: #2980b9;
+}
+
+/* Custom button styles */
+button[data-variant='transparent'] {
+  background-color: transparent;
+  color: #fff;
 }

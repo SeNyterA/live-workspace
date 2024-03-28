@@ -1,4 +1,13 @@
-import { Avatar, Input, ScrollArea, Select, TextInput } from '@mantine/core'
+import {
+  Autocomplete,
+  Avatar,
+  Button,
+  Input,
+  Popover,
+  ScrollArea,
+  Select,
+  TextInput
+} from '@mantine/core'
 import { DateTimePicker } from '@mantine/dates'
 import '@mantine/dates/styles.css'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
@@ -12,6 +21,7 @@ import { getAppValue, useAppSelector } from '../../../../redux/store'
 import Watching from '../../../../redux/Watching'
 import { useAppMutation } from '../../../../services/apis/mutations/useAppMutation'
 import { EPropertyType, extractApi } from '../../../../types'
+import SettingProperty from './SettingProperty'
 
 dayjs.extend(customParseFormat)
 
@@ -414,6 +424,30 @@ export default function Properties() {
               )}
             </Fragment>
           ))}
+
+          <Button className='mt-2 bg-gray-400/20'>Create</Button>
+
+          <SettingProperty />
+
+          {/* <Autocomplete
+            onChange={e => console.log(e)}
+            onSelect={e=>console.log(e)}
+            label='Your favorite library'
+            placeholder='Pick value or enter anything'
+            data={[
+              { group: 'Frontend', items: ['React', 'Angular'] },
+              { group: 'Backend', items: ['Express', 'Django'] }
+            ]}
+          /> */}
+
+          {/* <Select
+            classNames={{
+              input:
+                'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+              dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+              option: 'hover:bg-gray-700/90'
+            }}
+          ></Select> */}
         </ScrollArea>
       </div>
     </div>
