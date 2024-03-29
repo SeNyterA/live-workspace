@@ -496,10 +496,6 @@ export default function Properties() {
               )}
             </Fragment>
           ))}
-
-          <Button className='mt-2 bg-gray-400/20'>Create</Button>
-
-          <SettingProperty />
         </ScrollArea>
       </div>
     </div>

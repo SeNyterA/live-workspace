@@ -1,8 +1,10 @@
-import { Input, Select } from '@mantine/core'
-import { IconSearch } from '@tabler/icons-react'
+import { ActionIcon, Input, Select } from '@mantine/core'
+import { IconSearch, IconSettings } from '@tabler/icons-react'
+import { useState } from 'react'
 import { useAppSelector } from '../../../redux/store'
 import { EPropertyType } from '../../../types'
 import { useBoard } from './BoardProvider'
+import SettingProperty from './card/SettingProperty'
 
 export default function BoardHeader() {
   const {
@@ -23,6 +25,8 @@ export default function BoardHeader() {
         [EPropertyType.Person, EPropertyType.Select].includes(property.type)
     )
   )
+
+  const [openProperty, setOpenProperty] = useState(false)
 
   return (
     <>
@@ -83,13 +87,18 @@ export default function BoardHeader() {
         onChange={e => setSearchValue(e.currentTarget.value)}
       />
 
-      {/* <ActionIcon
-        variant='transparent'
+      <ActionIcon
         aria-label='Settings'
         className='h-[30px] w-[30px] bg-gray-400/20'
+        onClick={() => setOpenProperty(true)}
       >
-        <IconFilter size={16} stroke={1.5} />
-      </ActionIcon> */}
+        <IconSettings size={16} stroke={1.5} />
+      </ActionIcon>
+
+      <SettingProperty
+        opend={openProperty}
+        onClose={() => setOpenProperty(false)}
+      />
     </>
   )
 }

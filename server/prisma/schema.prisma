@@ -256,6 +256,7 @@ model Property {
   detail      Json?
   order       Float?
   type        PropertyType
+  description String?
 
   workspace   Workspace @relation("PropertyWorkspace", fields: [workspaceId], references: [id])
   workspaceId String

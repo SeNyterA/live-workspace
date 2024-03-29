@@ -427,4 +427,47 @@ export class BoardService {
 
     return optionUpdated
   }
+
+  async updateProperty({
+    boardId,
+    property,
+    user,
+    propertyId
+  }: {
+    boardId: string
+    user: TJwtUser
+    property: Property
+    propertyId: string
+  }) {
+    const propertyUpdated = await this.prismaService.property.upsert({
+      where: {
+        id: propertyId,
+        isAvailable: true,
+        workspace: {
+          id: boardId,
+          isAvailable: true,
+          members: {
+            some: {
+              userId: user.sub,
+              status: MemberStatus.Active
+            }
+          }
+        }
+      },
+      create: {
+        ...property,
+        workspaceId: boardId,
+        createdById: user.sub,
+        modifiedById: user.sub
+      },
+      update: {
+        ...property,
+        modifiedById: user.sub
+      }
+    })
+
+    this.server.to(boardId).emit('property', { property: propertyUpdated })
+
+    return propertyUpdated
+  }
 }

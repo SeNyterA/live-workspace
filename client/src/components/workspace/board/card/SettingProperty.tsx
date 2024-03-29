@@ -10,7 +10,8 @@ import {
   Select,
   TextInput
 } from '@mantine/core'
-import { IconX } from '@tabler/icons-react'
+import { DatePickerInput, DateTimePicker } from '@mantine/dates'
+import { IconPlus, IconX } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import {
   Controller,
@@ -22,12 +23,19 @@ import {
 } from 'react-hook-form'
 import useAppParams from '../../../../hooks/useAppParams'
 import { getAppValue, useAppSelector } from '../../../../redux/store'
+import Watching from '../../../../redux/Watching'
 import { EPropertyType, TProperty, TPropertyOption } from '../../../../types'
 
 export const usePropertyContext = () =>
   useFormContext<Partial<TProperty> & { options: Partial<TPropertyOption>[] }>()
 
-export default function SettingProperty() {
+export default function SettingProperty({
+  opend,
+  onClose
+}: {
+  opend: boolean
+  onClose: () => void
+}) {
   const { boardId } = useAppParams()
   const form = useForm<
     Partial<TProperty> & { options: Partial<TPropertyOption>[] }
@@ -74,9 +82,9 @@ export default function SettingProperty() {
 
   return (
     <Modal
-      onClose={() => {}}
-      opened={!true}
-      title={<p>Update property</p>}
+      onClose={onClose}
+      opened={opend}
+      title={<p>Property setting</p>}
       size='1000'
       overlayProps={{
         blur: '0.5'
@@ -96,13 +104,23 @@ export default function SettingProperty() {
         <div className='flex h-full gap-4'>
           <div className='w-48 rounded bg-gray-400/20 p-2'>
             {_properties?.map(e => (
-              <NavLink
-                className='mt-1 w-full bg-transparent first:mt-0 hover:bg-gray-400/30'
-                key={e.id}
-                label={e.title}
-                onClick={() => setPropertyId(e.id)}
-              />
+              <>
+                <NavLink
+                  className='mt-1 w-full bg-transparent first:mt-0 hover:bg-gray-400/30'
+                  active={e.id === propertyId}
+                  key={e.id}
+                  label={e.title}
+                  onClick={() => setPropertyId(e.id)}
+                />
+              </>
             ))}
+
+            <NavLink
+              className='mt-1 w-full bg-transparent first:mt-0 hover:bg-gray-400/30'
+              label='Create new'
+              rightSection={<IconPlus size={14} />}
+              onClick={() => setPropertyId('')}
+            />
           </div>
 
           <div className='relative w-full flex-1'>
@@ -112,6 +130,10 @@ export default function SettingProperty() {
               onCompositionStart={e => console.log(e)}
               onCompositionEnd={e => console.log(e)}
             >
+              <p className='sticky top-0 text-base'>
+                {propertyId ? 'Edit property' : 'Create property'}
+              </p>
+
               <Controller
                 control={form.control}
                 name='title'
@@ -144,25 +166,27 @@ export default function SettingProperty() {
                 )}
               />
 
-              <Controller
-                control={form.control}
-                name='type'
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    classNames={{
-                      input:
-                        'border-gray-100 border-none bg-gray-400/20 text-gray-100',
-                      dropdown:
-                        '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                      option: 'hover:bg-gray-700/90'
-                    }}
-                    label='Property type'
-                    description='Select the type of property'
-                    data={Object.values(EPropertyType)}
-                  />
-                )}
-              />
+              {!!propertyId || (
+                <Controller
+                  control={form.control}
+                  name='type'
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      classNames={{
+                        input:
+                          'border-gray-100 border-none bg-gray-400/20 text-gray-100',
+                        dropdown:
+                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                        option: 'hover:bg-gray-700/90'
+                      }}
+                      label='Property type'
+                      description='Select the type of property'
+                      data={Object.values(EPropertyType)}
+                    />
+                  )}
+                />
+              )}
 
               {[EPropertyType.Select, EPropertyType.MultiSelect].includes(
                 type!
@@ -247,7 +271,10 @@ export default function SettingProperty() {
             variant='dashed'
           />
 
-          <div className='flex h-full flex-1 flex-col justify-between'>
+          <div className='flex h-full flex-1 flex-col justify-between gap-2'>
+            <p className='text-base'>
+              {propertyId ? 'Edit property' : 'Create property'}
+            </p>
             {type === EPropertyType.Select && (
               <Select
                 searchable
@@ -333,6 +360,148 @@ export default function SettingProperty() {
               />
             )}
 
+            {type === EPropertyType.RangeDate && (
+              <DatePickerInput
+                type='range'
+                classNames={{
+                  input:
+                    'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+                }}
+                label={
+                  <Controller
+                    control={form.control}
+                    name='title'
+                    render={({ field }) => <>{field.value}</>}
+                  />
+                }
+                description={
+                  <Controller
+                    control={form.control}
+                    name='description'
+                    render={({ field }) => <>{field.value}</>}
+                  />
+                }
+              />
+            )}
+
+            {type === EPropertyType.Date && (
+              <DateTimePicker
+                classNames={{
+                  input:
+                    'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+                }}
+                label={
+                  <Controller
+                    control={form.control}
+                    name='title'
+                    render={({ field }) => <>{field.value}</>}
+                  />
+                }
+                description={
+                  <Controller
+                    control={form.control}
+                    name='description'
+                    render={({ field }) => <>{field.value}</>}
+                  />
+                }
+              />
+            )}
+
+            {type === EPropertyType.Person && (
+              <Watching
+                watchingFn={state =>
+                  Object.values(state.workspace.members)
+                    .filter(e => e.workspaceId === boardId)
+                    .map(member => ({
+                      member,
+                      user: state.workspace.users[member.userId]
+                    }))
+                }
+                children={data => (
+                  <Select
+                    className='!mt-2 first:!mt-0'
+                    classNames={{
+                      input:
+                        'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                      dropdown:
+                        '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                      option: 'hover:bg-gray-700/90'
+                    }}
+                    label={
+                      <Controller
+                        control={form.control}
+                        name='title'
+                        render={({ field }) => <>{field.value}</>}
+                      />
+                    }
+                    description={
+                      <Controller
+                        control={form.control}
+                        name='description'
+                        render={({ field }) => <>{field.value}</>}
+                      />
+                    }
+                    placeholder='Pick value'
+                    data={data
+                      ?.filter(e => !!e.user)
+                      .map(e => ({
+                        label: e.user.userName,
+                        value: e.user.id
+                      }))}
+                    mt='md'
+                  />
+                )}
+              />
+            )}
+
+            {type === EPropertyType.MultiPerson && (
+              <Watching
+                watchingFn={state =>
+                  Object.values(state.workspace.members)
+                    .filter(e => e.workspaceId === boardId)
+                    .map(member => ({
+                      member,
+                      user: state.workspace.users[member.userId]
+                    }))
+                }
+                children={data => (
+                  <MultiSelect
+                    className='!mt-2 first:!mt-0'
+                    classNames={{
+                      input:
+                        'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                      dropdown:
+                        '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                      option: 'hover:bg-gray-700/90'
+                    }}
+                    label={
+                      <Controller
+                        control={form.control}
+                        name='title'
+                        render={({ field }) => <>{field.value}</>}
+                      />
+                    }
+                    description={
+                      <Controller
+                        control={form.control}
+                        name='description'
+                        render={({ field }) => <>{field.value}</>}
+                      />
+                    }
+                    placeholder='Pick value'
+                    data={data
+                      ?.filter(e => !!e.user)
+                      .map(e => ({
+                        label: e.user.userName,
+                        value: e.user.id
+                      }))}
+                    mt='md'
+                  />
+                )}
+              />
+            )}
+
+            <div className='flex-1'></div>
             <Button
               className='ml-auto w-40 bg-gray-400 bg-gray-400/20'
               onClick={form.handleSubmit(data => {
