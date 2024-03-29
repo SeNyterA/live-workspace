@@ -24,6 +24,7 @@ import {
 import useAppParams from '../../../../hooks/useAppParams'
 import { getAppValue, useAppSelector } from '../../../../redux/store'
 import Watching from '../../../../redux/Watching'
+import { appMutationFn } from '../../../../services/apis/mutations/useAppMutation'
 import { EPropertyType, TProperty, TPropertyOption } from '../../../../types'
 
 export const usePropertyContext = () =>
@@ -119,7 +120,23 @@ export default function SettingProperty({
               className='mt-1 w-full bg-transparent first:mt-0 hover:bg-gray-400/30'
               label='Create new'
               rightSection={<IconPlus size={14} />}
-              onClick={() => setPropertyId('')}
+              onClick={() => {
+                appMutationFn({
+                  key: 'createProperty',
+                  method: 'post',
+                  url: {
+                    baseUrl: '/boards/:boardId/properties',
+                    urlParams: {
+                      boardId: boardId!
+                    }
+                  },
+                  payload: {
+                    title: 'New property',
+                    description: 'Description',
+                    type: EPropertyType.Select
+                  }
+                })
+              }}
             />
           </div>
 
@@ -166,27 +183,25 @@ export default function SettingProperty({
                 )}
               />
 
-              {!!propertyId || (
-                <Controller
-                  control={form.control}
-                  name='type'
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      classNames={{
-                        input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100',
-                        dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90'
-                      }}
-                      label='Property type'
-                      description='Select the type of property'
-                      data={Object.values(EPropertyType)}
-                    />
-                  )}
-                />
-              )}
+              <Controller
+                control={form.control}
+                name='type'
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    classNames={{
+                      input:
+                        'border-gray-100 border-none bg-gray-400/20 text-gray-100',
+                      dropdown:
+                        '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                      option: 'hover:bg-gray-700/90'
+                    }}
+                    label='Property type'
+                    description='Select the type of property'
+                    data={Object.values(EPropertyType)}
+                  />
+                )}
+              />
 
               {[EPropertyType.Select, EPropertyType.MultiSelect].includes(
                 type!
@@ -501,7 +516,6 @@ export default function SettingProperty({
               />
             )}
 
-            <div className='flex-1'></div>
             <Button
               className='ml-auto w-40 bg-gray-400 bg-gray-400/20'
               onClick={form.handleSubmit(data => {

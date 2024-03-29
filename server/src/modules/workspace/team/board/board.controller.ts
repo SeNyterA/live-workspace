@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import { Card, Member, Property, Workspace } from '@prisma/client'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { BoardService } from './board.service'
-import { Card, Member, Workspace } from '@prisma/client'
 
 @Controller()
 export class BoardController {
@@ -69,6 +69,34 @@ export class BoardController {
       optionId,
       propertyId,
       order
+    })
+  }
+
+  @Post('boards/:boardId/properties')
+  createProperty(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Body() property: Property
+  ) {
+    return this.boardService.createProperty({
+      boardId,
+      user,
+      property
+    })
+  }
+
+  @Patch('boards/:boardId/properties/:propertyId')
+  updateProperty(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Param('propertyId') propertyId: string,
+    @Body() property: Property
+  ) {
+    return this.boardService.updateProperty({
+      boardId,
+      user,
+      property,
+      propertyId
     })
   }
 }

@@ -254,8 +254,8 @@ model Property {
   updatedAt   DateTime     @updatedAt
   isAvailable Boolean      @default(true)
   detail      Json?
-  order       Float?
-  type        PropertyType
+  order       Float        @default(1.0)
+  type        PropertyType @default(Text)
   description String?
 
   workspace   Workspace @relation("PropertyWorkspace", fields: [workspaceId], references: [id])
@@ -279,7 +279,7 @@ model PropertyOption {
   isAvailable Boolean  @default(true)
   title       String
   color       String?
-  order       Float?
+  order       Float    @default(1.0)
 
   property   Property @relation("PropertyOption", fields: [propertyId], references: [id])
   propertyId String

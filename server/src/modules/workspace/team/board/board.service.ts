@@ -430,8 +430,8 @@ export class BoardService {
 
   async updateProperty({
     boardId,
-    property,
     user,
+    property,
     propertyId
   }: {
     boardId: string
@@ -439,7 +439,7 @@ export class BoardService {
     property: Property
     propertyId: string
   }) {
-    const propertyUpdated = await this.prismaService.property.upsert({
+    const propertyUpdated = await this.prismaService.property.update({
       where: {
         id: propertyId,
         isAvailable: true,
@@ -454,13 +454,7 @@ export class BoardService {
           }
         }
       },
-      create: {
-        ...property,
-        workspaceId: boardId,
-        createdById: user.sub,
-        modifiedById: user.sub
-      },
-      update: {
+      data: {
         ...property,
         modifiedById: user.sub
       }
