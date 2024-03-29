@@ -2,11 +2,12 @@ import {
   Avatar,
   Button,
   Input,
+  MultiSelect,
   ScrollArea,
   Select,
   TextInput
 } from '@mantine/core'
-import { DateTimePicker } from '@mantine/dates'
+import { DatePickerInput, DateTimePicker } from '@mantine/dates'
 import '@mantine/dates/styles.css'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import dayjs from 'dayjs'
@@ -221,9 +222,7 @@ export default function Properties() {
                 </Watching>
               )}
 
-              {[EPropertyType.People, EPropertyType.Assignees].includes(
-                property.type
-              ) && (
+              {[EPropertyType.Person].includes(property.type) && (
                 <Watching
                   watchingFn={state =>
                     Object.values(state.workspace.members)
@@ -308,12 +307,92 @@ export default function Properties() {
                 />
               )}
 
-              {[
-                EPropertyType.String,
-                EPropertyType.Number,
-                EPropertyType.Link,
-                EPropertyType.Email
-              ].includes(property.type) && (
+              {[EPropertyType.MultiPerson].includes(property.type) && (
+                <Watching
+                  watchingFn={state =>
+                    Object.values(state.workspace.members)
+                      .filter(e => e.workspaceId === boardId)
+                      .map(member => ({
+                        member,
+                        user: state.workspace.users[member.userId]
+                      }))
+                  }
+                  children={data => (
+                    <MultiSelect
+                      className='!mt-2 first:!mt-0'
+                      classNames={{
+                        input:
+                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                        dropdown:
+                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                        option: 'hover:bg-gray-700/90'
+                      }}
+                      label={property.title}
+                      description={property.title}
+                      placeholder='Pick value'
+                      data={data
+                        ?.filter(e => !!e.user)
+                        .map(e => ({
+                          label: e.user.userName,
+                          value: e.user.id
+                        }))}
+                      mt='md'
+                      value={card?.properties?.[property.id]}
+                      onChange={value => {
+                        const oldCard = getAppValue(
+                          state => state.workspace.cards[cardId!]
+                        )
+                        if (!oldCard) return
+                        dispatch(
+                          workspaceActions.updateWorkspaceStore({
+                            cards: {
+                              [cardId!]: {
+                                ...oldCard,
+                                properties: {
+                                  ...oldCard.properties,
+                                  [property.id]: value
+                                }
+                              }
+                            }
+                          })
+                        )
+                        updateCard(
+                          {
+                            url: {
+                              baseUrl: 'boards/:boardId/cards/:cardId',
+                              urlParams: {
+                                boardId: boardId!,
+                                cardId: card?.id!
+                              }
+                            },
+                            method: 'patch',
+                            payload: {
+                              card: {
+                                properties: {
+                                  ...oldCard?.properties,
+                                  [property.id]: value
+                                },
+                                order: new Date().getTime()
+                              } as any
+                            }
+                          },
+                          {
+                            onError(error, variables, context) {
+                              dispatch(
+                                workspaceActions.updateWorkspaceStore({
+                                  cards: { [cardId!]: oldCard }
+                                })
+                              )
+                            }
+                          }
+                        )
+                      }}
+                    />
+                  )}
+                />
+              )}
+
+              {[EPropertyType.Text].includes(property.type) && (
                 <TextInput
                   key={card?.properties?.[property.id]?.toString()}
                   className='!mt-2 first:!mt-0'
@@ -386,6 +465,10 @@ export default function Properties() {
               {[EPropertyType.Date].includes(property.type) && (
                 <DateTimePicker
                   className='!mt-2 first:!mt-0'
+                  classNames={{
+                    input:
+                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                  }}
                   label={property.title}
                   description={property.title}
                   {...{ placeholder: 'Pick value' }}
@@ -395,27 +478,19 @@ export default function Properties() {
                       ? new Date(card?.properties[property.id]?.toString()!)
                       : undefined
                   }
-                  onChange={value => {
-                    // setTmpValue(old => ({
-                    //   ...old,
-                    //   [property.id]: value?.toString()
-                    // }))
-                    // updateCard({
-                    //   url: {
-                    //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                    //     urlParams: {
-                    //       boardId: boardId!,
-                    //       cardId: card?.id!
-                    //     }
-                    //   },
-                    //   method: 'patch',
-                    //   payload: {
-                    //     properties: {
-                    //       ...card?.properties,
-                    //       [property.id]: value?.toString()
-                    //     }
-                    //   }
-                    // })
+                  onChange={value => {}}
+                />
+              )}
+
+              {[EPropertyType.RangeDate].includes(property.type) && (
+                <DatePickerInput
+                  type='range'
+                  label='Pick dates range'
+                  placeholder='Pick dates range'
+                  className='!mt-2 first:!mt-0'
+                  classNames={{
+                    input:
+                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
                   }}
                 />
               )}

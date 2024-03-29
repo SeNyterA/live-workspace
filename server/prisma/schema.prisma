@@ -45,17 +45,13 @@ enum MessageType {
 }
 
 enum PropertyType {
-  Date
-  Number
-  String
-  People
-  MultiPeople
+  Text
+  Person
+  MultiPerson
   Select
   MultiSelect
-  Link
-  Email
-  Assignees
-  DueDate
+  Date
+  RangeDate
 }
 
 model User {

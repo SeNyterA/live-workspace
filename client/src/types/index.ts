@@ -36,16 +36,12 @@ export enum EMessageType {
 
 export enum EPropertyType {
   Date = 'Date',
-  Number = 'Number',
-  String = 'String',
-  People = 'People',
-  MultiPeople = 'MultiPeople',
+  RangeDate = 'RangeDate',
+  Text = 'Text',
+  Person = 'Person',
+  MultiPerson = 'MultiPerson',
   Select = 'Select',
-  MultiSelect = 'MultiSelect',
-  Link = 'Link',
-  Email = 'Email',
-  Assignees = 'Assignees',
-  DueDate = 'DueDate'
+  MultiSelect = 'MultiSelect'
 }
 
 export type TUser = {

@@ -75,7 +75,7 @@ export default function SettingProperty() {
   return (
     <Modal
       onClose={() => {}}
-      opened={true}
+      opened={!true}
       title={<p>Update property</p>}
       size='1000'
       overlayProps={{
@@ -310,7 +310,7 @@ export default function SettingProperty() {
               />
             )}
 
-            {type === EPropertyType.String && (
+            {type === EPropertyType.Text && (
               <TextInput
                 classNames={{
                   input:

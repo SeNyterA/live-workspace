@@ -1,5 +1,5 @@
-import { ActionIcon, Input, Select } from '@mantine/core'
-import { IconFilter, IconSearch } from '@tabler/icons-react'
+import { Input, Select } from '@mantine/core'
+import { IconSearch } from '@tabler/icons-react'
 import { useAppSelector } from '../../../redux/store'
 import { EPropertyType } from '../../../types'
 import { useBoard } from './BoardProvider'
@@ -20,7 +20,7 @@ export default function BoardHeader() {
     Object.values(state.workspace.properties).filter(
       property =>
         property.workspaceId === boardId &&
-        [EPropertyType.People, EPropertyType.Select].includes(property.type)
+        [EPropertyType.Person, EPropertyType.Select].includes(property.type)
     )
   )
 
@@ -76,7 +76,8 @@ export default function BoardHeader() {
         placeholder='Search card name'
         leftSection={<IconSearch size={14} />}
         classNames={{
-          input: 'bg-transparent border-none min-h-[20px] h-[20px] text-gray-100',
+          input:
+            'bg-transparent border-none min-h-[20px] h-[20px] text-gray-100'
         }}
         value={searchValue}
         onChange={e => setSearchValue(e.currentTarget.value)}

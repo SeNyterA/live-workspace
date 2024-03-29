@@ -24,14 +24,42 @@ export const generateBoardData = ({
       title: 'Progress',
       workspaceId: boardId,
       order: 2,
-      type: PropertyType.String
+      type: PropertyType.Text
     },
     {
       id: uuidv4(),
       title: 'Assignee',
       workspaceId: boardId,
       order: 3,
-      type: PropertyType.People
+      type: PropertyType.Person
+    },
+    {
+      type: PropertyType.Date,
+      id: uuidv4(),
+      workspaceId: boardId,
+      order: 4,
+      title: 'Due Date'
+    },
+    {
+      type: PropertyType.MultiPerson,
+      id: uuidv4(),
+      title: 'Collaborators',
+      workspaceId: boardId,
+      order: 5
+    },
+    {
+      type: PropertyType.MultiSelect,
+      id: uuidv4(),
+      title: 'Labels',
+      workspaceId: boardId,
+      order: 6
+    },
+    {
+      type: PropertyType.RangeDate,
+      id: uuidv4(),
+      title: 'Start Date',
+      workspaceId: boardId,
+      order: 7
     }
   ]
 
