@@ -43,13 +43,13 @@ export default function SettingProperty({
   const property = useAppSelector(state => ({
     ...state.workspace.properties[propertyId!],
     options: Object.values(state.workspace.options).filter(
-      option => option.propertyId === propertyId
+      option => option.propertyId === propertyId && option.isAvailable
     )
   }))
 
   const properties = useAppSelector(state =>
     Object.values(state.workspace.properties)
-      .filter(e => e.workspaceId === boardId)
+      .filter(e => e.workspaceId === boardId && e.isAvailable)
       .map(e => ({ id: e.id, title: e.title }))
   )
 
@@ -140,11 +140,33 @@ export default function SettingProperty({
           <ScrollArea className='absolute inset-0 p-2' scrollbarSize={0}>
             {properties?.map(e => (
               <NavLink
-                className='w-full bg-transparent first:mt-0 hover:bg-gray-400/30'
+                className='group w-full bg-transparent first:mt-0 hover:bg-gray-400/30'
+                classNames={{
+                  section:
+                    'invisible group-hover:visible hover:text-gray-100 transition-colors'
+                }}
                 active={e.id === propertyId}
                 key={e.id}
                 label={e.title}
                 onClick={() => setPropertyId(e.id)}
+                rightSection={
+                  <IconX
+                    size={16}
+                    onClick={() => {
+                      updateProperty({
+                        method: 'patch',
+                        url: {
+                          baseUrl: '/boards/:boardId/properties/:propertyId',
+                          urlParams: {
+                            boardId: boardId!,
+                            propertyId: e.id
+                          }
+                        },
+                        payload: { isAvailable: false }
+                      })
+                    }}
+                  />
+                }
               />
             ))}
 
