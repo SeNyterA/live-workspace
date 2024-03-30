@@ -5,6 +5,7 @@ import {
   TProperty,
   TPropertyExtra,
   TPropertyOption,
+  TPropertyOptionExtra,
   TWorkspace,
   TWorkspaceExtra
 } from '../../../types'
@@ -21,20 +22,6 @@ export type TBoardApi = {
       method: 'post'
       payload: { workspace: TWorkspace; members?: TMember[] }
       response: TWorkspaceExtra
-    }
-
-    updateColumnPosition: {
-      url: {
-        baseUrl: 'boards/:boardId/properies/:propertyId/options/:optionId'
-        urlParams: {
-          boardId: string
-          propertyId: string
-          optionId: string
-        }
-      }
-      payload: { order: number }
-      method: 'patch'
-      response: TPropertyOption
     }
 
     createCard: {
@@ -72,6 +59,47 @@ export type TBoardApi = {
       method: 'patch'
       payload: Partial<TProperty>
       response: TPropertyExtra
+    }
+
+    createOption: {
+      url: {
+        baseUrl: 'boards/:boardId/properties/:propertyId/options'
+        urlParams: {
+          boardId: string
+          propertyId: string
+        }
+      }
+      payload: Partial<TPropertyOption>
+      method: 'post'
+      response: TPropertyOptionExtra
+    }
+
+    updateOption: {
+      url: {
+        baseUrl: 'boards/:boardId/properties/:propertyId/options/:optionId'
+        urlParams: {
+          boardId: string
+          propertyId: string
+          optionId: string
+        }
+      }
+      payload: Partial<TPropertyOption>
+      method: 'patch'
+      response: TPropertyOptionExtra
+    }
+
+    updateColumnPosition: {
+      url: {
+        baseUrl: 'boards/:boardId/properies/:propertyId/options/:optionId/order'
+        urlParams: {
+          boardId: string
+          propertyId: string
+          optionId: string
+        }
+      }
+      payload: { order: number }
+      method: 'patch'
+      response: TPropertyOption
     }
   }
   queries: {}

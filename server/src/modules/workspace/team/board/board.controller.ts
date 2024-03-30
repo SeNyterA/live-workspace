@@ -1,5 +1,11 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
-import { Card, Member, Property, Workspace } from '@prisma/client'
+import {
+  Card,
+  Member,
+  Property,
+  PropertyOption,
+  Workspace
+} from '@prisma/client'
 import { HttpUser } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { BoardService } from './board.service'
@@ -55,8 +61,40 @@ export class BoardController {
     })
   }
 
-  @Patch('boards/:boardId/properies/:propertyId/options/:optionId')
+  @Post('boards/:boardId/properties/:propertyId/options')
+  createOption(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Param('propertyId') propertyId: string,
+    @Body() option: PropertyOption
+  ) {
+    return this.boardService.createOption({
+      boardId,
+      user,
+      option,
+      propertyId
+    })
+  }
+
+  @Patch('boards/:boardId/properties/:propertyId/options/:optionId')
   updateOption(
+    @HttpUser() user: TJwtUser,
+    @Param('boardId') boardId: string,
+    @Param('propertyId') propertyId: string,
+    @Param('optionId') optionId: string,
+    @Body() option: PropertyOption
+  ) {
+    return this.boardService.updateOption({
+      boardId,
+      user,
+      option,
+      propertyId,
+      optionId
+    })
+  }
+
+  @Patch('boards/:boardId/properies/:propertyId/options/:optionId/order')
+  updateColumnPosition(
     @HttpUser() user: TJwtUser,
     @Param('boardId') boardId: string,
     @Param('propertyId') propertyId: string,

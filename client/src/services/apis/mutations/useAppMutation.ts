@@ -243,19 +243,6 @@ export type ApiMutationType = {
     response: TMessage
   }
 
-  updateOption: {
-    url: {
-      baseUrl: 'boards/:boardId/options/:optionId'
-      urlParams: {
-        boardId: string
-        optionId: string
-      }
-    }
-    method: 'patch'
-    payload: { option: TPropertyOption }
-    response: TPropertyOption
-  }
-
   updateCard: {
     url: {
       baseUrl: 'boards/:boardId/cards/:cardId'
