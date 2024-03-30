@@ -153,7 +153,8 @@ export class MessageService {
               isAvailable: true
             }
           },
-          replyTo: true
+          replyTo: true,
+          theadMessages: true
         }
       })
       return {

@@ -1,4 +1,5 @@
 import { Drawer, Modal } from '@mantine/core'
+import { IconFish } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useAppSelector } from '../../redux/store'
 import UserAvatar from '../common/UserAvatar'
@@ -10,7 +11,7 @@ export default function AppHeader() {
   const [settingProfile, setSettingProfile] = useState(false)
   return (
     <div className='flex h-12 items-center gap-3 bg-black/80 px-3'>
-      <p className='text-xl font-semibold'>Live workspace - Senytera</p>
+      <p className='text-xl font-semibold'>Live workspace</p>
       <div className='flex flex-1 items-center justify-center'></div>
       <Notification />
       <UserAvatar
@@ -28,7 +29,6 @@ export default function AppHeader() {
         overlayProps={{
           blur: '0.5'
         }}
-      
         classNames={{
           header: 'bg-transparent',
           content: 'rounded-lg flex flex-col bg-black/80',
