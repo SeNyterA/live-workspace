@@ -8,7 +8,6 @@ import {
   TMember,
   TMemberExtra,
   TMessage,
-  TPropertyOption,
   TUser,
   TWorkspace
 } from '../../../types'
@@ -16,7 +15,6 @@ import { replaceDynamicValues } from '../common'
 import http from '../http'
 import { TUploadMutionApi } from '../upload.api'
 import { TAuthApi } from './auth.api'
-import { TBoardlMutationApi } from './board'
 import { TBoardApi } from './board.api'
 import { TChannelMutationApi } from './channel'
 import { TDirectApi } from './direct.api'
@@ -244,19 +242,6 @@ export type ApiMutationType = {
     response: TMessage
   }
 
-  updateOption: {
-    url: {
-      baseUrl: 'boards/:boardId/options/:optionId'
-      urlParams: {
-        boardId: string
-        optionId: string
-      }
-    }
-    method: 'patch'
-    payload: { option: TPropertyOption }
-    response: TPropertyOption
-  }
-
   updateCard: {
     url: {
       baseUrl: 'boards/:boardId/cards/:cardId'
@@ -297,7 +282,6 @@ export type ApiMutationType = {
 } & TChannelMutationApi &
   TUploadMutionApi &
   TGroupMutationApi &
-  TBoardlMutationApi &
   TWorkspaceMutationApi &
   TMemberApi['muations'] &
   TMessageApi['muations'] &
@@ -345,6 +329,7 @@ export const useAppMutation = <T extends keyof ApiMutationType>(
 
   return mutation
 }
+
 export const appMutationFn = async <T extends keyof ApiMutationType>({
   method,
   key,

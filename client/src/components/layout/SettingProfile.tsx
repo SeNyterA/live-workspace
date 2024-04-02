@@ -1,4 +1,4 @@
-import { Avatar, Input, Loader, Textarea, TextInput } from '@mantine/core'
+import { Avatar, Loader, Textarea, TextInput } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import { useAppSelector } from '../../redux/store'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
@@ -77,7 +77,13 @@ const Field = ({
   )
 }
 
-const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
+const WorkspaceAvatar = ({
+  isDisabled,
+  user
+}: {
+  isDisabled: boolean
+  user?: TUser
+}) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
@@ -113,7 +119,7 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
   )
 
   return (
-    <>
+    <div className='flex items-center gap-2'>
       <Dropzone
         onDrop={files =>
           uploadFile(
@@ -141,30 +147,27 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
         disabled={isPending || isDisabled || uploadPending}
       >
         <Avatar
-          classNames={{ placeholder: 'rounded-lg' }}
+          classNames={{ placeholder: 'rounded-full' }}
           src={avatar?.path}
-          className='rounded-lg'
+          className='rounded-full'
           size={100}
         />
       </Dropzone>
-      <Input.Description className='mt-1'>
-        This image is used for avatar
-      </Input.Description>
-    </>
+      <div>
+        <p>{user?.userName}</p>
+      </div>
+    </div>
   )
 }
 
 export default function SettingProfile() {
   const user = useAppSelector(state => state.auth.userInfo)
   return (
-    <div className='flex gap-3'>
-      <div className='w-52'></div>
-      <div className='flex-1'>
-        <WorkspaceAvatar isDisabled={false} />
-        <Field name='nickName' value={user?.nickName} />
-        <Field name='email' value={user?.email} isDisabled />
-        <Field name='userName' value={user?.userName} isDisabled />
-      </div>
-    </div>
+    <>
+      <WorkspaceAvatar isDisabled={false} user={user} />
+      <Field name='nickName' value={user?.nickName} />
+      <Field name='email' value={user?.email} isDisabled />
+      <Field name='userName' value={user?.userName} isDisabled />
+    </>
   )
 }

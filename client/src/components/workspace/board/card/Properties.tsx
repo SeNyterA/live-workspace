@@ -1,10 +1,17 @@
-import { Avatar, Input, ScrollArea, Select, TextInput } from '@mantine/core'
-import { DateTimePicker } from '@mantine/dates'
+import {
+  Avatar,
+  Input,
+  MultiSelect,
+  ScrollArea,
+  Select,
+  TextInput
+} from '@mantine/core'
+import { DatePickerInput, DateTimePicker } from '@mantine/dates'
 import '@mantine/dates/styles.css'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment } from 'react'
 import { useDispatch } from 'react-redux'
 import useAppParams from '../../../../hooks/useAppParams'
 import { workspaceActions } from '../../../../redux/slices/workspace.slice'
@@ -65,13 +72,12 @@ export default function Properties() {
       }
     }
   )
-  const [tmpValue, setTmpValue] = useState<any>({})
 
-  useEffect(() => {
-    if (card?.properties) {
-      setTmpValue(card.properties)
-    }
-  }, [card?.properties])
+  // useEffect(() => {
+  //   if (card?.properties) {
+  //     setTmpValue(card.properties)
+  //   }
+  // }, [card?.properties])
 
   return (
     <div className='relative flex w-80 flex-col rounded-lg bg-gray-900/90 p-3'>
@@ -133,16 +139,15 @@ export default function Properties() {
             <Fragment key={property.id}>
               {property.type === EPropertyType.Select && (
                 <Watching
-                  watchingFn={
-                    state =>
-                      Object.values(state.workspace.options).filter(
-                        option => option.propertyId === property.id
-                      )
-                    // .sort((a, b) => a.order - b.order)
+                  watchingFn={state =>
+                    Object.values(state.workspace.options)
+                      .filter(option => option.propertyId === property.id)
+                      .sort((a, b) => a.order - b.order)
                   }
                 >
                   {options => (
                     <Select
+                      clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
                         input:
@@ -159,7 +164,7 @@ export default function Properties() {
                         label: option.title
                       }))}
                       mt='md'
-                      value={tmpValue[property.id]?.toString()}
+                      value={card?.properties?.[property.id]?.toString()}
                       onChange={value => {
                         const oldCard = getAppValue(
                           state => state.workspace.cards[cardId!]
@@ -214,9 +219,97 @@ export default function Properties() {
                 </Watching>
               )}
 
-              {[EPropertyType.People, EPropertyType.Assignees].includes(
-                property.type
-              ) && (
+              {property.type === EPropertyType.MultiSelect && (
+                <Watching
+                  watchingFn={state =>
+                    Object.values(state.workspace.options)
+                      .filter(option => option.propertyId === property.id)
+                      .sort((a, b) => a.order - b.order)
+                  }
+                >
+                  {options => (
+                    <MultiSelect
+                      clearable
+                      className='!mt-2 first:!mt-0'
+                      classNames={{
+                        input:
+                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                        dropdown:
+                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                        option: 'hover:bg-gray-700/90',
+                        pill: 'bg-gray-400/20 text-gray-100 border-gray-400/20'
+                      }}
+                      label={property.title}
+                      description={property.title}
+                      placeholder='Pick value'
+                      data={options?.map(option => ({
+                        value: option.id,
+                        label: option.title
+                      }))}
+                      mt='md'
+                      value={
+                        Array.isArray(card?.properties?.[property.id]) &&
+                        (card.properties[property.id] as any).every(
+                          (item: any) => typeof item === 'string'
+                        )
+                          ? card.properties[property.id]
+                          : []
+                      }
+                      onChange={value => {
+                        const oldCard = getAppValue(
+                          state => state.workspace.cards[cardId!]
+                        )
+                        if (!oldCard) return
+                        dispatch(
+                          workspaceActions.updateWorkspaceStore({
+                            cards: {
+                              [cardId!]: {
+                                ...oldCard,
+                                properties: {
+                                  ...oldCard.properties,
+                                  [property.id]: value
+                                }
+                              }
+                            }
+                          })
+                        )
+                        updateCard(
+                          {
+                            url: {
+                              baseUrl: 'boards/:boardId/cards/:cardId',
+                              urlParams: {
+                                boardId: boardId!,
+                                cardId: card?.id!
+                              }
+                            },
+                            method: 'patch',
+                            payload: {
+                              card: {
+                                properties: {
+                                  ...oldCard?.properties,
+                                  [property.id]: value
+                                },
+                                order: new Date().getTime()
+                              } as any
+                            }
+                          },
+                          {
+                            onError(error, variables, context) {
+                              dispatch(
+                                workspaceActions.updateWorkspaceStore({
+                                  cards: { [cardId!]: oldCard }
+                                })
+                              )
+                            }
+                          }
+                        )
+                      }}
+                    />
+                  )}
+                </Watching>
+              )}
+
+              {EPropertyType.Person === property.type && (
                 <Watching
                   watchingFn={state =>
                     Object.values(state.workspace.members)
@@ -228,6 +321,7 @@ export default function Properties() {
                   }
                   children={data => (
                     <Select
+                      clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
                         input:
@@ -246,7 +340,7 @@ export default function Properties() {
                           value: e.user.id
                         }))}
                       mt='md'
-                      value={tmpValue[property.id]?.toString()}
+                      value={card?.properties?.[property.id]?.toString()}
                       onChange={value => {
                         const oldCard = getAppValue(
                           state => state.workspace.cards[cardId!]
@@ -301,12 +395,93 @@ export default function Properties() {
                 />
               )}
 
-              {[
-                EPropertyType.String,
-                EPropertyType.Number,
-                EPropertyType.Link,
-                EPropertyType.Email
-              ].includes(property.type) && (
+              {EPropertyType.MultiPerson === property.type && (
+                <Watching
+                  watchingFn={state =>
+                    Object.values(state.workspace.members)
+                      .filter(e => e.workspaceId === boardId)
+                      .map(member => ({
+                        member,
+                        user: state.workspace.users[member.userId]
+                      }))
+                  }
+                  children={data => (
+                    <MultiSelect
+                      clearable
+                      className='!mt-2 first:!mt-0'
+                      classNames={{
+                        input:
+                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                        dropdown:
+                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
+                        option: 'hover:bg-gray-700/90'
+                      }}
+                      label={property.title}
+                      description={property.title}
+                      placeholder='Pick value'
+                      data={data
+                        ?.filter(e => !!e.user)
+                        .map(e => ({
+                          label: e.user.userName,
+                          value: e.user.id
+                        }))}
+                      mt='md'
+                      value={card?.properties?.[property.id]}
+                      onChange={value => {
+                        const oldCard = getAppValue(
+                          state => state.workspace.cards[cardId!]
+                        )
+                        if (!oldCard) return
+                        dispatch(
+                          workspaceActions.updateWorkspaceStore({
+                            cards: {
+                              [cardId!]: {
+                                ...oldCard,
+                                properties: {
+                                  ...oldCard.properties,
+                                  [property.id]: value
+                                }
+                              }
+                            }
+                          })
+                        )
+                        updateCard(
+                          {
+                            url: {
+                              baseUrl: 'boards/:boardId/cards/:cardId',
+                              urlParams: {
+                                boardId: boardId!,
+                                cardId: card?.id!
+                              }
+                            },
+                            method: 'patch',
+                            payload: {
+                              card: {
+                                properties: {
+                                  ...oldCard?.properties,
+                                  [property.id]: value
+                                },
+                                order: new Date().getTime()
+                              } as any
+                            }
+                          },
+                          {
+                            onError(error, variables, context) {
+                              dispatch(
+                                workspaceActions.updateWorkspaceStore({
+                                  cards: { [cardId!]: oldCard }
+                                })
+                              )
+                            }
+                          }
+                        )
+                      }}
+                    />
+                  )}
+                />
+              )}
+
+              {EPropertyType.Text === property.type && (
                 <TextInput
                   key={card?.properties?.[property.id]?.toString()}
                   className='!mt-2 first:!mt-0'
@@ -376,39 +551,102 @@ export default function Properties() {
                 />
               )}
 
-              {[EPropertyType.Date].includes(property.type) && (
+              {EPropertyType.Date === property.type && (
                 <DateTimePicker
                   className='!mt-2 first:!mt-0'
+                  classNames={{
+                    input:
+                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                  }}
+                  clearable
                   label={property.title}
                   description={property.title}
-                  {...{ placeholder: 'Pick value' }}
+                  placeholder='Pick value'
                   mt='md'
-                  value={
-                    card?.properties?.[property.id]?.toString()
-                      ? new Date(card?.properties[property.id]?.toString()!)
-                      : undefined
-                  }
                   onChange={value => {
-                    // setTmpValue(old => ({
-                    //   ...old,
-                    //   [property.id]: value?.toString()
-                    // }))
-                    // updateCard({
-                    //   url: {
-                    //     baseUrl: '/workspace/boards/:boardId/cards/:cardId',
-                    //     urlParams: {
-                    //       boardId: boardId!,
-                    //       cardId: card?.id!
-                    //     }
-                    //   },
-                    //   method: 'patch',
-                    //   payload: {
-                    //     properties: {
-                    //       ...card?.properties,
-                    //       [property.id]: value?.toString()
-                    //     }
-                    //   }
-                    // })
+                    updateCard(
+                      {
+                        url: {
+                          baseUrl: 'boards/:boardId/cards/:cardId',
+                          urlParams: {
+                            boardId: boardId!,
+                            cardId: card?.id!
+                          }
+                        },
+                        method: 'patch',
+                        payload: {
+                          card: {
+                            properties: {
+                              ...card?.properties,
+                              [property.id]: value
+                            },
+                            order: new Date().getTime()
+                          } as any
+                        }
+                      },
+                      {
+                        onError(error, variables, context) {
+                          dispatch(
+                            workspaceActions.updateWorkspaceStore({
+                              cards: { [cardId!]: card! }
+                            })
+                          )
+                        }
+                      }
+                    )
+                  }}
+                  value={dayjs(card?.properties?.[property.id]).toDate()}
+                />
+              )}
+
+              {EPropertyType.RangeDate === property.type && (
+                <DatePickerInput
+                  clearable
+                  onChange={value => {
+                    if (
+                      Object.values(value)
+                        .map(e => e?.toString())
+                        .filter(e => !!e).length === 1
+                    )
+                      return
+                    updateCard(
+                      {
+                        url: {
+                          baseUrl: 'boards/:boardId/cards/:cardId',
+                          urlParams: {
+                            boardId: boardId!,
+                            cardId: card?.id!
+                          }
+                        },
+                        method: 'patch',
+                        payload: {
+                          card: {
+                            properties: {
+                              ...card?.properties,
+                              [property.id]: value
+                            },
+                            order: new Date().getTime()
+                          } as any
+                        }
+                      },
+                      {
+                        onError(error, variables, context) {
+                          dispatch(
+                            workspaceActions.updateWorkspaceStore({
+                              cards: { [cardId!]: card! }
+                            })
+                          )
+                        }
+                      }
+                    )
+                  }}
+                  type='range'
+                  label='Pick dates range'
+                  placeholder='Pick dates range'
+                  className='!mt-2 first:!mt-0'
+                  classNames={{
+                    input:
+                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
                   }}
                 />
               )}

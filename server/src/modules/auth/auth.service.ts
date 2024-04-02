@@ -238,9 +238,7 @@ export class AuthService {
       }
     })
 
-    this.server
-      .to(members.map(e => e.workspaceId))
-      .emit('profileUpdated', { user })
+    this.server.to(members.map(e => e.workspaceId)).emit('user', { user })
   }
   async updateProfile({ id, user }: { id: string; user: User }) {
     const profileUpdated = await this.prismaService.user.update({

@@ -1,6 +1,6 @@
 import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
-import { ActionIcon, Avatar, AvatarGroup, Menu } from '@mantine/core'
+import { ActionIcon, Menu } from '@mantine/core'
 import { Link } from '@mantine/tiptap'
 import {
   IconBrandThreads,
@@ -16,7 +16,6 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
-import dayjs from 'dayjs'
 import DOMPurify from 'dompurify'
 import { memo, useState } from 'react'
 import Watching from '../../../redux/Watching'

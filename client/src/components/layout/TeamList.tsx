@@ -63,6 +63,7 @@ export default function TeamList() {
           >
             {teams?.map(team => (
               <Watching
+                key={team.id}
                 watchingFn={state => {
                   return Object.values(state.workspace.workspaces)
                     .filter(e => e.workspaceParentId === team.id)

@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, ScrollArea } from '@mantine/core'
+import { ActionIcon, Badge, Card, ScrollArea } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import {
   DragDropContext,
@@ -170,7 +170,7 @@ export default function CardsContent() {
                       method: 'patch',
                       url: {
                         baseUrl:
-                          'boards/:boardId/properies/:propertyId/options/:optionId',
+                          'boards/:boardId/properies/:propertyId/options/:optionId/order',
                         urlParams: {
                           boardId: boardId!,
                           propertyId: trackingId!,
@@ -285,70 +285,20 @@ export default function CardsContent() {
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                           >
-                            <div
-                              {...dragProvided.dragHandleProps}
-                              className='sticky top-0'
-                            >
-                              <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-black bg-gray-900/90 px-2 pr-1'>
-                                <Badge
-                                  classNames={{
-                                    root: 'p-0 rounded-none bg-transparent'
-                                  }}
-                                  leftSection={
-                                    <div
-                                      className={`h-4 w-4 rounded`}
-                                      style={{ backgroundColor: option.color }}
-                                    />
-                                  }
-                                >
-                                  {option.title}
-                                </Badge>
-                                <ActionIcon
-                                  variant='transparent'
-                                  aria-label='Settings'
-                                  className='h-[28px] w-[28px] bg-blue-400/20 text-white'
-                                  onClick={() => {
-                                    appMutationFn({
-                                      key: 'createCard',
-                                      url: {
-                                        baseUrl: 'boards/:boardId/cards',
-                                        urlParams: {
-                                          boardId: boardId!
-                                        }
-                                      },
-                                      method: 'post',
-                                      payload: {
-                                        card: {
-                                          title: 'New Card',
-                                          properties: {
-                                            [trackingId!]: option.id
-                                          }
-                                        }
-                                      }
-                                    }).then(result => {
-                                      dispatch(
-                                        workspaceActions.updateWorkspaceStore(
-                                          extractApi({
-                                            cards: [result]
-                                          })
-                                        )
-                                      )
-                                      toogleCard({ cardId: result.id })
-                                    })
-                                  }}
-                                >
-                                  <IconPlus size={16} stroke={1.5} />
-                                </ActionIcon>
-                              </div>
-                            </div>
                             <CardOptions
                               propertyId={propertyRoot.id}
-                              optionId={option.id}
+                              dragProvided={dragProvided}
+                              option={option}
                             />
                           </div>
                         )}
                       </Draggable>
                     ))}
+
+                    <div className='mx-1 w-64'>
+                      <CardOptions propertyId={propertyRoot.id} />
+                    </div>
+
                     {dropProvided.placeholder}
                   </div>
                 )}

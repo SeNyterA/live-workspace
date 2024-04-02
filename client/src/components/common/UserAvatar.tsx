@@ -75,10 +75,15 @@ export default function UserAvatar({
             <span className='capitalize'>{user?.userName[0]}</span>
           </Avatar>
 
-          <p className='mt-2 break-all text-center text-lg font-semibold'>
-            {user?.userName}
+          {!!user?.nickName && (
+            <p className='mt-2 break-all text-center text-lg font-semibold'>
+              {user?.nickName}
+            </p>
+          )}
+          <p className='break-all text-center text-sm text-gray-300'>
+            @{user?.userName}
           </p>
-          <p className='break-all text-center text-sm text-gray-500'>
+          <p className='break-all text-center text-sm text-gray-300'>
             {user?.email}
           </p>
         </div>

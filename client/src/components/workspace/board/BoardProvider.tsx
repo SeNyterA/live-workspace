@@ -132,11 +132,7 @@ export default function BoardProvider({ children }: { children: ReactNode }) {
             properties?.find(
               e =>
                 e.id === value &&
-                [
-                  EPropertyType.Assignees,
-                  EPropertyType.People,
-                  EPropertyType.Select
-                ].includes(e.type)
+                [EPropertyType.Person, EPropertyType.Select].includes(e.type)
             )
           ) {
             setTrackingId(value)
@@ -166,11 +162,7 @@ const checkTrackingId = ({
     properties.find(
       e =>
         e.id === trackingId &&
-        [
-          EPropertyType.Assignees,
-          EPropertyType.People,
-          EPropertyType.Select
-        ].includes(e.type)
+        [EPropertyType.Person, EPropertyType.Select].includes(e.type)
     )?.id
   )
     return undefined
@@ -180,11 +172,7 @@ const checkTrackingId = ({
   let _trackingId = properties.find(
     e =>
       e.id === lsTrackingId &&
-      [
-        EPropertyType.Assignees,
-        EPropertyType.People,
-        EPropertyType.Select
-      ].includes(e.type)
+      [EPropertyType.Person, EPropertyType.Select].includes(e.type)
   )?.id
 
   if (_trackingId) {

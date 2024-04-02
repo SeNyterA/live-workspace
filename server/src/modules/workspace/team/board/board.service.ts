@@ -208,6 +208,7 @@ export class BoardService {
     const propertyCreated = await this.prismaService.property.create({
       data: {
         ...property,
+        order: property?.order || new Date().getTime(),
         workspaceId: boardId,
         createdById: user.sub,
         modifiedById: user.sub
@@ -217,93 +218,6 @@ export class BoardService {
     this.server.to(boardId).emit('property', { property: propertyCreated })
 
     return propertyCreated
-  }
-
-  async createOption({
-    boardId,
-    user,
-    option,
-    propertyId
-  }: {
-    boardId: string
-    user: TJwtUser
-    propertyId: string
-    option: PropertyOption
-  }) {
-    const board = await this.prismaService.workspace.findUnique({
-      where: {
-        id: boardId,
-        isAvailable: true,
-        members: {
-          some: {
-            userId: user.sub,
-            status: MemberStatus.Active
-          }
-        },
-        properties: {
-          some: {
-            id: propertyId,
-            isAvailable: true
-          }
-        }
-      }
-    })
-
-    if (!board) {
-      throw new ForbiddenException(Errors.PERMISSION_DENIED)
-    }
-
-    const optionCreated = await this.prismaService.propertyOption.create({
-      data: {
-        ...option,
-        propertyId: propertyId,
-        createdById: user.sub,
-        modifiedById: user.sub
-      }
-    })
-
-    this.server.to(boardId).emit('option', { option: optionCreated })
-
-    return optionCreated
-  }
-
-  async updateOption({
-    boardId,
-    user,
-    option,
-    propertyId
-  }: {
-    boardId: string
-    user: TJwtUser
-    propertyId: string
-    option: PropertyOption
-  }) {
-    const optionUpdated = await this.prismaService.propertyOption.update({
-      where: {
-        id: option.id,
-        isAvailable: true,
-        property: {
-          id: propertyId,
-          isAvailable: true,
-          workspace: {
-            id: boardId,
-            isAvailable: true,
-            members: {
-              some: {
-                userId: user.sub,
-                status: MemberStatus.Active
-              }
-            }
-          }
-        }
-      },
-      data: {
-        ...option,
-        modifiedById: user.sub
-      }
-    })
-    this.server.to(boardId).emit('option', { option: optionUpdated })
-    return optionUpdated
   }
 
   async createCard({
@@ -335,10 +249,10 @@ export class BoardService {
     const cardCreated = await this.prismaService.card.create({
       data: {
         ...card,
+        order: card?.order || new Date().getTime(),
         workspaceId: boardId,
         createdById: user.sub,
-        modifiedById: user.sub,
-        order: card?.order || new Date().getTime()
+        modifiedById: user.sub
       }
     })
 
@@ -383,6 +297,137 @@ export class BoardService {
 
     this.server.to(boardId).emit('card', { card: cardUpdated })
     return cardUpdated
+  }
+
+  async updateProperty({
+    boardId,
+    user,
+    property,
+    propertyId
+  }: {
+    boardId: string
+    user: TJwtUser
+    property: Property
+    propertyId: string
+  }) {
+    const propertyUpdated = await this.prismaService.property.update({
+      where: {
+        id: propertyId,
+        isAvailable: true,
+        workspace: {
+          id: boardId,
+          isAvailable: true,
+          members: {
+            some: {
+              userId: user.sub,
+              status: MemberStatus.Active
+            }
+          }
+        }
+      },
+      data: {
+        ...property,
+        modifiedById: user.sub
+      }
+    })
+
+    this.server.to(boardId).emit('property', { property: propertyUpdated })
+
+    return propertyUpdated
+  }
+
+  async createOption({
+    boardId,
+    user,
+    option,
+    propertyId
+  }: {
+    boardId: string
+    user: TJwtUser
+    propertyId: string
+    option: PropertyOption
+  }) {
+    const board = await this.prismaService.workspace.findUnique({
+      where: {
+        id: boardId,
+        isAvailable: true,
+        members: {
+          some: {
+            userId: user.sub,
+            status: MemberStatus.Active
+          }
+        },
+        properties: {
+          some: {
+            id: propertyId,
+            isAvailable: true,
+            type: {
+              in: [PropertyType.Select, PropertyType.MultiSelect]
+            }
+          }
+        }
+      }
+    })
+
+    if (!board) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const optionCreated = await this.prismaService.propertyOption.create({
+      data: {
+        ...option,
+        order: option.order || new Date().getTime(),
+        propertyId: propertyId,
+        createdById: user.sub,
+        modifiedById: user.sub
+      }
+    })
+
+    this.server.to(boardId).emit('option', { option: optionCreated })
+
+    return optionCreated
+  }
+
+  async updateOption({
+    boardId,
+    user,
+    option,
+    propertyId,
+    optionId
+  }: {
+    boardId: string
+    user: TJwtUser
+    propertyId: string
+    option: PropertyOption
+    optionId: string
+  }) {
+    const optionUpdated = await this.prismaService.propertyOption.update({
+      where: {
+        id: optionId,
+        isAvailable: true,
+        property: {
+          id: propertyId,
+          isAvailable: true,
+          type: { in: [PropertyType.Select, PropertyType.MultiSelect] },
+          workspace: {
+            id: boardId,
+            isAvailable: true,
+            members: {
+              some: {
+                userId: user.sub,
+                status: MemberStatus.Active
+              }
+            }
+          }
+        }
+      },
+      data: {
+        ...option,
+        modifiedById: user.sub
+      }
+    })
+    this.server.to(boardId).emit('option', { option: optionUpdated })
+    return optionUpdated
   }
 
   async updateColumnPosition({
