@@ -44,7 +44,8 @@ export class BoardService {
     const {
       cards: _cards,
       options: _options,
-      properties: _properties
+      properties: _properties,
+      files: _files
     } = generateBoardData({
       boardId: boardId
     })
@@ -57,8 +58,15 @@ export class BoardService {
       data: _options as any
     })
 
+    const files = await this.prismaService.file.createMany({
+      data: _files as any
+    })
+
     const cards = await this.prismaService.card.createMany({
-      data: _cards as any
+      data: _cards.map((e, index) => ({
+        ...e,
+        thumbnailId: _files[index].id
+      })) as any
     })
   }
 

@@ -1,16 +1,15 @@
-import { Card, Property, PropertyOption, PropertyType } from '@prisma/client'
+import { fa, faker } from '@faker-js/faker'
+import {
+  Card,
+  File,
+  Property,
+  PropertyOption,
+  PropertyType
+} from '@prisma/client'
 
 import { v4 as uuidv4 } from 'uuid'
 
-export const generateBoardData = ({
-  boardId
-}: {
-  boardId: string
-}): {
-  properties: Partial<Property>[]
-  cards: Partial<Card>[]
-  options: Partial<PropertyOption>[]
-} => {
+export const generateBoardData = ({ boardId }: { boardId: string }) => {
   const properties: Partial<Property>[] = [
     {
       id: uuidv4(),
@@ -570,5 +569,11 @@ export const generateBoardData = ({
     }
   ]
 
-  return { properties, options, cards }
+  const files: Partial<File>[] = cards.map(card => ({
+    id: uuidv4(),
+    sourceType: 'Link',
+    path: faker.image.nature()
+  }))
+
+  return { properties, options, cards, files }
 }

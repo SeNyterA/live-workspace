@@ -9,9 +9,11 @@ import DetailCard from '../components/workspace/board/card/DetailCard'
 import MessageContentWrapper from '../components/workspace/message/MessageContentWrapper'
 import WorkspaceSetting from '../components/workspace/setting/WorkspaceSetting'
 import { authActions } from '../redux/slices/auth.slice'
+import { workspaceActions } from '../redux/slices/workspace.slice'
 import { useAppSelector } from '../redux/store'
 import { useAppQuery } from '../services/apis/useAppQuery'
 import SocketProvider from '../services/socket/SocketProvider'
+import { extractApi } from '../types'
 import { lsActions } from '../utils/auth'
 
 function PrivateRoute() {
@@ -28,6 +30,13 @@ function PrivateRoute() {
           token: lsActions.getToken(),
           user: user
         })
+      )
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            users: [user]
+          })
+        )
       )
     }
   })

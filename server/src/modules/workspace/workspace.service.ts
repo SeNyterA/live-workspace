@@ -11,8 +11,8 @@ import * as crypto from 'crypto-js'
 import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
 import { PrismaService } from '../prisma/prisma.service'
-import { TJwtUser } from '../socket/socket.gateway'
 import { RedisService } from '../redis/redis.service'
+import { TJwtUser } from '../socket/socket.gateway'
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
   data: Workspace
@@ -47,24 +47,6 @@ export class WorkspaceService {
   ) {}
 
   //#region Workspace
-  async createUsersFakeData() {
-    const users = await this.prismaService.user.createMany({
-      data: Array(100000)
-        .fill(1)
-        .map(() => ({
-          email:
-            generateRandomHash(Math.random().toString(), 16) + '@gmail.com',
-          userName: generateRandomHash(Math.random().toString(), 16),
-          password: crypto.SHA256('123123').toString(),
-          nickName: generateRandomHash(Math.random().toString(), 16),
-          isAvailable: true
-        })),
-      skipDuplicates: true
-    })
-
-    console.log(users.count)
-  }
-
   async updateWorkspace({
     workspaceId,
     user,

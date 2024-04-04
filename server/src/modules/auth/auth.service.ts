@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker'
 import {
   BadRequestException,
   ForbiddenException,
@@ -5,13 +6,13 @@ import {
   UnauthorizedException
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { FileSourceType, User } from '@prisma/client'
 import * as crypto from 'crypto-js'
+import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
 import { MailService } from '../mail/mail.service'
 import { PrismaService } from '../prisma/prisma.service'
-import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import { Server } from 'socket.io'
 
 export type FirebaseUserTokenData = {
   name: string
@@ -106,6 +107,32 @@ export class AuthService {
       user: user,
       token: access_token
     }
+  }
+
+  async createUsersFakeData() {
+    await Promise.all(
+      Array(100)
+        .fill(1)
+        .map(() =>
+          this.prismaService.user.create({
+            data: {
+              email: faker.internet.email(),
+              userName: faker.internet.userName(),
+              password: crypto.SHA256('123123').toString(),
+              nickName: faker.internet.displayName(),
+              isAvailable: true,
+              avatar: {
+                create: {
+                  path: faker.image.avatar(),
+                  sourceType: 'Link'
+                }
+              }
+            }
+          })
+        )
+    )
+    console.count('users')
+    this.createUsersFakeData()
   }
 
   async signInWithSocial({ token }: { token: string }) {

@@ -1,5 +1,5 @@
+import { faker } from '@faker-js/faker'
 import { Injectable } from '@nestjs/common'
-
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import * as crypto from 'crypto-js'
 import { Server } from 'socket.io'
@@ -42,7 +42,9 @@ export class UserService {
           { nickName: { contains: keyword } }
         ]
       },
-
+      include: {
+        avatar: true
+      },
       skip,
       take
     })

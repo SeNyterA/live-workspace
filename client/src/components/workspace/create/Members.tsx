@@ -14,8 +14,7 @@ import { useDispatch } from 'react-redux'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
-import { EMemberRole } from '../../../types'
-import { arrayToObject } from '../../../utils/helper'
+import { EMemberRole, extractApi } from '../../../types'
 import { useCreateWorkspaceForm } from './CreateWorkspace'
 import MemberControl from './MemberControl'
 import './userCombobox.module.css'
@@ -44,13 +43,15 @@ function UserCombobox({
       }
     },
     options: {
-      enabled: !!searchValue && searchValue.length > 3
+      // enabled: !!searchValue && searchValue.length > 2
     },
     onSucess(data) {
       dispatch(
-        workspaceActions.updateWorkspaceStore({
-          users: arrayToObject(data.users, 'id')
-        })
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            users: data.users
+          })
+        )
       )
     }
   })
