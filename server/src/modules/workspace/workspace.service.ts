@@ -172,40 +172,44 @@ export class WorkspaceService {
     user: TJwtUser
     workspaceId: string
   }) {
-    const { members, ...workspace } =
-      await this.prismaService.workspace.findUnique({
-        where: {
-          id: workspaceId,
-          isAvailable: true,
-          members: {
-            some: {
-              userId: user.sub,
-              status: MemberStatus.Active
-            }
+    const workspace = await this.prismaService.workspace.findUnique({
+      where: {
+        id: workspaceId,
+        isAvailable: true,
+        members: {
+          some: {
+            userId: user.sub,
+            status: MemberStatus.Active
           }
-        },
-        include: {
-          thumbnail: true,
-          avatar: true,
-          members: {
-            include: {
-              user: {
-                include: {
-                  avatar: true
-                }
+        }
+      },
+      include: {
+        thumbnail: true,
+        avatar: true,
+        members: {
+          include: {
+            user: {
+              include: {
+                avatar: true
               }
             }
           }
         }
+      }
+    })
+
+    if (!workspace) {
+      throw new ForbiddenException({
+        code: Errors.PERMISSION_DENIED
       })
+    }
 
     const usersPresence = await this.redisService.getUsersPresence(
-      members.map(member => member.userId)
+      workspace.members.map(member => member.userId)
     )
 
     return {
       workspace,
-      members,
       usersPresence
     }
   }

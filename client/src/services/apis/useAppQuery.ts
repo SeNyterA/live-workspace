@@ -54,7 +54,6 @@ type ApiQueryType = {
     }
     response: {
       workspace: TWorkspaceExtra
-      members: TMemberExtra[]
       usersPresence: { [userId: string]: 'online' | 'offline' }
     }
   }

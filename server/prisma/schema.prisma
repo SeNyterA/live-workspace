@@ -127,7 +127,7 @@ model File {
 
 model Workspace {
   id          String          @id @default(uuid())
-  title       String          @default("Untitled")
+  title       String          @default("")
   description String?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt

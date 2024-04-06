@@ -57,11 +57,10 @@ export default function Layout({ children }: { children: ReactNode }) {
       baseUrl: '/workspaces/:workspaceId',
       urlParams: { workspaceId: teamId! }
     },
-    onSucess({ members, workspace, usersPresence }) {
+    onSucess({ workspace, usersPresence }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           ...extractApi({
-            members,
             workspaces: [workspace]
           }),
           presents: usersPresence

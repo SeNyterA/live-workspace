@@ -9,6 +9,8 @@ import {
   TextInput
 } from '@mantine/core'
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone'
+import { useDispatch } from 'react-redux'
+import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import Watching from '../../../redux/Watching'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
@@ -16,16 +18,31 @@ import {
   EMemberRole,
   EMemberStatus,
   EWorkspaceStatus,
-  EWorkspaceType
+  EWorkspaceType,
+  extractApi
 } from '../../../types'
 
 const Title = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
-
-  const { mutateAsync: updateWorkspace, isPending } =
-    useAppMutation('updateWorkspace')
+  const dispatch = useDispatch()
+  const { mutateAsync: updateWorkspace, isPending } = useAppMutation(
+    'updateWorkspace',
+    {
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          dispatch(
+            workspaceActions.updateWorkspaceStore(
+              extractApi({
+                workspaces: [data]
+              })
+            )
+          )
+        }
+      }
+    }
+  )
 
   return (
     <TextInput
@@ -62,9 +79,23 @@ const Description = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
-
-  const { mutateAsync: updateWorkspace, isPending } =
-    useAppMutation('updateWorkspace')
+  const dispatch = useDispatch()
+  const { mutateAsync: updateWorkspace, isPending } = useAppMutation(
+    'updateWorkspace',
+    {
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          dispatch(
+            workspaceActions.updateWorkspaceStore(
+              extractApi({
+                workspaces: [data]
+              })
+            )
+          )
+        }
+      }
+    }
+  )
 
   return (
     <Textarea
@@ -101,9 +132,23 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
-
-  const { mutateAsync: updateWorkspace, isPending } =
-    useAppMutation('updateWorkspace')
+  const dispatch = useDispatch()
+  const { mutateAsync: updateWorkspace, isPending } = useAppMutation(
+    'updateWorkspace',
+    {
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          dispatch(
+            workspaceActions.updateWorkspaceStore(
+              extractApi({
+                workspaces: [data]
+              })
+            )
+          )
+        }
+      }
+    }
+  )
 
   return (
     <TextInput
@@ -141,9 +186,23 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspaceId = useAppSelector(
     state => state.workspace.workspaceSettingId
   )
-
-  const { mutateAsync: updateWorkspace, isPending } =
-    useAppMutation('updateWorkspace')
+  const dispatch = useDispatch()
+  const { mutateAsync: updateWorkspace, isPending } = useAppMutation(
+    'updateWorkspace',
+    {
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          dispatch(
+            workspaceActions.updateWorkspaceStore(
+              extractApi({
+                workspaces: [data]
+              })
+            )
+          )
+        }
+      }
+    }
+  )
 
   const { mutateAsync: uploadFile, isPending: uploadPending } = useAppMutation(
     'uploadFile',
@@ -235,8 +294,23 @@ const WorkspaceStatus = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
-  const { mutateAsync: updateWorkspace, isPending } =
-    useAppMutation('updateWorkspace')
+  const dispatch = useDispatch()
+  const { mutateAsync: updateWorkspace, isPending } = useAppMutation(
+    'updateWorkspace',
+    {
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          dispatch(
+            workspaceActions.updateWorkspaceStore(
+              extractApi({
+                workspaces: [data]
+              })
+            )
+          )
+        }
+      }
+    }
+  )
 
   return (
     <Radio.Group
@@ -293,8 +367,23 @@ const WorkspaceAvatar = ({ isDisabled }: { isDisabled: boolean }) => {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
-  const { mutateAsync: updateWorkspace, isPending } =
-    useAppMutation('updateWorkspace')
+  const dispatch = useDispatch()
+  const { mutateAsync: updateWorkspace, isPending } = useAppMutation(
+    'updateWorkspace',
+    {
+      mutationOptions: {
+        onSuccess(data, variables, context) {
+          dispatch(
+            workspaceActions.updateWorkspaceStore(
+              extractApi({
+                workspaces: [data]
+              })
+            )
+          )
+        }
+      }
+    }
+  )
 
   const { mutateAsync: uploadFile, isPending: uploadPending } = useAppMutation(
     'uploadFile',

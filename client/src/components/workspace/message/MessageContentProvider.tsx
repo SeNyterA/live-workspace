@@ -56,31 +56,13 @@ export default function MessageContentProvider({
       baseUrl: '/workspaces/:workspaceId',
       urlParams: { workspaceId: targetId }
     },
-    onSucess({ workspace, members }) {
-      const _members = members.map(e => {
-        const { user, ...member } = e
-        return { user, member }
-      })
-      const __user = _members.map(e => e.user)
-      const __members = _members.map(e => e.member)
-
+    onSucess({ workspace, usersPresence }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
-          workspaces: { [workspace.id]: workspace },
-          members: __members.reduce(
-            (pre, next) => ({
-              ...pre,
-              [`${next.workspaceId}_${next.userId}`]: next
-            }),
-            {}
-          ),
-          users: __user.reduce(
-            (pre, next) => ({
-              ...pre,
-              ...(!!next && { [next.id]: next })
-            }),
-            {}
-          )
+          ...extractApi({
+            workspaces: [workspace]
+          }),
+          presents: usersPresence
         })
       )
     }
