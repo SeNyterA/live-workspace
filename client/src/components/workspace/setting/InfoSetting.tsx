@@ -474,15 +474,17 @@ export default function InfoSetting() {
   const workspace = useAppSelector(
     state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
   )
-  const enabled = useAppSelector(state =>
-    Object.values(state.workspace.members).find(member => {
-      return (
-        member.userId === state.auth.userInfo?.id &&
-        [EMemberRole.Admin].includes(member.role) &&
-        member.status === EMemberStatus.Active
-      )
-    })
-  )
+  const enabled =
+    useAppSelector(
+      state =>
+        !!Object.values(state.workspace.members).find(member => {
+          return (
+            member.userId === state.auth.userInfo?.id &&
+            [EMemberRole.Admin].includes(member.role) &&
+            member.status === EMemberStatus.Active
+          )
+        })
+    ) || false
 
   return (
     <ScrollArea

@@ -1,0 +1,63 @@
+// @tailwind base;
+// @layer base {
+//   [data-mantine-color-scheme='light'] {
+//     --bg-layout: theme('colors.gray.50');
+//     --bg-sidebar: theme('colors.gray.800');
+
+//     --color-primary: 0 0 255;
+//     --color-secondary: 185 114 111;
+
+//     --text-primary: theme('colors.gray.50');
+//     --text-description: theme('colors.gray.300');
+
+//     --button-primary: 0 0 0;
+//     --button-secondary: theme('colors.gray.50');
+//     --button-danger: 0 0 0;
+//     --button-link: 0 0 0;
+
+//     --button-primary-hover: theme('colors.gray.50');
+//     --button-secondary-hover: theme('colors.gray.50');
+//     --button-danger-hover: theme('colors.gray.50');
+//     --button-link-hover: theme('colors.gray.50');
+
+//     --input-hover: 0 0 0;
+//     --input-focus: 0 0 0;
+//     --input-disabled: 0 0 0;
+//     --input: 0 0 0;
+//   }
+//   [data-mantine-color-scheme='dark'] {
+//     --color-primary: 0 0 255;
+//     --color-secondary: 185 114 111;
+//   }
+// }
+
+// .mantine-Input-wrapper {
+//   background-color: rgba(var(--color-primary));
+//   input {
+//     background-color: rgba(var(--color-primary));
+//   }
+//   &:hover {
+//     background-color: #f9fafb;
+//   }
+//   &:focus {
+//     background-color: #f9fafb;
+//   }
+//   &[data-disabled='true'] {
+//     background-color: #136fca;
+//   }
+// }
+
+// .mantine-InputWrapper-description {
+//   color: rgba(var(--text-description));
+// }
+
+// .mantine-InputWrapper-label {
+//   color: rgba(var(--text-primary));
+// }
+
+// .mantine-ActionIcon-root {
+//   background-color: rgba(var(--button-secondary));
+//   &:hover {
+//     background: rgba(var(--button-secondary));
+//   }
+// }
