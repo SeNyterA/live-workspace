@@ -33,7 +33,7 @@ export default function PinedMesages() {
     options: {
       enabled: !!workspaceId
     },
-    onSucess(messages) {
+    onSuccess(messages) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           messages: messages.reduce(

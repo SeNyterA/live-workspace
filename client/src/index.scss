@@ -8,45 +8,6 @@ body {
   overflow: hidden;
 }
 
-// @layer base {
-//   [data-mantine-color-scheme='light'] {
-//     --color-primary: 255 20 255;
-//     --color-secondary: 185 114 111;
-
-//     --text-primary: 0 0 0;
-//     --text-description: 0 0 0;
-//     --text-secondary: 0 0 0;
-//     --text-tertiary: 0 0 0;
-
-//     --button-primary: 0 0 0;
-//     --button-secondary: 0 0 0;
-//     --button-danger: 0 0 0;
-//     --button-link: 0 0 0;
-
-//     --input-hover: 0 0 0;
-//     --input-focus: 0 0 0;
-//     --input-disabled: 0 0 0;
-//     --input: 0 0 0;
-//   }
-//   [data-mantine-color-scheme='dark'] {
-//     --color-primary: 0 0 255;
-//     --color-secondary: 185 114 111;
-//   }
-// }
-
-// .mantine-Input-wrapper {
-//   background-color: rgba(var(--color-primary));
-//   &:hover {
-//     background-color: #f9fafb;
-//   }
-//   &:focus {
-//     background-color: #f9fafb;
-//   }
-//   &[data-disabled='true'] {
-//     background-color: #136fca;
-//   }
-// }
-
 @layer components {
   .primary-button {
     @apply rounded bg-blue-500 px-4 py-2 font-bold text-white;

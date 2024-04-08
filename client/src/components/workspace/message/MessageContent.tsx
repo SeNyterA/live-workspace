@@ -49,7 +49,7 @@ export default function MessageContent() {
         //       fromId: messages[0].id
         //     }
         //   },
-        //   onSucess({ messages, isCompleted }) {
+        //   onSuccess({ messages, isCompleted }) {
         //     if (isCompleted) {
         //       isCompleteRef.current = true
         //     }
@@ -118,7 +118,7 @@ export default function MessageContent() {
       refetchOnMount: false,
       refetchOnWindowFocus: false
     },
-    onSucess({ messages, isCompleted }) {
+    onSuccess({ messages, isCompleted }) {
       isCompleteRef.current = isCompleted
       dispatch(
         workspaceActions.updateWorkspaceStore(

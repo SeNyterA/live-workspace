@@ -40,7 +40,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     url: {
       baseUrl: '/workspaces'
     },
-    onSucess(data) {
+    onSuccess(data) {
       dispatch(
         workspaceActions.updateWorkspaceStore(
           extractApi({
@@ -57,7 +57,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       baseUrl: '/workspaces/:workspaceId',
       urlParams: { workspaceId: teamId! }
     },
-    onSucess({ workspace, usersPresence }) {
+    onSuccess({ workspace, usersPresence }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           ...extractApi({
@@ -156,8 +156,8 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur' />
-      <div className='fixed inset-0 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-slate-500 to-90% bg-cover bg-center bg-no-repeat blur' />
-      <div className='fixed inset-0 flex h-screen w-screen flex-col text-sm text-gray-100'>
+      {/* <div className='fixed inset-0 bg-gradient-to-rp from-indigo-500 from-10% via-sky-500 via-30% to-slate-500 to-90% bg-cover bg-center bg-no-repeat blur' /> */}
+      <div className='text-primary bg-layout fixed inset-0 flex h-screen w-screen flex-col text-sm'>
         <LoadingOverlay
           visible={isPending}
           classNames={{
@@ -167,7 +167,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         />
         <AppHeader />
 
-        <div className='flex flex-1 bg-black/80'>
+        <div className='flex flex-1 '>
           <TeamList />
 
           <div className='flex flex-1'>

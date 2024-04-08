@@ -45,7 +45,7 @@ function UserCombobox({
     options: {
       // enabled: !!searchValue && searchValue.length > 2
     },
-    onSucess(data) {
+    onSuccess(data) {
       dispatch(
         workspaceActions.updateWorkspaceStore(
           extractApi({

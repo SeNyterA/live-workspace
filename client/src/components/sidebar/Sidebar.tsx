@@ -82,7 +82,17 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
               state.workspace.files[workspace?.avatarId!]?.path
             }
           >
-            {path => <Avatar src={path} size={20} radius={4} />}
+            {path => (
+              <Avatar
+                classNames={{ placeholder: 'text-xs' }}
+                src={path}
+                size={20}
+                radius={4}
+                className='text-base'
+              >
+                {workspace.title[0]?.toUpperCase()}
+              </Avatar>
+            )}
           </Watching>
         )
       }
@@ -167,7 +177,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className='mb-4 flex w-72 flex-col gap-2 rounded-lg bg-gray-800/40 px-4 py-3 shadow-custom'>
+      <div className='bg-sidebar mb-4 flex w-72 flex-col gap-2 rounded-lg px-4 py-3 shadow-custom'>
         <p className='text-xl'>{!!team ? team?.title : 'Personal'}</p>
         <p className='line-clamp-3 text-gray-500'>
           {team ? team?.description : 'Wellcome to workspace'}

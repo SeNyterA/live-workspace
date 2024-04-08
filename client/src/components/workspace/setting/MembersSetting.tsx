@@ -122,7 +122,7 @@ export default function MembersSetting() {
     options: {
       enabled: searchValue.length > 2
     },
-    onSucess({ users }) {
+    onSuccess({ users }) {
       const workspace = getAppValue(
         state => state.workspace.workspaces[state.workspace.workspaceSettingId!]
       )

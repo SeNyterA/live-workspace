@@ -174,13 +174,13 @@ type ApiQueryType = {
 export const useAppQuery = <T extends keyof ApiQueryType>({
   url,
   options,
-  onSucess
+  onSuccess
 }: Omit<ApiQueryType[T], 'response'> & { key: T } & {
   options?: Omit<
     UseQueryOptions<ApiQueryType[T]['response']>,
     'queryFn' | 'queryKey'
   > & { queryKey?: string[] | string }
-  onSucess?: (data: ApiQueryType[T]['response']) => void
+  onSuccess?: (data: ApiQueryType[T]['response']) => void
 }) => {
   const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
 
@@ -197,7 +197,7 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
       const response = await http.get(urlApi, {
         params: (url as any)?.queryParams
       })
-      onSucess && onSucess(response.data)
+      onSuccess && onSuccess(response.data)
       return response.data
     }
   })
@@ -207,10 +207,10 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
 
 export const appGetFn = async <T extends keyof ApiQueryType>({
   url,
-  onSucess
+  onSuccess
 }: Omit<ApiQueryType[T], 'response'> & {
   key: T
-  onSucess?: (data: ApiQueryType[T]['response']) => void
+  onSuccess?: (data: ApiQueryType[T]['response']) => void
 }): Promise<ApiQueryType[T]['response']> => {
   const urlApi = `${replaceDynamicValues(
     url.baseUrl,
@@ -221,7 +221,7 @@ export const appGetFn = async <T extends keyof ApiQueryType>({
     const response = await http.get(urlApi, {
       params: (url as any)?.queryParams
     })
-    onSucess && onSucess(response.data)
+    onSuccess && onSuccess(response.data)
     return response.data
   } catch (error) {
     console.error('Error making API request:', error)

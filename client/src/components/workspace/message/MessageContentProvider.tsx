@@ -56,7 +56,7 @@ export default function MessageContentProvider({
       baseUrl: '/workspaces/:workspaceId',
       urlParams: { workspaceId: targetId }
     },
-    onSucess({ workspace, usersPresence }) {
+    onSuccess({ workspace, usersPresence }) {
       dispatch(
         workspaceActions.updateWorkspaceStore({
           ...extractApi({

@@ -24,7 +24,7 @@ function PrivateRoute() {
     url: {
       baseUrl: '/auth/profile'
     },
-    onSucess(user) {
+    onSuccess(user) {
       dispatch(
         authActions.loginSuccess({
           token: lsActions.getToken(),
