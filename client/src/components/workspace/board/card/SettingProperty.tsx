@@ -132,7 +132,7 @@ export default function SettingProperty({
         inner: 'p-12',
         body: 'flex flex-col flex-1 relative text-sm',
         root: 'text-gray-100',
-        overlay: 'bg-white/10 blur'
+         
       }}
     >
       <div className='flex h-full gap-4'>

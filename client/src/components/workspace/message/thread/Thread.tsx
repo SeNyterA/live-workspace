@@ -58,7 +58,7 @@ export default function Thread({
         inner: 'p-3',
         body: 'flex flex-col flex-1 relative text-sm p-0',
         root: 'text-gray-100',
-        overlay: 'bg-white/10 blur'
+         
       }}
     >
       <div className='relative flex-1'>

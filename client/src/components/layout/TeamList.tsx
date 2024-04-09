@@ -145,7 +145,7 @@ export default function TeamList() {
           inner: 'p-3',
           body: 'flex flex-col flex-1 relative text-sm',
           root: 'text-gray-100',
-          overlay: 'bg-white/10 blur'
+           
         }}
         size={376}
         position={'left'}

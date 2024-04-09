@@ -33,8 +33,7 @@ export default function AppHeader() {
           content: 'rounded-lg flex flex-col bg-black/80',
           inner: 'p-3',
           body: 'flex flex-col flex-1 relative text-sm',
-          root: 'text-gray-100',
-          overlay: 'bg-white/10 blur'
+          root: 'text-gray-100'
         }}
         position='right'
         size={376}

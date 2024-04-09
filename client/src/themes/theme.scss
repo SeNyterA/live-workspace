@@ -24,19 +24,22 @@
   }
 }
 
-.mantine-NavLink-root {
-  &[data-active='true'] {
-    font-weight: 700;
-  }
-  &:hover {
-    background-color: var(--color-primary-hover);
-  }
+body {
+  @apply text-gray-50;
 }
-.mantine-Input-wrapper {
-  &:hover {
-    border-color: var(--color-primary-hover);
-  }
-  &:focus-within {
-    border-color: var(--color-primary-focus);
-  }
+
+.layout {
+  @apply bg-black/90;
+}
+
+.sidebar {
+  @apply bg-slate-700/30;
+}
+
+.mantine-NavLink-root {
+  @apply hover:bg-blue-200/10 data-[active='true']:bg-blue-400/10 data-[active='true']:font-bold data-[active='true']:text-blue-500;
+}
+
+.mantine-Overlay-root {
+  @apply bg-white/10 blur;
 }
