@@ -131,8 +131,7 @@ export default function SettingProperty({
         content: 'rounded-lg flex flex-col bg-black/80 aspect-video',
         inner: 'p-12',
         body: 'flex flex-col flex-1 relative text-sm',
-        root: 'text-gray-100',
-         
+        root: 'text-gray-100'
       }}
     >
       <div className='flex h-full gap-4'>

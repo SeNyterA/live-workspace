@@ -37,9 +37,24 @@ body {
 }
 
 .mantine-NavLink-root {
-  @apply hover:bg-blue-200/10 data-[active='true']:bg-blue-400/10 data-[active='true']:font-bold data-[active='true']:text-blue-500;
+  @apply hover:bg-blue-200/10 data-[active='true']:bg-blue-400/10 data-[active='true']:text-blue-500;
 }
 
 .mantine-Overlay-root {
   @apply bg-white/10 blur;
+}
+
+// tab
+
+.mantine-Tabs-root {
+  @apply flex h-full flex-col;
+  & .mantine-Tabs-list {
+    @apply before:block before:h-[2px] before:border-blue-400/20 before:content-[attr(data-before)];
+    & .mantine-Tabs-tab {
+      @apply bg-transparent hover:bg-blue-400/20;
+    }
+  }
+  & .mantine-Tabs-panel {
+    @apply relative flex-1;
+  }
 }

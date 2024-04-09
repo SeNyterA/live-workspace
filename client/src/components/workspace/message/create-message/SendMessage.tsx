@@ -220,53 +220,45 @@ export default function SendMessage({
               editor={editor}
               tippyOptions={{ arrow: true, placement: 'top-start' }}
             >
-              <div className='flex p-1 bg-black/90 rounded gap-1'>
+              <div className='flex gap-1 rounded bg-black/90 p-1'>
                 <RichTextEditor.Bold
                   classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Italic
                   classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Underline
                   classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Highlight
                   classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Strikethrough
                   classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Link
                   classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.BulletList
                   classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.OrderedList
                   classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
                   }}
                 />
               </div>

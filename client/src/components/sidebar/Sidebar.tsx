@@ -178,7 +178,7 @@ export default function Sidebar() {
   return (
     <>
       <div className='sidebar mb-4 flex w-72 flex-col gap-2 rounded-lg px-4 py-3 shadow-custom'>
-        <p className='text-xl'>{!!team ? team?.title : 'Personal'}</p>
+        <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
         <p className='line-clamp-3 text-gray-500'>
           {team ? team?.description : 'Wellcome to workspace'}
         </p>
@@ -476,8 +476,7 @@ export default function Sidebar() {
           content: 'rounded-lg flex flex-col bg-black/80',
           inner: 'p-3',
           body: 'flex flex-col flex-1 relative text-sm',
-          root: 'text-gray-100',
-           
+          root: 'text-gray-100'
         }}
         size={376}
         position={'left'}

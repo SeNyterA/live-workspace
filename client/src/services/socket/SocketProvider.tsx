@@ -30,7 +30,7 @@ export default function SocketProvider({ children }: SocketProviderProps) {
       }).connect()
 
       setSocket(newSocket)
-      
+
       return () => {
         newSocket.disconnect()
       }

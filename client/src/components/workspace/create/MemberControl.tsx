@@ -1,8 +1,8 @@
 import { ActionIcon, Avatar } from '@mantine/core'
 import { IconX } from '@tabler/icons-react'
 import { memo } from 'react'
-import Watching from '../../../redux/Watching'
 import { useAppSelector } from '../../../redux/store'
+import Watching from '../../../redux/Watching'
 import { EMemberRole, TMember } from '../../../types'
 
 const MemberControl = ({
@@ -20,7 +20,7 @@ const MemberControl = ({
 
   return (
     <div
-      className='mt-2 flex flex-1 items-center gap-2 first:mt-0 p-2 rounded bg-slate-200/5'
+      className='mt-2 flex flex-1 items-center gap-2 rounded bg-slate-200/5 p-2 first:mt-0'
       key={user?.id}
     >
       <Watching watchingFn={state => state.workspace.files[user?.avatarId!]}>

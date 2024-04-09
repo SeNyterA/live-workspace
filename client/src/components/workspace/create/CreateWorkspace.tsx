@@ -96,20 +96,12 @@ export default function CreateWorkspace({
 
   return (
     <FormProvider {...form}>
-      <Tabs
-        defaultValue='info'
-        classNames={{
-          root: 'h-full flex flex-col',
-          panel: 'flex-1',
-          list: 'before:content-[attr(data-before)] before:block before:h-[2px] before:border-blue-400/20',
-          tab: 'bg-transparent hover:bg-blue-400/20'
-        }}
-      >
+      <Tabs defaultValue='info'>
         <Tabs.List>
           <Tabs.Tab value='info'>Infomation</Tabs.Tab>
           <Tabs.Tab value='members'>Members</Tabs.Tab>
         </Tabs.List>
-        <Tabs.Panel value='info' className='relative'>
+        <Tabs.Panel value='info'>
           <ScrollArea
             className='absolute inset-0 right-[-12px] pr-3'
             scrollbarSize={8}
@@ -117,7 +109,7 @@ export default function CreateWorkspace({
             <CreateWorkspaceInfo />
           </ScrollArea>
         </Tabs.Panel>
-        <Tabs.Panel value='members' className='relative'>
+        <Tabs.Panel value='members'>
           <ScrollArea
             className='absolute inset-0 right-[-12px] pr-3'
             scrollbarSize={8}

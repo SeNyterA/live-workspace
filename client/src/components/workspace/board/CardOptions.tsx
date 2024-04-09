@@ -28,7 +28,7 @@ export default function CardOptions({
     Object.values(state.workspace.cards).filter(
       card =>
         card.workspaceId === boardId &&
-        (!!option?.id
+        (option?.id
           ? card.properties?.[propertyId] === option.id
           : !Object.values(state.workspace.options)
               .filter(option => option.propertyId === propertyId)
@@ -53,7 +53,7 @@ export default function CardOptions({
               />
             }
           >
-            {!!option ? option?.title : 'Other'}
+            {option ? option?.title : 'Other'}
           </Badge>
 
           <ActionIcon

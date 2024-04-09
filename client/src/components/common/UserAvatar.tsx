@@ -37,7 +37,7 @@ export default function UserAvatar({
 }) {
   const { switchTo } = useAppControlParams()
   const meId = useAppSelector(state => state.auth.userInfo?.id)
-  
+
   const avatar = useAppSelector(state => state.workspace.files[user?.avatarId!])
   const presence = useAppSelector(state => state.workspace.presents[user?.id!])
   const dispath = useDispatch()
