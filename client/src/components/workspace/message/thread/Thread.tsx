@@ -52,13 +52,6 @@ export default function Thread({
       overlayProps={{
         blur: '0.5'
       }}
-      classNames={{
-        header: 'bg-transparent',
-        content: 'rounded-lg flex flex-col bg-black/80',
-        inner: 'p-3',
-        body: 'flex flex-col flex-1 relative text-sm p-0',
-        root: 'text-gray-100'
-      }}
     >
       <div className='relative flex-1'>
         <ScrollArea className='absolute inset-0' scrollbarSize={8}>

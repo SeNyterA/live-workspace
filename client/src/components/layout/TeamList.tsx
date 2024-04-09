@@ -136,18 +136,11 @@ export default function TeamList() {
         onClose={() => toggleDrawer(false)}
         opened={openDrawer}
         title={<p className='text-lg font-semibold'>Create team</p>}
+        size={376}
+        position={'left'}
         overlayProps={{
           blur: '0.5'
         }}
-        classNames={{
-          header: 'bg-transparent',
-          content: 'rounded-lg flex flex-col bg-black/80',
-          inner: 'p-3',
-          body: 'flex flex-col flex-1 relative text-sm',
-          root: 'text-gray-100'
-        }}
-        size={376}
-        position={'left'}
       >
         <CreateWorkspace
           onClose={() => toggleDrawer(false)}

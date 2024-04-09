@@ -41,18 +41,11 @@ export default function WorkspaceSetting() {
           <p className='h-fit leading-[18px]'>{workspace?.title}</p>
         </div>
       }
+      size={376}
+      position={position || 'left'}
       overlayProps={{
         blur: '0.5'
       }}
-      classNames={{
-        header: 'bg-transparent',
-        content: 'rounded-lg flex flex-col bg-black/80',
-        inner: 'p-3',
-        body: 'flex flex-col flex-1 relative text-sm',
-        root: 'text-gray-100'
-      }}
-      size={376}
-      position={position || 'left'}
     >
       <Tabs defaultValue='info'>
         <Tabs.List>

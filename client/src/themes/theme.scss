@@ -58,3 +58,22 @@ body {
     @apply relative flex-1;
   }
 }
+
+.mantine-Drawer-root {
+  @apply text-gray-50;
+  & .mantine-Overlay-root {
+    @apply bg-white/10 blur;
+  }
+  & .mantine-Drawer-inner {
+    @apply p-3;
+    & .mantine-Paper-root {
+      @apply flex flex-col rounded-lg bg-black/95;
+      & .mantine-Drawer-header {
+        @apply bg-transparent;
+      }
+      & .mantine-Drawer-body {
+        @apply relative flex flex-1 flex-col text-sm;
+      }
+    }
+  }
+}

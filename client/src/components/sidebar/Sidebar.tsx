@@ -10,13 +10,11 @@ import {
   ScrollArea
 } from '@mantine/core'
 import {
-  IconDirection,
   IconHash,
   IconLayoutKanban,
   IconPlus,
   IconSearch,
   IconSettings,
-  IconUser,
   IconUserBolt,
   IconUsersGroup
 } from '@tabler/icons-react'
@@ -467,16 +465,7 @@ export default function Sidebar() {
         opened={!!toggle}
         title={<p className='text-lg font-semibold'>Create {toggle}</p>}
         overlayProps={{
-          color: '#000',
-          backgroundOpacity: 0.2,
           blur: 0.5
-        }}
-        classNames={{
-          header: 'bg-transparent',
-          content: 'rounded-lg flex flex-col bg-black/80',
-          inner: 'p-3',
-          body: 'flex flex-col flex-1 relative text-sm',
-          root: 'text-gray-100'
         }}
         size={376}
         position={'left'}
