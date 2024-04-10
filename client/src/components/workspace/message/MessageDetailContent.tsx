@@ -115,7 +115,7 @@ function MessageDetailContent({
       </Menu>
 
       <div
-        className={`group relative w-fit rounded bg-gray-400/20 p-1 ${
+        className={`group relative w-fit rounded  p-1 ${
           message.replyToId && 'cursor-pointer'
         }`}
         key={message.id}
@@ -126,7 +126,7 @@ function MessageDetailContent({
           }`}
         >
           <ActionIcon
-            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
+            className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               toogleImojiId(message.id)
             }}
@@ -135,13 +135,13 @@ function MessageDetailContent({
           </ActionIcon>
 
           {isOwner && (
-            <ActionIcon className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'>
+            <ActionIcon className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'>
               <IconEdit size={18} />
             </ActionIcon>
           )}
 
           <ActionIcon
-            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
+            className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               pinWorkspaceMessage({
                 method: 'post',
@@ -159,7 +159,7 @@ function MessageDetailContent({
           </ActionIcon>
 
           <ActionIcon
-            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
+            className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               updateThread({
                 targetId: message.workspaceId,
@@ -171,7 +171,7 @@ function MessageDetailContent({
           </ActionIcon>
 
           <ActionIcon
-            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
+            className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               console.log({
                 targetId: message.workspaceId,
@@ -189,7 +189,7 @@ function MessageDetailContent({
           </ActionIcon>
           {isOwner && (
             <ActionIcon
-              className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
+              className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
               onClick={() => {
                 deleteWorkspaceMessage({
                   method: 'delete',
@@ -232,7 +232,7 @@ function MessageDetailContent({
           />
         )}
         {/* <p
-          className={`invisible absolute top-[50%] translate-y-[-50%] text-gray-300 group-hover:visible ${isOwner ? 'left-0 translate-x-[-110%]' : 'right-0 translate-x-[110%]'} text-xs text-gray-300 ${message.isPinned ? 'hidden' : ''}`}
+          className={`invisible absolute top-[50%] translate-y-[-50%]  group-hover:visible ${isOwner ? 'left-0 translate-x-[-110%]' : 'right-0 translate-x-[110%]'} text-xs  ${message.isPinned ? 'hidden' : ''}`}
         >
           {dayjs(message.createdAt).format('HH:mm')}
         </p> */}

@@ -37,7 +37,7 @@ export default function DetailCard() {
             content: 'rounded-lg flex flex-col bg-black/80 h-full aspect-video',
             inner: 'p-12',
             body: 'flex flex-col flex-1 relative text-sm h-full',
-            root: 'text-gray-100'
+            root: ''
           }}
         >
           <div className='flex h-full gap-4'>

@@ -86,7 +86,7 @@ export default function PinedMesages() {
                   <p className='font-medium'>
                     {createBy?.userName || 'Senytera'}
                   </p>
-                  <p className='text-xs text-gray-500'>
+                  <p className='text-xs '>
                     {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
                   </p>
                   <div

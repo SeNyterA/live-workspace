@@ -24,7 +24,7 @@ export default function Notification() {
     >
       <Popover.Target>
         <Indicator label={invitions?.invitions.length || 0}>
-          <ActionIcon className='bg-transparent text-gray-500 hover:bg-gray-400/20'>
+          <ActionIcon className='bg-transparent  hover:'>
             <IconBell size={24} />
           </ActionIcon>
         </Indicator>

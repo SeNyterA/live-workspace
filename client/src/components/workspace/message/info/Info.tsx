@@ -57,7 +57,7 @@ export default function Info() {
           </ActionIcon>
         </div>
         {workspace?.description && (
-          <p className='text-gray-500'>{workspace?.description}</p>
+          <p className=''>{workspace?.description}</p>
         )}
 
         {workspace?.thumbnail?.path && (

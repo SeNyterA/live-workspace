@@ -131,18 +131,18 @@ export default function SettingProperty({
         content: 'rounded-lg flex flex-col bg-black/80 aspect-video',
         inner: 'p-12',
         body: 'flex flex-col flex-1 relative text-sm',
-        root: 'text-gray-100'
+        root: ''
       }}
     >
       <div className='flex h-full gap-4'>
-        <div className='relative w-48 rounded bg-gray-400/20 p-2'>
+        <div className='relative w-48 rounded  p-2'>
           <ScrollArea className='absolute inset-0 p-2' scrollbarSize={0}>
             {properties?.map(e => (
               <NavLink
-                className='group w-full bg-transparent first:mt-0 hover:bg-gray-400/30'
+                className='group w-full bg-transparent first:mt-0 '
                 classNames={{
                   section:
-                    'invisible group-hover:visible hover:text-gray-100 transition-colors'
+                    'invisible group-hover:visible hover: transition-colors'
                 }}
                 active={e.id === propertyId}
                 key={e.id}
@@ -170,7 +170,7 @@ export default function SettingProperty({
             ))}
 
             <NavLink
-              className='w-full bg-transparent first:mt-0 hover:bg-gray-400/30'
+              className='w-full bg-transparent first:mt-0 '
               label='Create new'
               rightSection={<IconPlus size={14} />}
               onClick={() => {
@@ -226,7 +226,7 @@ export default function SettingProperty({
               className='mt-2'
               classNames={{
                 input:
-                  'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                  'border-gray-100 border-none   min-h-[30px]'
               }}
             />
 
@@ -252,7 +252,7 @@ export default function SettingProperty({
               className='mt-2'
               classNames={{
                 input:
-                  'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                  'border-gray-100 border-none   min-h-[30px]'
               }}
             />
 
@@ -278,10 +278,10 @@ export default function SettingProperty({
               className='mt-2'
               classNames={{
                 input:
-                  'border-gray-100 border-none bg-gray-400/20 text-gray-100',
+                  'border-gray-100 border-none  ',
                 dropdown:
-                  '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                option: 'hover:bg-gray-700/90'
+                  '!bg-gray-900/90  border-gray-400/20 pr-0',
+                option: ''
               }}
               label='Property type'
               description='Select the type of property'
@@ -299,7 +299,7 @@ export default function SettingProperty({
                       label='Option color'
                       classNames={{
                         input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px] w-32'
+                          'border-gray-100 border-none   min-h-[30px] w-32'
                       }}
                       defaultValue={option.color}
                       format='hex'
@@ -361,12 +361,12 @@ export default function SettingProperty({
                       classNames={{
                         root: 'flex-1',
                         input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                          'border-gray-100 border-none   min-h-[30px]'
                       }}
                     />
                     <ActionIcon
                       size={36}
-                      className='bg-gray-400/20'
+                      className=''
                       onClick={() => {
                         updateOption({
                           url: {
@@ -389,7 +389,7 @@ export default function SettingProperty({
                 ))}
                 <div className='flex w-full justify-end'>
                   <Button
-                    className='mt-2 bg-gray-400/20'
+                    className='mt-2 '
                     onClick={() =>
                       createOption({
                         method: 'post',
@@ -431,10 +431,10 @@ export default function SettingProperty({
               searchable
               classNames={{
                 input:
-                  'border-gray-100 border-none bg-gray-400/20 text-gray-100',
+                  'border-gray-100 border-none  ',
                 dropdown:
-                  '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                option: 'hover:bg-gray-700/90'
+                  '!bg-gray-900/90  border-gray-400/20 pr-0',
+                option: ''
               }}
               label={property.title}
               description={property.description}
@@ -450,10 +450,10 @@ export default function SettingProperty({
               searchable
               classNames={{
                 input:
-                  'border-gray-100 border-none bg-gray-400/20 text-gray-100',
+                  'border-gray-100 border-none  ',
                 dropdown:
-                  '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                option: 'hover:bg-gray-700/90'
+                  '!bg-gray-900/90  border-gray-400/20 pr-0',
+                option: ''
               }}
               label={property.title}
               description={property.description}
@@ -468,7 +468,7 @@ export default function SettingProperty({
             <TextInput
               classNames={{
                 input:
-                  'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+                  'border-gray-100 border-none  '
               }}
               label={property.title}
               description={property.description}
@@ -480,7 +480,7 @@ export default function SettingProperty({
               type='range'
               classNames={{
                 input:
-                  'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+                  'border-gray-100 border-none  '
               }}
               label={property.title}
               description={property.description}
@@ -491,7 +491,7 @@ export default function SettingProperty({
             <DateTimePicker
               classNames={{
                 input:
-                  'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+                  'border-gray-100 border-none  '
               }}
               label={property.title}
               description={property.description}
@@ -512,10 +512,10 @@ export default function SettingProperty({
                 <Select
                   classNames={{
                     input:
-                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                      'border-gray-100 border-none   min-h-[30px]',
                     dropdown:
-                      '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                    option: 'hover:bg-gray-700/90'
+                      '!bg-gray-900/90  border-gray-400/20 pr-0',
+                    option: ''
                   }}
                   label={property.title}
                   description={property.description}
@@ -546,10 +546,10 @@ export default function SettingProperty({
                 <MultiSelect
                   classNames={{
                     input:
-                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                      'border-gray-100 border-none   min-h-[30px]',
                     dropdown:
-                      '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                    option: 'hover:bg-gray-700/90'
+                      '!bg-gray-900/90  border-gray-400/20 pr-0',
+                    option: ''
                   }}
                   label={property.title}
                   description={property.description}

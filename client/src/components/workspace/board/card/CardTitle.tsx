@@ -20,7 +20,7 @@ export default function CardTitle() {
       className='w-full px-0'
       classNames={{
         input:
-          'border w-full bg-transparent text-gray-100 border-transparent outline-none w-full resize-none text-lg px-0 w-full truncate'
+          'border w-full bg-transparent  border-transparent outline-none w-full resize-none text-lg px-0 w-full truncate'
       }}
       value={value}
       onBlur={() => {

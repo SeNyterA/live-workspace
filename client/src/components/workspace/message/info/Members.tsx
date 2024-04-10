@@ -65,7 +65,7 @@ export default function Members() {
               <p className='max-w-[150px] truncate font-medium leading-4'>
                 {user?.userName}
               </p>
-              <p className='leading-2 max-w-[150px] truncate text-xs text-gray-300'>
+              <p className='leading-2 max-w-[150px] truncate text-xs '>
                 {user?.email}
               </p>
             </div>

@@ -151,10 +151,10 @@ export default function Properties() {
                       className='!mt-2 first:!mt-0'
                       classNames={{
                         input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                          'border-gray-100 border-none   min-h-[30px]',
                         dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90'
+                          '!bg-gray-900/90  border-gray-400/20 pr-0',
+                        option: ''
                       }}
                       label={property.title}
                       description={property.title}
@@ -233,11 +233,11 @@ export default function Properties() {
                       className='!mt-2 first:!mt-0'
                       classNames={{
                         input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                          'border-gray-100 border-none   min-h-[30px]',
                         dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90',
-                        pill: 'bg-gray-400/20 text-gray-100 border-gray-400/20'
+                          '!bg-gray-900/90  border-gray-400/20 pr-0',
+                        option: '',
+                        pill: '  border-gray-400/20'
                       }}
                       label={property.title}
                       description={property.title}
@@ -325,10 +325,10 @@ export default function Properties() {
                       className='!mt-2 first:!mt-0'
                       classNames={{
                         input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                          'border-gray-100 border-none   min-h-[30px]',
                         dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90'
+                          '!bg-gray-900/90  border-gray-400/20 pr-0',
+                        option: ''
                       }}
                       label={property.title}
                       description={property.title}
@@ -411,10 +411,10 @@ export default function Properties() {
                       className='!mt-2 first:!mt-0'
                       classNames={{
                         input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
+                          'border-gray-100 border-none   min-h-[30px]',
                         dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90'
+                          '!bg-gray-900/90  border-gray-400/20 pr-0',
+                        option: ''
                       }}
                       label={property.title}
                       description={property.title}
@@ -492,7 +492,7 @@ export default function Properties() {
                   defaultValue={card?.properties?.[property.id]?.toString()}
                   classNames={{
                     input:
-                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                      'border-gray-100 border-none   min-h-[30px]'
                   }}
                   onBlur={e => {
                     const oldCard = getAppValue(
@@ -556,7 +556,7 @@ export default function Properties() {
                   className='!mt-2 first:!mt-0'
                   classNames={{
                     input:
-                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                      'border-gray-100 border-none   min-h-[30px]'
                   }}
                   clearable
                   label={property.title}
@@ -646,7 +646,7 @@ export default function Properties() {
                   className='!mt-2 first:!mt-0'
                   classNames={{
                     input:
-                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                      'border-gray-100 border-none   min-h-[30px]'
                   }}
                 />
               )}

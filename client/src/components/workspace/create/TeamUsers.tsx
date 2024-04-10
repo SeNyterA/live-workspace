@@ -37,7 +37,7 @@ const Option = memo(
           </Watching>
           <div className='flex flex-1 flex-col justify-center'>
             <p className='font-medium leading-5'>{user.userName}</p>
-            <p className='text-xs leading-3 text-gray-500'>{user.email}</p>
+            <p className='text-xs leading-3 '>{user.email}</p>
           </div>
 
           <MemberRole member={member} />
@@ -194,7 +194,7 @@ export const TeamUsers = memo(() => {
                     className: 'mt-4',
                     classNames: {
                       input:
-                        'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+                        'border-gray-100 border-none  '
                     }
                   }}
                 />

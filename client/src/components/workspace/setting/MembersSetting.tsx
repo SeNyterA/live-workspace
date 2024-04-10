@@ -35,13 +35,13 @@ const User = memo(({ user }: { user: TUser }) => {
         <p className='max-w-[150px] truncate text-sm font-medium leading-4'>
           {user?.userName}
         </p>
-        <p className='leading-2 truncate text-xs text-gray-500'>
+        <p className='leading-2 truncate text-xs '>
           {user?.email}
         </p>
       </div>
       <Button
         color='gray'
-        className='h-[30px] min-h-[30px] border-none border-gray-100 bg-gray-400/10 hover:bg-gray-200/10'
+        className='h-[30px] min-h-[30px] border-none border-gray-100  hover:bg-gray-200/10'
         disabled={isPending}
         loading={isPending}
         onClick={() =>
@@ -92,7 +92,7 @@ const Member = ({ member }: { member: TMember }) => {
             <p className='max-w-[150px] truncate font-medium leading-4'>
               {user?.userName}
             </p>
-            <p className='leading-2 truncate text-xs text-gray-500'>
+            <p className='leading-2 truncate text-xs '>
               {user?.email}
             </p>
           </div>
@@ -161,7 +161,7 @@ export default function MembersSetting() {
               className='sticky top-0 z-[300] mt-4'
               classNames={{
                 input:
-                  'text-gray-100 bg-gray-400/20 border-gray-100/20 hover:border-blue-500/50 focus:border-blue-500/70'
+                  '  border-gray-100/20 hover:border-blue-500/50 focus:border-blue-500/70'
               }}
               leftSection={<IconSearch size={16} />}
               value={searchValue}

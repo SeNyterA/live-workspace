@@ -153,7 +153,7 @@ export default function Sidebar() {
     <>
       <div className='sidebar mb-4 flex w-72 flex-col gap-2 rounded-lg px-4 py-3 shadow-custom'>
         <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
-        <p className='line-clamp-3 text-gray-500'>
+        <p className='line-clamp-3 '>
           {team ? team?.description : 'Wellcome to workspace'}
         </p>
 

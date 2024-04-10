@@ -55,7 +55,7 @@ const Title = ({ isDisabled }: { isDisabled: boolean }) => {
       className='mt-4'
       classNames={{
         input:
-          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+          '  border-gray-100/20 focus:border-gray-100/40'
       }}
       defaultValue={workspace?.title}
       key={workspace?.title}
@@ -103,7 +103,7 @@ const Description = ({ isDisabled }: { isDisabled: boolean }) => {
       className='mt-4'
       classNames={{
         input:
-          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+          '  border-gray-100/20 focus:border-gray-100/40'
       }}
       defaultValue={workspace?.description}
       key={workspace?.description}
@@ -161,7 +161,7 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
       className='mt-4'
       classNames={{
         input:
-          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+          '  border-gray-100/20 focus:border-gray-100/40'
       }}
       defaultValue={workspace?.displayUrl}
       disabled={isPending || isDisabled}

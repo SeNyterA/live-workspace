@@ -223,42 +223,42 @@ export default function SendMessage({
               <div className='flex gap-1 rounded bg-black/90 p-1'>
                 <RichTextEditor.Bold
                   classNames={{
-                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: ' border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Italic
                   classNames={{
-                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: ' border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Underline
                   classNames={{
-                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: ' border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Highlight
                   classNames={{
-                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: ' border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Strikethrough
                   classNames={{
-                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: ' border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.Link
                   classNames={{
-                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: ' border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.BulletList
                   classNames={{
-                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: ' border-none hover:bg-blue-400/40'
                   }}
                 />
                 <RichTextEditor.OrderedList
                   classNames={{
-                    control: 'bg-gray-400/20 border-none hover:bg-blue-400/40'
+                    control: ' border-none hover:bg-blue-400/40'
                   }}
                 />
               </div>
@@ -282,7 +282,7 @@ export default function SendMessage({
           {files.map(file => (
             <Badge
               key={file.id}
-              className='h-[26px] rounded bg-gray-400/20'
+              className='h-[26px] rounded '
               rightSection={
                 <IconX
                   size={14}
@@ -329,7 +329,7 @@ export default function SendMessage({
       </div>
 
       <p
-        className={`info-wrapper absolute bottom-1 left-4 right-3 flex justify-between text-xs text-gray-300 ${classNames?.infoWrapper}`}
+        className={`info-wrapper absolute bottom-1 left-4 right-3 flex justify-between text-xs  ${classNames?.infoWrapper}`}
       >
         <Typing targetId={targetId} />
         <span>

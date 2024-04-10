@@ -29,13 +29,13 @@ const MemberControl = ({
 
       <div className='flex flex-1 flex-col justify-center'>
         <p className='truncate font-medium leading-5'>{user?.userName}</p>
-        <p className='truncate text-xs leading-3 text-gray-500'>
+        <p className='truncate text-xs leading-3 '>
           {user?.email}
         </p>
       </div>
 
       <ActionIcon
-        className='h-[30px] w-[30px] bg-gray-400/20'
+        className='h-[30px] w-[30px] '
         color='gray'
         onClick={onRemove}
       >

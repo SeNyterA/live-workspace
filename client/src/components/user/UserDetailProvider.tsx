@@ -28,8 +28,8 @@ export default function UserDetailProvider({
             {avatar => <Avatar src={avatar?.path} size={120} />}
           </Watching>
           <p className='mt-2 text-base font-semibold'>{user?.nickName}</p>
-          <p className='text-sm text-gray-500'>{`@${user?.userName}`}</p>
-          <p className='text-sm text-gray-500'>{user?.email}</p>
+          <p className='text-sm '>{`@${user?.userName}`}</p>
+          <p className='text-sm '>{user?.email}</p>
         </div>
         <Menu.Divider />
         <Menu.Item

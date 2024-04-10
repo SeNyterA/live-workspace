@@ -30,7 +30,7 @@ const Field = ({
           className='mt-4'
           classNames={{
             input:
-              'disabled:bg-gray-400/10 disabled:opacity-100 disabled:text-gray-100 text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+              ' disabled:opacity-100    border-gray-100/20 focus:border-gray-100/40'
           }}
           defaultValue={value}
           key={value}
@@ -56,7 +56,7 @@ const Field = ({
           className='mt-4'
           classNames={{
             input:
-              'disabled:bg-gray-400/10 disabled:opacity-100 disabled:text-gray-100 text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+              ' disabled:opacity-100    border-gray-100/20 focus:border-gray-100/40'
           }}
           defaultValue={value}
           key={value}

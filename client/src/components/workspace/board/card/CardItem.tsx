@@ -39,7 +39,7 @@ function CardItem({ card }: { card: TCard }) {
 
       <p className='line-clamp-2 flex-1 rounded'>{card.title}</p>
 
-      <div className='flex items-center text-xs text-gray-400'>
+      <div className='flex items-center text-xs '>
         {!!checkboxes.length && (
           <div className='mr-2 flex items-center'>
             {`${checkboxes.filter(e => e.attrs && e.attrs['checked']).length}/${

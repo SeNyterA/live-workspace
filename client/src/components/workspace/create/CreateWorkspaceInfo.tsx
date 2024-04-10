@@ -172,7 +172,7 @@ export default function CreateWorkspaceInfo() {
             classNames={{
               label: 'capitalize',
               input:
-                'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+                '  border-gray-100/20 focus:border-gray-100/40'
             }}
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -197,7 +197,7 @@ export default function CreateWorkspaceInfo() {
             className='mt-4'
             classNames={{
               input:
-                'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+                '  border-gray-100/20 focus:border-gray-100/40'
             }}
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -216,7 +216,7 @@ export default function CreateWorkspaceInfo() {
             className='mt-4'
             classNames={{
               input:
-                'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
+                '  border-gray-100/20 focus:border-gray-100/40'
             }}
             value={value}
             onChange={e => onChange(e.target.value)}

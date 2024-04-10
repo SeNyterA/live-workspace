@@ -47,7 +47,7 @@ export default function MessageGroup({
           </p>
         )}
 
-        <p className='text-xs leading-3 text-gray-500'>
+        <p className='text-xs leading-3 '>
           {dayjs(messageGroup.messages[0].createdAt).format(
             'YYYY-MM-DD HH:mm:ss'
           )}

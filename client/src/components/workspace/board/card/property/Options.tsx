@@ -18,7 +18,7 @@ export default function Options() {
             label='Option color'
             classNames={{
               input:
-                'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px] w-32'
+                'border-gray-100 border-none   min-h-[30px] w-32'
             }}
             format='hex'
             onChange={color => update(index, { title: option.title, color })}
@@ -51,13 +51,13 @@ export default function Options() {
             classNames={{
               root: 'flex-1',
               input:
-                'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                'border-gray-100 border-none   min-h-[30px]'
             }}
           />
           <ActionIcon
             size={36}
-            className='bg-gray-400/20'
-            onClick={() => remove(index)}
+            className=''
+            onClick={() => remove(index)}4-0
           >
             <IconX size={16} />
           </ActionIcon>
@@ -65,7 +65,7 @@ export default function Options() {
       ))}
 
       <Button
-        className='mt-2 bg-gray-400/20'
+        className='mt-2 '
         onClick={() =>
           append({
             title: 'Title option',

@@ -36,9 +36,9 @@ export default function BoardHeader() {
         <Select
           classNames={{
             input:
-              'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px] h-[30px]',
-            dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-            option: 'hover:bg-gray-700/90'
+              'border-gray-100 border-none   min-h-[30px] h-[30px]',
+            dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
+            option: ''
           }}
           className='w-32'
           data={propertiesChecking?.map(e => ({
@@ -57,9 +57,9 @@ export default function BoardHeader() {
         <Select
           classNames={{
             input:
-              'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px] h-[30px]',
-            dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-            option: 'hover:bg-gray-700/90'
+              'border-gray-100 border-none   min-h-[30px] h-[30px]',
+            dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
+            option: ''
           }}
           className='w-32'
           value={sortBy}
@@ -75,13 +75,13 @@ export default function BoardHeader() {
       </label> */}
 
       <Input
-        className='flex h-[30px] items-center rounded bg-gray-400/20'
+        className='flex h-[30px] items-center rounded '
         size='sm'
         placeholder='Search card name'
         leftSection={<IconSearch size={14} />}
         classNames={{
           input:
-            'bg-transparent border-none min-h-[20px] h-[20px] text-gray-100'
+            'bg-transparent border-none min-h-[20px] h-[20px] '
         }}
         value={searchValue}
         onChange={e => setSearchValue(e.currentTarget.value)}
@@ -89,7 +89,7 @@ export default function BoardHeader() {
 
       <ActionIcon
         aria-label='Settings'
-        className='h-[30px] w-[30px] bg-gray-400/20'
+        className='h-[30px] w-[30px] '
         onClick={() => setOpenProperty(true)}
       >
         <IconSettings size={16} stroke={1.5} />

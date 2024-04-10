@@ -33,7 +33,7 @@ const TeamChild = ({ name }: { name: 'channels' | 'boards' }) => {
               leftSection={<IconHash size={16} />}
               rightSection={
                 <ActionIcon
-                  className='hover:bg-gray-400/20'
+                  className='hover:'
                   onClick={() => remove(index)}
                 >
                   <IconX size={16} />
@@ -41,7 +41,7 @@ const TeamChild = ({ name }: { name: 'channels' | 'boards' }) => {
               }
               classNames={{
                 input:
-                  'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40 border border-dashed'
+                  '  border-gray-100/20 focus:border-gray-100/40 border border-dashed'
               }}
               error={fieldState.error && fieldState.error.message}
             />
