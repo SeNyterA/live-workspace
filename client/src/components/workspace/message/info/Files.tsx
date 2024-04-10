@@ -25,9 +25,7 @@ export default function Files() {
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>File</p>
           {workspaceFiles && workspaceFiles?.length > 0 && (
-            <Badge variant='light' color='gray'>
-              {workspaceFiles!.length}
-            </Badge>
+            <Badge color='gray'>{workspaceFiles!.length}</Badge>
           )}
           {isPending && <Loader size={10} />}
         </div>

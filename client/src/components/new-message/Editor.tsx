@@ -112,7 +112,6 @@ export default function Editor({ onChange, onSubmit }: Props) {
       </RichTextEditor>
 
       <ActionIcon
-        variant='default'
         className='mx-2 my-2'
         onClick={() => {
           if (removeHtmlTags(editor?.getHTML() || '').trim() !== '') {

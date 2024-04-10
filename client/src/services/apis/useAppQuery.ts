@@ -182,7 +182,7 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
     'queryFn' | 'queryKey'
   > & { queryKey?: string[] | string }
   onSuccess?: (data: ApiQueryType[T]['response']) => void
-  onError: (error: any) => void
+  onError?: (error: any) => void
 }) => {
   const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
 
@@ -203,7 +203,7 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
         onSuccess?.(response.data)
         return response.data
       } catch (error) {
-        onError(error)
+        onError?.(error)
         console.error('Error making API request:', error)
         return Promise.reject(error)
       }

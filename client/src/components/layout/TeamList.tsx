@@ -37,7 +37,6 @@ export default function TeamList() {
           className={`mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${
             teamId === 'personal' ? 'ring-[1.5px]' : ''
           }`}
-          variant='subtle'
           onClick={() => switchTeam({ teamId: 'personal' })}
         >
           <Watching
@@ -88,7 +87,6 @@ export default function TeamList() {
                           ? 'rounded-full shadow-custom ring-2 ring-blue-400'
                           : 'rounded-full'
                       }`}
-                      variant='light'
                       size='md'
                       onClick={() => {
                         switchTeam({ teamId: team.id })
@@ -121,7 +119,6 @@ export default function TeamList() {
 
         <ActionIcon
           className='m mx-auto flex h-fit w-fit items-center justify-center rounded-full p-0'
-          variant='subtle'
           onClick={() => {
             toggleDrawer(true)
           }}

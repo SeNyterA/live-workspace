@@ -61,9 +61,7 @@ export default function PinedMesages() {
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>Pined messages</p>
           {pinedMessages!.length > 0 && (
-            <Badge variant='light' color='gray'>
-              {pinedMessages!.length}
-            </Badge>
+            <Badge color='gray'>{pinedMessages!.length}</Badge>
           )}
           {isPending && <Loader size={10} />}
         </div>

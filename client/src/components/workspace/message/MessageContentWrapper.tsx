@@ -45,7 +45,6 @@ export default function MessageContentWrapper() {
             />
 
             <ActionIcon
-              variant='light'
               size={30}
               className='bg-gray-400/20'
               onClick={() => setOpenInfo(e => !e)}

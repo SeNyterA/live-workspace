@@ -16,10 +16,7 @@ export default function UserDetailProvider({
   return (
     <Menu shadow='md' width={200} position='top-start' withArrow>
       <Menu.Target>
-        <ActionIcon
-          variant='transparent'
-          className='h-fit w-fit overflow-visible'
-        >
+        <ActionIcon className='h-fit w-fit overflow-visible'>
           {children}
         </ActionIcon>
       </Menu.Target>

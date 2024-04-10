@@ -129,10 +129,10 @@ body {
 .mantine-Input-wrapper {
   @apply flex items-center rounded bg-gray-400/20;
   & .mantine-Input-input {
-    @apply border-none bg-transparent text-gray-50 ;
+    @apply border-none bg-transparent text-gray-50;
   }
 }
 
 .mantine-ActionIcon-root {
-  @apply bg-gray-400/10 text-gray-50 transition-colors hover:bg-gray-400/20 hover:text-blue-500;
+  @apply bg-gray-400/10 text-gray-50 transition-colors hover:bg-gray-400/20 hover:text-blue-500 data-[variant='transparent']:bg-transparent;
 }

@@ -282,7 +282,6 @@ export default function SendMessage({
           {files.map(file => (
             <Badge
               key={file.id}
-              variant='transparent'
               className='h-[26px] rounded bg-gray-400/20'
               rightSection={
                 <IconX
@@ -308,7 +307,6 @@ export default function SendMessage({
             {props => (
               <Button
                 size='compact-sm'
-                variant='transparent'
                 className='bg-blue-400/20'
                 {...props}
                 loading={isPending}
@@ -319,7 +317,6 @@ export default function SendMessage({
           </FileButton>
           <Divider orientation='vertical' />
           <Button
-            variant='transparent'
             size='compact-sm'
             className='bg-blue-400/20'
             onClick={() => {

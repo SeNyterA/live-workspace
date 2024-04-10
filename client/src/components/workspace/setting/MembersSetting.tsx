@@ -40,7 +40,6 @@ const User = memo(({ user }: { user: TUser }) => {
         </p>
       </div>
       <Button
-        variant='outline'
         color='gray'
         className='h-[30px] min-h-[30px] border-none border-gray-100 bg-gray-400/10 hover:bg-gray-200/10'
         disabled={isPending}
@@ -184,9 +183,7 @@ export default function MembersSetting() {
 
       <div className='mt-4 flex justify-between font-semibold'>
         Members
-        <Badge variant='light' color='gray'>
-          {members!.length}
-        </Badge>
+        <Badge color='gray'>{members!.length}</Badge>
       </div>
 
       {invitedMembers.length > 0 && (

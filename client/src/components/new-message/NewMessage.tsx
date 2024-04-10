@@ -144,7 +144,6 @@ export default function Editor({
         </RichTextEditor.Toolbar>
 
         <ActionIcon
-          variant='default'
           className='mx-2 my-2'
           onClick={() => {
             if (removeHtmlTags(editor?.getHTML() || '').trim() !== '') {

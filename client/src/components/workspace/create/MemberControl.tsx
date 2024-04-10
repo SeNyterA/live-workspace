@@ -37,7 +37,6 @@ const MemberControl = ({
       <ActionIcon
         className='h-[30px] w-[30px] bg-gray-400/20'
         color='gray'
-        variant='transparent'
         onClick={onRemove}
       >
         <IconX size={12} />

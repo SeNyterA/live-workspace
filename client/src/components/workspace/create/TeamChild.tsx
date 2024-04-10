@@ -33,7 +33,6 @@ const TeamChild = ({ name }: { name: 'channels' | 'boards' }) => {
               leftSection={<IconHash size={16} />}
               rightSection={
                 <ActionIcon
-                  variant='transparent'
                   className='hover:bg-gray-400/20'
                   onClick={() => remove(index)}
                 >
@@ -52,7 +51,6 @@ const TeamChild = ({ name }: { name: 'channels' | 'boards' }) => {
       <div className='mt-2 flex justify-end'>
         <Button
           size='sm'
-          variant='light'
           onClick={() => {
             append({
               title: ''

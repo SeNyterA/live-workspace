@@ -31,9 +31,7 @@ export default function Members() {
         <div className='flex items-center justify-between'>
           Members
           {members?.length! > 0 && (
-            <Badge variant='light' color='gray'>
-              {members!.length}
-            </Badge>
+            <Badge color='gray'>{members!.length}</Badge>
           )}
         </div>
       }

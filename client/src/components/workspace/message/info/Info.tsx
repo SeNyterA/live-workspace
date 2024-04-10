@@ -42,7 +42,6 @@ export default function Info() {
           <p className='flex-1 text-base font-semibold'>{workspace?.title}</p>
           <ActionIcon
             size={30}
-            variant='light'
             color='gray'
             onClick={() =>
               dispatch(

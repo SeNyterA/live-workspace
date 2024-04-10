@@ -240,7 +240,7 @@ export default function Authentication() {
                 ? 'Already have an account? Login'
                 : "Don't have an account? Register"}
             </Anchor>
-            <Button type='submit' radius='xl' variant='outline'>
+            <Button type='submit' radius='xl'>
               {type}
             </Button>
           </Group>

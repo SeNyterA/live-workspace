@@ -126,7 +126,6 @@ function MessageDetailContent({
           }`}
         >
           <ActionIcon
-            variant='light'
             className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               toogleImojiId(message.id)
@@ -136,16 +135,12 @@ function MessageDetailContent({
           </ActionIcon>
 
           {isOwner && (
-            <ActionIcon
-              variant='light'
-              className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
-            >
+            <ActionIcon className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'>
               <IconEdit size={18} />
             </ActionIcon>
           )}
 
           <ActionIcon
-            variant='light'
             className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               pinWorkspaceMessage({
@@ -164,7 +159,6 @@ function MessageDetailContent({
           </ActionIcon>
 
           <ActionIcon
-            variant='light'
             className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               updateThread({
@@ -177,7 +171,6 @@ function MessageDetailContent({
           </ActionIcon>
 
           <ActionIcon
-            variant='light'
             className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               console.log({
@@ -196,7 +189,6 @@ function MessageDetailContent({
           </ActionIcon>
           {isOwner && (
             <ActionIcon
-              variant='light'
               className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
               onClick={() => {
                 deleteWorkspaceMessage({

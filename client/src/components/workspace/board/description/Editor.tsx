@@ -193,7 +193,6 @@ export default function Editor({ card }: { card?: TCard }) {
             {({ onClick }) => (
               <ActionIcon
                 size={26}
-                variant='default'
                 className='m-[2px] border-none bg-gray-400/20 !text-gray-100 hover:bg-blue-400/40 data-[active]:bg-blue-50'
                 onClick={onClick}
               >
@@ -204,7 +203,6 @@ export default function Editor({ card }: { card?: TCard }) {
 
           <ActionIcon
             size={26}
-            variant='default'
             onClick={() => {
               editor.chain().focus().toggleTaskList().run()
             }}

@@ -57,7 +57,6 @@ export default function CardOptions({
           </Badge>
 
           <ActionIcon
-            variant='transparent'
             aria-label='Settings'
             className='h-[28px] w-[28px] bg-blue-400/20 text-white'
             onClick={() => {
