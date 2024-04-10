@@ -23,11 +23,11 @@ pre {
   }
 }
 
-body {
-  @apply h-screen w-screen overflow-hidden text-gray-50;
-}
-
 @layer components {
+  body {
+    @apply h-screen w-screen overflow-hidden text-gray-50;
+  }
+
   .layout {
     @apply bg-black/90;
   }
@@ -168,7 +168,7 @@ body {
 }
 
 .editorWapper {
-  @apply bg-gray-400/20 ring-violet-400 transition-all focus-within:ring-1 hover:ring-1 hover:ring-blue-400;
+  @apply bg-slate-700/30 ring-violet-400 transition-all focus-within:ring-1 hover:ring-1 hover:ring-blue-400;
 }
 
 .mantine-Divider-root {
@@ -178,6 +178,6 @@ body {
 .mantine-Badge-root {
   @apply bg-transparent transition-colors hover:text-blue-400;
 }
-.mantine-Menu-item{
-  @apply text-gray-50 hover:bg-gray-50/5
+.mantine-Menu-item {
+  @apply text-gray-50 hover:bg-gray-50/5;
 }

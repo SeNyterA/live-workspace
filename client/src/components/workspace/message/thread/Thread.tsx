@@ -49,6 +49,9 @@ export default function Thread({
       opened={!!thread}
       title={<p className='text-lg font-semibold'>Thread</p>}
       position='right'
+      classNames={{
+        body:'p-0'
+      }}
       overlayProps={{
         blur: '0.5'
       }}
@@ -87,8 +90,8 @@ export default function Thread({
       )}
       <SendMessage
         classNames={{
-          editorWrapper: '!left-4 !right-4',
-          infoWrapper: '!left-4 !right-4'
+          editorWrapper: '',
+          infoWrapper: '!left-4 !right-4',rootWrapper: 'px-4'
         }}
         targetId={thread.targetId}
         createMessage={data =>
