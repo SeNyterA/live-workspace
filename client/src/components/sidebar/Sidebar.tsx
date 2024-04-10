@@ -50,7 +50,7 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
         body: 'overflow-visible',
         section: 'data-[position="left"]:me-[8px]'
       }}
-      className='h-8 overflow-visible p-1 pl-1 hover:bg-blue-400/10'
+      className='h-8 overflow-visible p-1 pl-1'
       leftSection={
         workspace.type === EWorkspaceType.Direct ? (
           <Watching
@@ -111,15 +111,6 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
               >
                 {user => (
                   <>
-                    {/* <Watching
-                      watchingFn={state =>
-                        state.workspace.files[user?.avatarId!]?.path
-                      }
-                    >
-                      {path =>
-                        !!path && <Avatar src={path} size={20} radius={4} />
-                      }
-                    </Watching> */}
                     {workspace.title ||
                       user?.nickName ||
                       user?.userName ||
@@ -128,24 +119,9 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
                 )}
               </Watching>
             ) : (
-              <>
-                {/* <Watching
-                  watchingFn={state =>
-                    state.workspace.files[workspace?.avatarId!]?.path
-                  }
-                >
-                  {path => !!path && <Avatar src={path} size={20} radius={4} />}
-                </Watching> */}
-                {workspace.title || workspace.id}
-              </>
+              <>{workspace.title || workspace.id}</>
             )}
           </p>
-
-          {/* {unReadCount && (
-            <span className='h-4 min-w-4 rounded-full bg-gray-300 px-1 text-center text-xs leading-4 text-gray-800'>
-              {unReadCount}
-            </span>
-          )} */}
 
           <Indicator
             processing
@@ -197,23 +173,16 @@ export default function Sidebar() {
 
         <div className='flex items-center justify-center gap-2'>
           <Input
-            className='flex h-[30px] flex-1 items-center rounded bg-gray-400/10'
+            className='flex h-[32px] flex-1 items-center rounded'
             size='sm'
             placeholder='Search on workspace'
             leftSection={<IconSearch size={16} />}
-            classNames={{
-              input:
-                'bg-transparent text-gray-100 border-none min-h-[20px] h-[20px]'
-            }}
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
           />
           {!!team && (
             <ActionIcon
-              size={30}
-              variant='light'
-              color='gray'
-              className='bg-gray-400/10'
+              size={32}
               onClick={() =>
                 dispatch(
                   workspaceActions.toggleWorkspaceSetting({
@@ -239,7 +208,7 @@ export default function Sidebar() {
             {team && (
               <>
                 <NavLink
-                  className='sticky top-0 z-10 mb-1 h-8 p-1 hover:bg-blue-400/10'
+                  className='sticky top-0 z-10 mb-1 h-8 p-1'
                   label='Boards'
                   leftSection={
                     <IconLayoutKanban
@@ -287,14 +256,14 @@ export default function Sidebar() {
                     {canCreate =>
                       canCreate && (
                         <NavLink
-                          className='p-1 opacity-70 hover:bg-blue-400/20'
+                          className='h-8 p-1 opacity-70'
                           label={`Create board`}
                           classNames={{
                             section: 'data-[position="left"]:me-[8px]'
                           }}
                           leftSection={
-                            <ActionIcon size={20} className='bg-gray-400/20'>
-                              <IconPlus size={16} stroke={1.5} />
+                            <ActionIcon size={20}>
+                              <IconPlus size={16} />
                             </ActionIcon>
                           }
                           onClick={() => {
@@ -307,11 +276,9 @@ export default function Sidebar() {
                 </NavLink>
 
                 <NavLink
-                  className='sticky top-0 z-10 mb-1 h-8 p-1 hover:bg-blue-400/10'
+                  className='sticky top-0 z-10 mb-1 h-8 p-1'
                   label='Channels'
-                  leftSection={
-                    <IconHash className='scale-90' size={20} stroke={1.5} />
-                  }
+                  leftSection={<IconHash className='scale-90' size={20} />}
                   active={path.pathname.includes('channel')}
                   defaultOpened={!!channelId}
                   classNames={{
@@ -351,14 +318,14 @@ export default function Sidebar() {
                     {canCreate =>
                       canCreate && (
                         <NavLink
-                          className='p-1 opacity-70 hover:bg-blue-400/20'
+                          className='h-8 p-1 opacity-70'
                           label={`Create channel`}
                           classNames={{
                             section: 'data-[position="left"]:me-[8px]'
                           }}
                           leftSection={
-                            <ActionIcon size={20} className='bg-gray-400/20'>
-                              <IconPlus size={16} stroke={1.5} />
+                            <ActionIcon size={20}>
+                              <IconPlus size={16} />
                             </ActionIcon>
                           }
                           onClick={() => {
@@ -375,11 +342,9 @@ export default function Sidebar() {
             )}
 
             <NavLink
-              className='sticky top-0 z-10 mb-1 mt-1 h-8 p-1 hover:bg-blue-400/10'
+              className='sticky top-0 z-10 mb-1 mt-1 h-8 p-1'
               label='Groups'
-              leftSection={
-                <IconUsersGroup className='scale-90' size={20} stroke={1.5} />
-              }
+              leftSection={<IconUsersGroup className='scale-90' size={20} />}
               active={!!groupId}
               defaultOpened={!!groupId}
               classNames={{
@@ -404,12 +369,12 @@ export default function Sidebar() {
               </Watching>
 
               <NavLink
-                className='p-1 opacity-70 hover:bg-blue-400/20'
+                className='h-8 p-1 opacity-70'
                 label={`Create group`}
                 classNames={{ section: 'data-[position="left"]:me-[8px]' }}
                 leftSection={
-                  <ActionIcon size={20} className='bg-gray-400/20'>
-                    <IconPlus size={16} stroke={1.5} />
+                  <ActionIcon size={20}>
+                    <IconPlus size={16} />
                   </ActionIcon>
                 }
                 onClick={() => {
@@ -419,11 +384,9 @@ export default function Sidebar() {
             </NavLink>
 
             <NavLink
-              className='sticky top-0 z-10 mb-1 h-8 p-1 hover:bg-blue-400/10'
+              className='sticky top-0 z-10 mb-1 h-8 p-1'
               label='Drirects'
-              leftSection={
-                <IconUserBolt className='scale-90' size={20} stroke={1.5} />
-              }
+              leftSection={<IconUserBolt className='scale-90' size={20} />}
               active={!!directId}
               defaultOpened={!!directId}
               classNames={{
@@ -448,9 +411,9 @@ export default function Sidebar() {
               </Watching>
 
               {/* <NavLink
-                className='p-1 pl-3 opacity-70 hover:bg-blue-400/20'
+                className='p-1 pl-3 opacity-70'
                 label={`Create direct`}
-                rightSection={<IconPlus size={16} stroke={1.5} />}
+                rightSection={<IconPlus size={16} />}
                 onClick={() => {
                   setToggle(EWorkspaceType.Direct)
                 }}

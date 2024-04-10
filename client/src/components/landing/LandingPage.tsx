@@ -1,15 +1,44 @@
-import React from 'react'
+import './landing.scss'
 
 export default function LandingPage() {
   return (
-    <div className='h-screen snap-y overflow-y-auto'>
-      <div className='h-screen w-screen snap-center bg-gray-500'></div>
-      <div className='h-screen w-screen snap-center bg-blue-500'></div>
-      <div className='h-screen w-screen snap-center bg-green-500'></div>
-      <div className='h-screen w-screen snap-center bg-yellow-500'></div>
-      <div className='h-screen w-screen snap-center bg-red-500'></div>
-      <div className='h-screen w-screen snap-center bg-purple-500'></div>
-      <div className='h-screen w-screen snap-center bg-indigo-500'></div>
+    <div className='landing'>
+      <svg className='filter'>
+        <filter id='alphaRed'>
+          <feColorMatrix
+            mode='matrix'
+            values='1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'
+            result='joint'
+          />
+        </filter>
+        <filter id='alphaGreen'>
+          <feColorMatrix
+            mode='matrix'
+            values='0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0'
+            result='joint'
+          />
+        </filter>
+        <filter id='alphaBlue'>
+          <feColorMatrix
+            mode='matrix'
+            values='0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0'
+            result='joint'
+          />
+        </filter>
+        <filter id='alpha'>
+          <feColorMatrix type='saturate' values='0' />
+        </filter>
+      </svg>
+      <div className='page'>
+        <div className='imgWrap'>
+          <img className='red' src='/auth-bg.jpg' />
+          <img className='green' src='/auth-bg.jpg' />
+          <img className='blue' src='/auth-bg.jpg' />
+          <p className='text'>
+            <span>Live workspace</span>
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
