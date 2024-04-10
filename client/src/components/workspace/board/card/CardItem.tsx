@@ -14,7 +14,7 @@ function CardItem({ card }: { card: TCard }) {
 
   return (
     <div
-      className='flex flex-col rounded bg-blue-400/20 p-2'
+      className='card-item-wrapper flex flex-col rounded p-2'
       id={card.id}
       onClick={() => {
         toogleCard({

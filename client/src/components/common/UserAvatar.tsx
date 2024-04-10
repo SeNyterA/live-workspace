@@ -46,7 +46,7 @@ export default function UserAvatar({
       shadow='md'
       position='bottom-start'
       classNames={{
-        item: ' hover:bg-blue-400/20 bg-transparent flex justify-between items-center',
+        item: ' bg-transparent flex justify-between items-center',
         arrow: 'border-none'
       }}
       disabled={!user || !showMenu || (user.id === meId && !isSetting)}
@@ -81,12 +81,8 @@ export default function UserAvatar({
               {user?.nickName}
             </p>
           )}
-          <p className='break-all text-center text-sm '>
-            @{user?.userName}
-          </p>
-          <p className='break-all text-center text-sm '>
-            {user?.email}
-          </p>
+          <p className='break-all text-center text-sm '>@{user?.userName}</p>
+          <p className='break-all text-center text-sm '>{user?.email}</p>
         </div>
 
         <Menu.Label>Application</Menu.Label>

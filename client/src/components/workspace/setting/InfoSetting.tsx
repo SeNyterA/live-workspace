@@ -54,8 +54,7 @@ const Title = ({ isDisabled }: { isDisabled: boolean }) => {
       size='sm'
       className='mt-4'
       classNames={{
-        input:
-          '  border-gray-100/20 focus:border-gray-100/40'
+        input: '  border-gray-100/20 focus:border-gray-100/40'
       }}
       defaultValue={workspace?.title}
       key={workspace?.title}
@@ -102,8 +101,7 @@ const Description = ({ isDisabled }: { isDisabled: boolean }) => {
       placeholder='Enter a description...'
       className='mt-4'
       classNames={{
-        input:
-          '  border-gray-100/20 focus:border-gray-100/40'
+        input: '  border-gray-100/20 focus:border-gray-100/40'
       }}
       defaultValue={workspace?.description}
       key={workspace?.description}
@@ -160,8 +158,7 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
       size='sm'
       className='mt-4'
       classNames={{
-        input:
-          '  border-gray-100/20 focus:border-gray-100/40'
+        input: '  border-gray-100/20 focus:border-gray-100/40'
       }}
       defaultValue={workspace?.displayUrl}
       disabled={isPending || isDisabled}
@@ -490,7 +487,7 @@ export default function InfoSetting() {
     <ScrollArea
       className='absolute inset-0 left-[-12px] right-[-12px]'
       classNames={{
-        viewport:'px-3'
+        viewport: 'px-3'
       }}
       scrollbarSize={8}
     >

@@ -34,13 +34,12 @@ export default function BoardHeader() {
       <label className='flex cursor-pointer items-center justify-center gap-1 rounded'>
         <p className='ml-1'>Group by:</p>
         <Select
+          checkIconPosition='right'
           classNames={{
-            input:
-              'border-gray-100 border-none   min-h-[30px] h-[30px]',
-            dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-            option: ''
+            input: 'border-gray-100 border-none min-h-[30px] h-[30px]',
+            dropdown: '!bg-gray-900/90 border-gray-400/20 pr-0'
           }}
-          className='w-32'
+          className='max-w-32'
           data={propertiesChecking?.map(e => ({
             label: e.title,
             value: e.id
@@ -59,7 +58,7 @@ export default function BoardHeader() {
             input:
               'border-gray-100 border-none   min-h-[30px] h-[30px]',
             dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-            option: ''
+            
           }}
           className='w-32'
           value={sortBy}
@@ -80,8 +79,7 @@ export default function BoardHeader() {
         placeholder='Search card name'
         leftSection={<IconSearch size={14} />}
         classNames={{
-          input:
-            'bg-transparent border-none min-h-[20px] h-[20px] '
+          input: 'bg-transparent border-none min-h-[20px] h-[20px] '
         }}
         value={searchValue}
         onChange={e => setSearchValue(e.currentTarget.value)}

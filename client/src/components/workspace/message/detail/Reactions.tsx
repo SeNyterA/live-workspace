@@ -35,7 +35,7 @@ function Reactions({
       {reactionsByUnified.map((reactions, index) => (
         <div
           key={reactions.toString()}
-          className={`cursor-pointer rounded bg-blue-400/20 p-0.5 transition hover:ring-1 hover:ring-blue-500 ${reactions.some(e => e.userId === getAppValue(state => state.auth.userInfo?.id)) && 'ring-1 ring-gray-300/20'}`}
+          className={`cursor-pointer rounded  p-0.5 transition hover:ring-1 hover:ring-blue-500 ${reactions.some(e => e.userId === getAppValue(state => state.auth.userInfo?.id)) && 'ring-1 ring-gray-300/20'}`}
           onClick={() => {
             reactMessage({
               url: {

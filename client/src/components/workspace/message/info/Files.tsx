@@ -20,7 +20,7 @@ export default function Files() {
 
   return (
     <NavLink
-      className='sticky top-0 z-[2] mt-1 p-1 pl-0 hover:bg-blue-400/20'
+      className='sticky top-0 z-[2] mt-1 p-1 pl-0'
       label={
         <div className='flex items-center justify-between gap-1'>
           <p className='flex-1'>File</p>

@@ -58,7 +58,7 @@ export default function CardOptions({
 
           <ActionIcon
             aria-label='Settings'
-            className='h-[28px] w-[28px] bg-blue-400/20 text-white'
+            className='h-[28px] w-[28px]  '
             onClick={() => {
               appMutationFn({
                 key: 'createCard',

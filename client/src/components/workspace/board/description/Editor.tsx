@@ -123,44 +123,37 @@ export default function Editor({ card }: { card?: TCard }) {
         >
           <RichTextEditor.Bold
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.Italic
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.Underline
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.Strikethrough
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.ClearFormatting
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.Highlight
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.CodeBlock
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
 
@@ -193,7 +186,7 @@ export default function Editor({ card }: { card?: TCard }) {
             {({ onClick }) => (
               <ActionIcon
                 size={26}
-                className='m-[2px] border-none  ! hover:bg-blue-400/40 data-[active]:bg-blue-50'
+                className='! m-[2px]  border-none'
                 onClick={onClick}
               >
                 <IconPhotoPlus size={16} />
@@ -206,108 +199,92 @@ export default function Editor({ card }: { card?: TCard }) {
             onClick={() => {
               editor.chain().focus().toggleTaskList().run()
             }}
-            className='m-[2px] border-none  ! hover:bg-blue-400/40 data-[active]:bg-blue-50'
+            className='! m-[2px]  border-none'
           >
             <IconCheckbox size={16} />
           </ActionIcon>
 
           <RichTextEditor.H1
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.H2
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.H3
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.H4
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
 
           <RichTextEditor.Blockquote
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.Hr
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.BulletList
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.OrderedList
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.Subscript
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.Superscript
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
 
           <RichTextEditor.Link
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.Unlink
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
 
           <RichTextEditor.AlignLeft
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.AlignCenter
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.AlignJustify
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
           <RichTextEditor.AlignRight
             classNames={{
-              control:
-                ' border-none m-[2px] hover:bg-blue-400/40 data-[active]:bg-blue-50'
+              control: ' border-none m-[2px]'
             }}
           />
         </RichTextEditor.Toolbar>

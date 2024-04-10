@@ -66,7 +66,7 @@ function UserCombobox({
       position='top-start'
       classNames={{
         dropdown: '!bg-gray-900/90  border-gray-400/20',
-        option: ''
+        
       }}
     >
       <Combobox.Target>
@@ -102,9 +102,7 @@ function UserCombobox({
                       <Avatar src={item.avatar?.path} />
                       <div className='flex flex-1 flex-col justify-center'>
                         <p className='font-medium leading-5'>{item.userName}</p>
-                        <p className='text-xs leading-3 '>
-                          {item.email}
-                        </p>
+                        <p className='text-xs leading-3 '>{item.email}</p>
                       </div>
                       {usersSelectedId.includes(item.id) && (
                         <CheckIcon size={12} />

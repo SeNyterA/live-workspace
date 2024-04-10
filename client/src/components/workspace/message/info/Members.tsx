@@ -26,7 +26,7 @@ export default function Members() {
 
   return (
     <NavLink
-      className='sticky top-0 z-[2] p-1 pl-0 hover:bg-blue-400/20'
+      className='sticky top-0 z-[2] p-1 pl-0'
       label={
         <div className='flex items-center justify-between'>
           Members

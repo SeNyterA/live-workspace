@@ -132,8 +132,11 @@ export default function Properties() {
       </Input.Description>
       <div className='relative mt-2 flex-1'>
         <ScrollArea
-          className='absolute inset-0 right-[-8px] pr-2'
+          className='absolute inset-0 left-[-12px] right-[-12px] overflow-visible'
           scrollbarSize={8}
+          classNames={{
+            viewport: 'px-3'
+          }}
         >
           {properties?.map(property => (
             <Fragment key={property.id}>
@@ -147,14 +150,12 @@ export default function Properties() {
                 >
                   {options => (
                     <Select
+                      checkIconPosition='right'
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input:
-                          'border-gray-100 border-none   min-h-[30px]',
-                        dropdown:
-                          '!bg-gray-900/90  border-gray-400/20 pr-0',
-                        option: ''
+                        input: 'border-gray-100 border-none   min-h-[30px]',
+                        dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -232,11 +233,9 @@ export default function Properties() {
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input:
-                          'border-gray-100 border-none   min-h-[30px]',
-                        dropdown:
-                          '!bg-gray-900/90  border-gray-400/20 pr-0',
-                        option: '',
+                        input: 'border-gray-100 border-none   min-h-[30px]',
+                        dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
+
                         pill: '  border-gray-400/20'
                       }}
                       label={property.title}
@@ -321,14 +320,12 @@ export default function Properties() {
                   }
                   children={data => (
                     <Select
+                      checkIconPosition='right'
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input:
-                          'border-gray-100 border-none   min-h-[30px]',
-                        dropdown:
-                          '!bg-gray-900/90  border-gray-400/20 pr-0',
-                        option: ''
+                        input: 'border-gray-100 border-none   min-h-[30px]',
+                        dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -410,11 +407,8 @@ export default function Properties() {
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input:
-                          'border-gray-100 border-none   min-h-[30px]',
-                        dropdown:
-                          '!bg-gray-900/90  border-gray-400/20 pr-0',
-                        option: ''
+                        input: 'border-gray-100 border-none   min-h-[30px]',
+                        dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -491,8 +485,7 @@ export default function Properties() {
                   mt='md'
                   defaultValue={card?.properties?.[property.id]?.toString()}
                   classNames={{
-                    input:
-                      'border-gray-100 border-none   min-h-[30px]'
+                    input: 'border-gray-100 border-none   min-h-[30px]'
                   }}
                   onBlur={e => {
                     const oldCard = getAppValue(
@@ -555,8 +548,7 @@ export default function Properties() {
                 <DateTimePicker
                   className='!mt-2 first:!mt-0'
                   classNames={{
-                    input:
-                      'border-gray-100 border-none   min-h-[30px]'
+                    input: 'border-gray-100 border-none   min-h-[30px]'
                   }}
                   clearable
                   label={property.title}
@@ -645,8 +637,7 @@ export default function Properties() {
                   placeholder='Pick dates range'
                   className='!mt-2 first:!mt-0'
                   classNames={{
-                    input:
-                      'border-gray-100 border-none   min-h-[30px]'
+                    input: 'border-gray-100 border-none   min-h-[30px]'
                   }}
                 />
               )}

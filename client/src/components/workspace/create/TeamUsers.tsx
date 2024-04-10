@@ -193,8 +193,7 @@ export const TeamUsers = memo(() => {
                     placeholder: 'Search and select members...',
                     className: 'mt-4',
                     classNames: {
-                      input:
-                        'border-gray-100 border-none  '
+                      input: 'border-gray-100 border-none  '
                     }
                   }}
                 />

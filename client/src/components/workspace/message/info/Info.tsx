@@ -56,9 +56,7 @@ export default function Info() {
             <IconSettings size={16} />
           </ActionIcon>
         </div>
-        {workspace?.description && (
-          <p className=''>{workspace?.description}</p>
-        )}
+        {workspace?.description && <p>{workspace?.description}</p>}
 
         {workspace?.thumbnail?.path && (
           <Image

@@ -29,9 +29,7 @@ const MemberControl = ({
 
       <div className='flex flex-1 flex-col justify-center'>
         <p className='truncate font-medium leading-5'>{user?.userName}</p>
-        <p className='truncate text-xs leading-3 '>
-          {user?.email}
-        </p>
+        <p className='truncate text-xs leading-3 '>{user?.email}</p>
       </div>
 
       <ActionIcon

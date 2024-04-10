@@ -35,9 +35,7 @@ const User = memo(({ user }: { user: TUser }) => {
         <p className='max-w-[150px] truncate text-sm font-medium leading-4'>
           {user?.userName}
         </p>
-        <p className='leading-2 truncate text-xs '>
-          {user?.email}
-        </p>
+        <p className='leading-2 truncate text-xs '>{user?.email}</p>
       </div>
       <Button
         color='gray'
@@ -92,9 +90,7 @@ const Member = ({ member }: { member: TMember }) => {
             <p className='max-w-[150px] truncate font-medium leading-4'>
               {user?.userName}
             </p>
-            <p className='leading-2 truncate text-xs '>
-              {user?.email}
-            </p>
+            <p className='leading-2 truncate text-xs '>{user?.email}</p>
           </div>
 
           {member && <MemberRole member={member} />}
@@ -143,8 +139,9 @@ export default function MembersSetting() {
 
   return (
     <ScrollArea
-      className='absolute inset-0 right-[-12px] pr-3'
+      className='absolute inset-0 left-[-12px] right-[-12px]'
       scrollbarSize={8}
+      classNames={{ viewport: 'px-3' }}
     >
       <Watching
         watchingFn={state =>

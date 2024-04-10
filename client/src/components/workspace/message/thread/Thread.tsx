@@ -72,7 +72,7 @@ export default function Thread({
         >
           {data => (
             <div
-              className='mb-1 ml-5 line-clamp-1 h-4 w-fit max-w-96 cursor-pointer truncate !bg-transparent text-sm !text-blue-400 hover:underline'
+              className='! mb-1 ml-5 line-clamp-1 h-4 w-fit max-w-96 cursor-pointer truncate !bg-transparent text-sm hover:underline'
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   generateHTML(

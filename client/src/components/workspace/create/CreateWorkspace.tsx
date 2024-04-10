@@ -131,7 +131,6 @@ export default function CreateWorkspace({
         </Button>
 
         <Button
-          className='bg-blue-400/20'
           onClick={form.handleSubmit(({ ...data }) => {
             console.log({ data })
             if (workspaceType === EWorkspaceType.Team) {

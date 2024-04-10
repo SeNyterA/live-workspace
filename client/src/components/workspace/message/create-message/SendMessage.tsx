@@ -221,46 +221,14 @@ export default function SendMessage({
               tippyOptions={{ arrow: true, placement: 'top-start' }}
             >
               <div className='flex gap-1 rounded bg-black/90 p-1'>
-                <RichTextEditor.Bold
-                  classNames={{
-                    control: ' border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Italic
-                  classNames={{
-                    control: ' border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Underline
-                  classNames={{
-                    control: ' border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Highlight
-                  classNames={{
-                    control: ' border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Strikethrough
-                  classNames={{
-                    control: ' border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Link
-                  classNames={{
-                    control: ' border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.BulletList
-                  classNames={{
-                    control: ' border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.OrderedList
-                  classNames={{
-                    control: ' border-none hover:bg-blue-400/40'
-                  }}
-                />
+                <RichTextEditor.Bold />
+                <RichTextEditor.Italic />
+                <RichTextEditor.Underline />
+                <RichTextEditor.Highlight />
+                <RichTextEditor.Strikethrough />
+                <RichTextEditor.Link />
+                <RichTextEditor.BulletList />
+                <RichTextEditor.OrderedList />
               </div>
             </BubbleMenu>
           )}
@@ -282,7 +250,7 @@ export default function SendMessage({
           {files.map(file => (
             <Badge
               key={file.id}
-              className='h-[26px] rounded '
+              className='h-[26px] rounded'
               rightSection={
                 <IconX
                   size={14}
@@ -305,12 +273,7 @@ export default function SendMessage({
             disabled={isPending}
           >
             {props => (
-              <Button
-                size='compact-sm'
-                className='bg-blue-400/20'
-                {...props}
-                loading={isPending}
-              >
+              <Button size='compact-sm' {...props} loading={isPending}>
                 <IconPaperclip size={16} />
               </Button>
             )}
@@ -318,7 +281,6 @@ export default function SendMessage({
           <Divider orientation='vertical' />
           <Button
             size='compact-sm'
-            className='bg-blue-400/20'
             onClick={() => {
               _createMessage()
             }}

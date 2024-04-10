@@ -23,8 +23,13 @@ export default function Notification() {
       }}
     >
       <Popover.Target>
-        <Indicator label={invitions?.invitions.length || 0}>
-          <ActionIcon className='bg-transparent  hover:'>
+        <Indicator
+          className='flex items-center'
+          offset={5}
+          label={!!invitions?.invitions.length}
+          processing
+        >
+          <ActionIcon variant='transparent'>
             <IconBell size={24} />
           </ActionIcon>
         </Indicator>

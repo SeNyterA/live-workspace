@@ -39,16 +39,11 @@ export default function MessageContentWrapper() {
               leftSection={<IconSearch size={14} />}
               className='flex h-[30px] max-w-[230px] flex-1 items-center rounded bg-gray-100 '
               classNames={{
-                input:
-                  'bg-transparent  border-none min-h-[20px] h-[20px]'
+                input: 'bg-transparent  border-none min-h-[20px] h-[20px]'
               }}
             />
 
-            <ActionIcon
-              size={30}
-              className=''
-              onClick={() => setOpenInfo(e => !e)}
-            >
+            <ActionIcon size={30} onClick={() => setOpenInfo(e => !e)}>
               <IconChevronRight
                 className={`h-4 w-4 transition-transform ${
                   openInfo || 'rotate-180'

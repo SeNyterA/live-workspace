@@ -60,7 +60,7 @@ function MessageDetailContent({
         >
           {data => (
             <div
-              className='line-clamp-1 h-4 max-w-96 cursor-pointer truncate !bg-transparent text-xs !text-blue-400 hover:underline'
+              className='! line-clamp-1 h-4 max-w-96 cursor-pointer truncate !bg-transparent text-xs hover:underline'
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   generateHTML(
@@ -115,8 +115,8 @@ function MessageDetailContent({
       </Menu>
 
       <div
-        className={`group relative w-fit rounded  p-1 ${
-          message.replyToId && 'cursor-pointer'
+        className={`message-wrapper group relative w-fit rounded  p-1 ${
+          !!message.replyToId && 'cursor-pointer'
         }`}
         key={message.id}
       >
@@ -126,7 +126,7 @@ function MessageDetailContent({
           }`}
         >
           <ActionIcon
-            className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
+            className=' bg-slate-800/90 hover:bg-gray-800'
             onClick={() => {
               toogleImojiId(message.id)
             }}
@@ -135,13 +135,13 @@ function MessageDetailContent({
           </ActionIcon>
 
           {isOwner && (
-            <ActionIcon className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'>
+            <ActionIcon className=' bg-slate-800/90 hover:bg-gray-800'>
               <IconEdit size={18} />
             </ActionIcon>
           )}
 
           <ActionIcon
-            className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
+            className=' bg-slate-800/90 hover:bg-gray-800'
             onClick={() => {
               pinWorkspaceMessage({
                 method: 'post',
@@ -159,7 +159,7 @@ function MessageDetailContent({
           </ActionIcon>
 
           <ActionIcon
-            className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
+            className=' bg-slate-800/90 hover:bg-gray-800'
             onClick={() => {
               updateThread({
                 targetId: message.workspaceId,
@@ -171,7 +171,7 @@ function MessageDetailContent({
           </ActionIcon>
 
           <ActionIcon
-            className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
+            className=' bg-slate-800/90 hover:bg-gray-800'
             onClick={() => {
               console.log({
                 targetId: message.workspaceId,
@@ -189,7 +189,7 @@ function MessageDetailContent({
           </ActionIcon>
           {isOwner && (
             <ActionIcon
-              className='bg-slate-800/90  hover:bg-gray-800 hover:text-blue-400'
+              className=' bg-slate-800/90 hover:bg-gray-800'
               onClick={() => {
                 deleteWorkspaceMessage({
                   method: 'delete',

@@ -32,16 +32,13 @@ const TeamChild = ({ name }: { name: 'channels' | 'boards' }) => {
               placeholder='General'
               leftSection={<IconHash size={16} />}
               rightSection={
-                <ActionIcon
-                  className='hover:'
-                  onClick={() => remove(index)}
-                >
+                <ActionIcon onClick={() => remove(index)}>
                   <IconX size={16} />
                 </ActionIcon>
               }
               classNames={{
                 input:
-                  '  border-gray-100/20 focus:border-gray-100/40 border border-dashed'
+                  'border-gray-100/20 focus:border-gray-100/40 border border-dashed'
               }}
               error={fieldState.error && fieldState.error.message}
             />

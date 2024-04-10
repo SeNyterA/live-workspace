@@ -56,7 +56,7 @@ export default function Options() {
           />
           <ActionIcon
             size={36}
-            className=''
+            
             onClick={() => remove(index)}4-0
           >
             <IconX size={16} />
