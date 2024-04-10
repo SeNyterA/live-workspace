@@ -162,7 +162,8 @@ body {
   @apply bg-gray-50/20 text-gray-50;
 }
 
-.mantine-Popover-dropdown {
+.mantine-Popover-dropdown,
+.mantine-Menu-dropdown {
   @apply border-none bg-gray-950/95 ring-1 ring-violet-400/30;
 }
 
@@ -176,4 +177,7 @@ body {
 
 .mantine-Badge-root {
   @apply bg-transparent transition-colors hover:text-blue-400;
+}
+.mantine-Menu-item{
+  @apply text-gray-50 hover:bg-gray-50/5
 }
