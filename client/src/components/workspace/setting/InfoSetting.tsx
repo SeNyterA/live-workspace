@@ -488,7 +488,10 @@ export default function InfoSetting() {
 
   return (
     <ScrollArea
-      className='absolute inset-0 right-[-12px] pr-3'
+      className='absolute inset-0 left-[-12px] right-[-12px]'
+      classNames={{
+        viewport:'px-3'
+      }}
       scrollbarSize={8}
     >
       <Thunmbnail isDisabled={!enabled} />
