@@ -43,7 +43,7 @@ export default function DetailCard() {
           <div className='flex h-full gap-4'>
             <Properties />
 
-            <div className='relative flex flex-1 flex-col overflow-hidden rounded-lg bg-black/80'>
+            <div className='card-detail-wrapper relative flex flex-1 flex-col overflow-hidden rounded-lg'>
               <ScrollArea className='absolute inset-0' scrollbarSize={6}>
                 <Editor card={card} />
               </ScrollArea>

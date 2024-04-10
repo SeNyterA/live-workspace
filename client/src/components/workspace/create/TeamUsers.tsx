@@ -102,7 +102,7 @@ const UserCombobox = memo(
           />
         </Combobox.Target>
 
-        <Combobox.Dropdown className='border-1 border-blue-400 bg-gray-400 shadow-sm'>
+        <Combobox.Dropdown className='border-1 shadow-sm'>
           <Combobox.Options style={{ overflowY: 'auto' }}>
             <ScrollArea.Autosize scrollbarSize={8} mah={400}>
               {teamMembers.length === 0 ? (

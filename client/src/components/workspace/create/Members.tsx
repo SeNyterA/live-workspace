@@ -64,9 +64,6 @@ function UserCombobox({
       }}
       store={combobox}
       position='top-start'
-      classNames={{
-        dropdown: '!bg-gray-900/90  border-gray-400/20'
-      }}
     >
       <Combobox.Target>
         <TextInput

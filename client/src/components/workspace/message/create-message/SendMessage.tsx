@@ -204,14 +204,13 @@ export default function SendMessage({
 
   return (
     <div className={`rootWrapper px-2 pb-1 ${classNames?.rootWrapper}`}>
-      <div
-        className={`editorWapper rounded-md ${classNames?.editorWrapper}`}
-      >
+      <div className={`editorWapper rounded-md ${classNames?.editorWrapper}`}>
         <RichTextEditor
           editor={editor}
           className='border-none text-sm'
           classNames={{
-            content: 'bg-transparent border-none text-sm'
+            content: 'bg-transparent border-none text-sm',
+            typographyStylesProvider: 'customscroll'
           }}
           autoFocus
         >
@@ -250,7 +249,7 @@ export default function SendMessage({
           {files.map(file => (
             <Badge
               key={file.id}
-              className='h-[26px] rounded'
+              className='h-[26px] rounded px-1'
               rightSection={
                 <IconX
                   size={14}
@@ -273,7 +272,12 @@ export default function SendMessage({
             disabled={isPending}
           >
             {props => (
-              <Button size='compact-sm' {...props} loading={isPending}>
+              <Button
+                size='compact-sm'
+                variant='transparent'
+                {...props}
+                loading={isPending}
+              >
                 <IconPaperclip size={16} />
               </Button>
             )}
@@ -291,7 +295,7 @@ export default function SendMessage({
       </div>
 
       <div
-        className={`info-wrapper py-1 text-end pl-4 pr-3 flex justify-between text-xs ${classNames?.infoWrapper}`}
+        className={`info-wrapper flex justify-between py-1 pl-4 pr-3 text-end text-xs ${classNames?.infoWrapper}`}
       >
         <Typing targetId={targetId} />
         <span>

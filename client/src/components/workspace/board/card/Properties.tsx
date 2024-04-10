@@ -80,7 +80,7 @@ export default function Properties() {
   // }, [card?.properties])
 
   return (
-    <div className='relative flex w-80 flex-col rounded-lg bg-gray-900/90 p-3'>
+    <div className='card-propetes-wrapper relative flex w-80 flex-col rounded-lg p-3'>
       <Dropzone
         onDrop={files =>
           uploadFile(
@@ -234,7 +234,7 @@ export default function Properties() {
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        dropdown: '!bg-gray-900/90 border-gray-400/20 pr-0'
+                        dropdown: 'pr-0'
                       }}
                       label={property.title}
                       description={property.title}

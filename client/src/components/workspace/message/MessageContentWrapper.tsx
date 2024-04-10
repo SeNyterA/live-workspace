@@ -37,9 +37,9 @@ export default function MessageContentWrapper() {
               size='sm'
               placeholder='Search on'
               leftSection={<IconSearch size={14} />}
-              className='flex h-[30px] max-w-[230px] flex-1 items-center rounded bg-gray-100 '
+              className='flex h-[30px] max-w-[230px] flex-1 items-center rounded'
               classNames={{
-                input: 'bg-transparent  border-none min-h-[20px] h-[20px]'
+                input: 'min-h-[20px] h-[20px]'
               }}
             />
 
