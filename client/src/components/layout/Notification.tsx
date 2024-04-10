@@ -12,16 +12,7 @@ export default function Notification() {
   })
 
   return (
-    <Popover
-      width={300}
-      position='bottom-end'
-      withArrow
-      shadow='md'
-      classNames={{
-        dropdown: '!bg-black/95 border-gray-800',
-        arrow: 'bg-black/95 border-gray-800'
-      }}
-    >
+    <Popover width={300} position='bottom-end' withArrow shadow='md'>
       <Popover.Target>
         <Indicator
           className='flex items-center'

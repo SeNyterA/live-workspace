@@ -291,7 +291,7 @@ body {
 }
 
 .mantine-Input-wrapper {
-  @apply items-center rounded bg-gray-400/20 ring-blue-500 transition-all focus-within:ring-1 hover:bg-gray-400/30 hover:ring-1 hover:ring-blue-400;
+  @apply items-center rounded bg-gray-400/20 ring-violet-400 transition-all focus-within:ring-1 hover:bg-gray-400/30 hover:ring-1 hover:ring-blue-400;
 
   & .mantine-Input-input {
     @apply border-none bg-transparent text-gray-50 truncate;
@@ -299,7 +299,7 @@ body {
 }
 
 .mantine-focus-auto {
-  @apply ring-blue-800 ring-offset-1 ring-offset-transparent focus-visible:outline-none focus-visible:ring-1;
+  @apply ring-violet-400 ring-offset-1 ring-offset-transparent focus-visible:outline-none focus-visible:ring-1;
 }
 
 .mantine-ActionIcon-root,
@@ -308,6 +308,21 @@ body {
   @apply bg-gray-400/10 text-gray-50 transition-colors hover:bg-gray-400/20 hover:text-blue-500 data-[active='true']:bg-blue-400/20 data-[variant='transparent']:bg-transparent data-[active='true']:text-blue-400 border-none;
 }
 
-.mantine-Select-option:hover:where(:not([data-combobox-selected], [data-combobox-disabled])) {
-  @apply bg-blue-400/20
+.mantine-Select-option,
+.mantine-MultiSelect-option {
+  &:hover:where(:not([data-combobox-selected], [data-combobox-disabled])) {
+    @apply bg-blue-400/20
+  }
+}
+
+.mantine-Pill-root {
+  @apply bg-gray-50/20 text-gray-50
+}
+
+.mantine-Popover-dropdown {
+  @apply bg-gray-950/95 border-none ring-1 ring-violet-400/30
+}
+
+.editorWapper {
+  @apply bg-gray-400/20 ring-violet-400 transition-all focus-within:ring-1 hover:bg-gray-400/30 hover:ring-1 hover:ring-blue-400
 }

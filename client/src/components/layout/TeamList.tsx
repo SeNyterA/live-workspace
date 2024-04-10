@@ -53,7 +53,7 @@ export default function TeamList() {
           </Watching>
         </ActionIcon>
 
-        <Divider variant='dashed' className='mx-4 border-gray-400/20' />
+        <Divider variant='dashed' className='mx-4' />
         <div className='relative flex-1'>
           <ScrollArea
             className='absolute inset-0'
@@ -115,7 +115,7 @@ export default function TeamList() {
             ))}
           </ScrollArea>
         </div>
-        <Divider variant='dashed' className='mx-4 border-gray-400/20' />
+        <Divider variant='dashed' className='mx-4' />
 
         <ActionIcon
           className='m mx-auto flex h-fit w-fit items-center justify-center rounded-full p-0'

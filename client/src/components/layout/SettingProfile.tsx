@@ -28,10 +28,6 @@ const Field = ({
           placeholder={`Enter the team ${name}`}
           size='sm'
           className='mt-4'
-          classNames={{
-            input:
-              ' disabled:opacity-100    border-gray-100/20 focus:border-gray-100/40'
-          }}
           defaultValue={value}
           key={value}
           onBlur={e =>
@@ -54,10 +50,6 @@ const Field = ({
           placeholder={`Enter the team ${name}`}
           size='sm'
           className='mt-4'
-          classNames={{
-            input:
-              ' disabled:opacity-100    border-gray-100/20 focus:border-gray-100/40'
-          }}
           defaultValue={value}
           key={value}
           onBlur={e =>

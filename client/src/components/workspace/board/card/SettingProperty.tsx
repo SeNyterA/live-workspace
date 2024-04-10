@@ -11,7 +11,21 @@ import {
   TextInput
 } from '@mantine/core'
 import { DatePickerInput, DateTimePicker } from '@mantine/dates'
-import { IconPlus, IconX } from '@tabler/icons-react'
+import {
+  IconBox,
+  IconBoxMultiple,
+  IconCalendar,
+  IconCalendarMonth,
+  IconLayoutKanban,
+  IconLetterA,
+  IconLetterT,
+  IconPlus,
+  IconTextCaption,
+  IconTextPlus,
+  IconUser,
+  IconUsers,
+  IconX
+} from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
@@ -29,6 +43,16 @@ import {
 
 export const usePropertyContext = () =>
   useFormContext<Partial<TProperty> & { options: Partial<TPropertyOption>[] }>()
+
+const Icons = {
+  [EPropertyType.Text]: <IconLetterA size={16} />,
+  [EPropertyType.Date]: <IconCalendar size={16} />,
+  [EPropertyType.RangeDate]: <IconCalendarMonth size={16} />,
+  [EPropertyType.Person]: <IconUser size={16} />,
+  [EPropertyType.MultiPerson]: <IconUsers size={16} />,
+  [EPropertyType.Select]: <IconBox size={16} />,
+  [EPropertyType.MultiSelect]: <IconBoxMultiple size={16} />
+}
 
 export default function SettingProperty({
   opend,
@@ -50,7 +74,7 @@ export default function SettingProperty({
   const properties = useAppSelector(state =>
     Object.values(state.workspace.properties)
       .filter(e => e.workspaceId === boardId && e.isAvailable)
-      .map(e => ({ id: e.id, title: e.title }))
+      .map(e => ({ id: e.id, title: e.title, type: e.type }))
   )
 
   useEffect(() => {
@@ -136,12 +160,15 @@ export default function SettingProperty({
     >
       <div className='flex h-full gap-4'>
         <div className='relative w-48 rounded p-2'>
-          <ScrollArea className='absolute inset-0 p-2' scrollbarSize={0}>
+          <ScrollArea className='absolute inset-0' scrollbarSize={0}>
             {properties?.map(e => (
               <NavLink
-                className='group w-full bg-transparent first:mt-0 '
+                className='group w-full bg-transparent px-1 first:mt-0'
+                leftSection={Icons[e.type]}
+                defaultOpened={!!boardId}
                 classNames={{
-                  section: 'invisible group-hover:visible transition-colors'
+                  children: 'pl-0 mb-2',
+                  section: 'data-[position="left"]:me-[8px]'
                 }}
                 active={e.id === propertyId}
                 key={e.id}
@@ -225,7 +252,7 @@ export default function SettingProperty({
               label='Title'
               className='mt-2'
               classNames={{
-                input: 'border-gray-100 border-none   min-h-[30px]'
+                input: 'min-h-[30px]'
               }}
             />
 
@@ -250,7 +277,7 @@ export default function SettingProperty({
               label='Description'
               className='mt-2'
               classNames={{
-                input: 'border-gray-100 border-none   min-h-[30px]'
+                input: 'min-h-[30px]'
               }}
             />
 
@@ -276,9 +303,7 @@ export default function SettingProperty({
               }
               className='mt-2'
               classNames={{
-                input: 'border-gray-100 border-none  ',
-                dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-                
+                dropdown: 'pr-0'
               }}
               label='Property type'
               description='Select the type of property'
@@ -295,7 +320,7 @@ export default function SettingProperty({
                       key={option.color}
                       label='Option color'
                       classNames={{
-                        input: 'border-gray-100 border-none   min-h-[30px] w-32'
+                        input: 'min-h-[30px] w-32'
                       }}
                       defaultValue={option.color}
                       format='hex'
@@ -356,7 +381,7 @@ export default function SettingProperty({
                       label='Option value'
                       classNames={{
                         root: 'flex-1',
-                        input: 'border-gray-100 border-none   min-h-[30px]'
+                        input: 'min-h-[30px]'
                       }}
                     />
                     <ActionIcon
@@ -425,9 +450,7 @@ export default function SettingProperty({
               checkIconPosition='right'
               searchable
               classNames={{
-                input: 'border-gray-100 border-none  ',
-                dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-                
+                dropdown: 'pr-0'
               }}
               label={property.title}
               description={property.description}
@@ -440,11 +463,10 @@ export default function SettingProperty({
 
           {property?.type === EPropertyType.MultiSelect && (
             <MultiSelect
+              checkIconPosition='right'
               searchable
               classNames={{
-                input: 'border-gray-100 border-none  ',
-                dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-                
+                dropdown: 'pr-0'
               }}
               label={property.title}
               description={property.description}
@@ -457,9 +479,6 @@ export default function SettingProperty({
 
           {property?.type === EPropertyType.Text && (
             <TextInput
-              classNames={{
-                input: 'border-gray-100 border-none  '
-              }}
               label={property.title}
               description={property.description}
             />
@@ -468,9 +487,6 @@ export default function SettingProperty({
           {property?.type === EPropertyType.RangeDate && (
             <DatePickerInput
               type='range'
-              classNames={{
-                input: 'border-gray-100 border-none  '
-              }}
               label={property.title}
               description={property.description}
             />
@@ -478,9 +494,6 @@ export default function SettingProperty({
 
           {property?.type === EPropertyType.Date && (
             <DateTimePicker
-              classNames={{
-                input: 'border-gray-100 border-none  '
-              }}
               label={property.title}
               description={property.description}
             />
@@ -500,9 +513,8 @@ export default function SettingProperty({
                 <Select
                   checkIconPosition='right'
                   classNames={{
-                    input: 'border-gray-100 border-none   min-h-[30px]',
-                    dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-                    
+                    input: 'min-h-[30px]',
+                    dropdown: 'pr-0'
                   }}
                   label={property.title}
                   description={property.description}
@@ -531,10 +543,10 @@ export default function SettingProperty({
               }
               children={data => (
                 <MultiSelect
+                  checkIconPosition='right'
                   classNames={{
-                    input: 'border-gray-100 border-none   min-h-[30px]',
-                    dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-                    
+                    input: 'min-h-[30px]',
+                    dropdown: 'pr-0'
                   }}
                   label={property.title}
                   description={property.description}

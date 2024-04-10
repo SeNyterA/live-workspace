@@ -170,8 +170,7 @@ export default function CreateWorkspaceInfo() {
             size='sm'
             className='mt-4'
             classNames={{
-              label: 'capitalize',
-              input: '  border-gray-100/20 focus:border-gray-100/40'
+              label: 'capitalize'
             }}
             value={value}
             onChange={e => onChange(e.target.value)}
@@ -194,9 +193,7 @@ export default function CreateWorkspaceInfo() {
             }`}
             size='sm'
             className='mt-4'
-            classNames={{
-              input: '  border-gray-100/20 focus:border-gray-100/40'
-            }}
+            classNames={{}}
             value={value}
             onChange={e => onChange(e.target.value)}
             error={fieldState.error && fieldState.error.message}
@@ -212,9 +209,7 @@ export default function CreateWorkspaceInfo() {
             label='Team Description'
             placeholder='Enter a description for the team...'
             className='mt-4'
-            classNames={{
-              input: '  border-gray-100/20 focus:border-gray-100/40'
-            }}
+            classNames={{}}
             value={value}
             onChange={e => onChange(e.target.value)}
           />

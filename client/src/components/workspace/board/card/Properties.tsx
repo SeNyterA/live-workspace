@@ -154,8 +154,8 @@ export default function Properties() {
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input: 'border-gray-100 border-none   min-h-[30px]',
-                        dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0'
+                        input: 'min-h-[30px]',
+                        dropdown: 'pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -230,13 +230,11 @@ export default function Properties() {
                 >
                   {options => (
                     <MultiSelect
+                      checkIconPosition='right'
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input: 'border-gray-100 border-none   min-h-[30px]',
-                        dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-
-                        pill: '  border-gray-400/20'
+                        dropdown: '!bg-gray-900/90 border-gray-400/20 pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -324,8 +322,8 @@ export default function Properties() {
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input: 'border-gray-100 border-none   min-h-[30px]',
-                        dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0'
+                        input: 'min-h-[30px]',
+                        dropdown: 'pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -404,11 +402,12 @@ export default function Properties() {
                   }
                   children={data => (
                     <MultiSelect
+                      checkIconPosition='right'
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input: 'border-gray-100 border-none   min-h-[30px]',
-                        dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0'
+                        input: 'min-h-[30px]',
+                        dropdown: 'pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -485,7 +484,7 @@ export default function Properties() {
                   mt='md'
                   defaultValue={card?.properties?.[property.id]?.toString()}
                   classNames={{
-                    input: 'border-gray-100 border-none   min-h-[30px]'
+                    input: 'min-h-[30px]'
                   }}
                   onBlur={e => {
                     const oldCard = getAppValue(
@@ -548,7 +547,7 @@ export default function Properties() {
                 <DateTimePicker
                   className='!mt-2 first:!mt-0'
                   classNames={{
-                    input: 'border-gray-100 border-none   min-h-[30px]'
+                    input: 'min-h-[30px]'
                   }}
                   clearable
                   label={property.title}
@@ -637,7 +636,7 @@ export default function Properties() {
                   placeholder='Pick dates range'
                   className='!mt-2 first:!mt-0'
                   classNames={{
-                    input: 'border-gray-100 border-none   min-h-[30px]'
+                    input: 'min-h-[30px]'
                   }}
                 />
               )}

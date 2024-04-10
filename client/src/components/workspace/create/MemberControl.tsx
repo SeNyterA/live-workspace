@@ -20,7 +20,7 @@ const MemberControl = ({
 
   return (
     <div
-      className='mt-2 flex flex-1 items-center gap-2 rounded bg-slate-200/5 p-2 first:mt-0'
+      className='mt-2 flex flex-1 items-center gap-2 rounded p-2 first:mt-0'
       key={user?.id}
     >
       <Watching watchingFn={state => state.workspace.files[user?.avatarId!]}>

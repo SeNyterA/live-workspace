@@ -203,9 +203,9 @@ export default function SendMessage({
   })
 
   return (
-    <div className={`rootWrapper relative h-28 ${classNames?.rootWrapper}`}>
+    <div className={`rootWrapper px-2 pb-1 ${classNames?.rootWrapper}`}>
       <div
-        className={`editorWapper absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-200/40 bg-[#101b24]/95 ${classNames?.editorWrapper}`}
+        className={`editorWapper rounded-md ${classNames?.editorWrapper}`}
       >
         <RichTextEditor
           editor={editor}
@@ -290,8 +290,8 @@ export default function SendMessage({
         </div>
       </div>
 
-      <p
-        className={`info-wrapper absolute bottom-1 left-4 right-3 flex justify-between text-xs  ${classNames?.infoWrapper}`}
+      <div
+        className={`info-wrapper py-1 text-end pl-4 pr-3 flex justify-between text-xs ${classNames?.infoWrapper}`}
       >
         <Typing targetId={targetId} />
         <span>
@@ -299,7 +299,7 @@ export default function SendMessage({
           <kbd className='rounded-sm bg-gray-400/30'>Alt Enter</kbd> to quickly
           send
         </span>
-      </p>
+      </div>
     </div>
   )
 }

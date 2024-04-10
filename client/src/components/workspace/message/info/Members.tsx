@@ -38,7 +38,7 @@ export default function Members() {
       onClick={() => {}}
       classNames={{
         children:
-          'pl-0 border-0 border-b border-dashed border-gray-200/20 pb-2 mb-4'
+          'pl-0 border-0 border-b border-dashed pb-2 mb-4'
       }}
     >
       {!!enableMembers?.length &&

@@ -9,7 +9,7 @@ export default function Invition({ invition }: { invition: TMemberExtra }) {
     useAppMutation('declineInvition')
 
   return (
-    <div className='mt-2 cursor-pointer rounded  p-2 text-sm  transition-colors first:mt-0 hover:bg-gray-100/20'>
+    <div className='mt-2 cursor-pointer rounded p-2 text-sm transition-colors first:mt-0'>
       {invition.workspace?.thumbnail && (
         <Image
           loading='lazy'

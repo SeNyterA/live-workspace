@@ -36,8 +36,8 @@ export default function BoardHeader() {
         <Select
           checkIconPosition='right'
           classNames={{
-            input: 'border-gray-100 border-none min-h-[30px] h-[30px]',
-            dropdown: '!bg-gray-900/90 border-gray-400/20 pr-0'
+            input: 'min-h-[30px] h-[30px]',
+            dropdown: 'pr-0'
           }}
           className='max-w-32'
           data={propertiesChecking?.map(e => ({
@@ -50,28 +50,6 @@ export default function BoardHeader() {
           }}
         />
       </label>
-
-      {/* <label className='flex cursor-pointer items-center justify-center gap-1 rounded'>
-        <p className='ml-1'>Sort by:</p>
-        <Select
-          classNames={{
-            input:
-              'border-gray-100 border-none   min-h-[30px] h-[30px]',
-            dropdown: '!bg-gray-900/90  border-gray-400/20 pr-0',
-            
-          }}
-          className='w-32'
-          value={sortBy}
-          data={[
-            { label: 'Label', value: 'label' },
-            { label: 'Created at', value: 'createdAt' },
-            { label: 'Updated at', value: 'updatedAt' }
-          ]}
-          onChange={propertyCheckingId =>
-            propertyCheckingId && setSortBy(propertyCheckingId as any)
-          }
-        />
-      </label> */}
 
       <Input
         className='flex h-[30px] items-center rounded '

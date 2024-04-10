@@ -39,7 +39,7 @@ const User = memo(({ user }: { user: TUser }) => {
       </div>
       <Button
         color='gray'
-        className='h-[30px] min-h-[30px] border-none border-gray-100  hover:bg-gray-200/10'
+        className='h-[30px] min-h-[30px] border-none'
         disabled={isPending}
         loading={isPending}
         onClick={() =>
@@ -156,10 +156,6 @@ export default function MembersSetting() {
               description='Atleast 3 characters required'
               placeholder='senytera'
               className='sticky top-0 z-[300] mt-4'
-              classNames={{
-                input:
-                  '  border-gray-100/20 hover:border-blue-500/50 focus:border-blue-500/70'
-              }}
               leftSection={<IconSearch size={16} />}
               value={searchValue}
               onChange={event => setSearchValue(event.currentTarget.value)}

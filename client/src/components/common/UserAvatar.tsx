@@ -70,7 +70,7 @@ export default function UserAvatar({
         </Indicator>
       </Menu.Target>
 
-      <Menu.Dropdown className='rounded-xl border-none !bg-slate-950/90 p-4  shadow-none'>
+      <Menu.Dropdown className='rounded-xl border-none p-4  shadow-none'>
         <div className='flex flex-col items-center justify-center p-3'>
           <Avatar src={avatar?.path} size={100}>
             <span className='capitalize'>{user?.userName[0]}</span>

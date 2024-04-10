@@ -53,9 +53,6 @@ const Title = ({ isDisabled }: { isDisabled: boolean }) => {
       placeholder='Enter the team name'
       size='sm'
       className='mt-4'
-      classNames={{
-        input: '  border-gray-100/20 focus:border-gray-100/40'
-      }}
       defaultValue={workspace?.title}
       key={workspace?.title}
       onBlur={e =>
@@ -100,12 +97,8 @@ const Description = ({ isDisabled }: { isDisabled: boolean }) => {
     <Textarea
       placeholder='Enter a description...'
       className='mt-4'
-      classNames={{
-        input: '  border-gray-100/20 focus:border-gray-100/40'
-      }}
       defaultValue={workspace?.description}
       key={workspace?.description}
-      // data-autofocus
       withAsterisk
       disabled={isPending || isDisabled}
       label={`${workspace?.type} description`}
@@ -157,9 +150,6 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
       description='This is the url that will be used to access the team. e.g. .../teams/your-team-name'
       size='sm'
       className='mt-4'
-      classNames={{
-        input: '  border-gray-100/20 focus:border-gray-100/40'
-      }}
       defaultValue={workspace?.displayUrl}
       disabled={isPending || isDisabled}
       key={workspace?.displayUrl}
