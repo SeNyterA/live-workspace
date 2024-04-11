@@ -139,7 +139,8 @@ export default function CardsContent() {
       {propertyRoot && (
         <div className='relative flex-1'>
           <ScrollArea
-            className='absolute inset-0 cursor-pointer px-2 pt-2'
+            className='absolute inset-0 cursor-pointer'
+            classNames={{viewport:'p-2'}}
             scrollbarSize={8}
           >
             <DragDropContext
@@ -281,7 +282,7 @@ export default function CardsContent() {
                       >
                         {dragProvided => (
                           <div
-                            className='mx-1 w-64'
+                            className='mx-1 w-64 group'
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                           >
@@ -295,7 +296,7 @@ export default function CardsContent() {
                       </Draggable>
                     ))}
 
-                    <div className='mx-1 w-64'>
+                    <div className='mx-1 w-64 group'>
                       <CardOptions propertyId={propertyRoot.id} />
                     </div>
 

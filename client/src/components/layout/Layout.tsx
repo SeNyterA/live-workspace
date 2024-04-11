@@ -160,9 +160,6 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className='layout fixed inset-0 flex h-screen w-screen flex-col text-sm'>
         <LoadingOverlay
           visible={isPending}
-          classNames={{
-            overlay: 'bg-black/50'
-          }}
           overlayProps={{ radius: 'sm', blur: 2 }}
         />
         <AppHeader />

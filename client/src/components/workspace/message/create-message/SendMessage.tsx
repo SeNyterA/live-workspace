@@ -219,7 +219,7 @@ export default function SendMessage({
               editor={editor}
               tippyOptions={{ arrow: true, placement: 'top-start' }}
             >
-              <div className='flex gap-1 rounded bg-black/90 p-1'>
+              <div className='flex gap-1 rounded actions-wrapper p-1'>
                 <RichTextEditor.Bold />
                 <RichTextEditor.Italic />
                 <RichTextEditor.Underline />
@@ -299,8 +299,8 @@ export default function SendMessage({
       >
         <Typing targetId={targetId} />
         <span>
-          Press <kbd className='rounded-sm bg-gray-400/30'>⌘Enter</kbd> or{' '}
-          <kbd className='rounded-sm bg-gray-400/30'>Alt Enter</kbd> to quickly
+          Press <kbd className='rounded-sm kbd'>⌘Enter</kbd> or{' '}
+          <kbd className='rounded-sm kbd'>Alt Enter</kbd> to quickly
           send
         </span>
       </div>

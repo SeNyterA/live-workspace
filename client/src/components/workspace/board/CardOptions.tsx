@@ -41,7 +41,7 @@ export default function CardOptions({
   return (
     <>
       <div {...dragProvided?.dragHandleProps} className='sticky top-0'>
-        <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-black bg-gray-900/90 px-2 pr-1'>
+        <div className='column-header flex h-9 items-center justify-between rounded border px-2 pr-1'>
           <Badge
             classNames={{
               root: 'p-0 rounded-none bg-transparent'

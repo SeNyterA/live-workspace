@@ -56,6 +56,18 @@ pre {
     @apply focus-within:ring-1;
   }
 
+  .kbd {
+    @apply bg-gray-400/20;
+  }
+
+  .actions-wrapper {
+    @apply bg-black/90;
+  }
+
+  .column-header {
+    @apply bg-gray-900/90 group-hover:bg-blue-400/20 group-hover:ring-1;
+  }
+
   .customscroll {
     overflow-y: scroll;
     scrollbar-width: thin;
@@ -95,37 +107,44 @@ pre {
 .mantine-Tabs-root {
   @apply flex h-full flex-col;
 
-  & .mantine-Tabs-list {
+  .mantine-Tabs-list {
     @apply before:block before:h-[2px] before:border-blue-400/20 before:content-[attr(data-before)];
 
-    & .mantine-Tabs-tab {
+    .mantine-Tabs-tab {
       @apply bg-transparent hover:bg-blue-400/20;
     }
   }
 
-  & .mantine-Tabs-panel {
+  .mantine-Tabs-panel {
     @apply relative flex-1;
+  }
+}
+
+.mantine-Modal-root {
+  @apply text-gray-50;
+  .mantine-Paper-root {
+    @apply bg-black/95;
   }
 }
 
 .mantine-Drawer-root {
   @apply text-gray-50;
 
-  & .mantine-Overlay-root {
+  .mantine-Overlay-root {
     @apply bg-white/10 blur;
   }
 
-  & .mantine-Drawer-inner {
+  .mantine-Drawer-inner {
     @apply p-3;
 
-    & .mantine-Paper-root {
+    .mantine-Paper-root {
       @apply flex flex-col rounded-lg bg-black/95;
 
-      & .mantine-Drawer-header {
+      .mantine-Drawer-header {
         @apply bg-transparent;
       }
 
-      & .mantine-Drawer-body {
+      .mantine-Drawer-body {
         @apply relative flex flex-1 flex-col text-sm;
       }
     }
@@ -135,7 +154,7 @@ pre {
 .mantine-Input-wrapper {
   @apply items-center rounded bg-gray-400/20 ring-violet-400 transition-all focus-within:ring-1 hover:bg-gray-400/30 hover:ring-1 hover:ring-blue-400;
 
-  & .mantine-Input-input {
+  .mantine-Input-input {
     @apply truncate border-none bg-transparent text-gray-50;
   }
 }

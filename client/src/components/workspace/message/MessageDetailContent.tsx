@@ -83,7 +83,7 @@ function MessageDetailContent({
         offset={0}
       >
         <Menu.Target>
-          <div className='bg-black'></div>
+          <div className=''></div>
         </Menu.Target>
 
         <Menu.Dropdown className='overflow-hidden rounded-lg p-0 shadow-none'>
@@ -115,13 +115,13 @@ function MessageDetailContent({
       </Menu>
 
       <div
-        className={`message-wrapper group relative w-fit rounded  p-1 ${
+        className={`message-wrapper group relative w-fit rounded p-1 ${
           !!message.replyToId && 'cursor-pointer'
         }`}
         key={message.id}
       >
         <div
-          className={`absolute top-0 z-10 hidden translate-y-[-100%] items-center justify-center gap-1 rounded bg-gray-900 p-1 shadow-custom group-hover:flex ${
+          className={`actions-wrapper absolute top-0 z-10 hidden translate-y-[-100%] items-center justify-center gap-1 rounded p-1 shadow-custom group-hover:flex ${
             isOwner ? 'right-0' : 'left-0'
           }`}
         >

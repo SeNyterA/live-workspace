@@ -194,7 +194,7 @@ export default function MessageContent() {
             )}
             <div
               ref={loadMoreObserverRef}
-              className='invisible absolute inset-0 bottom-[-800px] -z-10 flex justify-center bg-black'
+              className='invisible absolute inset-0 bottom-[-800px] -z-10 flex justify-center'
             />
           </div>
         </ScrollArea>

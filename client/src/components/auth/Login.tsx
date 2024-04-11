@@ -68,7 +68,7 @@ export default function Authentication() {
           Create, share and manage your projects
         </p>
       </div>
-      <div className='absolute inset-10 left-[unset] w-96 rounded-xl bg-black/80 p-6 '>
+      <div className='absolute inset-10 left-[unset] w-96 rounded-xl p-6 '>
         <Text size='lg' fw={500}>
           Welcome to Mantine, {type === 'register' ? 'Register' : 'Login'} with
         </Text>

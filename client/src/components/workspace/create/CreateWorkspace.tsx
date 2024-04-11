@@ -126,9 +126,7 @@ export default function CreateWorkspace({
       </Tabs>
 
       <div className='mt-4 flex items-center justify-end gap-3'>
-        <Button className='bg-transparent text-red-300 hover:bg-red-400/20 hover:text-red-500'>
-          Close
-        </Button>
+        <Button>Close</Button>
 
         <Button
           onClick={form.handleSubmit(({ ...data }) => {

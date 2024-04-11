@@ -152,10 +152,9 @@ export default function SettingProperty({
       classNames={{
         title: 'flex-1',
         header: 'bg-transparent',
-        content: 'rounded-lg flex flex-col bg-black/80 aspect-video',
+        content: 'rounded-lg flex flex-col aspect-video',
         inner: 'p-12',
-        body: 'flex flex-col flex-1 relative text-sm',
-        root: ''
+        body: 'flex flex-col flex-1 relative text-sm'
       }}
     >
       <div className='flex h-full gap-4'>
