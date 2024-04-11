@@ -181,8 +181,8 @@ pre {
   @apply bg-gray-50/20 text-gray-50;
 }
 
-.mantine-Popover-dropdown,
-.mantine-Menu-dropdown {
+[data-portal='true'] .mantine-Popover-dropdown,
+[data-portal='true'] .mantine-Menu-dropdown {
   @apply border-none bg-gray-950/95 ring-1 ring-violet-400/30;
 }
 

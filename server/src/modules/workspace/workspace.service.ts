@@ -98,7 +98,8 @@ export class WorkspaceService {
           userId: user.sub,
           workspaceId: workpsaceId
         },
-        status: MemberStatus.Active
+        status: MemberStatus.Active,
+        role: MemberRole.Admin
       }
     })
 
@@ -207,6 +208,10 @@ export class WorkspaceService {
     const usersPresence = await this.redisService.getUsersPresence(
       workspace.members.map(member => member.userId)
     )
+
+    this.server.fetchSockets().then(sockets => {
+      console.log(sockets)
+    })
 
     return {
       workspace,

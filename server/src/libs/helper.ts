@@ -1,5 +1,5 @@
 import { MemberRole } from '@prisma/client'
-
+import { Server } from 'socket.io'
 export declare type JSONContent = {
   type?: string
   attrs?: Record<string, any>
@@ -53,4 +53,38 @@ export const checkPermission = async ({
     return true
   }
   return false
+}
+
+export const joinRooms = async ({
+  rooms,
+  server,
+  userId
+}: {
+  server: Server
+  userId: string
+  rooms: string[] | string
+}) => {
+  const sockets = await server.fetchSockets()
+  const userSockets = sockets.filter(socket => socket.rooms.has(userId))
+  if (userSockets.length) return
+  userSockets.forEach(socket => {
+    socket.join(rooms)
+  })
+}
+
+export const leaveRooms = async ({
+  rooms,
+  server,
+  userId
+}: {
+  server: Server
+  userId: string
+  rooms: string[]
+}) => {
+  const sockets = await server.fetchSockets()
+  const userSockets = sockets.filter(socket => socket.rooms.has(userId))
+  if (!userSockets.length) return
+  userSockets.forEach(socket => {
+    rooms.forEach(room => socket.leave(room))
+  })
 }

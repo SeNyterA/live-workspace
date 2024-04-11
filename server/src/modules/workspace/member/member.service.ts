@@ -1,13 +1,9 @@
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import {
-  MemberRole,
-  MemberStatus,
-  WorkspaceStatus,
-  WorkspaceType
-} from '@prisma/client'
+import { Member, MemberRole, MemberStatus } from '@prisma/client'
 import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
+import { joinRooms, leaveRooms } from 'src/libs/helper'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
@@ -21,6 +17,19 @@ export class MemberService {
   @WebSocketServer()
   server: Server
   constructor(private readonly prismaService: PrismaService) {}
+
+  async emitMember(member: Member, status?: 'leave' | 'join') {
+    this.server.to(member.workspaceId).emit('member', { member })
+    if (status === 'leave') {
+      this.server.fetchSockets().then(sockets => {
+        sockets.forEach(socket => {
+          if (socket.id === member.userId) {
+            socket.leave(member.workspaceId)
+          }
+        })
+      })
+    }
+  }
 
   async getInvitions({ user }: { user: TJwtUser }) {
     const invitions = await this.prismaService.member.findMany({
@@ -120,7 +129,7 @@ export class MemberService {
         user: true
       }
     })
-
+    this.server.to(memberUserId).emit('member', { member })
     return member
   }
 
@@ -131,50 +140,31 @@ export class MemberService {
     user: TJwtUser
     workspaceId: string
   }) {
-    const memberUpdated = await this.prismaService.member.update({
-      where: {
-        userId_workspaceId: {
-          userId: user.sub,
-          workspaceId: workspaceId
-        },
-        status: MemberStatus.Invited
-      },
-      data: {
-        status: MemberStatus.Active,
-        modifiedById: user.sub
-      },
-      include: { workspace: true }
-    })
-
-    if (memberUpdated.workspace.type === WorkspaceType.Team) {
-      const workspaceChidren = await this.prismaService.workspace.findMany({
-        where: {
-          workspaceParentId: workspaceId,
-          isAvailable: true,
-          status: WorkspaceStatus.Public
-        }
-      })
-
-      await this.prismaService.member.createMany({
-        data: workspaceChidren.map(child => ({
-          workspaceId: child.id,
-          userId: user.sub,
-          status: MemberStatus.Active,
-          role: MemberRole.Member
-        }))
-      })
-    }
-
     const workspaces = await this.prismaService.workspace.findMany({
       where: {
-        OR: [{ workspaceParentId: workspaceId }, { id: workspaceId }],
         isAvailable: true,
-        members: {
-          some: {
-            userId: user.sub,
-            status: MemberStatus.Active
+        OR: [
+          {
+            id: workspaceId,
+            members: {
+              some: {
+                userId: user.sub,
+                status: MemberStatus.Invited
+              }
+            }
+          },
+          {
+            workspaceParent: {
+              id: workspaceId,
+              members: {
+                some: {
+                  userId: user.sub,
+                  status: MemberStatus.Invited
+                }
+              }
+            }
           }
-        }
+        ]
       },
       include: {
         avatar: true,
@@ -182,9 +172,45 @@ export class MemberService {
       }
     })
 
-    this.server.to(user.sub).emit('workspaces', { workspaces })
+    const members = await Promise.all(
+      workspaces.map(async workspace => {
+        return this.prismaService.member.upsert({
+          where: {
+            status: MemberStatus.Invited,
+            userId_workspaceId: {
+              userId: user.sub,
+              workspaceId: workspace.id
+            }
+          },
+          update: {
+            status: MemberStatus.Active,
+            modifiedById: user.sub
+          },
+          create: {
+            workspaceId: workspace.id,
+            userId: user.sub,
+            status: MemberStatus.Active,
+            createdById: user.sub,
+            role: MemberRole.Member
+          },
+          include: {
+            user: { include: { avatar: true } }
+          }
+        })
+      })
+    )
 
-    return workspaces
+    joinRooms({
+      rooms: members.map(e => e.workspaceId),
+      server: this.server,
+      userId: user.sub
+    })
+    this.server.to(workspaceId).emit('member', { members })
+
+    return {
+      workspaces,
+      members
+    }
   }
 
   async declineInvition({
@@ -194,7 +220,7 @@ export class MemberService {
     user: TJwtUser
     workspaceId: string
   }) {
-    await this.prismaService.member.update({
+    const member = await this.prismaService.member.update({
       where: {
         userId_workspaceId: {
           userId: user.sub,
@@ -207,6 +233,9 @@ export class MemberService {
         modifiedById: user.sub
       }
     })
+
+    this.server.to(workspaceId).emit('member', { member })
+    return member
   }
 
   async leaveWorkspace({
@@ -216,19 +245,51 @@ export class MemberService {
     workspaceId: string
     user: TJwtUser
   }) {
-    await this.prismaService.member.update({
+    const workspaceMembers = await this.prismaService.member.findMany({
       where: {
-        userId_workspaceId: {
-          userId: user.sub,
-          workspaceId: workspaceId
-        },
-        status: MemberStatus.Active
-      },
-      data: {
-        status: MemberStatus.Leaved,
-        modifiedById: user.sub
+        userId: user.sub,
+        status: MemberStatus.Active,
+        OR: [
+          {
+            workspaceId: workspaceId,
+            role: {
+              not: MemberRole.Admin
+            }
+          },
+          {
+            workspace: {
+              workspaceParentId: workspaceId
+            }
+          }
+        ]
       }
     })
+
+    const members = await Promise.all(
+      workspaceMembers.map(async member => {
+        return this.prismaService.member.update({
+          where: {
+            userId_workspaceId: {
+              userId: member.userId,
+              workspaceId: member.workspaceId
+            }
+          },
+          data: {
+            status: MemberStatus.Leaved,
+            modifiedById: user.sub
+          }
+        })
+      })
+    )
+
+    this.server.to(workspaceId).emit('member', { members })
+    leaveRooms({
+      server: this.server,
+      userId: user.sub,
+      rooms: members.map(e => e.workspaceId)
+    })
+
+    return members
   }
 
   async kickWorkspaceMember({
@@ -257,9 +318,10 @@ export class MemberService {
       })
     }
 
-    const membersKicked = await this.prismaService.member.updateMany({
+    const workspaceMembers = await this.prismaService.member.findMany({
       where: {
         userId: userTargetId,
+        status: MemberStatus.Active,
         OR: [
           {
             workspaceId: workspaceId
@@ -270,13 +332,34 @@ export class MemberService {
             }
           }
         ]
-      },
-      data: {
-        status: MemberStatus.Kicked,
-        modifiedById: user.sub
       }
     })
-    return membersKicked
+
+    const kickedMembers = await Promise.all(
+      workspaceMembers.map(async member => {
+        return this.prismaService.member.update({
+          where: {
+            userId_workspaceId: {
+              userId: member.userId,
+              workspaceId: member.workspaceId
+            }
+          },
+          data: {
+            status: MemberStatus.Kicked,
+            modifiedById: user.sub
+          }
+        })
+      })
+    )
+
+    this.server.to(workspaceId).emit('member', { members: kickedMembers })
+    leaveRooms({
+      server: this.server,
+      userId: userTargetId,
+      rooms: kickedMembers.map(e => e.workspaceId)
+    })
+
+    return kickedMembers
   }
 
   async editMemberRole({
@@ -320,6 +403,8 @@ export class MemberService {
         modifiedById: user.sub
       }
     })
+
+    this.server.to(workspaceId).emit('member', { member: memberUpdated })
 
     return memberUpdated
   }

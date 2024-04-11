@@ -1,15 +1,34 @@
 import { ActionIcon, Indicator, Popover, ScrollArea } from '@mantine/core'
 import { IconBell } from '@tabler/icons-react'
+import { useDispatch } from 'react-redux'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
+import { useAppSelector } from '../../redux/store'
 import { useAppQuery } from '../../services/apis/useAppQuery'
+import { EMemberStatus, extractApi } from '../../types'
 import Invition from './Invition'
 
 export default function Notification() {
-  const { data: invitions } = useAppQuery({
+  const dispatch = useDispatch()
+  useAppQuery({
     key: 'getInvitions',
     url: {
       baseUrl: '/members/invitions'
+    },
+    onSuccess(data) {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({ members: data.invitions })
+        )
+      )
     }
   })
+  const invitions = useAppSelector(state =>
+    Object.values(state.workspace.members).filter(
+      member =>
+        member.status === EMemberStatus.Invited &&
+        member.userId === state.auth.userInfo?.id
+    )
+  )
 
   return (
     <Popover width={300} position='bottom-end' withArrow shadow='md'>
@@ -17,7 +36,7 @@ export default function Notification() {
         <Indicator
           className='flex items-center'
           offset={5}
-          label={!!invitions?.invitions.length}
+          disabled={!invitions?.length}
           processing
         >
           <ActionIcon variant='transparent'>
@@ -26,14 +45,11 @@ export default function Notification() {
         </Indicator>
       </Popover.Target>
       <Popover.Dropdown className='inset-0 h-80'>
-        {/* {invitions?.invitions.map(invition => (
-          <Invition invition={invition} key={invition.id} />
-        ))} */}
         <ScrollArea
           scrollbarSize={8}
           className='absolute inset-0 bg-transparent p-3'
         >
-          {invitions?.invitions.map(invition => (
+          {invitions?.map(invition => (
             <Invition invition={invition} key={invition.workspaceId} />
           ))}
         </ScrollArea>
