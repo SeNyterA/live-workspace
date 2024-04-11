@@ -90,9 +90,13 @@ export class GroupService {
             ]
           }
         }
+      },
+      include: {
+        thumbnail: true,
+        avatar: true
       }
     })
-
+    this.server.to(user.sub).emit('workspace', { workspace: newGroup })
     return newGroup
   }
 }
