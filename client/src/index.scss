@@ -65,7 +65,7 @@ pre {
   }
 
   .column-header {
-    @apply bg-gray-900/90 group-hover:bg-blue-400/20 group-hover:ring-1;
+    @apply bg-gray-900/90 ring-violet-400 group-hover:bg-gray-900 group-hover:ring-1;
   }
 
   .customscroll {
@@ -88,14 +88,14 @@ pre {
 }
 
 .mantine-NavLink-root {
-  @apply rounded hover:bg-blue-200/5 data-[active='true']:bg-transparent data-[active='true']:font-semibold data-[active='true']:text-blue-400;
+  @apply rounded hover:bg-blue-200/5 data-[active='true']:bg-transparent data-[expanded]:bg-[#151d29] data-[active='true']:font-semibold data-[active='true']:text-blue-400;
 }
 
 .mantine-NavLink-collapse .mantine-NavLink-root[data-active='true'] {
   @apply bg-gray-50/5;
 
   &::before {
-    @apply absolute left-[-6px] h-4 w-1 rounded-full bg-blue-400;
+    @apply absolute left-1 h-4 w-1 rounded-full bg-blue-400;
     content: '';
   }
 }
@@ -160,7 +160,7 @@ pre {
 }
 
 .mantine-focus-auto {
-  @apply ring-violet-400 ring-offset-1 ring-offset-transparent focus-visible:outline-none focus-visible:ring-1;
+  @apply ring-violet-400 ring-offset-transparent focus-within:outline-none focus-visible:outline-none focus-visible:ring-1;
 }
 
 .mantine-ActionIcon-root,

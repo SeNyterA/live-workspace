@@ -200,7 +200,10 @@ export default function Sidebar() {
         <div className='relative flex-1'>
           <ScrollArea
             scrollbarSize={6}
-            className='absolute inset-0 overflow-visible'
+            className='absolute inset-0 inset-x-[-12px] overflow-visible'
+            classNames={{
+              viewport: 'px-3'
+            }}
           >
             {team && (
               <>
