@@ -29,7 +29,7 @@ pre {
   }
 
   .layout {
-    @apply bg-black/90;
+    @apply bg-black/80;
   }
 
   .sidebar {
@@ -49,11 +49,11 @@ pre {
   }
 
   .card-propetes-wrapper {
-    @apply bg-black/80;
+    @apply bg-white/5;
   }
 
   .card-detail-wrapper {
-    @apply focus-within:ring-1;
+    @apply focus-within:ring-1 hover:ring-1;
   }
 
   .kbd {
@@ -65,7 +65,7 @@ pre {
   }
 
   .column-header {
-    @apply bg-gray-900/90 ring-violet-400 group-hover:bg-gray-900 group-hover:ring-1;
+    @apply bg-gray-900/90 ring-violet-400 group-hover:bg-gray-800 group-hover:shadow;
   }
 
   .customscroll {
@@ -84,6 +84,10 @@ pre {
     &::-webkit-scrollbar-thumb:hover {
       background-color: #2980b9;
     }
+  }
+
+  .editorWapper {
+    @apply bg-slate-700/30 ring-violet-400 transition-all focus-within:ring-1 hover:ring-1 hover:ring-blue-400;
   }
 }
 
@@ -152,7 +156,10 @@ pre {
 }
 
 .mantine-Input-wrapper {
-  @apply items-center rounded bg-gray-400/20 ring-violet-400 transition-all focus-within:ring-1 hover:bg-gray-400/30 hover:ring-1 hover:ring-blue-400;
+  @apply items-center rounded transition-all;
+  &:where(:not([data-variant='transparent'])) {
+    @apply bg-gray-400/20 ring-violet-400 focus-within:ring-1 hover:bg-gray-400/30 hover:ring-1 hover:ring-blue-400;
+  }
 
   .mantine-Input-input {
     @apply truncate border-none bg-transparent text-gray-50;
@@ -184,10 +191,6 @@ pre {
 [data-portal='true'] .mantine-Popover-dropdown,
 [data-portal='true'] .mantine-Menu-dropdown {
   @apply border-none bg-gray-950/95 ring-1 ring-violet-400/30;
-}
-
-.editorWapper {
-  @apply bg-slate-700/30 ring-violet-400 transition-all focus-within:ring-1 hover:ring-1 hover:ring-blue-400;
 }
 
 .mantine-Divider-root {

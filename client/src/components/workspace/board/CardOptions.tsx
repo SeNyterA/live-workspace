@@ -41,10 +41,11 @@ export default function CardOptions({
   return (
     <>
       <div {...dragProvided?.dragHandleProps} className='sticky top-0'>
-        <div className='column-header flex h-9 items-center justify-between rounded border px-2 pr-1'>
+        <div className='column-header flex h-9 items-center justify-between rounded border px-2 pr-1 gap-2'>
           <Badge
             classNames={{
-              root: 'p-0 rounded-none bg-transparent'
+              root: 'p-0 rounded-none bg-transparent flex-1 flex',
+              label:'flex-1'
             }}
             leftSection={
               <div
@@ -52,13 +53,14 @@ export default function CardOptions({
                 style={{ backgroundColor: option?.color || 'gray' }}
               />
             }
+            rightSection={<span>{cards?.length}</span>}
           >
             {option ? option?.title : 'Other'}
           </Badge>
 
           <ActionIcon
             aria-label='Settings'
-            className='h-[28px] w-[28px]  '
+          size={20}
             onClick={() => {
               appMutationFn({
                 key: 'createCard',

@@ -31,7 +31,7 @@ export default function Notification() {
   )
 
   return (
-    <Popover width={300} position='bottom-end' withArrow shadow='md'>
+    <Popover width={300} position='bottom-end' shadow='md'>
       <Popover.Target>
         <Indicator
           className='flex items-center'

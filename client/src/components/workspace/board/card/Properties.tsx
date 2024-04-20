@@ -80,7 +80,7 @@ export default function Properties() {
   // }, [card?.properties])
 
   return (
-    <div className='card-propetes-wrapper relative flex w-80 flex-col rounded-lg p-3'>
+    <div className='card-propetes-wrapper relative flex w-80 flex-col rounded-lg p-4'>
       <Dropzone
         onDrop={files =>
           uploadFile(
