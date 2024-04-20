@@ -159,16 +159,22 @@ export default function SettingProperty({
     >
       <div className='flex h-full gap-4'>
         <div className='relative w-48 rounded p-2'>
-          <ScrollArea className='absolute inset-0' scrollbarSize={0}>
+          <ScrollArea
+            className='absolute inset-0 inset-x-[-12px]'
+            scrollbarSize={0}
+            classNames={{ viewport: 'px-3' }}
+          >
             {properties?.map(e => (
               <NavLink
-                className='group w-full bg-transparent px-1 first:mt-0'
                 leftSection={Icons[e.type]}
                 defaultOpened={!!boardId}
+                className='group group w-full bg-transparent px-1 first:mt-0'
                 classNames={{
                   children: 'pl-0 mb-2',
-                  section: 'data-[position="left"]:me-[8px]'
+                  section:
+                    'data-[position="left"]:me-[8px] data-[position="right"]:hidden group-hover:block'
                 }}
+                variant='indicator'
                 active={e.id === propertyId}
                 key={e.id}
                 label={e.title}
@@ -195,9 +201,14 @@ export default function SettingProperty({
             ))}
 
             <NavLink
-              className='w-full bg-transparent first:mt-0 '
+              className='group group w-full bg-transparent px-1 first:mt-0'
+              classNames={{
+                children: 'pl-0 mb-2',
+                section:
+                  'data-[position="left"]:me-[8px] data-[position="right"]:hidden group-hover:block'
+              }}
               label='Create new'
-              rightSection={<IconPlus size={14} />}
+              leftSection={<IconPlus size={14} />}
               onClick={() => {
                 createProperty({
                   method: 'post',

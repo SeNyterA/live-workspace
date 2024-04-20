@@ -26,19 +26,22 @@ export default function Members() {
 
   return (
     <NavLink
+      variant='indicator'
       className='sticky top-0 z-[2] p-1 pl-0'
       label={
-        <div className='flex items-center justify-between'>
+        <Badge
+          classNames={{
+            root: 'p-0 rounded-none bg-transparent flex-1 flex',
+            label: 'flex-1'
+          }}
+          // rightSection={<span>{members?.length! > 0 && members!.length}</span>}
+        >
           Members
-          {members?.length! > 0 && (
-            <Badge color='gray'>{members!.length}</Badge>
-          )}
-        </div>
+        </Badge>
       }
       onClick={() => {}}
       classNames={{
-        children:
-          'pl-0 border-0 border-b border-dashed pb-2 mb-4'
+        children: 'pl-0 border-0 border-b border-dashed pb-2 mb-4'
       }}
     >
       {!!enableMembers?.length &&
@@ -47,18 +50,6 @@ export default function Members() {
             className='mt-2 flex max-w-full flex-1 items-center gap-3 shadow-custom first:mt-0'
             key={user?.id}
           >
-            {/* <Indicator
-              inline
-              size={12}
-              offset={4}
-              position='bottom-end'
-              color='yellow'
-              processing
-              zIndex={1}
-            >
-              <Avatar src={user?.avatar?.path} size={32} />
-            </Indicator> */}
-
             <UserAvatar user={user} size={32} />
 
             <div className='flex flex-1 flex-col justify-center'>

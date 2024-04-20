@@ -32,6 +32,11 @@ export default function BoardContent() {
 
         {openInfo && (
           <>
+            <Divider
+              orientation='vertical'
+              variant='dashed'
+              className='border-gray-200/20'
+            />
             <Info />
           </>
         )}

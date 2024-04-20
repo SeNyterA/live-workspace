@@ -92,14 +92,20 @@ pre {
 }
 
 .mantine-NavLink-root {
-  @apply rounded hover:bg-blue-200/5 data-[active='true']:bg-transparent data-[expanded]:bg-[#151d29] data-[active='true']:font-semibold data-[active='true']:text-blue-400;
+  @apply relative rounded hover:bg-blue-200/5 data-[active='true']:bg-transparent data-[active='true']:font-semibold data-[active='true']:text-blue-400;
+  &[data-variant='indicator'][data-active='true'] {
+    @apply bg-gray-50/10;
+    &:before {
+      @apply absolute left-[-8px] h-4 w-1 rounded-full bg-blue-400;
+      content: '';
+    }
+  }
 }
 
 .mantine-NavLink-collapse .mantine-NavLink-root[data-active='true'] {
   @apply bg-gray-50/5;
-
   &::before {
-    @apply absolute left-1 h-4 w-1 rounded-full bg-blue-400;
+    @apply absolute left-[-8px] h-4 w-1 rounded-full bg-blue-400;
     content: '';
   }
 }
