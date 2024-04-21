@@ -65,8 +65,8 @@ export const joinRooms = async ({
   rooms: string[] | string
 }) => {
   const sockets = await server.fetchSockets()
-  const userSockets = sockets.filter(socket => socket.rooms.has(userId))
-  if (userSockets.length) return
+  const userSockets = sockets.filter(socket => socket._id === userId)
+  if (!userSockets.length) return
   userSockets.forEach(socket => {
     socket.join(rooms)
   })
@@ -82,7 +82,7 @@ export const leaveRooms = async ({
   rooms: string[]
 }) => {
   const sockets = await server.fetchSockets()
-  const userSockets = sockets.filter(socket => socket.rooms.has(userId))
+  const userSockets = sockets.filter(socket => socket._id === userId)
   if (!userSockets.length) return
   userSockets.forEach(socket => {
     rooms.forEach(room => socket.leave(room))

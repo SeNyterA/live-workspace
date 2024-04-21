@@ -16,10 +16,7 @@ export type TJwtUser = {
   iat: number
   exp: number
 }
-export interface CustomSocket extends Socket {
-  userId: string
-  __id: string
-}
+
 
 @WebSocketGateway({
   cors: {
@@ -40,7 +37,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     userId
   }: {
     userId: string
-    client: CustomSocket
+    client: Socket
   }) {
     const members = await this.prismaService.member.findMany({
       where: {
@@ -62,7 +59,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return members
   }
 
-  async handleConnection(client: CustomSocket, ...args: any[]) {
+  async handleConnection(client: Socket, ...args: any[]) {
     try {
       if (!client?.handshake?.auth?.token) throw new Error('Missing token')
 
@@ -97,13 +94,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  async handleDisconnect(client: CustomSocket) {
+  async handleDisconnect(client: Socket) {
     try {
-      const userId = client.__id
+      const userId = client._id
       if (!userId) return
 
       const sockets = await this.server.fetchSockets()
-      const userSockets = sockets.filter(socket => socket.rooms.has(userId))
+      const userSockets = sockets.filter(socket => socket._id === userId)
       if (userSockets.length) return
 
       const now = Date.now().toString()

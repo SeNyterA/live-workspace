@@ -18,7 +18,6 @@ import {
 } from '@prisma/client'
 import { Errors } from 'src/libs/errors'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
-import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { generateBoardData } from './board.init'
 
 export const generateRandomHash = (
@@ -71,7 +70,8 @@ export class BoardService {
   }
 
   joinBoard = async ({
-    boardId
+    boardId,
+    workspace
   }: {
     boardId: string
     workspace: Workspace
@@ -92,6 +92,10 @@ export class BoardService {
         }
       }
     })
+
+    setTimeout(() => {
+      this.server.to(boardId).emit('workspace', { workspace: workspace })
+    }, 0)
   }
 
   async createBoard({

@@ -1,4 +1,5 @@
 import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
+import { IconHash } from '@tabler/icons-react'
 import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
 import { EMemberStatus, RoleWeights } from '../../../../types'
@@ -27,22 +28,26 @@ export default function Members() {
   return (
     <NavLink
       variant='indicator'
-      className='sticky top-0 z-[2] p-1 pl-0 h-8'
+      className='sticky top-0 z-[2] h-8 p-1 pl-0'
+      leftSection={<IconHash className='scale-90' size={20} />}
+      defaultOpened={true}
+      classNames={{
+        children: 'pl-0 mb-2',
+        section: 'data-[position="left"]:me-[8px]'
+      }}
       label={
         <Badge
+          rightSection={<span>{members?.length! > 0 && members!.length}</span>}
           classNames={{
             root: 'p-0 rounded-none bg-transparent flex-1 flex',
-            label: 'flex-1'
+            label: 'flex-1',
+            section: 'data-[position="left"]:me-[8px]'
           }}
-          // rightSection={<span>{members?.length! > 0 && members!.length}</span>}
         >
           Members
         </Badge>
       }
       onClick={() => {}}
-      classNames={{
-        children: 'pl-0 border-0 border-b border-dashed pb-2 mb-4'
-      }}
     >
       {!!enableMembers?.length &&
         enableMembers?.map(({ member, user }) => (

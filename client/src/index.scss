@@ -92,7 +92,7 @@ pre {
 }
 
 .mantine-NavLink-root {
-  @apply relative rounded hover:bg-blue-200/5 data-[active='true']:bg-transparent data-[active='true']:font-semibold data-[active='true']:text-blue-400;
+  @apply relative rounded  hover:bg-blue-200/5 data-[active='true']:bg-transparent data-[active='true']:font-semibold data-[active='true']:text-blue-400 data-[active]:hover:bg-blue-200/5;
   &[data-variant='indicator'][data-active='true'] {
     @apply bg-gray-50/10;
     &:before {
