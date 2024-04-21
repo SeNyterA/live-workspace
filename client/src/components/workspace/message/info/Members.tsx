@@ -27,7 +27,7 @@ export default function Members() {
   return (
     <NavLink
       variant='indicator'
-      className='sticky top-0 z-[2] p-1 pl-0'
+      className='sticky top-0 z-[2] p-1 pl-0 h-8'
       label={
         <Badge
           classNames={{

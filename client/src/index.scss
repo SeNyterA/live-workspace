@@ -184,9 +184,11 @@ pre {
 }
 
 .mantine-Select-option,
-.mantine-MultiSelect-option {
-  &:hover:where(:not([data-combobox-selected], [data-combobox-disabled])) {
-    @apply bg-blue-400/20;
+.mantine-MultiSelect-option,
+.mantine-Combobox-option {
+  &:hover:where(:not([data-combobox-disabled])),
+  &[data-combobox-selected] {
+    @apply bg-white/10 text-gray-50;
   }
 }
 
