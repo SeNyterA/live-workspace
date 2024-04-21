@@ -1,5 +1,4 @@
-import { ActionIcon, Badge, Card, ScrollArea } from '@mantine/core'
-import { IconPlus } from '@tabler/icons-react'
+import { ScrollArea } from '@mantine/core'
 import {
   DragDropContext,
   Draggable,
@@ -11,11 +10,7 @@ import useAppControlParams from '../../../hooks/useAppControlParams'
 import useRenderCount from '../../../hooks/useRenderCount'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../../redux/store'
-import {
-  appMutationFn,
-  useAppMutation
-} from '../../../services/apis/mutations/useAppMutation'
-import { extractApi } from '../../../types'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
@@ -140,7 +135,7 @@ export default function CardsContent() {
         <div className='relative flex-1'>
           <ScrollArea
             className='absolute inset-0 cursor-pointer'
-            classNames={{viewport:'p-2'}}
+            classNames={{ viewport: 'p-2' }}
             scrollbarSize={8}
           >
             <DragDropContext
@@ -282,7 +277,7 @@ export default function CardsContent() {
                       >
                         {dragProvided => (
                           <div
-                            className='mx-1 w-64 group'
+                            className='group mx-1 w-64'
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                           >
@@ -296,9 +291,21 @@ export default function CardsContent() {
                       </Draggable>
                     ))}
 
-                    <div className='mx-1 w-64 group'>
+                    {/* <div className='mx-1 w-64 group'>
                       <CardOptions propertyId={propertyRoot.id} />
-                    </div>
+                    </div> */}
+
+                    <Draggable draggableId='orhter' index={9999} isDragDisabled>
+                      {dragProvided => (
+                        <div
+                          className='group mx-1 w-64'
+                          ref={dragProvided.innerRef}
+                          {...dragProvided.draggableProps}
+                        >
+                          <CardOptions propertyId={propertyRoot.id} />
+                        </div>
+                      )}
+                    </Draggable>
 
                     {dropProvided.placeholder}
                   </div>

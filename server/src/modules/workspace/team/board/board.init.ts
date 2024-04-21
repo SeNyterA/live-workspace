@@ -1,4 +1,4 @@
-import { fa, faker } from '@faker-js/faker'
+import { faker } from '@faker-js/faker'
 import {
   Card,
   File,
@@ -572,7 +572,7 @@ export const generateBoardData = ({ boardId }: { boardId: string }) => {
   const files: Partial<File>[] = cards.map(card => ({
     id: uuidv4(),
     sourceType: 'Link',
-    path: faker.image.nature()
+    path: faker.image.url()
   }))
 
   return { properties, options, cards, files }

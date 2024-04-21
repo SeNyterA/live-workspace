@@ -143,14 +143,14 @@ export default function SettingProperty({
     <Modal
       onClose={onClose}
       opened={opend}
-      title={<p>Property setting</p>}
+      title={'Property setting'}
       size='1000'
       overlayProps={{
         blur: '0.5'
       }}
       centered
       classNames={{
-        title: 'flex-1',
+        title: 'flex-1 text-lg',
         header: 'bg-transparent',
         content: 'rounded-lg flex flex-col aspect-video',
         inner: 'p-12',

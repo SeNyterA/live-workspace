@@ -70,6 +70,30 @@ export class BoardService {
     })
   }
 
+  joinBoard = async ({
+    boardId
+  }: {
+    boardId: string
+    workspace: Workspace
+  }) => {
+    const members = await this.prismaService.member.findMany({
+      where: {
+        workspaceId: boardId,
+        status: MemberStatus.Active
+      }
+    })
+
+    const membersId = members.map(member => member.userId)
+    const socket = await this.server.sockets.fetchSockets()
+    socket.map(socket => {
+      {
+        if (membersId.includes(socket._id)) {
+          return socket.join(boardId)
+        }
+      }
+    })
+  }
+
   async createBoard({
     user,
     workspace,
@@ -133,6 +157,11 @@ export class BoardService {
         skipDuplicates: true
       })
     }
+
+    this.joinBoard({
+      boardId: board.id,
+      workspace: board
+    })
 
     return board
   }

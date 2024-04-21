@@ -133,7 +133,7 @@ pre {
 .mantine-Modal-root {
   @apply text-gray-50;
   .mantine-Paper-root {
-    @apply bg-black/95;
+    @apply bg-black/70;
   }
 }
 
@@ -148,7 +148,7 @@ pre {
     @apply p-3;
 
     .mantine-Paper-root {
-      @apply flex flex-col rounded-lg bg-black/95;
+      @apply flex flex-col rounded-lg bg-black/70;
 
       .mantine-Drawer-header {
         @apply bg-transparent;

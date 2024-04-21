@@ -18,6 +18,7 @@ export type TJwtUser = {
 }
 export interface CustomSocket extends Socket {
   user: TJwtUser
+  __id: string
 }
 
 @WebSocketGateway({
@@ -81,6 +82,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!validUser) throw new Error('Invalid user')
 
       client.user = jwtUser
+      client._id = jwtUser.sub
 
       const members = await this.subscribeToWorkspaces({
         client,

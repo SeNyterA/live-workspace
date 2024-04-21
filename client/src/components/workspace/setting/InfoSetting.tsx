@@ -475,9 +475,9 @@ export default function InfoSetting() {
 
   return (
     <ScrollArea
-      className='absolute inset-0 left-[-12px] right-[-12px]'
+      className='absolute inset-0 inset-x-[-12px]'
       classNames={{
-        viewport: 'px-3'
+        viewport: 'px-3',
       }}
       scrollbarSize={8}
     >

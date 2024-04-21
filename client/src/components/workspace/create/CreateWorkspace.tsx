@@ -103,7 +103,10 @@ export default function CreateWorkspace({
         </Tabs.List>
         <Tabs.Panel value='info'>
           <ScrollArea
-            className='absolute inset-0 right-[-12px] pr-3'
+            className='absolute inset-0 inset-x-[-12px]'
+            classNames={{
+              viewport: 'px-3'
+            }}
             scrollbarSize={8}
           >
             <CreateWorkspaceInfo />
@@ -111,7 +114,10 @@ export default function CreateWorkspace({
         </Tabs.Panel>
         <Tabs.Panel value='members'>
           <ScrollArea
-            className='absolute inset-0 right-[-12px] pr-3'
+            className='absolute inset-0 inset-x-[-12px]'
+            classNames={{
+              viewport: 'px-3'
+            }}
             scrollbarSize={8}
           >
             {[EWorkspaceType.Channel, EWorkspaceType.Board].includes(
