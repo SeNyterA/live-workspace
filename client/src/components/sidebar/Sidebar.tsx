@@ -45,6 +45,7 @@ function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
   )
   return (
     <NavLink
+      tabIndex={0}
       classNames={{
         label: 'max-w-[220px] block flex-1 overflow-visible',
         body: 'overflow-visible',
@@ -200,14 +201,15 @@ export default function Sidebar() {
         <div className='relative flex-1'>
           <ScrollArea
             scrollbarSize={6}
-            className='absolute inset-0 inset-x-[-12px] overflow-visible'
+            className='absolute inset-x-[-12px] inset-y-[-4px] overflow-visible'
             classNames={{
-              viewport: 'px-3'
+              viewport: 'px-3 py-1'
             }}
           >
             {team && (
               <>
                 <NavLink
+                  tabIndex={0}
                   className='sticky top-0 z-10 mb-1 h-8 p-1'
                   label='Boards'
                   leftSection={
@@ -256,13 +258,14 @@ export default function Sidebar() {
                     {canCreate =>
                       canCreate && (
                         <NavLink
+                          tabIndex={0}
                           className='h-8 p-1 opacity-70'
                           label={`Create board`}
                           classNames={{
                             section: 'data-[position="left"]:me-[8px]'
                           }}
                           leftSection={
-                            <ActionIcon size={20}>
+                            <ActionIcon tabIndex={-1} size={20}>
                               <IconPlus size={16} />
                             </ActionIcon>
                           }
@@ -276,6 +279,7 @@ export default function Sidebar() {
                 </NavLink>
 
                 <NavLink
+                  tabIndex={0}
                   className='sticky top-0 z-10 mb-1 h-8 p-1'
                   label='Channels'
                   leftSection={<IconHash className='scale-90' size={20} />}
@@ -318,13 +322,14 @@ export default function Sidebar() {
                     {canCreate =>
                       canCreate && (
                         <NavLink
+                          tabIndex={0}
                           className='h-8 p-1 opacity-70'
                           label={`Create channel`}
                           classNames={{
                             section: 'data-[position="left"]:me-[8px]'
                           }}
                           leftSection={
-                            <ActionIcon size={20}>
+                            <ActionIcon tabIndex={-1} size={20}>
                               <IconPlus size={16} />
                             </ActionIcon>
                           }
@@ -342,6 +347,7 @@ export default function Sidebar() {
             )}
 
             <NavLink
+              tabIndex={0}
               className='sticky top-0 z-10 mb-1 mt-1 h-8 p-1'
               label='Groups'
               leftSection={<IconUsersGroup className='scale-90' size={20} />}
@@ -369,11 +375,12 @@ export default function Sidebar() {
               </Watching>
 
               <NavLink
+                tabIndex={0}
                 className='h-8 p-1 opacity-70'
                 label={`Create group`}
                 classNames={{ section: 'data-[position="left"]:me-[8px]' }}
                 leftSection={
-                  <ActionIcon size={20}>
+                  <ActionIcon tabIndex={-1} size={20}>
                     <IconPlus size={16} />
                   </ActionIcon>
                 }
@@ -384,6 +391,7 @@ export default function Sidebar() {
             </NavLink>
 
             <NavLink
+              tabIndex={0}
               className='sticky top-0 z-10 mb-1 h-8 p-1'
               label='Drirects'
               leftSection={<IconUserBolt className='scale-90' size={20} />}
@@ -411,6 +419,7 @@ export default function Sidebar() {
               </Watching>
 
               {/* <NavLink
+              tabIndex={0}
                 className='p-1 pl-3 opacity-70'
                 label={`Create direct`}
                 rightSection={<IconPlus size={16} />}

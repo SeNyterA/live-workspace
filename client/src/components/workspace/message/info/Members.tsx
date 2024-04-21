@@ -52,7 +52,7 @@ export default function Members() {
       {!!enableMembers?.length &&
         enableMembers?.map(({ member, user }) => (
           <div
-            className='mt-2 flex max-w-full flex-1 items-center gap-3 shadow-custom first:mt-0'
+            className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
             key={user?.id}
           >
             <UserAvatar user={user} size={32} />
