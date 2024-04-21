@@ -35,13 +35,13 @@ export class TeamService {
   ) {}
 
   async createTeam({
-    user,
+    userId,
     workspace,
     boards,
     channels,
     members
   }: {
-    user: TJwtUser
+    userId: string
     workspace: Workspace
     channels?: Workspace[]
     boards?: Workspace[]
@@ -54,23 +54,23 @@ export class TeamService {
         avatarId: workspace.avatarId,
         type: WorkspaceType.Team,
         status: WorkspaceStatus.Private,
-        createdById: user.sub,
-        modifiedById: user.sub,
+        createdById: userId,
+        modifiedById: userId,
         members: {
           createMany: {
             data: [
               {
                 role: MemberRole.Admin,
-                userId: user.sub,
-                createdById: user.sub,
-                modifiedById: user.sub,
+                userId: userId,
+                createdById: userId,
+                modifiedById: userId,
                 status: MemberStatus.Active
               },
               ...(members?.map(e => ({
                 role: e.role,
                 userId: e.userId,
-                createdById: user.sub,
-                modifiedById: user.sub,
+                createdById: userId,
+                modifiedById: userId,
                 status: MemberStatus.Invited
               })) || [])
             ]
@@ -86,7 +86,7 @@ export class TeamService {
 
     boards?.forEach(async board => {
       await this.boardService.createBoard({
-        user,
+        userId,
         workspace: board,
         teamId: team.id
       })
@@ -94,7 +94,7 @@ export class TeamService {
 
     channels?.map(async channel => {
       await this.channelService.createChannel({
-        user,
+        userId,
         workspace: channel,
         teamId: team.id
       })

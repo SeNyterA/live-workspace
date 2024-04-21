@@ -27,12 +27,12 @@ export class GroupService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createGroup({
-    user,
+    userId,
     workspace,
     members
   }: {
     workspace: Workspace
-    user: TJwtUser
+    userId: string
     members?: Member[]
   }) {
     const newGroup = await this.prismaService.workspace.create({
@@ -40,19 +40,19 @@ export class GroupService {
         ...workspace,
         type: WorkspaceType.Group,
         status: WorkspaceStatus.Private,
-        createdById: user.sub,
-        modifiedById: user.sub,
+        createdById: userId,
+        modifiedById: userId,
 
         members: {
           createMany: {
             data: [
               {
-                userId: user.sub,
+                userId: userId,
                 role: MemberRole.Admin,
                 status: MemberStatus.Active
               },
               ...(members
-                .filter(e => e.userId !== user.sub)
+                .filter(e => e.userId !== userId)
                 .map(e => ({
                   userId: e.userId,
                   role: MemberRole.Member,
@@ -96,7 +96,7 @@ export class GroupService {
         avatar: true
       }
     })
-    this.server.to(user.sub).emit('workspace', { workspace: newGroup })
+    this.server.to(userId).emit('workspace', { workspace: newGroup })
     return newGroup
   }
 }

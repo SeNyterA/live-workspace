@@ -37,19 +37,19 @@ export class ChannelService {
   ) {}
 
   async createChannel({
-    user,
+    userId,
     workspace,
     teamId,
     members
   }: {
     workspace: Workspace
-    user: TJwtUser
+    userId: string
     teamId: string
     members?: Member[]
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         workspaceId: teamId,
         status: MemberStatus.Active,
         role: MemberRole.Admin
@@ -65,8 +65,8 @@ export class ChannelService {
         ...workspace,
         workspaceParentId: teamId,
         type: WorkspaceType.Channel,
-        createdById: user.sub,
-        modifiedById: user.sub,
+        createdById: userId,
+        modifiedById: userId,
         messages: {
           createMany: {
             data: [
@@ -100,7 +100,7 @@ export class ChannelService {
             data: [
               {
                 role: MemberRole.Admin,
-                userId: user.sub,
+                userId: userId,
                 status: MemberStatus.Active
               }
             ]

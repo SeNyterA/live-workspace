@@ -1,5 +1,5 @@
 import { Body, Controller, Param, Post } from '@nestjs/common'
-import { HttpUser } from 'src/decorators/users.decorator'
+import { UserId } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { ChannelService } from './channel.service'
 import { Member, Workspace } from '@prisma/client'
@@ -10,12 +10,12 @@ export class ChannelController {
 
   @Post('teams/:teamId/channels')
   createChannel(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('teamId') teamId: string,
     @Body() { workspace, members }: { workspace: Workspace; members: Member[] }
   ) {
     return this.channelService.createChannel({
-      user,
+      userId,
       teamId,
       workspace,
       members

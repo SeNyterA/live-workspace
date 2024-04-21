@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch } from '@nestjs/common'
 import { Workspace } from '@prisma/client'
-import { HttpUser } from 'src/decorators/users.decorator'
+import { UserId } from 'src/decorators/users.decorator'
 import { TJwtUser } from '../socket/socket.gateway'
 import { WorkspaceService } from './workspace.service'
 
@@ -9,31 +9,31 @@ export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
 
   @Get()
-  getAllWorkspace(@HttpUser() user: TJwtUser) {
-    return this.workspaceService.getAllWorkspace({ user })
+  getAllWorkspace(@UserId() userId: string) {
+    return this.workspaceService.getAllWorkspace({ userId })
   }
 
   @Get(':id')
-  getWorkspace(@HttpUser() user: TJwtUser, @Param('id') workspaceId: string) {
-    return this.workspaceService.getWorkspaceById({ user, workspaceId })
+  getWorkspace(@UserId() userId: string, @Param('id') workspaceId: string) {
+    return this.workspaceService.getWorkspaceById({ userId, workspaceId })
   }
 
   @Get(':id/files')
   getWorkspaceAttachments(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('id') workspaceId: string
   ) {
-    return this.workspaceService.getWorkspaceAttachFiles({ user, workspaceId })
+    return this.workspaceService.getWorkspaceAttachFiles({ userId, workspaceId })
   }
 
   @Patch(':id')
   updateWorkspace(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('id') workspaceId: string,
     @Body() { workspace }: { workspace: Workspace }
   ) {
     return this.workspaceService.updateWorkspace({
-      user,
+      userId,
       workspaceId,
       workspace
     })

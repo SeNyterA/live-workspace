@@ -31,10 +31,10 @@ export class MemberService {
     }
   }
 
-  async getInvitions({ user }: { user: TJwtUser }) {
+  async getInvitions({ userId }: { userId: string }) {
     const invitions = await this.prismaService.member.findMany({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Invited
       },
 
@@ -53,15 +53,15 @@ export class MemberService {
   }
 
   async workpsaceMembers({
-    user,
+    userId,
     workspaceId
   }: {
-    user: TJwtUser
+    userId: string
     workspaceId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         workspace: {
           id: workspaceId,
@@ -91,17 +91,17 @@ export class MemberService {
   }
 
   async inviteMember({
-    user,
+    userId,
     workspaceId,
     memberUserId
   }: {
-    user: TJwtUser
+    userId: string
     workspaceId: string
     memberUserId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         role: MemberRole.Admin,
         workspace: {
@@ -122,7 +122,7 @@ export class MemberService {
         workspaceId: workspaceId,
         userId: memberUserId,
         status: MemberStatus.Invited,
-        createdById: user.sub,
+        createdById: userId,
         role: MemberRole.Member
       },
       include: {
@@ -134,10 +134,10 @@ export class MemberService {
   }
 
   async acceptInvition({
-    user,
+    userId,
     workspaceId
   }: {
-    user: TJwtUser
+    userId: string
     workspaceId: string
   }) {
     const workspaces = await this.prismaService.workspace.findMany({
@@ -148,7 +148,7 @@ export class MemberService {
             id: workspaceId,
             members: {
               some: {
-                userId: user.sub,
+                userId: userId,
                 status: MemberStatus.Invited
               }
             }
@@ -158,7 +158,7 @@ export class MemberService {
               id: workspaceId,
               members: {
                 some: {
-                  userId: user.sub,
+                  userId: userId,
                   status: MemberStatus.Invited
                 }
               }
@@ -178,19 +178,19 @@ export class MemberService {
           where: {
             status: MemberStatus.Invited,
             userId_workspaceId: {
-              userId: user.sub,
+              userId: userId,
               workspaceId: workspace.id
             }
           },
           update: {
             status: MemberStatus.Active,
-            modifiedById: user.sub
+            modifiedById: userId
           },
           create: {
             workspaceId: workspace.id,
-            userId: user.sub,
+            userId: userId,
             status: MemberStatus.Active,
-            createdById: user.sub,
+            createdById: userId,
             role: MemberRole.Member
           },
           include: {
@@ -203,7 +203,7 @@ export class MemberService {
     joinRooms({
       rooms: members.map(e => e.workspaceId),
       server: this.server,
-      userId: user.sub
+      userId: userId
     })
     this.server.to(workspaceId).emit('member', { members })
 
@@ -214,23 +214,23 @@ export class MemberService {
   }
 
   async declineInvition({
-    user,
+    userId,
     workspaceId
   }: {
-    user: TJwtUser
+    userId: string
     workspaceId: string
   }) {
     const member = await this.prismaService.member.update({
       where: {
         userId_workspaceId: {
-          userId: user.sub,
+          userId: userId,
           workspaceId: workspaceId
         },
         status: MemberStatus.Invited
       },
       data: {
         status: MemberStatus.Declined,
-        modifiedById: user.sub
+        modifiedById: userId
       }
     })
 
@@ -239,15 +239,15 @@ export class MemberService {
   }
 
   async leaveWorkspace({
-    user,
+    userId,
     workspaceId
   }: {
     workspaceId: string
-    user: TJwtUser
+    userId: string
   }) {
     const workspaceMembers = await this.prismaService.member.findMany({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         OR: [
           {
@@ -276,7 +276,7 @@ export class MemberService {
           },
           data: {
             status: MemberStatus.Leaved,
-            modifiedById: user.sub
+            modifiedById: userId
           }
         })
       })
@@ -285,7 +285,7 @@ export class MemberService {
     this.server.to(workspaceId).emit('member', { members })
     leaveRooms({
       server: this.server,
-      userId: user.sub,
+      userId: userId,
       rooms: members.map(e => e.workspaceId)
     })
 
@@ -293,17 +293,17 @@ export class MemberService {
   }
 
   async kickWorkspaceMember({
-    user,
+    userId,
     workspaceId,
     userTargetId
   }: {
     workspaceId: string
-    user: TJwtUser
+    userId: string
     userTargetId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         role: MemberRole.Admin,
         workspace: {
@@ -346,7 +346,7 @@ export class MemberService {
           },
           data: {
             status: MemberStatus.Kicked,
-            modifiedById: user.sub
+            modifiedById: userId
           }
         })
       })
@@ -364,18 +364,18 @@ export class MemberService {
 
   async editMemberRole({
     memberRole,
-    user,
+    userId,
     workspaceId,
     userTargetId
   }: {
     memberRole: MemberRole
-    user: TJwtUser
+    userId: string
     workspaceId: string
     userTargetId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         role: MemberRole.Admin,
         workspace: {
@@ -400,7 +400,7 @@ export class MemberService {
       },
       data: {
         role: memberRole,
-        modifiedById: user.sub
+        modifiedById: userId
       }
     })
 

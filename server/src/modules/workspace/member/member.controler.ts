@@ -7,7 +7,7 @@ import {
   Patch,
   Post
 } from '@nestjs/common'
-import { HttpUser } from 'src/decorators/users.decorator'
+import { UserId } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { MemberService } from './member.service'
 import { Member } from '@prisma/client'
@@ -17,65 +17,65 @@ export class MemberController {
   constructor(private readonly memberService: MemberService) {}
 
   @Get('members/invitions')
-  getInvitions(@HttpUser() user: TJwtUser) {
-    return this.memberService.getInvitions({ user })
+  getInvitions(@UserId() userId: string) {
+    return this.memberService.getInvitions({ userId })
   }
 
   @Post('workspaces/:workspaceId/accept-invition')
   acceptInvition(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') workspaceId: string
   ) {
     return this.memberService.acceptInvition({
-      user,
+      userId,
       workspaceId
     })
   }
 
   @Post('workspaces/:workspaceId/decline-invition')
   declineInvition(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') workspaceId: string
   ) {
     return this.memberService.declineInvition({
-      user,
+      userId,
       workspaceId
     })
   }
 
   @Delete('workspaces/:workspaceId/members')
   leaveWorkspace(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') workspaceId: string
   ) {
     return this.memberService.leaveWorkspace({
-      user,
+      userId,
       workspaceId
     })
   }
 
   @Get('workspaces/:workspaceId/members')
   workspaceMembers(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') workspaceId: string
   ) {}
 
   @Post('workspaces/:workspaceId/members')
   inviteMember(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') workspaceId: string,
-    @Body() { userId }: Member
+    @Body() inviteMemberId: string
   ) {
     return this.memberService.inviteMember({
-      user,
+      userId,
       workspaceId,
-      memberUserId: userId
+      memberUserId: inviteMemberId
     })
   }
 
   @Patch('workspaces/:workspaceId/members/:memberId')
   updateWorkspaceMember(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') workspaceId: string
   ) {}
 }

@@ -6,7 +6,7 @@ import {
   PropertyOption,
   Workspace
 } from '@prisma/client'
-import { HttpUser } from 'src/decorators/users.decorator'
+import { UserId } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { BoardService } from './board.service'
 
@@ -16,12 +16,12 @@ export class BoardController {
 
   @Post('teams/:teamId/boards')
   createBoard(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('teamId') teamId: string,
     @Body() { workspace, members }: { workspace: Workspace; members?: Member[] }
   ) {
     return this.boardService.createBoard({
-      user,
+      userId,
       workspace,
       teamId,
       members
@@ -29,33 +29,33 @@ export class BoardController {
   }
 
   @Get('boards/:id')
-  getBoard(@HttpUser() user: TJwtUser, @Param('id') boardId: string) {
-    return this.boardService.getBoardById({ user, workspaceId: boardId })
+  getBoard(@UserId() userId: string, @Param('id') boardId: string) {
+    return this.boardService.getBoardById({ userId, workspaceId: boardId })
   }
 
   @Post('boards/:boardId/cards')
   createCard(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('boardId') boardId: string,
     @Body() { card }: { card: Card }
   ) {
     return this.boardService.createCard({
       boardId,
-      user,
+      userId,
       card
     })
   }
 
   @Patch('boards/:boardId/cards/:cardId')
   updateCard(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('boardId') boardId: string,
     @Param('cardId') cardId: string,
     @Body() { card }: { card: Card }
   ) {
     return this.boardService.updateCard({
       boardId,
-      user,
+      userId,
       card,
       cardId
     })
@@ -63,14 +63,14 @@ export class BoardController {
 
   @Post('boards/:boardId/properties/:propertyId/options')
   createOption(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('boardId') boardId: string,
     @Param('propertyId') propertyId: string,
     @Body() option: PropertyOption
   ) {
     return this.boardService.createOption({
       boardId,
-      user,
+      userId,
       option,
       propertyId
     })
@@ -78,7 +78,7 @@ export class BoardController {
 
   @Patch('boards/:boardId/properties/:propertyId/options/:optionId')
   updateOption(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('boardId') boardId: string,
     @Param('propertyId') propertyId: string,
     @Param('optionId') optionId: string,
@@ -86,7 +86,7 @@ export class BoardController {
   ) {
     return this.boardService.updateOption({
       boardId,
-      user,
+      userId,
       option,
       propertyId,
       optionId
@@ -95,7 +95,7 @@ export class BoardController {
 
   @Patch('boards/:boardId/properies/:propertyId/options/:optionId/order')
   updateColumnPosition(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('boardId') boardId: string,
     @Param('propertyId') propertyId: string,
     @Param('optionId') optionId: string,
@@ -103,7 +103,7 @@ export class BoardController {
   ) {
     return this.boardService.updateColumnPosition({
       boardId,
-      user,
+      userId,
       optionId,
       propertyId,
       order
@@ -112,27 +112,27 @@ export class BoardController {
 
   @Post('boards/:boardId/properties')
   createProperty(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('boardId') boardId: string,
     @Body() property: Property
   ) {
     return this.boardService.createProperty({
       boardId,
-      user,
+      userId,
       property
     })
   }
 
   @Patch('boards/:boardId/properties/:propertyId')
   updateProperty(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('boardId') boardId: string,
     @Param('propertyId') propertyId: string,
     @Body() property: Property
   ) {
     return this.boardService.updateProperty({
       boardId,
-      user,
+      userId,
       property,
       propertyId
     })

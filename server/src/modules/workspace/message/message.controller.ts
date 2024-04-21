@@ -8,7 +8,7 @@ import {
   Query
 } from '@nestjs/common'
 import { Message } from '@prisma/client'
-import { HttpUser } from 'src/decorators/users.decorator'
+import { UserId } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { MessageService } from './message.service'
 
@@ -18,7 +18,7 @@ export class MessageController {
 
   @Post()
   createMessage(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Body()
     payload: {
       message: Message
@@ -26,7 +26,7 @@ export class MessageController {
     @Param('workspaceId') targetId: string
   ) {
     return this.messageService.createMessage({
-      user,
+      userId,
       targetId,
       ...payload
     })
@@ -34,14 +34,14 @@ export class MessageController {
 
   @Delete(':messageId')
   deleteMessage(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId')
     targetId: string,
     @Param('messageId')
     messageId: string
   ) {
     return this.messageService.deleteMessage({
-      user,
+      userId,
       messageId,
       targetId
     })
@@ -49,7 +49,7 @@ export class MessageController {
 
   @Post(':messageId/react')
   async reactMessage(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') targetId: string,
     @Param('messageId') messageId: string,
     @Body()
@@ -60,7 +60,7 @@ export class MessageController {
     }
   ) {
     return this.messageService.reactMessage({
-      user,
+      userId,
       messageId,
       targetId,
       icon: payload
@@ -69,14 +69,14 @@ export class MessageController {
 
   @Post(':messageId/pin')
   pinMessage(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId')
     targetId: string,
     @Param('messageId')
     messageId: string
   ) {
     return this.messageService.pinMessage({
-      user,
+      userId,
       messageId,
       targetId
     })
@@ -84,15 +84,15 @@ export class MessageController {
 
   @Get('/pined')
   getPinedMessages(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') targetId: string
   ) {
-    return this.messageService.getPinedMessages({ user, targetId })
+    return this.messageService.getPinedMessages({ userId, targetId })
   }
 
   @Get()
   getMessages(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Param('workspaceId') targetId: string,
     @Query('fromId') fromId: string,
     @Query('size') size: number
@@ -101,7 +101,7 @@ export class MessageController {
       targetId,
       fromId,
       size: Number(size) || 100,
-      user
+      userId
     })
   }
 }

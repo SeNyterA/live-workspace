@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Patch, Post } from '@nestjs/common'
 import { User } from '@prisma/client'
-import { HttpUser } from 'src/decorators/users.decorator'
+import { UserId } from 'src/decorators/users.decorator'
 import { TJwtUser } from '../socket/socket.gateway'
 import { Public } from './auth.guard'
 import { AuthService } from './auth.service'
@@ -28,8 +28,8 @@ export class AuthController {
   }
 
   @Get('profile')
-  getProfile(@HttpUser() user: TJwtUser) {
-    return this.authService.getProfile(user.sub)
+  getProfile(@UserId() userId: string) {
+    return this.authService.getProfile(userId)
   }
 
   @Public()
@@ -39,9 +39,9 @@ export class AuthController {
   }
 
   @Patch('profile')
-  updateProfile(@HttpUser() user: TJwtUser, @Body() updateProfileDto: User) {
+  updateProfile(@UserId() userId: string, @Body() updateProfileDto: User) {
     return this.authService.updateProfile({
-      id: user.sub,
+      userId: userId,
       user: updateProfileDto
     })
   }

@@ -18,7 +18,6 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-
     private readonly prismaService: PrismaService
   ) {}
 
@@ -49,8 +48,8 @@ export class AuthGuard implements CanActivate {
       })
 
       if (!user) throw new UnauthorizedException()
-
-      request['user'] = payload
+      
+      request['userId'] = user.id
     } catch {
       throw new UnauthorizedException()
     }

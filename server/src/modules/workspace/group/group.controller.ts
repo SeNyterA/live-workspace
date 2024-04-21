@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common'
-import { HttpUser } from 'src/decorators/users.decorator'
+import { UserId } from 'src/decorators/users.decorator'
 import { Member, Workspace } from '@prisma/client'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { GroupService } from './group.service'
@@ -10,7 +10,7 @@ export class GroupController {
 
   @Post()
   createGroup(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Body()
     {
       workspace,
@@ -21,7 +21,7 @@ export class GroupController {
     }
   ) {
     return this.groupService.createGroup({
-      user,
+      userId,
       workspace,
       members
     })

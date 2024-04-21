@@ -95,21 +95,21 @@ export class BoardService {
   }
 
   async createBoard({
-    user,
+    userId,
     workspace,
     teamId,
     members,
     isInitBoardData
   }: {
     workspace: Workspace
-    user: TJwtUser
+    userId: string
     teamId: string
     members?: Member[]
     isInitBoardData?: boolean
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         workspaceId: teamId,
         status: MemberStatus.Active,
         role: MemberRole.Admin
@@ -125,13 +125,13 @@ export class BoardService {
         ...workspace,
         workspaceParentId: teamId,
         type: WorkspaceType.Board,
-        createdById: user.sub,
-        modifiedById: user.sub,
+        createdById: userId,
+        modifiedById: userId,
 
         members: {
           create: {
             role: MemberRole.Admin,
-            userId: user.sub,
+            userId: userId,
             status: MemberStatus.Active
           }
         }
@@ -167,10 +167,10 @@ export class BoardService {
   }
 
   async getBoardById({
-    user,
+    userId,
     workspaceId
   }: {
-    user: TJwtUser
+    userId: string
     workspaceId: string
   }) {
     const workspace = await this.prismaService.workspace.findUnique({
@@ -179,7 +179,7 @@ export class BoardService {
         isAvailable: true,
         members: {
           some: {
-            userId: user.sub,
+            userId: userId,
             status: MemberStatus.Active
           }
         }
@@ -218,11 +218,11 @@ export class BoardService {
 
   async createProperty({
     boardId,
-    user,
+    userId,
     property
   }: {
     boardId: string
-    user: TJwtUser
+    userId: string
     property: Property
   }) {
     const board = await this.prismaService.workspace.findFirst({
@@ -231,7 +231,7 @@ export class BoardService {
         isAvailable: true,
         members: {
           some: {
-            userId: user.sub,
+            userId: userId,
             status: MemberStatus.Active
           }
         }
@@ -247,8 +247,8 @@ export class BoardService {
         ...property,
         order: property?.order || new Date().getTime(),
         workspaceId: boardId,
-        createdById: user.sub,
-        modifiedById: user.sub
+        createdById: userId,
+        modifiedById: userId
       }
     })
 
@@ -259,11 +259,11 @@ export class BoardService {
 
   async createCard({
     boardId,
-    user,
+    userId,
     card
   }: {
     boardId: string
-    user: TJwtUser
+    userId: string
     card: Card
   }) {
     const board = await this.prismaService.workspace.findUnique({
@@ -272,7 +272,7 @@ export class BoardService {
         isAvailable: true,
         members: {
           some: {
-            userId: user.sub,
+            userId: userId,
             status: MemberStatus.Active
           }
         }
@@ -288,8 +288,8 @@ export class BoardService {
         ...card,
         order: card?.order || new Date().getTime(),
         workspaceId: boardId,
-        createdById: user.sub,
-        modifiedById: user.sub
+        createdById: userId,
+        modifiedById: userId
       }
     })
 
@@ -300,10 +300,10 @@ export class BoardService {
   async updateCard({
     boardId,
     card,
-    user,
+    userId,
     cardId
   }: {
-    user: TJwtUser
+    userId: string
     card: Card
     boardId: string
     cardId: string
@@ -317,7 +317,7 @@ export class BoardService {
           isAvailable: true,
           members: {
             some: {
-              userId: user.sub,
+              userId: userId,
               status: MemberStatus.Active
             }
           }
@@ -325,7 +325,7 @@ export class BoardService {
       },
       data: {
         ...card,
-        modifiedById: user.sub
+        modifiedById: userId
       },
       include: {
         thumbnail: true
@@ -338,12 +338,12 @@ export class BoardService {
 
   async updateProperty({
     boardId,
-    user,
+    userId,
     property,
     propertyId
   }: {
     boardId: string
-    user: TJwtUser
+    userId: string
     property: Property
     propertyId: string
   }) {
@@ -356,7 +356,7 @@ export class BoardService {
           isAvailable: true,
           members: {
             some: {
-              userId: user.sub,
+              userId: userId,
               status: MemberStatus.Active
             }
           }
@@ -364,7 +364,7 @@ export class BoardService {
       },
       data: {
         ...property,
-        modifiedById: user.sub
+        modifiedById: userId
       }
     })
 
@@ -375,12 +375,12 @@ export class BoardService {
 
   async createOption({
     boardId,
-    user,
+    userId,
     option,
     propertyId
   }: {
     boardId: string
-    user: TJwtUser
+    userId: string
     propertyId: string
     option: PropertyOption
   }) {
@@ -390,7 +390,7 @@ export class BoardService {
         isAvailable: true,
         members: {
           some: {
-            userId: user.sub,
+            userId: userId,
             status: MemberStatus.Active
           }
         },
@@ -415,8 +415,8 @@ export class BoardService {
         ...option,
         order: option.order || new Date().getTime(),
         propertyId: propertyId,
-        createdById: user.sub,
-        modifiedById: user.sub
+        createdById: userId,
+        modifiedById: userId
       }
     })
 
@@ -427,13 +427,13 @@ export class BoardService {
 
   async updateOption({
     boardId,
-    user,
+    userId,
     option,
     propertyId,
     optionId
   }: {
     boardId: string
-    user: TJwtUser
+    userId: string
     propertyId: string
     option: PropertyOption
     optionId: string
@@ -451,7 +451,7 @@ export class BoardService {
             isAvailable: true,
             members: {
               some: {
-                userId: user.sub,
+                userId: userId,
                 status: MemberStatus.Active
               }
             }
@@ -460,7 +460,7 @@ export class BoardService {
       },
       data: {
         ...option,
-        modifiedById: user.sub
+        modifiedById: userId
       }
     })
     this.server.to(boardId).emit('option', { option: optionUpdated })
@@ -470,12 +470,12 @@ export class BoardService {
   async updateColumnPosition({
     boardId,
     optionId,
-    user,
+    userId,
     order,
     propertyId
   }: {
     boardId: string
-    user: TJwtUser
+    userId: string
     optionId: string
     propertyId: string
     order: number
@@ -493,7 +493,7 @@ export class BoardService {
             isAvailable: true,
             members: {
               some: {
-                userId: user.sub,
+                userId: userId,
                 status: MemberStatus.Active
               }
             }
@@ -502,7 +502,7 @@ export class BoardService {
       },
       data: {
         order: order,
-        modifiedById: user.sub
+        modifiedById: userId
       }
     })
     this.server.to(boardId).emit('option', { option: optionUpdated })
