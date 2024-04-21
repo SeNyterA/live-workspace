@@ -2,25 +2,16 @@ import './landing.scss'
 
 const Intro = () => {
   return (
-    <div className='section relative h-screen text-black bg-gray-950'>
-      {/* <video
-        src='./intro.webm'
-        autoPlay
-        muted
-        loop
-        playsInline
-        className='absolute right-0 top-0 h-[80vh] w-full object-cover'
-      /> */}
-      <p className='intro-text absolute left-[10%] top-[60%] z-10 bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 bg-clip-text text-7xl font-bold text-transparent'>
+    <div className='section relative h-screen bg-gray-950 text-gray-50'>
+      <p
+        data-text="&nbsp;SeNyter'A&nbsp;"
+        className='intro-text relative z-10 text-7xl font-bold text-transparent'
+      >
+        &nbsp;
         <span className='text-9xl'>S</span>
-        <span>e</span>
-        <span>N</span>
-        <span>y</span>
-        <span>e</span>
-        <span>r</span>
-        <span>'</span>
-        <span>A</span>
+        <span>eNyter'A</span>
         <sup className='text-xl'>.online</sup>
+        &nbsp;
       </p>
     </div>
   )
