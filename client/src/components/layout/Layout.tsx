@@ -121,7 +121,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   useAppOnSocket({
     key: 'typing',
     resFunc: data => {
-      console.log(data)
       dispatch(
         workspaceActions.toogleTyping({
           isTyping: data.isTyping,
@@ -135,7 +134,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   useAppOnSocket({
     key: 'unread',
     resFunc: data => {
-      console.log(data)
       dispatch(
         workspaceActions.updateWorkspaceStore({
           unreads: {
@@ -148,9 +146,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   useAppOnSocket({
     key: 'checkpointMessage',
-    resFunc: data => {
-      console.log(data)
-    }
+    resFunc: data => {}
   })
 
   return (

@@ -9,7 +9,8 @@ import {
   TMemberExtra,
   TMessage,
   TUser,
-  TWorkspace
+  TWorkspace,
+  TWorkspaceExtra
 } from '../../../types'
 import { replaceDynamicValues } from '../common'
 import http from '../http'
@@ -188,7 +189,7 @@ export type ApiMutationType = {
       boards?: TWorkspace[]
       members?: TMember[]
     }
-    response: TWorkspace
+    response: TWorkspaceExtra
   }
 
   sendWorkspaceMessage: {

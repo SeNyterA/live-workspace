@@ -1,7 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
 import {
   Member,
@@ -11,6 +10,7 @@ import {
   WorkspaceStatus,
   WorkspaceType
 } from '@prisma/client'
+import { membersJoinRoomWhenCreateWorkspace } from 'src/libs/helper'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { BoardService } from './board/board.service'
 import { ChannelService } from './channel/channel.service'
@@ -78,9 +78,7 @@ export class TeamService {
         }
       },
       include: {
-        members: true,
-        avatar: true,
-        thumbnail: true
+        avatar: true
       }
     })
 
@@ -100,10 +98,12 @@ export class TeamService {
       })
     })
 
-    const { members: _, ..._team } = team
-    this.server
-      .to(team.members.map(e => e.userId))
-      .emit('workspace', { workspace: _team, action: 'create' })
+    membersJoinRoomWhenCreateWorkspace({
+      workspaceId: team.id,
+      workspace: team,
+      prismaService: this.prismaService,
+      server: this.server
+    })
 
     return team
   }

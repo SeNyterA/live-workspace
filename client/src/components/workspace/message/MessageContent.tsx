@@ -76,7 +76,6 @@ export default function MessageContent() {
   useAppOnSocket({
     key: 'reaction',
     resFunc({ reaction }) {
-      console.log({ reaction })
       dispatch(
         workspaceActions.updateWorkspaceStore({
           reactions: { [`${reaction.messageId}_${reaction.userId}`]: reaction }

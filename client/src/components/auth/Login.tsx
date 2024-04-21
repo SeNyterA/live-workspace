@@ -35,7 +35,6 @@ export default function Authentication() {
       onSuccess(data) {
         dispatch(authActions.loginSuccess(data))
         // const redirect = new URLSearchParams(location.search).get('redirect')
-        // console.log(redirect)
         // navigate(redirect || '/')
       }
     }
@@ -45,7 +44,6 @@ export default function Authentication() {
       onSuccess(data) {
         dispatch(authActions.loginSuccess(data))
         // const redirect = new URLSearchParams(location.search).get('redirect')
-        // console.log(redirect)
         // navigate(redirect || '/')
       }
     }

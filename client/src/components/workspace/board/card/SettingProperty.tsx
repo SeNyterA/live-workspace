@@ -167,7 +167,6 @@ export default function SettingProperty({
             {properties?.map(e => (
               <NavLink
                 leftSection={Icons[e.type]}
-                defaultOpened={!!boardId}
                 className='group group w-full bg-transparent px-1 first:mt-0'
                 classNames={{
                   children: 'pl-0 mb-2',

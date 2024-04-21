@@ -17,8 +17,8 @@ import {
 import { Server } from 'socket.io'
 
 import { Errors } from 'src/libs/errors'
+import { membersJoinRoomWhenCreateWorkspace } from 'src/libs/helper'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
-import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { TeamService } from '../team.service'
 
 @WebSocketGateway({
@@ -106,10 +106,18 @@ export class ChannelService {
             ]
           }
         }
+      },
+      include: {
+        avatar: true
       }
     })
 
-    this.server.to(teamId).emit('workspace', { workspace: channel })
+    membersJoinRoomWhenCreateWorkspace({
+      workspaceId: channel.id,
+      workspace: channel,
+      prismaService: this.prismaService,
+      server: this.server
+    })
 
     return channel
   }

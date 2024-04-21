@@ -65,7 +65,7 @@ export default function UserAvatar({
           className='h-fit w-fit'
         >
           <Avatar src={avatar?.path} size={size} radius={radius}>
-            <span className='capitalize'>{user?.userName[0]}</span>
+            <span className='capitalize'>{user?.userName?.[0]}</span>
           </Avatar>
         </Indicator>
       </Menu.Target>
@@ -73,7 +73,7 @@ export default function UserAvatar({
       <Menu.Dropdown className='rounded-xl border-none p-4 shadow-none'>
         <div className='flex flex-col items-center justify-center p-3'>
           <Avatar src={avatar?.path} size={100}>
-            <span className='capitalize'>{user?.userName[0]}</span>
+            <span className='capitalize'>{user?.userName?.[0]}</span>
           </Avatar>
 
           {!!user?.nickName && (

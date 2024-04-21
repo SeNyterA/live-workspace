@@ -45,7 +45,7 @@ pre {
   }
 
   .card-item-wrapper {
-    @apply bg-gray-50/10;
+    @apply bg-gray-50/10 focus-visible:ring-1 outline-none ring-violet-400;
   }
 
   .card-propetes-wrapper {
@@ -65,7 +65,7 @@ pre {
   }
 
   .column-header {
-    @apply bg-gray-900/90 ring-violet-400 group-hover:bg-gray-800 group-hover:shadow;
+    @apply bg-gray-900/90 ring-violet-400 group-hover:bg-gray-800 group-hover:shadow focus-visible:outline-none;
   }
 
   .customscroll {
@@ -92,9 +92,10 @@ pre {
 }
 
 .mantine-NavLink-root {
-  @apply relative rounded  hover:bg-blue-200/5 data-[active='true']:bg-transparent data-[active='true']:font-semibold data-[active='true']:text-blue-400 data-[active]:hover:bg-blue-200/5;
-  &[data-variant='indicator'][data-active='true'] {
-    @apply bg-gray-50/10;
+  @apply relative rounded  hover:bg-blue-200/5 data-[active]:bg-transparent data-[active]:font-semibold data-[active]:text-blue-400 data-[active]:hover:bg-blue-200/5;
+  &[data-variant='indicator'][data-active],
+  &[data-variant='indicator'][data-expanded='true'][data-info] {
+    @apply bg-gray-50/10 text-blue-400 data-[info]:bg-gray-50/[0.02];
     &:before {
       @apply absolute left-[-8px] h-4 w-1 rounded-full bg-blue-400;
       content: '';
@@ -102,7 +103,7 @@ pre {
   }
 }
 
-.mantine-NavLink-collapse .mantine-NavLink-root[data-active='true'] {
+.mantine-NavLink-collapse .mantine-NavLink-root[data-active] {
   @apply bg-gray-50/5;
   &::before {
     @apply absolute left-[-8px] h-4 w-1 rounded-full bg-blue-400;
@@ -180,7 +181,7 @@ pre {
 .mantine-CloseButton-root,
 .mantine-RichTextEditor-control,
 .mantine-Button-root {
-  @apply border-none bg-gray-400/10 text-gray-50 transition-colors hover:bg-gray-400/20 hover:text-blue-400 data-[active='true']:bg-blue-400/20 data-[variant='transparent']:bg-transparent data-[active='true']:text-blue-400;
+  @apply border-none bg-gray-400/10 text-gray-50 transition-colors hover:bg-gray-400/20 hover:text-blue-400 data-[active]:bg-blue-400/20 data-[variant='transparent']:bg-transparent data-[active]:text-blue-400;
 }
 
 .mantine-Select-option,
@@ -196,8 +197,8 @@ pre {
   @apply bg-gray-50/20 text-gray-50;
 }
 
-[data-portal='true'] .mantine-Popover-dropdown,
-[data-portal='true'] .mantine-Menu-dropdown {
+[data-portal] .mantine-Popover-dropdown,
+[data-portal] .mantine-Menu-dropdown {
   @apply border-none bg-gray-950/95 ring-1 ring-violet-400/30;
 }
 
@@ -206,7 +207,7 @@ pre {
 }
 
 .mantine-Badge-root {
-  @apply bg-transparent transition-colors hover:text-blue-400;
+  @apply bg-transparent text-[unset] transition-colors;
 }
 .mantine-Menu-item {
   @apply text-gray-50 hover:bg-gray-50/5;

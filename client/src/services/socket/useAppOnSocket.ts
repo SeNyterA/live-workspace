@@ -91,7 +91,10 @@ export const useAppOnSocket = <T extends keyof ApiSocketType>({
 }) => {
   const { socket } = useSocketContext()
   useEffect(() => {
-    socket?.on(key as string, resFunc)
+    socket?.on(key as string, (data: ApiSocketType[T]['response']) => {
+      console.log(data)
+      resFunc(data)
+    })
     return () => {
       socket?.off(key)
     }

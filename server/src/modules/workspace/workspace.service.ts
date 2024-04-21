@@ -45,35 +45,6 @@ export class WorkspaceService {
     private readonly redisService: RedisService
   ) {}
 
-  async createWorkspaceJoinRoom({
-    workspaceId,
-    workspace
-  }: {
-    workspaceId: string
-    workspace: any
-  }) {
-    const members = await this.prismaService.member.findMany({
-      where: {
-        workspaceId: workspaceId,
-        status: MemberStatus.Active
-      }
-    })
-
-    const membersId = members.map(member => member.userId)
-    const socket = await this.server.sockets.fetchSockets()
-    socket.map(socket => {
-      {
-        if (membersId.includes(socket._id)) {
-          return socket.join(workspaceId)
-        }
-      }
-    })
-
-    setTimeout(() => {
-      this.server.to(workspaceId).emit('workspace', { workspace: workspace })
-    }, 0)
-  }
-
   //#region Workspace
   async updateWorkspace({
     workspaceId,

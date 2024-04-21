@@ -1,11 +1,14 @@
 import { Button, ScrollArea, Tabs } from '@mantine/core'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
+import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../../services/apis/mutations/useAppMutation'
-import { EWorkspaceStatus, EWorkspaceType } from '../../../types'
+import { EWorkspaceStatus, EWorkspaceType, extractApi } from '../../../types'
 import CreateWorkspaceInfo from './CreateWorkspaceInfo'
 import Members from './Members'
 import { TeamUsers } from './TeamUsers'
@@ -64,17 +67,37 @@ export default function CreateWorkspace({
   const form = useForm<TCreateWorkspaceForm>({ defaultValues })
   const workspaceType = defaultValues?.workspace.type
   const { teamId } = useAppParams()
+  const { switchTeam, switchTo } = useAppControlParams()
+  const dispatch = useDispatch()
 
   const { mutateAsync: createBoard } = useAppMutation('createBoard', {
     mutationOptions: {
-      onSuccess: () => {
+      onSuccess: data => {
+        dispatch(
+          workspaceActions.updateWorkspaceStore(
+            extractApi({ workspaces: [data] })
+          )
+        )
+        switchTo({
+          target: EWorkspaceType.Board,
+          targetId: data.id
+        })
         onClose && onClose()
       }
     }
   })
   const { mutateAsync: createChannel } = useAppMutation('createChannel', {
     mutationOptions: {
-      onSuccess: () => {
+      onSuccess: data => {
+        dispatch(
+          workspaceActions.updateWorkspaceStore(
+            extractApi({ workspaces: [data] })
+          )
+        )
+        switchTo({
+          target: EWorkspaceType.Channel,
+          targetId: data.id
+        })
         onClose && onClose()
       }
     }
@@ -88,7 +111,13 @@ export default function CreateWorkspace({
   })
   const { mutateAsync: createTeam } = useAppMutation('createTeam', {
     mutationOptions: {
-      onSuccess: () => {
+      onSuccess: data => {
+        dispatch(
+          workspaceActions.updateWorkspaceStore(
+            extractApi({ workspaces: [data] })
+          )
+        )
+        switchTeam({ teamId: data.id })
         onClose && onClose()
       }
     }
@@ -136,7 +165,6 @@ export default function CreateWorkspace({
 
         <Button
           onClick={form.handleSubmit(({ ...data }) => {
-            console.log({ data })
             if (workspaceType === EWorkspaceType.Team) {
               const _data = data as ApiMutationType['createTeam']['payload']
               createTeam({

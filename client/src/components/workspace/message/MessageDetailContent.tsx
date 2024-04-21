@@ -90,8 +90,6 @@ function MessageDetailContent({
           <Picker
             data={data}
             onEmojiSelect={(data: any) => {
-              console.log(data)
-              // console.log(String.fromCodePoint(Number('0x1f618')))
               reactMessage({
                 url: {
                   baseUrl: '/workspaces/:workspaceId/messages/:messageId/react',
@@ -169,11 +167,6 @@ function MessageDetailContent({
 
           <ActionIcon
             onClick={() => {
-              console.log({
-                targetId: message.workspaceId,
-                threadId: message.threadToId || message.id,
-                replyId: message.id
-              })
               updateThread({
                 targetId: message.workspaceId,
                 threadId: message.threadToId || message.id,

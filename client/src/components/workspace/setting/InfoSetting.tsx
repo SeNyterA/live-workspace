@@ -250,9 +250,6 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
                 state.workspace.workspaces[workspaceId!].thumbnailId!
               ]
 
-            console.log({
-              state
-            })
             return thumbnail
           }}
         >
@@ -477,7 +474,7 @@ export default function InfoSetting() {
     <ScrollArea
       className='absolute inset-0 inset-x-[-12px]'
       classNames={{
-        viewport: 'px-3',
+        viewport: 'px-3'
       }}
       scrollbarSize={8}
     >

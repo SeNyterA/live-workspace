@@ -5,7 +5,6 @@ import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
 import { joinRooms, leaveRooms } from 'src/libs/helper'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
-import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
 @WebSocketGateway({
   cors: {

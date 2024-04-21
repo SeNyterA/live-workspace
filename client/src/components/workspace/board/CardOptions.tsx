@@ -16,11 +16,11 @@ export default function CardOptions({
   dragProvided
 }: {
   propertyId: string
-
   option?: TPropertyOption
   dragProvided?: DraggableProvided
 }) {
   const { toogleCard } = useAppControlParams()
+
   const dispatch = useDispatch()
   const { searchValue } = useBoard()
   const { trackingId, boardId } = useBoard()
@@ -40,7 +40,11 @@ export default function CardOptions({
 
   return (
     <>
-      <div {...dragProvided?.dragHandleProps} className='sticky top-0'>
+      <div
+        {...dragProvided?.dragHandleProps}
+        className='sticky top-0 outline-none'
+        tabIndex={-1}
+      >
         <div className='column-header flex h-9 items-center justify-between gap-2 rounded border px-2 pr-1'>
           <Badge
             classNames={{
@@ -106,10 +110,14 @@ export default function CardOptions({
               <Draggable key={card.id} draggableId={card.id} index={index}>
                 {dragProvided => (
                   <div
-                    className='py-1'
+                    className='card-item-wrapper mt-2 flex flex-col rounded p-2'
                     {...dragProvided.dragHandleProps}
                     {...dragProvided.draggableProps}
                     ref={dragProvided.innerRef}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') toogleCard({ cardId: card.id })
+                    }}
+                    onClick={() => toogleCard({ cardId: card.id })}
                   >
                     <CardItem card={card} />
                   </div>

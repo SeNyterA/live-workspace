@@ -28,11 +28,12 @@ export default function Members() {
   return (
     <NavLink
       variant='indicator'
-      className='sticky top-0 z-[2] h-8 p-1 pl-0'
-      leftSection={<IconHash className='scale-90' size={20} />}
       defaultOpened={true}
+      data-info
+      leftSection={<IconHash className='scale-90' size={20} />}
+      className='sticky top-0 z-[2] h-8 p-1 pl-0'
       classNames={{
-        children: 'pl-0 mb-2',
+        children: 'pl-0 mb-2 mt-1',
         section: 'data-[position="left"]:me-[8px]'
       }}
       label={
@@ -47,7 +48,6 @@ export default function Members() {
           Members
         </Badge>
       }
-      onClick={() => {}}
     >
       {!!enableMembers?.length &&
         enableMembers?.map(({ member, user }) => (

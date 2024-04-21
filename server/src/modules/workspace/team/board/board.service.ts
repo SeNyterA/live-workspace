@@ -17,6 +17,7 @@ import {
   WorkspaceType
 } from '@prisma/client'
 import { Errors } from 'src/libs/errors'
+import { membersJoinRoomWhenCreateWorkspace } from 'src/libs/helper'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { generateBoardData } from './board.init'
 
@@ -69,35 +70,6 @@ export class BoardService {
     })
   }
 
-  joinBoard = async ({
-    boardId,
-    workspace
-  }: {
-    boardId: string
-    workspace: Workspace
-  }) => {
-    const members = await this.prismaService.member.findMany({
-      where: {
-        workspaceId: boardId,
-        status: MemberStatus.Active
-      }
-    })
-
-    const membersId = members.map(member => member.userId)
-    const socket = await this.server.sockets.fetchSockets()
-    socket.map(socket => {
-      {
-        if (membersId.includes(socket._id)) {
-          return socket.join(boardId)
-        }
-      }
-    })
-
-    setTimeout(() => {
-      this.server.to(boardId).emit('workspace', { workspace: workspace })
-    }, 0)
-  }
-
   async createBoard({
     userId,
     workspace,
@@ -139,6 +111,9 @@ export class BoardService {
             status: MemberStatus.Active
           }
         }
+      },
+      include: {
+        avatar: true
       }
     })
 
@@ -162,9 +137,11 @@ export class BoardService {
       })
     }
 
-    this.joinBoard({
-      boardId: board.id,
-      workspace: board
+    membersJoinRoomWhenCreateWorkspace({
+      prismaService: this.prismaService,
+      server: this.server,
+      workspace: board,
+      workspaceId: board.id
     })
 
     return board

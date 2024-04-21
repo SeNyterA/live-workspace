@@ -36,7 +36,6 @@ export default function Properties() {
   const { mutateAsync: updateCard } = useAppMutation('updateCard', {
     mutationOptions: {
       onSuccess(data, variables, context) {
-        console.log(data)
         dispatch(
           workspaceActions.updateWorkspaceStore(
             extractApi({

@@ -12,15 +12,7 @@ function CardItem({ card }: { card: TCard }) {
   const checkboxes = getItemsWithMatchingKey(card.detail || {}, 'taskItem')
 
   return (
-    <div
-      className='card-item-wrapper flex flex-col rounded p-2'
-      id={card.id}
-      onClick={() => {
-        toogleCard({
-          cardId: card.id
-        })
-      }}
-    >
+    <>
       <Watching
         watchingFn={state => state.workspace.files[card.thumbnailId!].path}
       >
@@ -50,7 +42,7 @@ function CardItem({ card }: { card: TCard }) {
 
         <span>{dayjs(card.updatedAt).format('MMM DD HH:mm')}</span>
       </div>
-    </div>
+    </>
   )
 }
 

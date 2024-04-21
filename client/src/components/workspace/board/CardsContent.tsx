@@ -7,7 +7,6 @@ import {
 } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../../hooks/useAppControlParams'
-import useRenderCount from '../../../hooks/useRenderCount'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../../redux/store'
 import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
@@ -34,7 +33,6 @@ const getNewOptionOrder = ({
 
   if (options.length === 0) return
 
-  console.log({ to, length: options.length })
   if (to === 0)
     return { oldOption: options[from], newOrder: options[0].order / 2 }
   if (to === options.length - 1)
@@ -110,7 +108,6 @@ const getNewCard = (result: DropResult, propertyId: string) => {
 }
 
 export default function CardsContent() {
-  useRenderCount('CardsContent')
   const { toogleCard } = useAppControlParams()
   const { trackingId, boardId } = useBoard()
   const { mutateAsync: updateColumnPosition } = useAppMutation(
@@ -134,16 +131,13 @@ export default function CardsContent() {
       {propertyRoot && (
         <div className='relative flex-1'>
           <ScrollArea
-            className='absolute inset-0 cursor-pointer'
-            classNames={{ viewport: 'p-2' }}
+            className='absolute inset-0 mt-2 cursor-pointer'
+            classNames={{ viewport: 'px-2 pb-2' }}
             scrollbarSize={8}
           >
             <DragDropContext
               onDragEnd={result => {
-                console.log(result)
                 if (result.type === 'column') {
-                  console.log({ result })
-
                   const data = getNewOptionOrder({
                     from: result.source.index,
                     to: result.destination?.index,
