@@ -161,26 +161,44 @@ section > div {
   overflow: hidden;
 }
 
-.intro-text {
-  -webkit-text-stroke: 1px rgba($color: #fff, $alpha: 0.5);
+// .intro-text {
+//   -webkit-text-stroke: 1px rgba($color: #fff, $alpha: 0.5);
 
-  &:before {
-    content: attr(data-text);
-    position: absolute;
-    color: #fff;
+//   &:before {
+//     content: attr(data-text);
+//     position: absolute;
+//     color: #fff;
+//     width: 0%;
+//     z-index: 10;
+//     transition: width 1s;
+//     display: block;
+//     overflow-x: clip;
+//     border-right: 8px solid #fff;
+//     &::first-letter {
+//       font-size: 8rem;
+//       line-height: 1;
+//     }
+//   }
+//   &:hover::before {
+//     width: 100%;
+//     filter: drop-shadow(0 0 5px #fff);
+//   }
+// }
+
+.intro {
+  .intro-text {
+    -webkit-text-stroke: 0.5px rgba($color: #fff, $alpha: 0.5);
+  }
+
+  .intro-overlay {
     width: 0%;
-    z-index: 10;
+  
     transition: width 1s;
     display: block;
     overflow-x: clip;
-    border-right: 8px solid #fff;
-    &::first-letter {
-      font-size: 8rem;
-      line-height: 1;
-    }
   }
-  &:hover::before {
+  &:hover .intro-overlay {
     width: 100%;
-    filter: drop-shadow(0 0 5px #fff);
+    // filter: drop-shadow(0 0 5px #fff);
   }
 }
