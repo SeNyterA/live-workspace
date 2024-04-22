@@ -195,7 +195,7 @@ section > div {
     width: 0%;
     border-right: 5px solid rgba($color: #fff, $alpha: 0.5);
     transition: width 1s;
-    color: white;
+    // color: white;
     display: block;
     overflow-x: clip;
     animation: cursor 0.4s step-end infinite alternate;

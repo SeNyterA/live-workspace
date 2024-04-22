@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import './landing.scss'
 
 const Intro = () => {
@@ -22,7 +23,7 @@ const Intro = () => {
 
             <p
               data-text="&nbsp;SeNyter'A&nbsp;"
-              className='intro-overlay absolute top-0 z-10 bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 bg-clip-text text-7xl font-bold text-transparent'
+              className='intro-overlay absolute top-0 z-10 bg-gradient-to-r from-blue-400 via-yellow-500 to-indigo-900 bg-clip-text text-7xl font-bold text-transparent'
             >
               &nbsp;
               <span className='text-9xl'>S</span>
@@ -53,7 +54,11 @@ const Intro = () => {
 
 const Features = () => {
   return (
-    <div className='section relative h-screen bg-gray-400 text-black'></div>
+    <motion.div
+      className='section relative h-screen  text-black'
+      initial={{ opacity: 0, backgroundColor: '#fff' }}
+      whileInView={{ opacity: 1, backgroundColor: '#000000' }}
+    />
   )
 }
 
