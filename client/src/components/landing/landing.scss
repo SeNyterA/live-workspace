@@ -186,19 +186,37 @@ section > div {
 // }
 
 .intro {
+  letter-spacing: 10px;
   .intro-text {
     -webkit-text-stroke: 0.5px rgba($color: #fff, $alpha: 0.5);
   }
 
   .intro-overlay {
     width: 0%;
-  
+    border-right: 5px solid rgba($color: #fff, $alpha: 0.5);
     transition: width 1s;
+    color: white;
     display: block;
     overflow-x: clip;
+    animation: cursor 0.4s step-end infinite alternate;
   }
   &:hover .intro-overlay {
     width: 100%;
-    // filter: drop-shadow(0 0 5px #fff);
+    filter: drop-shadow(0 0 100px #fff);
+
+    // animation:
+    //   typing 10s steps(50, end),
+    //   cursor 0.4s step-end infinite alternate;
+  }
+}
+@keyframes cursor {
+  50% {
+    border: transparent;
+  }
+}
+
+@keyframes typing {
+  from {
+    width: 0;
   }
 }
