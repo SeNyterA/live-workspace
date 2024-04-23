@@ -65,8 +65,7 @@ html {
 }
 
 .intro {
-  letter-spacing: 0px;
-  mix-blend-mode: luminosity;
+  @apply relative text-7xl font-bold mix-blend-luminosity;
 
   .intro-overlay {
     width: 0%;
