@@ -37,41 +37,35 @@ html {
     z-index: -1;
     content: '';
     position: absolute;
-    top: -1500px;
-    right: -1500px;
-    bottom: -1500px;
-    left: -1500px;
-
+    top: -100%;
+    right: -100%;
+    bottom: -100%;
+    left: -100%;
     background: conic-gradient(#ffffffaa, #000000aa);
-    animation: spin 5s linear infinite;
-    filter: drop-shadow(0 0 10px #6366f1) blur(1500px);
+    animation: spin 1s linear infinite;
+    filter: drop-shadow(0 0 10px #6366f1) blur(100px);
   }
 
   > div:first-child:where(:not([data-none])) {
-    position: absolute;
-    inset: 40px;
-    border-radius: 20px !important;
-    overflow: hidden;
     &::before {
-      // background-blend-mode: luminosity;
+      background-blend-mode: luminosity;
       border-radius: 20px !important;
       z-index: -1;
       content: '';
       position: absolute;
-      top: -1500px;
-      right: -1500px;
-      bottom: -1500px;
-      left: -1500px;
+      top: -100%;
+      right: -100%;
+      bottom: -100%;
+      left: -100%;
       background: conic-gradient(#7f89d4, #ffffff);
       animation: spin 5s linear infinite;
-      // filter: drop-shadow(0 0 10px #6366f1) blur(0px);
+      filter: drop-shadow(0 0 10px #6366f1) blur(0px);
     }
   }
 }
 
 .intro {
   letter-spacing: 0px;
-  // animation: intro-color 5s linear infinite;
   mix-blend-mode: luminosity;
 
   .intro-overlay {
