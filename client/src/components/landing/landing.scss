@@ -11,15 +11,6 @@ html {
   }
 }
 
-// @keyframes intro-color {
-//   0% {
-//     -webkit-text-stroke-color: #000;
-//   }
-//   50% {
-//     -webkit-text-stroke-color: #fff;
-//   }
-// }
-
 @keyframes cursor {
   50% {
     border: transparent;
@@ -46,32 +37,34 @@ html {
     z-index: -1;
     content: '';
     position: absolute;
-    top: -1000px;
-    right: -1000px;
-    bottom: -1000px;
-    left: -1000px;
+    top: -1500px;
+    right: -1500px;
+    bottom: -1500px;
+    left: -1500px;
 
     background: conic-gradient(#ffffffaa, #000000aa);
     animation: spin 5s linear infinite;
-    filter: drop-shadow(0 0 10px #6366f1) blur(1000px);
+    filter: drop-shadow(0 0 10px #6366f1) blur(1500px);
   }
 
   > div:first-child:where(:not([data-none])) {
     position: absolute;
     inset: 40px;
-    border-radius: 20px;
+    border-radius: 20px !important;
     overflow: hidden;
     &::before {
+      // background-blend-mode: luminosity;
+      border-radius: 20px !important;
       z-index: -1;
       content: '';
       position: absolute;
-      top: -1000px;
-      right: -1000px;
-      bottom: -1000px;
-      left: -1000px;
-      background: conic-gradient(#fff, #000);
+      top: -1500px;
+      right: -1500px;
+      bottom: -1500px;
+      left: -1500px;
+      background: conic-gradient(#7f89d4, #ffffff);
       animation: spin 5s linear infinite;
-      filter: drop-shadow(0 0 10px #6366f1);
+      // filter: drop-shadow(0 0 10px #6366f1) blur(0px);
     }
   }
 }
@@ -79,10 +72,8 @@ html {
 .intro {
   letter-spacing: 0px;
   // animation: intro-color 5s linear infinite;
-  // mix-blend-mode: difference;
-  .intro-text {
-    -webkit-text-stroke: 0.5px rgba($color: #56d40d, $alpha: 1);
-  }
+  mix-blend-mode: luminosity;
+
   .intro-overlay {
     width: 0%;
     border-right: 5px solid rgba($color: #6366f1, $alpha: 1);
@@ -93,15 +84,8 @@ html {
   &:hover .intro-overlay {
     width: 100%;
     filter: drop-shadow(0 0 100px #6366f1);
-    // animation:
-    //   typing 2s steps(50, end),
-    //   cursor 0.4s step-end infinite alternate;
+    animation:
+      typing 2s steps(50, end),
+      cursor 0.4s step-end infinite alternate;
   }
-}
-
-.text-with-background {
-  background: linear-gradient(to right, red, blue);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
