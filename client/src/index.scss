@@ -25,7 +25,7 @@ pre {
 
 @layer components {
   body {
-    @apply h-screen w-screen overflow-hidden text-gray-50;
+    @apply text-gray-50;
   }
 
   .layout {
@@ -45,7 +45,7 @@ pre {
   }
 
   .card-item-wrapper {
-    @apply bg-gray-50/10 focus-visible:ring-1 outline-none ring-violet-400;
+    @apply bg-gray-50/10 outline-none ring-violet-400 focus-visible:ring-1;
   }
 
   .card-propetes-wrapper {
@@ -65,7 +65,7 @@ pre {
   }
 
   .column-header {
-    @apply bg-gray-900/90 ring-violet-400 group-hover:bg-gray-800 group-hover:shadow focus-visible:outline-none;
+    @apply bg-gray-900/90 ring-violet-400 focus-visible:outline-none group-hover:bg-gray-800 group-hover:shadow;
   }
 
   .customscroll {

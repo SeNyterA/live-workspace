@@ -9,6 +9,7 @@ import { extractApi } from '../../types'
 import Sidebar from '../sidebar/Sidebar'
 import AppHeader from './AppHeader'
 import TeamList from './TeamList'
+import '../landing/landing.scss'
 
 export type TThread = {
   threadId: string
@@ -153,6 +154,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     <>
       {/* <div className='fixed inset-0 bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat blur' /> */}
       <div className='fixed inset-0 bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-blue-500 to-90% bg-cover bg-center bg-no-repeat blur' />
+      {/* <div className='content'></div> */}
+
       <div className='layout fixed inset-0 flex h-screen w-screen flex-col text-sm'>
         <LoadingOverlay
           visible={isPending}
