@@ -7,8 +7,10 @@ const Intro = () => {
   const background = useTransform(
     x,
     [-100, 0, 100],
-    ['#ff008c', '#7700ff', 'rgb(230, 255, 0)']
+    ['#ff008c', '#03141e', 'rgb(230, 255, 0)']
   )
+
+  const rotate = useTransform(x, [-100, 0, 100], ['-45deg', '0deg', '45deg'])
 
   return (
     <div className='content flex h-screen flex-col bg-black/80 p-10 text-black'>
@@ -18,7 +20,7 @@ const Intro = () => {
             className='flex flex-1 items-center rounded-xl border-none px-3 py-1.5 font-semibold text-slate-900 no-underline outline-0'
             href='https://github.com/SeNyterA'
           >
-            <IconBrandGithub size={24} /> @SeNyterA
+            <IconBrandGithub size={24} /> <span className='ml-2'>SeNyterA</span>
           </motion.a>
 
           <p>Login</p>
@@ -36,14 +38,14 @@ const Intro = () => {
 
         <motion.div
           style={{ background, translateX: '-50%' }}
-          className='absolute bottom-10 left-1/2 z-10 h-12 w-12 rounded-2xl bg-blend-screen backdrop-brightness-105'
+          className='absolute bottom-10 left-1/2 z-10 gap-10 rounded-2xl bg-blend-screen backdrop-brightness-105'
         >
           <motion.div
-            className='flex h-12 w-12 items-center justify-center rounded-2xl'
+            className='flex h-12 w-12 items-center justify-center rounded-2xl text-white'
             drag='x'
             dragConstraints={{ left: 0, right: 0 }}
-            style={{ x }}
-            dragTransition={{ bounceStiffness: 600, bounceDamping: 10 }}
+            style={{ x, rotate, color: background }}
+            dragTransition={{ bounceStiffness: 600, bounceDamping: 15 }}
           >
             <IconX size={40} />
           </motion.div>
@@ -84,8 +86,11 @@ const Intro = () => {
 
 const Features = () => {
   return (
-    <div className='content bg-clip-padding absolute inset-0'>
-      <div data-none className='rounded-[20px] bg-black/90 absolute inset-10'></div>
+    <div className='content absolute inset-0 bg-clip-padding'>
+      <div
+        data-none
+        className='absolute inset-10 rounded-[20px] bg-black/90'
+      ></div>
     </div>
   )
 }
@@ -93,8 +98,8 @@ const Features = () => {
 export default function LandingContent() {
   return (
     <>
-      {/* <Intro /> */}
-      <Features />
+      <Intro />
+      {/* <Features /> */}
     </>
   )
 }
