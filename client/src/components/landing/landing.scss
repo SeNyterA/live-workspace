@@ -65,16 +65,19 @@ html {
 }
 
 .intro {
-  @apply relative text-7xl font-bold mix-blend-luminosity;
+  @apply absolute h-fit w-fit text-7xl font-bold;
 
-  .intro-overlay {
-    width: 0%;
-    border-right: 5px solid rgba($color: #6366f1, $alpha: 1);
-    transition: width 1s;
-    display: block;
+  .intro-text {
+    @apply h-full w-full items-center justify-center text-transparent;
+    -webkit-text-stroke: 1px #6366f1;
+  }
+  .intro-text-overlay {
+    @apply absolute bottom-0 left-0 top-0 w-0 overflow-hidden border-0 border-r-8 border-solid border-gray-950 bg-gradient-to-r from-blue-900 via-yellow-900 to-indigo-900 bg-clip-text text-transparent mix-blend-luminosity transition-[width] duration-1000 ease-in-out;
     animation: cursor 0.4s step-end infinite alternate;
   }
-  &:hover .intro-overlay {
+
+  &:hover .intro-text-overlay {
+    mix-blend-mode: soft-light;
     width: 100%;
     filter: drop-shadow(0 0 100px #6366f1);
     animation:
