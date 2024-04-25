@@ -3,16 +3,9 @@ import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useState } from 'react'
 import ChipTabs from './Tabs'
 import './landing.scss'
+import { TextParallaxContentExample } from './ScrollContent'
 
-const imgs = [
-  '/imgs/nature/1.jpg',
-  '/imgs/nature/2.jpg',
-  '/imgs/nature/3.jpg',
-  '/imgs/nature/4.jpg',
-  '/imgs/nature/5.jpg',
-  '/imgs/nature/6.jpg',
-  '/imgs/nature/7.jpg'
-]
+const imgs = ['/imgs/nature/1.jpg', '/imgs/nature/2.jpg']
 const DRAG_BUFFER = 100
 const SPRING_OPTIONS = {
   type: 'spring',
@@ -84,45 +77,48 @@ const Intro = () => {
                 transition={SPRING_OPTIONS}
                 className={`relative h-full w-full shrink-0 rounded-xl object-cover ${imgIndex === idx && 'bgConicContainer'}`}
               >
-                <motion.div
-                  className='intro left-10 top-1/2 h-[140px]'
-                  style={{
-                    translateY: '-50%'
-                  }}
-                  initial={{ opacity: 0, translateX: -100 }}
-                  whileInView={{
-                    scale: [1, 1.05, 1],
-                    transition: { duration: 0.5 },
-                    opacity: 1,
-                    translateX: 0
-                  }}
-                >
-                  <div className='intro-text'>
-                    &nbsp;
-                    <span className='text-9xl'>S</span>
-                    <span>eNyter'A</span>
-                    <sup className='text-3xl'>.online</sup>
-                    &nbsp;
-                  </div>
+                {idx == 0 && (
                   <motion.div
-                    className='intro-text-overlay'
-                    initial={{ width: 0 }}
-                    whileInView={{ width: '100%' }}
+                    className='intro left-10 top-1/2 h-[140px]'
+                    style={{
+                      translateY: '-50%'
+                    }}
+                    initial={{ opacity: 0, translateX: -100 }}
+                    whileInView={{
+                      scale: [1, 1.05, 1],
+                      transition: { duration: 0.5 },
+                      opacity: 1,
+                      translateX: 0
+                    }}
                   >
-                    &nbsp;
-                    <span className='text-9xl'>S</span>
-                    <span>eNyter'A</span>
-                    <sup className='text-3xl'>.online</sup>
-                    &nbsp;
+                    <div className='intro-text'>
+                      &nbsp;
+                      <span className='text-9xl'>S</span>
+                      <span>eNyter'A</span>
+                      <sup className='text-3xl'>.online</sup>
+                      &nbsp;
+                    </div>
+                    <motion.div
+                      className='intro-text-overlay'
+                      initial={{ width: 0 }}
+                      whileInView={{ width: '100%' }}
+                    >
+                      &nbsp;
+                      <span className='text-9xl'>S</span>
+                      <span>eNyter'A</span>
+                      <sup className='text-3xl'>.online</sup>
+                      &nbsp;
+                    </motion.div>
                   </motion.div>
-                </motion.div>
+                )}
+                {idx == 1 && <TextParallaxContentExample />}
               </motion.div>
             )
           })}
         </motion.div>
       </div>
 
-      <div className='fixed left-10 right-10 top-10 flex items-center justify-between gap-3 p-4 font-semibold'>
+      <div className='fixed left-10 right-10 top-10 flex items-center justify-between gap-3 p-4 font-semibold bg-blend-lighten'>
         <motion.a
           className='flex flex-1 items-center rounded-xl border-none px-3 py-1.5 font-semibold text-slate-950 no-underline outline-0'
           href='https://github.com/SeNyterA'
@@ -156,7 +152,7 @@ const Intro = () => {
           <motion.div
             onDragEnd={onDragEnd}
             onDrag={onDrag}
-            onChange={e=>console.log(e)}
+            onChange={e => console.log(e)}
             className='flex h-12 w-12 cursor-grab items-center justify-center rounded-2xl bg-slate-950 text-gray-600'
             drag='x'
             dragConstraints={{ left: 0, right: 0 }}
@@ -184,4 +180,5 @@ const Intro = () => {
 
 export default function LandingContent() {
   return <Intro />
+  return <TextParallaxContentExample />
 }
