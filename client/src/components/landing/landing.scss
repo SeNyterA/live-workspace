@@ -1,7 +1,3 @@
-html {
-  // scroll-snap-type: y mandatory;
-}
-
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -23,16 +19,29 @@ html {
   }
 }
 
-.content {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  scroll-snap-align: center;
-  perspective: 500px;
-  position: relative;
-  overflow: hidden;
+.intro {
+  @apply absolute h-fit w-fit text-7xl font-bold;
 
+  .intro-text {
+    @apply h-full w-full items-center justify-center text-transparent;
+    -webkit-text-stroke: 1px rgb(2 6 23 / 0.6);
+  }
+  .intro-text-overlay {
+    @apply absolute bottom-0 left-0 top-0 w-0 overflow-hidden border-0 border-r-8 border-solid border-slate-950/60 transition-[width] duration-[2000ms] ease-in-out;
+    animation: cursor 0.4s step-end infinite alternate;
+  }
+
+  &:hover .intro-text-overlay {
+    // @apply bg-gradient-to-r from-blue-500 via-yellow-500 to-indigo-500 bg-clip-text text-transparent mix-blend-luminosity;
+    // // width: 100%;
+    // filter: drop-shadow(0 0 100px #000113);
+    // animation:
+    //   typing 2s steps(50, end),
+    //   cursor 0.4s step-end infinite alternate;
+  }
+}
+
+.backgroudConic {
   &::before {
     z-index: -1;
     content: '';
@@ -45,43 +54,17 @@ html {
     animation: spin 1s linear infinite;
     filter: drop-shadow(0 0 10px #6366f1) blur(100px);
   }
-
-  > div:first-child:where(:not([data-none])) {
-    &::before {
-      background-blend-mode: luminosity;
-      border-radius: 20px !important;
-      z-index: -1;
-      content: '';
-      position: absolute;
-      top: -100%;
-      right: -100%;
-      bottom: -100%;
-      left: -100%;
-      background: conic-gradient(#7f89d4, #ffffff);
-      animation: spin 5s linear infinite;
-      filter: drop-shadow(0 0 10px #6366f1) blur(0px);
-    }
-  }
 }
-
-.intro {
-  @apply absolute h-fit w-fit text-7xl font-bold;
-
-  .intro-text {
-    @apply h-full w-full items-center justify-center text-transparent;
-    -webkit-text-stroke: 1px #6366f1;
-  }
-  .intro-text-overlay {
-    @apply absolute bottom-0 left-0 top-0 w-0 overflow-hidden border-0 border-r-8 border-solid border-gray-950 bg-gradient-to-r from-blue-900 via-yellow-900 to-indigo-900 bg-clip-text text-transparent mix-blend-luminosity transition-[width] duration-1000 ease-in-out;
-    animation: cursor 0.4s step-end infinite alternate;
-  }
-
-  &:hover .intro-text-overlay {
-    mix-blend-mode: soft-light;
-    width: 100%;
-    filter: drop-shadow(0 0 100px #6366f1);
-    animation:
-      typing 2s steps(50, end),
-      cursor 0.4s step-end infinite alternate;
+.bgConicContainer {
+  &::before {
+    border-radius: 20px !important;
+    content: '';
+    position: absolute;
+    top: -100%;
+    right: -100%;
+    bottom: -100%;
+    left: -100%;
+    background: conic-gradient(#898ca5, #ffffff);
+    animation: spin 5s linear infinite;
   }
 }
