@@ -43,7 +43,7 @@ const Intro = () => {
   )
 
   return (
-    <div className='backgroudConic fixed inset-0 p-10 text-slate-950'>
+    <div className='backgroudConic fixed inset-0 mb-10 p-10 pt-12 text-slate-950'>
       <div className='relative h-full overflow-hidden rounded-[20px]'>
         <motion.div
           drag='x'
@@ -118,30 +118,23 @@ const Intro = () => {
         </motion.div>
       </div>
 
-      <div className='fixed left-10 right-10 top-10 flex items-center justify-between gap-3 p-4 font-semibold bg-blend-lighten'>
+      <div className='fixed left-10 right-10 top-1 flex items-center justify-between gap-3 font-semibold bg-blend-lighten'>
         <motion.a
           className='flex flex-1 items-center rounded-xl border-none px-3 py-1.5 font-semibold text-slate-950 no-underline outline-0'
           href='https://github.com/SeNyterA'
         >
-          <IconBrandGithub size={24} /> <span className='ml-2'>SeNyterA</span>
+          <span className='ml-2 text-xl'>SeNyterA</span>
         </motion.a>
 
         <ChipTabs />
       </div>
 
-      <div className='fixed bottom-20 left-1/2 z-50 flex translate-x-[-50%] gap-28'>
+      <div className='fixed bottom-4 left-1/2 z-50 flex translate-x-[-50%] gap-28'>
         <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'>
           <IconPlus size={40} />
         </motion.div>
 
         <motion.div className='relative h-12 w-12 rounded-2xl bg-blend-screen ring-offset-2 hover:ring-2'>
-          <motion.p
-            style={{ visibility: showControlTitle }}
-            className='absolute left-1/2 top-[-40px] translate-x-[-50%] text-2xl font-bold uppercase'
-          >
-            About
-            {/* {imgIndex + 1}/{imgs.length} */}
-          </motion.p>
           <motion.div
             className='absolute inset-0 flex items-center justify-center text-slate-950'
             style={{ rotate }}
