@@ -1,8 +1,8 @@
 import { IconBrandGithub, IconPlus } from '@tabler/icons-react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
-import { SwipeCarousel } from './Silde'
-import './landing.scss'
 import { useState } from 'react'
+import './landing.scss'
+import ChipTabs from './Tabs'
 
 const imgs = [
   '/imgs/nature/1.jpg',
@@ -13,7 +13,7 @@ const imgs = [
   '/imgs/nature/6.jpg',
   '/imgs/nature/7.jpg'
 ]
-const DRAG_BUFFER = 50
+const DRAG_BUFFER = 100
 const SPRING_OPTIONS = {
   type: 'spring',
   mass: 3,
@@ -21,13 +21,11 @@ const SPRING_OPTIONS = {
   damping: 50
 }
 const Intro = () => {
-  const x = useMotionValue(0)
-
   const [imgIndex, setImgIndex] = useState(0)
   const dragX = useMotionValue(0)
+
   const onDragEnd = () => {
     const x = dragX.get()
-
     if (x <= -DRAG_BUFFER && imgIndex < imgs.length - 1) {
       setImgIndex(pv => pv + 1)
     } else if (x >= DRAG_BUFFER && imgIndex > 0) {
@@ -35,7 +33,7 @@ const Intro = () => {
     }
   }
   const rotate = useTransform(
-    x,
+    dragX,
     [-120, -100, 100, 120],
     ['-1125deg', '0deg', '0deg', '1125deg']
   )
@@ -120,17 +118,7 @@ const Intro = () => {
           <IconBrandGithub size={24} /> <span className='ml-2'>SeNyterA</span>
         </motion.a>
 
-        <p>Login</p>
-        <motion.button
-          className='h-8 rounded-lg border-none bg-slate-950 px-3 text-gray-50 outline-0 ring-offset-2 hover:ring-1'
-          whileInView={{
-            scale: [1, 1.1, 1],
-            translateY: [-3, 0],
-            transition: { duration: 0.4 }
-          }}
-        >
-          Register
-        </motion.button>
+        <ChipTabs />
       </div>
 
       <div className='fixed bottom-20 left-1/2 z-50 flex translate-x-[-50%] gap-28'>
@@ -139,6 +127,9 @@ const Intro = () => {
         </motion.div>
 
         <motion.div className='relative h-12 w-12 rounded-2xl bg-blend-screen ring-offset-2 hover:ring-2'>
+          <motion.p className='absolute left-1/2 top-[-40px] translate-x-[-50%] text-3xl font-semibold uppercase'>
+            About
+          </motion.p>
           <motion.div
             className='absolute inset-0 flex items-center justify-center text-slate-950'
             style={{ rotate }}
@@ -147,12 +138,13 @@ const Intro = () => {
           </motion.div>
 
           <motion.div
+            onDragEnd={onDragEnd}
             className='flex h-12 w-12 cursor-grab items-center justify-center rounded-2xl bg-slate-950 text-gray-600'
             drag='x'
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
             style={{
-              x,
+              x: dragX,
               filter: 'drop-shadow(0 0 4px #000000aa)'
             }}
             dragTransition={{ bounceStiffness: 600, bounceDamping: 15 }}
