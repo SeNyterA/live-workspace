@@ -10,9 +10,7 @@ const imgs = [
   '/imgs/nature/6.jpg',
   '/imgs/nature/7.jpg'
 ]
-
 const DRAG_BUFFER = 50
-
 const SPRING_OPTIONS = {
   type: 'spring',
   mass: 3,
