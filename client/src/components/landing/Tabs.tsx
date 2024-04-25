@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { Dispatch, SetStateAction, useState } from 'react'
 
-const tabs = ['Home', 'Search', 'About', 'FAQ']
+const tabs = ['Intro', 'About me', 'Exprience', 'Projects', 'Contact']
 
 const ChipTabs = () => {
   const [selected, setSelected] = useState(tabs[0])
@@ -36,7 +36,7 @@ const Chip = ({
         selected
           ? 'text-white'
           : 'text-slate-950 hover:bg-slate-700 hover:text-slate-200'
-      } relative rounded-md px-2.5 py-0.5 text-sm outline-none transition-colors border-none bg-transparent`}
+      } relative rounded-md border-none bg-transparent px-2.5 py-0.5 text-base outline-none transition-colors`}
     >
       <span className='relative z-10'>{text}</span>
       {selected && (

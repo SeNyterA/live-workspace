@@ -1,8 +1,8 @@
 import { IconBrandGithub, IconPlus } from '@tabler/icons-react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useState } from 'react'
-import './landing.scss'
 import ChipTabs from './Tabs'
+import './landing.scss'
 
 const imgs = [
   '/imgs/nature/1.jpg',
@@ -23,6 +23,7 @@ const SPRING_OPTIONS = {
 const Intro = () => {
   const [imgIndex, setImgIndex] = useState(0)
   const dragX = useMotionValue(0)
+  const showControlTitle = useMotionValue<'hidden' | 'visible'>('hidden')
 
   const onDragEnd = () => {
     const x = dragX.get()
@@ -32,9 +33,19 @@ const Intro = () => {
       setImgIndex(pv => pv - 1)
     }
   }
+
+  const onDrag = () => {
+    const x = dragX.get()
+    if (x <= -DRAG_BUFFER || x >= DRAG_BUFFER) {
+      showControlTitle.set('visible')
+    } else {
+      showControlTitle.set('hidden')
+    }
+  }
+
   const rotate = useTransform(
     dragX,
-    [-120, -100, 100, 120],
+    [-120, -DRAG_BUFFER, DRAG_BUFFER, 120],
     ['-1125deg', '0deg', '0deg', '1125deg']
   )
 
@@ -55,6 +66,7 @@ const Intro = () => {
           }}
           transition={SPRING_OPTIONS}
           onDragEnd={onDragEnd}
+          onDrag={onDrag}
           className='flex h-full cursor-grab items-center space-x-4 active:cursor-grabbing'
         >
           {imgs.map((imgSrc, idx) => {
@@ -127,8 +139,12 @@ const Intro = () => {
         </motion.div>
 
         <motion.div className='relative h-12 w-12 rounded-2xl bg-blend-screen ring-offset-2 hover:ring-2'>
-          <motion.p className='absolute left-1/2 top-[-40px] translate-x-[-50%] text-3xl font-semibold uppercase'>
+          <motion.p
+            style={{ visibility: showControlTitle }}
+            className='absolute left-1/2 top-[-40px] translate-x-[-50%] text-2xl font-bold uppercase'
+          >
             About
+            {/* {imgIndex + 1}/{imgs.length} */}
           </motion.p>
           <motion.div
             className='absolute inset-0 flex items-center justify-center text-slate-950'
@@ -139,6 +155,8 @@ const Intro = () => {
 
           <motion.div
             onDragEnd={onDragEnd}
+            onDrag={onDrag}
+            onChange={e=>console.log(e)}
             className='flex h-12 w-12 cursor-grab items-center justify-center rounded-2xl bg-slate-950 text-gray-600'
             drag='x'
             dragConstraints={{ left: 0, right: 0 }}
@@ -151,7 +169,12 @@ const Intro = () => {
           />
         </motion.div>
 
-        <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'>
+        <motion.div
+          className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'
+          onClick={() =>
+            setImgIndex(index => (index + 1 > imgs.length - 1 ? 0 : index + 1))
+          }
+        >
           <IconPlus size={40} />
         </motion.div>
       </div>
