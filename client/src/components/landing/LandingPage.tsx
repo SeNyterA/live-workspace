@@ -1,9 +1,11 @@
-import { IconBrandGithub, IconPlus } from '@tabler/icons-react'
+import { IconPlus } from '@tabler/icons-react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useState } from 'react'
-import './landing.scss'
 import { Chip } from './Chip'
-import { TextParallaxContentExample } from './ScrollContent'
+import './landing.scss'
+import Exprience from './secssions/Exprience'
+import Intro from './secssions/Intro'
+import { Project } from './secssions/Project'
 
 const DRAG_BUFFER = 100
 const SPRING_OPTIONS = {
@@ -15,7 +17,7 @@ const SPRING_OPTIONS = {
 
 export const tabs = ['Intro', 'About me', 'Exprience', 'Projects', 'Contact']
 
-const Intro = () => {
+export default function LandingContent() {
   const [imgIndex, setImgIndex] = useState(0)
   const dragX = useMotionValue(0)
 
@@ -70,41 +72,9 @@ const Intro = () => {
                 transition={SPRING_OPTIONS}
                 className={`relative h-full w-full shrink-0 rounded-xl object-cover ${imgIndex === idx && 'bgConicContainer'}`}
               >
-                {idx == 0 && (
-                  <motion.div
-                    className='intro left-10 top-1/2 h-[140px]'
-                    style={{
-                      translateY: '-50%'
-                    }}
-                    initial={{ opacity: 0, translateX: -100 }}
-                    whileInView={{
-                      scale: [1, 1.05, 1],
-                      transition: { duration: 0.5 },
-                      opacity: 1,
-                      translateX: 0
-                    }}
-                  >
-                    <div className='intro-text'>
-                      &nbsp;
-                      <span className='text-9xl'>S</span>
-                      <span>eNyter'A</span>
-                      <sup className='text-3xl'>.online</sup>
-                      &nbsp;
-                    </div>
-                    <motion.div
-                      className='intro-text-overlay'
-                      initial={{ width: 0 }}
-                      whileInView={{ width: '100%' }}
-                    >
-                      &nbsp;
-                      <span className='text-9xl'>S</span>
-                      <span>eNyter'A</span>
-                      <sup className='text-3xl'>.online</sup>
-                      &nbsp;
-                    </motion.div>
-                  </motion.div>
-                )}
-                {idx == 2 && <TextParallaxContentExample />}
+                {idx == 0 && <Intro />}
+                {idx == 2 && <Exprience />}
+                {idx == 1 && <Project />}
               </motion.div>
             )
           })}
@@ -149,9 +119,15 @@ const Intro = () => {
       </motion.div>
 
       <motion.div
-        className='fixed left-1/2 z-50 flex translate-x-[-50%] gap-28'
+        className='fixed left-1/2 z-50 flex gap-28'
+        initial={{ bottom: 80, translateY: 20, translateX: '-50%', opacity: 0 }}
         animate={{
           bottom: imgIndex == 0 ? 80 : 16
+        }}
+        whileInView={{
+          translateY: 0,
+          opacity: 1,
+          translateX: '-50%'
         }}
       >
         <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'>
@@ -193,8 +169,4 @@ const Intro = () => {
       </motion.div>
     </motion.div>
   )
-}
-
-export default function LandingContent() {
-  return <Intro />
 }
