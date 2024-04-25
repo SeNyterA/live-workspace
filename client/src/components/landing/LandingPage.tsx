@@ -1,11 +1,10 @@
 import { IconBrandGithub, IconPlus } from '@tabler/icons-react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useState } from 'react'
-import ChipTabs from './Tabs'
+import ChipTabs, { tabs } from './Tabs'
 import './landing.scss'
 import { TextParallaxContentExample } from './ScrollContent'
 
-const imgs = ['/imgs/nature/1.jpg', '/imgs/nature/2.jpg']
 const DRAG_BUFFER = 100
 const SPRING_OPTIONS = {
   type: 'spring',
@@ -20,7 +19,7 @@ const Intro = () => {
 
   const onDragEnd = () => {
     const x = dragX.get()
-    if (x <= -DRAG_BUFFER && imgIndex < imgs.length - 1) {
+    if (x <= -DRAG_BUFFER && imgIndex < tabs.length - 1) {
       setImgIndex(pv => pv + 1)
     } else if (x >= DRAG_BUFFER && imgIndex > 0) {
       setImgIndex(pv => pv - 1)
@@ -62,15 +61,10 @@ const Intro = () => {
           onDrag={onDrag}
           className='flex h-full cursor-grab items-center space-x-4 active:cursor-grabbing'
         >
-          {imgs.map((imgSrc, idx) => {
+          {tabs.map((_, idx) => {
             return (
               <motion.div
                 key={idx}
-                style={{
-                  backgroundImage: `url(${imgSrc})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
                 animate={{
                   scale: imgIndex === idx ? 1 : 0.97
                 }}
@@ -161,7 +155,7 @@ const Intro = () => {
         <motion.div
           className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'
           onClick={() =>
-            setImgIndex(index => (index + 1 > imgs.length - 1 ? 0 : index + 1))
+            setImgIndex(index => (index + 1 > tabs.length - 1 ? 0 : index + 1))
           }
         >
           <IconPlus size={40} />
