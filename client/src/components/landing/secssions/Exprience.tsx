@@ -7,12 +7,16 @@ export default function Exprience() {
     <div className='absolute inset-0 flex overflow-y-scroll'>
       <motion.div className='flex-1 space-y-2'>
         {Array.from({ length: 1000 }).map((_, i) => (
-          <div className='h-20 bg-slate-300 flex items-center justify-center'>{i}</div>
+          <div className='flex h-20 items-center justify-center bg-slate-300'>
+            {i}
+          </div>
         ))}
       </motion.div>
       <motion.div className='flex-1 space-y-2'>
         {Array.from({ length: 1000 }).map((_, i) => (
-          <div className='h-20 bg-blue-300 flex items-center justify-center'>{i}</div>
+          <div className='flex h-20 items-center justify-center bg-blue-300'>
+            {i}
+          </div>
         ))}
       </motion.div>
     </div>

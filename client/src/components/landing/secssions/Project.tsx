@@ -10,6 +10,7 @@ import { FiArrowUpRight } from 'react-icons/fi'
 
 export const Project = () => {
   const viewPortRef = useRef<HTMLDivElement>(null)
+
   return (
     <ScrollArea
       className='absolute inset-0 rounded-[20px]'
@@ -89,7 +90,8 @@ const StickyImage = ({
   const { scrollYProgress, scrollY } = useScroll({
     target: targetRef,
     container: viewPortRef,
-    offset: ['end end', 'end start']
+    offset: ['end end', 'end start'],
+    layoutEffect: false
   })
 
   useMotionValueEvent(scrollY, 'change', latest => {
@@ -135,7 +137,8 @@ const OverlayCopy = ({
   const { scrollYProgress } = useScroll({
     target: targetRef,
     container: viewPortRef,
-    offset: ['start end', 'end start']
+    offset: ['start end', 'end start'],
+    layoutEffect: false
   })
 
   const y = useTransform(scrollYProgress, [0, 1], [250, -250])

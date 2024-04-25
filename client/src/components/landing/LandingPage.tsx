@@ -21,6 +21,8 @@ export default function LandingContent() {
   const [imgIndex, setImgIndex] = useState(0)
   const dragX = useMotionValue(0)
 
+  console.count('LandingContent')
+
   const onDragEnd = () => {
     const x = dragX.get()
     if (x <= -DRAG_BUFFER && imgIndex < tabs.length - 1) {
@@ -74,7 +76,7 @@ export default function LandingContent() {
               >
                 {idx == 0 && <Intro />}
                 {idx == 2 && <Exprience />}
-                {idx == 1 && <Project />}
+                {idx == 3 && <Project />}
               </motion.div>
             )
           })}
