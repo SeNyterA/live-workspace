@@ -1,12 +1,7 @@
-import { IconBrandGithub, IconPlus, IconX } from '@tabler/icons-react'
-import {
-  AnimatePresence,
-  motion,
-  useMotionValue,
-  useTransform
-} from 'framer-motion'
+import { IconPlus } from '@tabler/icons-react'
+import { motion, useMotionValue, useTransform } from 'framer-motion'
+import { SwipeCarousel } from './Silde'
 import './landing.scss'
-import { GradientEdges, SwipeCarousel } from './Silde'
 
 const Intro = () => {
   const x = useMotionValue(0)
@@ -19,7 +14,7 @@ const Intro = () => {
 
   return (
     <div className='backgroudConic fixed inset-0 p-10 text-slate-950'>
-      <AnimatePresence initial={false}>
+      {/* <AnimatePresence initial={false}>
         <motion.div
           className='bgConicContainer relative h-full w-full overflow-hidden rounded-[20px]'
           style={{
@@ -93,9 +88,9 @@ const Intro = () => {
             </motion.div>
           </motion.div>
         </motion.div>
-      </AnimatePresence>
+      </AnimatePresence> */}
 
-      {/* <SwipeCarousel /> */}
+      <SwipeCarousel />
 
       {/* <div className='fixed left-10 right-10 top-10 flex items-center justify-between gap-3 p-4 font-semibold'>
         <motion.a
