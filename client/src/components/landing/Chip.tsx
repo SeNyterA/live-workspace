@@ -1,26 +1,7 @@
 import { motion } from 'framer-motion'
 import { Dispatch, SetStateAction, useState } from 'react'
 
-export const tabs = ['Intro', 'About me', 'Exprience', 'Projects', 'Contact']
-
-const ChipTabs = () => {
-  const [selected, setSelected] = useState(tabs[0])
-
-  return (
-    <div className='flex flex-wrap items-center gap-2'>
-      {tabs.map(tab => (
-        <Chip
-          text={tab}
-          selected={selected === tab}
-          setSelected={setSelected}
-          key={tab}
-        />
-      ))}
-    </div>
-  )
-}
-
-const Chip = ({
+export const Chip = ({
   text,
   selected,
   setSelected
@@ -49,5 +30,3 @@ const Chip = ({
     </button>
   )
 }
-
-export default ChipTabs

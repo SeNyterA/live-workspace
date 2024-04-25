@@ -4,13 +4,14 @@ import { ReactNode, useRef } from 'react'
 import { FiArrowUpRight } from 'react-icons/fi'
 
 export const TextParallaxContentExample = () => {
+  const viewPortRef = useRef<HTMLDivElement>(null)
   return (
     <ScrollArea
-      className='absolute inset-0 overflow-y-auto'
-      scrollbarSize={8}
-      classNames={{ thumb: 'right-0.5' }}
+      className='absolute inset-0 rounded-[20px]'
+      viewportRef={viewPortRef}
     >
       <TextParallaxContent
+        viewPortRef={viewPortRef}
         imgUrl='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
         subheading='Collaborate'
         heading='Built for all of us.'
@@ -18,6 +19,7 @@ export const TextParallaxContentExample = () => {
         <ExampleContent />
       </TextParallaxContent>
       <TextParallaxContent
+        viewPortRef={viewPortRef}
         imgUrl='https://images.unsplash.com/photo-1530893609608-32a9af3aa95c?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
         subheading='Quality'
         heading='Never compromise.'
@@ -25,6 +27,7 @@ export const TextParallaxContentExample = () => {
         <ExampleContent />
       </TextParallaxContent>
       <TextParallaxContent
+        viewPortRef={viewPortRef}
         imgUrl='https://images.unsplash.com/photo-1504610926078-a1611febcad3?q=80&w=2416&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
         subheading='Modern'
         heading='Dress for the best.'
@@ -41,12 +44,14 @@ const TextParallaxContent = ({
   imgUrl,
   subheading,
   heading,
-  children
+  children,
+  viewPortRef
 }: {
   imgUrl: string
   subheading: string
   heading: string
   children: ReactNode
+  viewPortRef: React.RefObject<HTMLDivElement>
 }) => {
   return (
     <div
@@ -56,7 +61,7 @@ const TextParallaxContent = ({
       }}
     >
       <div className='relative h-[150vh]'>
-        <StickyImage imgUrl={imgUrl} />
+        <StickyImage imgUrl={imgUrl} viewPortRef={viewPortRef} />
         <OverlayCopy heading={heading} subheading={subheading} />
       </div>
       {children}
@@ -64,10 +69,18 @@ const TextParallaxContent = ({
   )
 }
 
-const StickyImage = ({ imgUrl }: { imgUrl: string }) => {
+const StickyImage = ({
+  imgUrl,
+  viewPortRef
+}: {
+  imgUrl: string
+  viewPortRef: React.RefObject<HTMLDivElement>
+}) => {
   const targetRef = useRef(null)
   const { scrollYProgress } = useScroll({
     target: targetRef,
+    container: viewPortRef,
+    smooth: 1,
     offset: ['end end', 'end start']
   })
 
@@ -80,7 +93,7 @@ const StickyImage = ({ imgUrl }: { imgUrl: string }) => {
         backgroundImage: `url(${imgUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        height: `calc(100vh - 124px - ${IMG_PADDING * 2}px)`,
+        height: `calc(100vh - 128px - ${IMG_PADDING * 2}px)`,
         top: IMG_PADDING,
         scale
       }}

@@ -1,8 +1,8 @@
 import { IconBrandGithub, IconPlus } from '@tabler/icons-react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useState } from 'react'
-import ChipTabs, { tabs } from './Tabs'
 import './landing.scss'
+import { Chip } from './Chip'
 import { TextParallaxContentExample } from './ScrollContent'
 
 const DRAG_BUFFER = 100
@@ -12,10 +12,12 @@ const SPRING_OPTIONS = {
   stiffness: 400,
   damping: 50
 }
+
+export const tabs = ['Intro', 'About me', 'Exprience', 'Projects', 'Contact']
+
 const Intro = () => {
   const [imgIndex, setImgIndex] = useState(0)
   const dragX = useMotionValue(0)
-  const showControlTitle = useMotionValue<'hidden' | 'visible'>('hidden')
 
   const onDragEnd = () => {
     const x = dragX.get()
@@ -26,15 +28,6 @@ const Intro = () => {
     }
   }
 
-  const onDrag = () => {
-    const x = dragX.get()
-    if (x <= -DRAG_BUFFER || x >= DRAG_BUFFER) {
-      showControlTitle.set('visible')
-    } else {
-      showControlTitle.set('hidden')
-    }
-  }
-
   const rotate = useTransform(
     dragX,
     [-120, -DRAG_BUFFER, DRAG_BUFFER, 120],
@@ -42,8 +35,14 @@ const Intro = () => {
   )
 
   return (
-    <div className='backgroudConic fixed inset-0 mb-10 p-10 pt-12 text-slate-950'>
-      <div className='relative h-full overflow-hidden rounded-[20px]'>
+    <motion.div
+      className='backgroudConic fixed inset-0 p-10 text-slate-950'
+      animate={{
+        paddingTop: imgIndex == 0 ? 40 : 48,
+        paddingBottom: imgIndex == 0 ? 40 : 80
+      }}
+    >
+      <div className='relative h-full overflow-hidden rounded-3xl'>
         <motion.div
           drag='x'
           dragConstraints={{
@@ -58,7 +57,7 @@ const Intro = () => {
           }}
           transition={SPRING_OPTIONS}
           onDragEnd={onDragEnd}
-          onDrag={onDrag}
+          // onDrag={onDrag}
           className='flex h-full cursor-grab items-center space-x-4 active:cursor-grabbing'
         >
           {tabs.map((_, idx) => {
@@ -105,25 +104,56 @@ const Intro = () => {
                     </motion.div>
                   </motion.div>
                 )}
-                {idx == 1 && <TextParallaxContentExample />}
+                {idx == 2 && <TextParallaxContentExample />}
               </motion.div>
             )
           })}
         </motion.div>
       </div>
 
-      <div className='fixed left-10 right-10 top-1 flex items-center justify-between gap-3 font-semibold bg-blend-lighten'>
+      <motion.div
+        className='fixed flex h-12 items-center justify-between gap-3 font-semibold bg-blend-lighten'
+        initial={{ translateY: -10, opacity: 0 }}
+        animate={{
+          top: imgIndex == 0 ? 44 : 0,
+          left: imgIndex == 0 ? 52 : 40,
+          right: imgIndex == 0 ? 52 : 40
+        }}
+        whileInView={{
+          translateY: 0,
+          opacity: 1
+        }}
+      >
         <motion.a
-          className='flex flex-1 items-center rounded-xl border-none px-3 py-1.5 font-semibold text-slate-950 no-underline outline-0'
+          className='flex items-center rounded-xl border-none px-3 py-1.5 font-semibold text-slate-950 no-underline outline-0'
           href='https://github.com/SeNyterA'
+          animate={{
+            scale: imgIndex == 0 ? 1.2 : 1.4,
+            fontWeight: imgIndex == 0 ? 'bold' : 'semibold',
+            opacity: imgIndex == 0 ? 0 : 1
+          }}
         >
-          <span className='ml-2 text-xl'>SeNyterA</span>
+          <span className='ml-2'>SeNyterA</span>
         </motion.a>
 
-        <ChipTabs />
-      </div>
+        <div className='flex flex-wrap items-center gap-2'>
+          {tabs.map((tab, index) => (
+            <Chip
+              text={tab}
+              selected={imgIndex === index}
+              setSelected={() => setImgIndex(index)}
+              key={tab}
+            />
+          ))}
+        </div>
+      </motion.div>
 
-      <div className='fixed bottom-4 left-1/2 z-50 flex translate-x-[-50%] gap-28'>
+      <motion.div
+        className='fixed left-1/2 z-50 flex translate-x-[-50%] gap-28'
+        animate={{
+          bottom: imgIndex == 0 ? 80 : 16
+        }}
+      >
         <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'>
           <IconPlus size={40} />
         </motion.div>
@@ -138,7 +168,7 @@ const Intro = () => {
 
           <motion.div
             onDragEnd={onDragEnd}
-            onDrag={onDrag}
+            // onDrag={onDrag}
             onChange={e => console.log(e)}
             className='flex h-12 w-12 cursor-grab items-center justify-center rounded-2xl bg-slate-950 text-gray-600'
             drag='x'
@@ -160,12 +190,11 @@ const Intro = () => {
         >
           <IconPlus size={40} />
         </motion.div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
 export default function LandingContent() {
   return <Intro />
-  return <TextParallaxContentExample />
 }
