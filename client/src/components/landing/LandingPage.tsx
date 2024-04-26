@@ -42,7 +42,7 @@ export default function LandingContent() {
   return (
     <motion.div
       className='backgroudConic fixed inset-0 p-10 text-slate-950'
-      data-showBg={imgIndex !== 0}
+      data-showBg={true}
       animate={{
         paddingTop: imgIndex == 0 ? 40 : 48,
         paddingBottom: imgIndex == 0 ? 40 : 80
@@ -75,7 +75,7 @@ export default function LandingContent() {
                   // filter: imgIndex === idx ? 'drop-shadow(0 0 4px #000000aa)' : 'none'
                 }}
                 transition={SPRING_OPTIONS}
-                className={`relative h-full w-full shrink-0 overflow-hidden rounded-3xl object-cover ${imgIndex === idx && imgIndex === 0 ? 'bgConicContainer' : 'bg-white/60'}`}
+                className={`relative h-full w-full shrink-0 overflow-hidden rounded-3xl object-cover ${idx == 0 ? 'bg-gradient-to-r from-red-500/20 via-yellow-200/20 to-indigo-300/20' : 'bg-white/60'}`}
               >
                 {idx == 0 && <Intro />}
                 {idx == 1 && <AboutMe />}
@@ -136,11 +136,11 @@ export default function LandingContent() {
           translateX: '-50%'
         }}
       >
-        <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'>
+        {/* <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'>
           <IconPlus size={40} />
-        </motion.div>
+        </motion.div> */}
 
-        <motion.div className='relative h-12 w-12 rounded-2xl bg-blend-screen ring-offset-2 hover:ring-2'>
+        <motion.div className='relative h-12 w-12 rounded-2xl bg-blend-screen'>
           <motion.div
             className='absolute inset-0 flex items-center justify-center text-slate-950'
             style={{ rotate }}
@@ -159,18 +159,24 @@ export default function LandingContent() {
               x: dragX,
               filter: 'drop-shadow(0 0 4px #000000aa)'
             }}
+            whileDrag={{
+              scale: 1.1
+            }}
+            whileHover={{
+              scale: 1.1
+            }}
             dragTransition={{ bounceStiffness: 600, bounceDamping: 15 }}
           />
         </motion.div>
 
-        <motion.div
+        {/* <motion.div
           className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'
           onClick={() =>
             setImgIndex(index => (index + 1 > tabs.length - 1 ? 0 : index + 1))
           }
         >
           <IconPlus size={40} />
-        </motion.div>
+        </motion.div> */}
       </motion.div>
     </motion.div>
   )
