@@ -37,7 +37,7 @@ export default function LandingContent() {
     ['-1125deg', '0deg', '0deg', '1125deg']
   )
 
-  const contentX = useTransform(dragX, x => x)
+  const contentX = useTransform(dragX, x => 2 * x)
 
   return (
     <motion.div
@@ -71,9 +71,11 @@ export default function LandingContent() {
                 key={idx}
                 animate={{
                   scale: imgIndex === idx ? 1 : 1
+
+                  // filter: imgIndex === idx ? 'drop-shadow(0 0 4px #000000aa)' : 'none'
                 }}
                 transition={SPRING_OPTIONS}
-                className={`relative h-full w-full shrink-0 rounded-3xl object-cover ${(imgIndex === idx && imgIndex === 0) ? 'bgConicContainer':'bg-black/20'}`}
+                className={`relative h-full w-full shrink-0 overflow-hidden rounded-3xl object-cover ${imgIndex === idx && imgIndex === 0 ? 'bgConicContainer' : 'bg-white/60'}`}
               >
                 {idx == 0 && <Intro />}
                 {idx == 1 && <AboutMe />}
@@ -152,7 +154,7 @@ export default function LandingContent() {
             className='flex h-12 w-12 cursor-grab items-center justify-center rounded-2xl bg-slate-950 text-gray-600'
             drag='x'
             dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
+            // dragElastic={0.2}
             style={{
               x: dragX,
               filter: 'drop-shadow(0 0 4px #000000aa)'
