@@ -44,7 +44,7 @@ export const Project = () => {
   )
 }
 
-const IMG_PADDING = 12
+const IMG_PADDING = 0
 
 const TextParallaxContent = ({
   imgUrl,

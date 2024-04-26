@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useState } from 'react'
 import { Chip } from './Chip'
 import './landing.scss'
+import AboutMe from './secssions/AboutMe'
 import Exprience from './secssions/Exprience'
 import Intro from './secssions/Intro'
 import { Project } from './secssions/Project'
@@ -21,8 +22,6 @@ export default function LandingContent() {
   const [imgIndex, setImgIndex] = useState(0)
   const dragX = useMotionValue(0)
 
-  console.count('LandingContent')
-
   const onDragEnd = () => {
     const x = dragX.get()
     if (x <= -DRAG_BUFFER && imgIndex < tabs.length - 1) {
@@ -38,9 +37,12 @@ export default function LandingContent() {
     ['-1125deg', '0deg', '0deg', '1125deg']
   )
 
+  const contentX = useTransform(dragX, x => x)
+
   return (
     <motion.div
       className='backgroudConic fixed inset-0 p-10 text-slate-950'
+      data-showBg={imgIndex !== 0}
       animate={{
         paddingTop: imgIndex == 0 ? 40 : 48,
         paddingBottom: imgIndex == 0 ? 40 : 80
@@ -61,7 +63,6 @@ export default function LandingContent() {
           }}
           transition={SPRING_OPTIONS}
           onDragEnd={onDragEnd}
-          // onDrag={onDrag}
           className='flex h-full cursor-grab items-center space-x-4 active:cursor-grabbing'
         >
           {tabs.map((_, idx) => {
@@ -69,12 +70,13 @@ export default function LandingContent() {
               <motion.div
                 key={idx}
                 animate={{
-                  scale: imgIndex === idx ? 1 : 0.97
+                  scale: imgIndex === idx ? 1 : 1
                 }}
                 transition={SPRING_OPTIONS}
-                className={`relative h-full w-full shrink-0 rounded-xl object-cover ${imgIndex === idx && 'bgConicContainer'}`}
+                className={`relative h-full w-full shrink-0 rounded-3xl object-cover ${(imgIndex === idx && imgIndex === 0) ? 'bgConicContainer':'bg-black/20'}`}
               >
                 {idx == 0 && <Intro />}
+                {idx == 1 && <AboutMe />}
                 {idx == 2 && <Exprience />}
                 {idx == 3 && <Project />}
               </motion.div>
@@ -84,7 +86,7 @@ export default function LandingContent() {
       </div>
 
       <motion.div
-        className='fixed flex h-12 items-center justify-between gap-3 font-semibold bg-blend-lighten'
+        className='fixed flex h-12 items-center justify-between gap-3 bg-blend-lighten'
         initial={{ translateY: -10, opacity: 0 }}
         animate={{
           top: imgIndex == 0 ? 44 : 0,
@@ -146,7 +148,6 @@ export default function LandingContent() {
 
           <motion.div
             onDragEnd={onDragEnd}
-            // onDrag={onDrag}
             onChange={e => console.log(e)}
             className='flex h-12 w-12 cursor-grab items-center justify-center rounded-2xl bg-slate-950 text-gray-600'
             drag='x'

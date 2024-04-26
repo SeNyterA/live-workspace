@@ -41,20 +41,20 @@
   }
 }
 
-// .backgroudConic {
-//   &::before {
-//     z-index: -1;
-//     content: '';
-//     position: absolute;
-//     top: -100%;
-//     right: -100%;
-//     bottom: -100%;
-//     left: -100%;
-//     background: conic-gradient(#ffffffaa, #000000aa);
-//     animation: spin 1s linear infinite;
-//     filter: drop-shadow(0 0 10px #6366f1) blur(100px);
-//   }
-// }
+.backgroudConic {
+  &[data-showBg='true']::before {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    top: -100%;
+    right: -100%;
+    bottom: -100%;
+    left: -100%;
+    background: conic-gradient(#898ca5, #ffffff);
+    animation: spin 5s linear infinite;
+    filter: drop-shadow(0 0 10px #6366f1) blur(100px);
+  }
+}
 .bgConicContainer {
   &::before {
     border-radius: 20px !important;
