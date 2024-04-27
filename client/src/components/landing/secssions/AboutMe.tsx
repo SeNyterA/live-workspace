@@ -1,13 +1,18 @@
 import { IconDownload } from '@tabler/icons-react'
 import { motion } from 'framer-motion'
 import Exprience from './Exprience'
+import Skills from './Skills'
 
 export default function AboutMe() {
   return (
-    <div className='absolute inset-0 flex items-center justify-center gap-10 p-10 text-slate-800'>
+    <div className='absolute inset-0 flex items-center justify-center gap-10 p-10 text-slate-800 text-justify'>
       <div className='relative flex-1'>
-        <motion.p className='text-5xl font-bold'>Khang.ND</motion.p>
-        <div className='animated-text relative'>
+        <motion.p className='text-5xl font-bold'>N.D.Khang</motion.p>
+        <div className='animated-text relative'
+        style={{
+          WebkitTextStroke: '1px #000000',
+        }}
+        >
           I'm a <span></span>
         </div>
         <p className='max-w-2xl cursor-text'>
@@ -44,8 +49,8 @@ export default function AboutMe() {
         </motion.button>
       </div>
 
-      <div className='relative h-full flex-[2] overflow-hidden rounded-2xl bg-red-50'>
-        <Exprience />
+      <div className='relative h-full flex-[2] 2xl:flex-[2] overflow-hidden rounded-2xl bg-red-50'>
+        <Skills />
       </div>
     </div>
   )
