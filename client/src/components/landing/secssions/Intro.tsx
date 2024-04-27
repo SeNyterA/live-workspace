@@ -1,19 +1,9 @@
 import { motion } from 'framer-motion'
-import ss from 'pixi.js'
 
 export default function Intro() {
-  new LiquidEffect({
-    appendTo: '#example',
-    image: 'image.jpg',
-    displacementImage: 'displacement_map.jpg',
-    displacementScale: 1,
-    speed: 1,
-    intensityX: 1.5,
-    intensityY: 1.5
-  })
   return (
     <motion.div
-      className='intro left-10 top-1/2 h-[140px]'
+      className='intro left-10 top-1/2 h-[125px]'
       style={{
         translateY: '-50%'
       }}
@@ -25,7 +15,7 @@ export default function Intro() {
         translateX: 0
       }}
     >
-      <div className='intro-tex'>
+      <div className='intro-text'>
         &nbsp;
         <span className='text-9xl'>S</span>
         <span>eNyter'A</span>
@@ -34,8 +24,8 @@ export default function Intro() {
       </div>
       <motion.div
         className='intro-text-overlay'
-        initial={{ width: 0 }}
-        whileInView={{ width: '100%' }}
+        // initial={{ width: 0 }}
+        // whileInView={{ width: '100%' }}
       >
         &nbsp;
         <span className='text-9xl'>S</span>

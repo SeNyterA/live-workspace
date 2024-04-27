@@ -7,37 +7,36 @@
   }
 }
 
-@keyframes cursor {
-  50% {
-    border: transparent;
-  }
-}
-
 @keyframes typing {
   from {
     width: 0;
   }
 }
 
+@keyframes cursorIntro {
+  50% {
+    border-color: transparent;
+  }
+}
 .intro {
   @apply absolute h-fit w-fit text-7xl font-bold;
 
   .intro-text {
     @apply h-full w-full items-center justify-center text-transparent;
-    -webkit-text-stroke: 1px rgb(2 6 23 / 0.6);
+    -webkit-text-stroke: 0.5px #6366f1;
   }
   .intro-text-overlay {
-    @apply absolute bottom-0 left-0 top-0 w-0 overflow-hidden border-0 border-r-8 border-solid border-slate-950/60 transition-[width] duration-[2000ms] ease-in-out;
-    animation: cursor 0.4s step-end infinite alternate;
+    @apply absolute bottom-0 left-0 top-0 w-0 overflow-hidden bg-gradient-to-r from-blue-900 via-yellow-900 to-indigo-900 bg-clip-text text-transparent mix-blend-luminosity transition-all duration-1000 ease-in-out;
+    animation: cursorIntro 0.5s linear infinite;
+    border-right: 5px solid #ff7f50;
   }
 
   &:hover .intro-text-overlay {
-    // @apply bg-gradient-to-r from-blue-500 via-yellow-500 to-indigo-500 bg-clip-text text-transparent mix-blend-luminosity;
-    // // width: 100%;
-    // filter: drop-shadow(0 0 100px #000113);
-    // animation:
-    //   typing 2s steps(50, end),
-    //   cursor 0.4s step-end infinite alternate;
+    mix-blend-mode: soft-light;
+    width: 100%;
+    scale: 1.05;
+    filter: drop-shadow(0 0 100px #6366f1);
+    animation: glitchIntro 0.1s linear infinite;
   }
 }
 
@@ -76,8 +75,6 @@
   min-width: 280px;
   span {
     position: relative;
-    // text-shadow: red -2px 0, red 2px 0, red 0 -2px, red 0 2px;
-
     &::before {
       content: 'Youtuber';
       color: #ff7f50;

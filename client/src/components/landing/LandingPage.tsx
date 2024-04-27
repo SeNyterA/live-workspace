@@ -22,7 +22,7 @@ const SPRING_OPTIONS = {
   damping: 50
 }
 
-export const tabs = ['Intro', 'About me', 'Exprience', 'Projects', 'Contact']
+export const tabs = ['Intro', 'Exprience', 'Projects', 'Contact']
 
 export default function LandingContent() {
   const [imgIndex, setImgIndex] = useState(0)
@@ -80,13 +80,12 @@ export default function LandingContent() {
                   // filter: imgIndex === idx ? 'drop-shadow(0 0 4px #000000aa)' : 'none'
                 }}
                 transition={SPRING_OPTIONS}
-                className={`relative h-full w-full shrink-0 overflow-hidden rounded-3xl object-cover !bg-white/60 ${idx == 0 ? ' from-blue-500/20 via-white/100 to-yellow-500/40' : 'bg-white/60'}`}
+                className={`relative h-full w-full shrink-0 overflow-hidden rounded-3xl !bg-white/60 object-cover ${idx == 0 ? ' from-blue-500/20 via-white/100 to-yellow-500/40' : 'bg-white/60'}`}
               >
                 {idx == 0 && <Intro />}
                 {idx == 1 && <AboutMe />}
-                {idx == 2 && <Exprience />}
-                {idx == 3 && <Project />}
-                {idx == 4 && <Example />}
+                {idx == 2 && <Project />}
+                {idx == 3 && <Example />}
               </motion.div>
             )
           })}
@@ -115,7 +114,16 @@ export default function LandingContent() {
             opacity: imgIndex == 0 ? 0 : 1
           }}
         >
-          <span className='ml-2'>SeNyterA</span>
+          <motion.span
+            className='ml-2'
+            style={
+              {
+                // WebkitTextStroke: '0.5px #000000'
+              }
+            }
+          >
+            <span className='text-xl'>S</span>eNyterA
+          </motion.span>
         </motion.a>
 
         <div className='flex flex-wrap items-center gap-2'>
