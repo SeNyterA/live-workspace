@@ -26,12 +26,17 @@ export default function AboutMe() {
           software that delivers exceptional user experiences.
         </p>
         <motion.button
-          className='flex h-9 mt-2 cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-slate-700 px-2 text-white outline-none hover:bg-slate-950'
+          className='mt-2 flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-slate-700 px-4 text-white outline-none hover:bg-slate-950'
           initial={{ opacity: 0, translateX: -1000 }}
           animate={{ opacity: 1, translateX: 0 }}
           whileHover={{
             filter: 'drop-shadow(0 0 4px #000000aa)',
             scale: 1.05
+          }}
+          onClick={() => {
+            window.open(
+              '/NguyenDucKhang.pdf'
+            )
           }}
         >
           <IconDownload size={16} />
@@ -39,7 +44,7 @@ export default function AboutMe() {
         </motion.button>
       </div>
 
-      <div className='relative h-full flex-[2] bg-red-50'>
+      <div className='relative h-full flex-[2] overflow-hidden rounded-2xl bg-red-50'>
         <Exprience />
       </div>
     </div>

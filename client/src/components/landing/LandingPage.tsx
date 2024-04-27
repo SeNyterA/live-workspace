@@ -4,7 +4,12 @@ import {
   IconPlus,
   IconSwipeRight
 } from '@tabler/icons-react'
-import { motion, useMotionValue, useTransform } from 'framer-motion'
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform
+} from 'framer-motion'
 import { useState } from 'react'
 import Example from './aaa/Scrollaa'
 import { Chip } from './Chip'
@@ -27,6 +32,7 @@ export const tabs = ['Intro', 'Exprience', 'Projects', 'Contact']
 export default function LandingContent() {
   const [imgIndex, setImgIndex] = useState(0)
   const dragX = useMotionValue(0)
+  const dragButton = useMotionValue(0)
 
   const onDragEnd = () => {
     const x = dragX.get()
@@ -43,12 +49,13 @@ export default function LandingContent() {
     ['-1125deg', '0deg', '0deg', '1125deg']
   )
 
+  useMotionValueEvent(dragButton, 'change', e => dragX.set(-e))
+
   const contentX = useTransform(dragX, x => -x)
 
   return (
     <motion.div
       className='backgroudConic fixed inset-0 p-10 text-slate-950'
-      data-showBg={true}
       animate={{
         paddingTop: imgIndex == 0 ? 40 : 48,
         paddingBottom: imgIndex == 0 ? 40 : 80
@@ -150,7 +157,12 @@ export default function LandingContent() {
           translateX: '-50%'
         }}
       >
-        <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl'>
+        <motion.div
+          className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl opacity-70 ${imgIndex == 0 && 'pointer-events-none opacity-40'}`}
+          onClick={() =>
+            setImgIndex(index => (index - 1 < 0 ? tabs.length - 1 : index - 1))
+          }
+        >
           <IconChevronLeft size={40} />
         </motion.div>
 
@@ -170,9 +182,10 @@ export default function LandingContent() {
             dragConstraints={{ left: 0, right: 0 }}
             // dragElastic={0.2}
             style={{
-              x: dragX,
+              x: dragButton,
               filter: 'drop-shadow(0 0 4px #000000aa)'
             }}
+            onDragLeave={e => console.log(e)}
             whileDrag={{
               scale: 1.05
             }}
@@ -184,7 +197,7 @@ export default function LandingContent() {
         </motion.div>
 
         <motion.div
-          className='flex h-12 w-12 items-center justify-center rounded-2xl'
+          className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl opacity-70 ${imgIndex == tabs.length - 1 && 'pointer-events-none opacity-40'}`}
           onClick={() =>
             setImgIndex(index => (index + 1 > tabs.length - 1 ? 0 : index + 1))
           }
