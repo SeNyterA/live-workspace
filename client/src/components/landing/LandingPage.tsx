@@ -1,6 +1,12 @@
-import { IconPlus } from '@tabler/icons-react'
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconPlus,
+  IconSwipeRight
+} from '@tabler/icons-react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { useState } from 'react'
+import Example from './aaa/Scrollaa'
 import { Chip } from './Chip'
 import './landing.scss'
 import AboutMe from './secssions/AboutMe'
@@ -37,7 +43,7 @@ export default function LandingContent() {
     ['-1125deg', '0deg', '0deg', '1125deg']
   )
 
-  const contentX = useTransform(dragX, x => 2 * x)
+  const contentX = useTransform(dragX, x => -x)
 
   return (
     <motion.div
@@ -71,16 +77,16 @@ export default function LandingContent() {
                 key={idx}
                 animate={{
                   scale: imgIndex === idx ? 1 : 1
-
                   // filter: imgIndex === idx ? 'drop-shadow(0 0 4px #000000aa)' : 'none'
                 }}
                 transition={SPRING_OPTIONS}
-                className={`relative h-full w-full shrink-0 overflow-hidden rounded-3xl object-cover ${idx == 0 ? 'bg-gradient-to-r from-red-500/20 via-yellow-200/20 to-indigo-300/20' : 'bg-white/60'}`}
+                className={`relative h-full w-full shrink-0 overflow-hidden rounded-3xl object-cover !bg-white/60 ${idx == 0 ? ' from-blue-500/20 via-white/100 to-yellow-500/40' : 'bg-white/60'}`}
               >
                 {idx == 0 && <Intro />}
                 {idx == 1 && <AboutMe />}
                 {idx == 2 && <Exprience />}
                 {idx == 3 && <Project />}
+                {idx == 4 && <Example />}
               </motion.div>
             )
           })}
@@ -136,9 +142,9 @@ export default function LandingContent() {
           translateX: '-50%'
         }}
       >
-        {/* <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'>
-          <IconPlus size={40} />
-        </motion.div> */}
+        <motion.div className='flex h-12 w-12 items-center justify-center rounded-2xl'>
+          <IconChevronLeft size={40} />
+        </motion.div>
 
         <motion.div className='relative h-12 w-12 rounded-2xl bg-blend-screen'>
           <motion.div
@@ -151,7 +157,7 @@ export default function LandingContent() {
           <motion.div
             onDragEnd={onDragEnd}
             onChange={e => console.log(e)}
-            className='flex h-12 w-12 cursor-grab items-center justify-center rounded-2xl bg-slate-950 text-gray-600'
+            className='flex h-12 w-12 cursor-grab items-center justify-center rounded-2xl bg-slate-950'
             drag='x'
             dragConstraints={{ left: 0, right: 0 }}
             // dragElastic={0.2}
@@ -160,23 +166,23 @@ export default function LandingContent() {
               filter: 'drop-shadow(0 0 4px #000000aa)'
             }}
             whileDrag={{
-              scale: 1.1
+              scale: 1.05
             }}
             whileHover={{
-              scale: 1.1
+              scale: 1.05
             }}
             dragTransition={{ bounceStiffness: 600, bounceDamping: 15 }}
           />
         </motion.div>
 
-        {/* <motion.div
-          className='flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600'
+        <motion.div
+          className='flex h-12 w-12 items-center justify-center rounded-2xl'
           onClick={() =>
             setImgIndex(index => (index + 1 > tabs.length - 1 ? 0 : index + 1))
           }
         >
-          <IconPlus size={40} />
-        </motion.div> */}
+          <IconChevronRight size={40} />
+        </motion.div>
       </motion.div>
     </motion.div>
   )

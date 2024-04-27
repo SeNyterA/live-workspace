@@ -1,6 +1,16 @@
 import { motion } from 'framer-motion'
+import ss from 'pixi.js'
 
 export default function Intro() {
+  new LiquidEffect({
+    appendTo: '#example',
+    image: 'image.jpg',
+    displacementImage: 'displacement_map.jpg',
+    displacementScale: 1,
+    speed: 1,
+    intensityX: 1.5,
+    intensityY: 1.5
+  })
   return (
     <motion.div
       className='intro left-10 top-1/2 h-[140px]'
@@ -15,7 +25,7 @@ export default function Intro() {
         translateX: 0
       }}
     >
-      <div className='intro-text'>
+      <div className='intro-tex'>
         &nbsp;
         <span className='text-9xl'>S</span>
         <span>eNyter'A</span>
