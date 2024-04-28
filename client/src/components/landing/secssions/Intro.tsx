@@ -10,7 +10,6 @@ export default function Intro() {
         playsInline
         src='https://cdn.dribbble.com/userupload/12527312/file/original-d62ced1c569e1807f46bf766de030300.mp4'
         className='absolute inset-0 h-full rounded-3xl object-cover blur-[4px]'
-
       />
       <motion.div
         className='intro absolute left-1/2 h-[125px]'
