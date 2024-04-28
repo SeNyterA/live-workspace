@@ -25,7 +25,10 @@ export default function AboutMe() {
     const scrollTrigger = viewPortRef?.current?.addEventListener(
       'scrollend',
       e => {
-        const height = viewPortRef?.current?.clientHeight || 1
+        const height = viewPortRef?.current?.clientHeight
+
+        if (!height) return
+        if (Math.round(scrollY.get() / height) > 2) return
         viewPortRef.current?.scrollTo({
           top: Math.round(scrollY.get() / height) * height,
           behavior: 'smooth'
@@ -43,7 +46,7 @@ export default function AboutMe() {
       className='absolute inset-0 overflow-x-hidden overflow-y-scroll scroll-smooth text-justify text-slate-800'
       ref={viewPortRef}
     >
-      <div className='flex h-full snap-center items-center gap-10 p-10'>
+      <div className='flex h-full items-center gap-10 p-10'>
         <div className='flex-1'>
           <motion.p className='text-5xl font-bold'>N.D.Khang</motion.p>
           <div className='animated-text relative'>
@@ -104,7 +107,7 @@ export default function AboutMe() {
         />
       </div>
 
-      <div className='flex h-full snap-center items-center gap-10 p-10'>
+      <div className='flex h-full items-center gap-10 p-10'>
         <video
           autoPlay
           loop
@@ -118,11 +121,13 @@ export default function AboutMe() {
           <p>
             I am a skilled creator committed to designing engaging web and
             mobile experiences that prioritize user satisfaction. I possess
-            expertise in advanced technologies like ReactJS and NextJS, which I
-            utilize to build complex, high-performance applications. With a
-            strong foundation and the necessary skills, I adeptly tackle the
-            challenges of front-end development, leveraging my expertise and
-            supplementary libraries to execute projects swiftly and efficiently.
+            expertise in advanced technologies like{' '}
+            <span className='text-lime-600'>ReactJS</span> and{' '}
+            <span className='text-lime-600'>NextJS</span>, which I utilize to
+            build complex, high-performance applications. With a strong
+            foundation and the necessary skills, I adeptly tackle the challenges
+            of frontend development, leveraging my expertise and supplementary
+            libraries to execute projects swiftly and efficiently.
           </p>
 
           <ul>
@@ -143,7 +148,7 @@ export default function AboutMe() {
             <li>
               Utilize popular UI libraries such as{' '}
               <span className='text-lime-600'>Ant Design</span>,{' '}
-              <span className='text-lime-600'>MaterialUI</span>, and
+              <span className='text-lime-600'>MaterialUI</span>, and{' '}
               <span className='text-lime-600'>Mantine</span> to create visually
               appealing and intuitive user interfaces.
             </li>
@@ -165,7 +170,7 @@ export default function AboutMe() {
         </motion.div>
       </div>
 
-      <div className='flex h-full snap-center items-center gap-10 p-10'>
+      <div className='flex h-full items-center gap-10 p-10'>
         <motion.div className='flex-1 flex-col items-center justify-center rounded-xl text-sm xl:text-base'>
           <p className='text-2xl font-semibold'>Backend</p>
           <p>
@@ -175,10 +180,12 @@ export default function AboutMe() {
             <span className='text-lime-600'>NestJS</span> to create APIs and
             backend services that meet the highest standards of performance and
             scalability. My expertise also includes designing and implementing
-            RESTful APIs and GraphQL to facilitate flexible and efficient data
-            access. With my extensive experience, I have a proven track record
-            of optimizing application speed and building real-time
-            functionalities to provide exceptional user experiences.
+            <span className='text-lime-600'>RESTful APIs</span> and{' '}
+            <span className='text-lime-600'>GraphQL</span> to facilitate
+            flexible and efficient data access. With my extensive experience, I
+            have a proven track record of optimizing application speed and
+            building real-time functionalities to provide exceptional user
+            experiences.
           </p>
 
           <ul>
@@ -194,8 +201,8 @@ export default function AboutMe() {
             <li>
               Implement real-time features using{' '}
               <span className='text-lime-600'>SocketIO</span> and leverage{' '}
-              <span className='text-lime-600'>Redis</span>
-              for caching and data storage optimization.
+              <span className='text-lime-600'>Redis</span> for caching and data
+              storage optimization.
             </li>
             <li>
               Proficient in both Object-Oriented Programming (OOP), Functional
@@ -209,9 +216,7 @@ export default function AboutMe() {
             </li>
             <li>
               Having a comprehensive knowledge of information security practices
-              is crucial. This includes understanding authentication,
-              authorization, data encryption, and techniques to prevent cyber
-              attacks.
+              is crucial.
             </li>
           </ul>
         </motion.div>
@@ -226,12 +231,9 @@ export default function AboutMe() {
         />
       </div>
 
-      <div className='relative h-full' ref={projectsRef}>
-        <motion.div className='flex gap-4 p-10'>
-          <div
-            style={{ minWidth: '100%' }}
-            className='w-full flex-col items-center justify-center rounded-xl bg-blue-50 p-4 py-2'
-          >
+      <div className='relative h-[400%] text-sm' ref={projectsRef}>
+        <motion.div className='gap-4 p-10'>
+          <div className='w-full flex-col items-center justify-center rounded-xl bg-blue-100 p-2'>
             <p className='text-xl'>Realtime workspace</p>
             <p>
               The development of a comprehensive real-time workspace system
@@ -268,10 +270,7 @@ export default function AboutMe() {
             </ul>
           </div>
 
-          <div
-            style={{ minWidth: '100%' }}
-            className='w-full flex-col items-center justify-center rounded-xl bg-emerald-50 p-4 py-2'
-          >
+          <div className='bg w-full flex-col items-center justify-center rounded-xl bg-white/50 p-2'>
             <p className='text-xl'>Finaccel module</p>
             <p>
               A booking system built with Next.js caters to businesses needing a
@@ -303,10 +302,7 @@ export default function AboutMe() {
             </ul>
           </div>
 
-          <div
-            style={{ minWidth: '100%' }}
-            className='w-full flex-col items-center justify-center rounded-xl bg-emerald-50 p-4 py-2'
-          >
+          <div className='bg w-full flex-col items-center justify-center rounded-xl bg-white/50 p-2'>
             <p className='text-xl'>Travel booking system</p>
             <p>
               A booking system built with Next.js caters to businesses needing a
@@ -338,10 +334,7 @@ export default function AboutMe() {
             </ul>
           </div>
 
-          <div
-            style={{ minWidth: '100%' }}
-            className='w-full flex-col items-center justify-center rounded-xl bg-emerald-50 p-4 py-2'
-          >
+          <div className='bg w-full flex-col items-center justify-center rounded-xl bg-white/50 p-2'>
             <p className='text-xl'>Renew the logistics system </p>
             <p>
               This project aims to renew an outdated logistics system using new
