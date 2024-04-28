@@ -14,6 +14,7 @@ import { useState } from 'react'
 import Example from './aaa/Scrollaa'
 import { Chip } from './Chip'
 import './landing.scss'
+import MouseIcon from './common/MouseIcon'
 import AboutMe from './secssions/AboutMe'
 import Exprience from './secssions/Exprience'
 import Intro from './secssions/Intro'
@@ -27,12 +28,7 @@ const SPRING_OPTIONS = {
   damping: 50
 }
 
-export const tabs = [
-  'Intro',
-  'Skills & Exprience',
-  'Live workspace',
-  'Contact'
-]
+export const tabs = ['Intro', 'Skills & Exprience', 'Live workspace', 'Contact']
 
 export default function LandingContent() {
   const [imgIndex, setImgIndex] = useState(0)
@@ -126,14 +122,7 @@ export default function LandingContent() {
             opacity: imgIndex == 0 ? 0 : 1
           }}
         >
-          <motion.span
-            className='ml-2'
-            style={
-              {
-                // WebkitTextStroke: '0.5px #000000'
-              }
-            }
-          >
+          <motion.span className='ml-2 bg-gradient-to-r from-blue-900 via-yellow-900 to-indigo-900 bg-clip-text text-transparent mix-blend-lighten'>
             <span className='text-xl'>S</span>eNyterA
           </motion.span>
         </motion.a>
@@ -210,6 +199,8 @@ export default function LandingContent() {
           <IconChevronRight size={40} />
         </motion.div>
       </motion.div>
+
+      <MouseIcon />
     </motion.div>
   )
 }

@@ -1,30 +1,22 @@
-import { useElementSize } from '@mantine/hooks'
-import {
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform
-} from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 
 export default function Skills() {
-  const { ref: viewPortRef, width, height } = useElementSize()
-
   const skillsRef = useRef<HTMLDivElement>(null)
   const projectsRef = useRef<HTMLDivElement>(null)
 
   const { scrollYProgress: scrollSkillsYProgress } = useScroll({
     target: skillsRef,
-    axis: 'y',
-    container: viewPortRef
+    axis: 'y'
+    // container: viewPortRef
   })
 
-  const x = useTransform(scrollSkillsYProgress, [0, 1], [0, -width + 112])
+  // const x = useTransform(scrollSkillsYProgress, [0, 1], [0, -width + 112])
 
   const { scrollYProgress: scrollProjectsYProgress } = useScroll({
     target: projectsRef,
-    axis: 'y',
-    container: viewPortRef
+    axis: 'y'
+    // container: viewPortRef
   })
   const projectsX = useTransform(
     scrollProjectsYProgress,
@@ -33,46 +25,14 @@ export default function Skills() {
   )
 
   return (
-    <div
-      className='absolute inset-0 overflow-y-auto overflow-x-hidden text-sm'
-      ref={viewPortRef}
-    >
-      {/* <div className='flex-col items-center justify-center bg-slate-100 p-4 pb-0'>
-        <p className='text-xl'>Overall skills</p>
-        <p>
-          As a <span className='text-lime-600'>Full-Stack Developer</span>, I
-          specialize in building user-centric web applications using frameworks
-          such as <span className='text-lime-600'>JavaScript/TypeScript</span>.
-          My expertise covers both{' '}
-          <span className='text-lime-600'>front-end</span> and{' '}
-          <span className='text-lime-600'>back-end</span> development, ensuring
-          a holistic approach to project delivery. I have a successful track
-          record in creating{' '}
-          <span className='text-lime-600'>booking systems</span>,{' '}
-          <span className='text-lime-600'>real-time applications</span>, and
-          contributing to{' '}
-          <span className='text-lime-600'>open-source projects</span>. I use
-          <span className='text-lime-600'>TypeScript</span> to improve code
-          maintainability, while <span className='text-lime-600'>Git</span>,{' '}
-          <span className='text-lime-600'>Docker</span>, and{' '}
-          <span className='text-lime-600'></span> methodologies help me ensure
-          smooth development workflows and efficient collaboration.
-        </p>
-      </div> */}
-
-      <div
-        className='relative'
-        style={{
-          height: height * 2
-        }}
-        ref={skillsRef}
-      >
+    <>
+      <div className='relative h-full bg-black' ref={skillsRef}>
         <motion.div
-          style={{ x, translateY: '-50%' }}
-          className='sticky top-1/2 flex gap-4 p-4'
+          // style={{ translateY: '-50%' }}
+          className='flex gap-4 p-4'
         >
           <div
-            style={{ minWidth: width - 80, maxWidth: width - 80 }}
+            style={{ minWidth: '100%' }}
             className='w-full flex-col items-center justify-center rounded-xl bg-blue-50 p-4 py-2'
           >
             <p className='text-xl'>Frontend</p>
@@ -127,7 +87,7 @@ export default function Skills() {
           </div>
 
           <div
-            style={{ minWidth: width - 80, maxWidth: width - 80 }}
+            style={{ minWidth: '100%' }}
             className='w-full flex-col items-center justify-center rounded-xl bg-emerald-50 p-4 py-2'
           >
             <p className='text-xl'>Backend</p>
@@ -181,19 +141,10 @@ export default function Skills() {
         </motion.div>
       </div>
 
-      <div
-        className='relative'
-        style={{
-          height: height * 4
-        }}
-        ref={projectsRef}
-      >
-        <motion.div
-          style={{ x: projectsX, translateY: '-50%' }}
-          className='sticky top-1/2 flex gap-4 p-4'
-        >
+      <div className='h-full relative bg-red-400' ref={projectsRef}>
+        <motion.div className='flex gap-4 p-4'>
           <div
-            style={{ minWidth: width - 80, maxWidth: width - 80 }}
+            style={{ minWidth: '100%' }}
             className='w-full flex-col items-center justify-center rounded-xl bg-blue-50 p-4 py-2'
           >
             <p className='text-xl'>Realtime workspace</p>
@@ -233,7 +184,7 @@ export default function Skills() {
           </div>
 
           <div
-            style={{ minWidth: width - 80, maxWidth: width - 80 }}
+            style={{ minWidth: '100%' }}
             className='w-full flex-col items-center justify-center rounded-xl bg-emerald-50 p-4 py-2'
           >
             <p className='text-xl'>Finaccel module</p>
@@ -268,7 +219,7 @@ export default function Skills() {
           </div>
 
           <div
-            style={{ minWidth: width - 80, maxWidth: width - 80 }}
+            style={{ minWidth: '100%' }}
             className='w-full flex-col items-center justify-center rounded-xl bg-emerald-50 p-4 py-2'
           >
             <p className='text-xl'>Travel booking system</p>
@@ -303,7 +254,7 @@ export default function Skills() {
           </div>
 
           <div
-            style={{ minWidth: width - 80, maxWidth: width - 80 }}
+            style={{ minWidth: '100%' }}
             className='w-full flex-col items-center justify-center rounded-xl bg-emerald-50 p-4 py-2'
           >
             <p className='text-xl'>Renew the logistics system </p>
@@ -331,6 +282,6 @@ export default function Skills() {
           </div>
         </motion.div>
       </div>
-    </div>
+    </>
   )
 }
