@@ -27,7 +27,12 @@ const SPRING_OPTIONS = {
   damping: 50
 }
 
-export const tabs = ['Intro', 'Exprience', 'Projects', 'Contact']
+export const tabs = [
+  'Intro',
+  'Skills & Exprience',
+  'Live workspace',
+  'Contact'
+]
 
 export default function LandingContent() {
   const [imgIndex, setImgIndex] = useState(0)

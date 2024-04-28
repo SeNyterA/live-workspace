@@ -32,10 +32,10 @@
   }
 
   &:hover .intro-text-overlay {
-    mix-blend-mode: soft-light;
+    mix-blend-mode: hard-light;
     width: 100%;
     scale: 1.05;
-    filter: drop-shadow(0 0 100px #6366f1);
+    filter: drop-shadow(0 0 10px #6366f1);
     animation: glitchIntro 0.1s linear infinite;
   }
 }
