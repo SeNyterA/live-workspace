@@ -355,3 +355,16 @@
     opacity: 0.5;
   }
 }
+
+.projects {
+  &::before {
+    @apply bg-cover bg-center -z-20;
+    content: '';
+    position: absolute;
+    inset: 0;
+    // background-image: url('/app.png');
+    opacity: 0.4;
+
+    // filter: drop-shadow(0 0 10px #6366f1) blur(10px);
+  }
+}
