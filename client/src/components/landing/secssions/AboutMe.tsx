@@ -1,7 +1,5 @@
-import { useEventListener } from '@mantine/hooks'
 import { IconDownload } from '@tabler/icons-react'
 import {
-  AnimatePresence,
   motion,
   useMotionValueEvent,
   useScroll,
@@ -10,40 +8,50 @@ import {
 import { useLayoutEffect, useRef, useState } from 'react'
 
 export default function AboutMe() {
-  const skillsRef = useRef<HTMLDivElement>(null)
   const projectsRef = useRef<HTMLDivElement>(null)
   const viewPortRef = useRef<HTMLDivElement>(null)
   const [page, setPage] = useState(0)
+  const timeoutRef = useRef<NodeJS.Timeout>()
 
-  const { scrollYProgress: scrollSkillsYProgress, scrollY } = useScroll({
-    target: skillsRef,
+  const { scrollYProgress: projectsYProgress, scrollY } = useScroll({
+    target: projectsRef,
     axis: 'y',
     container: viewPortRef,
     layoutEffect: true,
     offset: ['start start', 'end end']
   })
 
-  useMotionValueEvent(scrollY, 'change', () => {
+  useMotionValueEvent(scrollY, 'change', value => {
     const height = viewPortRef?.current?.clientHeight
     if (!height) return
-    setPage(Math.round(scrollY.get() / height))
+    setPage(Math.round(value / height))
   })
+
+  useMotionValueEvent(projectsYProgress, 'change', value => {
+    console.log(value)
+  })
+
+  const projectsX = useTransform(projectsYProgress, [0.2, 1], ['0%', '-266%'])
 
   useLayoutEffect(() => {
     const scrollTrigger = viewPortRef?.current?.addEventListener(
       'scrollend',
       e => {
-        const height = viewPortRef?.current?.clientHeight
-        if (!height) return
-        if (Math.round(scrollY.get() / height) > 2) return
-        // viewPortRef.current?.scrollTo({
-        //   top: Math.round(scrollY.get() / height) * height,
-        //   behavior: 'smooth'
-        // })
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = setTimeout(() => {
+          const height = viewPortRef?.current?.clientHeight
+          if (!height) return
+          if (Math.round(scrollY.get() / height) > 2) return
+          viewPortRef.current?.scrollTo({
+            top: Math.round(scrollY.get() / height) * height,
+            behavior: 'smooth'
+          })
+        }, 500)
       }
     )
     if (!scrollTrigger) return
     return () => {
+      clearTimeout(timeoutRef.current)
       viewPortRef?.current?.removeEventListener('scrollend', scrollTrigger)
     }
   }, [])
@@ -59,6 +67,9 @@ export default function AboutMe() {
       <div
         className='absolute inset-0 overflow-x-hidden overflow-y-scroll scroll-smooth text-justify text-slate-800'
         ref={viewPortRef}
+        onScroll={() => {
+          clearTimeout(timeoutRef.current)
+        }}
       >
         <div className='flex h-full items-center gap-10 p-10'>
           <div className='flex-1'>
@@ -249,30 +260,132 @@ export default function AboutMe() {
           />
         </div>
 
-        <div className='projects flex relative h-full gap-10 p-10'>
-        <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
-            className='aspect-square h-full overflow-hidden rounded-2xl object-cover'
-          />
-          <motion.div className='flex-1 z-50 flex-col rounded-xl text-sm xl:text-base'>
-            <p className='text-2xl font-semibold'>TGL Solutions</p>
-            <p>
-              I have been working as a Full-Stack Developer intern since May
-              2022, and I transitioned to full-time in August 2022. I work for a
-              company that specializes in outsourcing services for the Japanese
-              market. My primary responsibilities include participating in
-              product development projects and outsourcing services for the
-              Japanese market.
-              {/* I work on both front-end and back-end tasks to
+        <div className='projects relative h-[500%]' ref={projectsRef}>
+          <div className='sticky top-0 flex h-1/5 gap-10 p-10'>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
+              className='aspect-square h-full overflow-hidden rounded-2xl object-cover'
+            />
+            <motion.div className='z-50 flex flex-1 flex-col justify-center overflow-x-hidden rounded-xl'>
+              <p className='text-2xl font-semibold'>TGL Solutions</p>
+              <p>
+                I have been working as a Full-Stack Developer intern since May
+                2022, and I transitioned to full-time in August 2022. I work for
+                a company that specializes in outsourcing services for the
+                Japanese market. My primary responsibilities include
+                participating in product development projects and outsourcing
+                services for the Japanese market.
+                {/* I work on both front-end and back-end tasks to
               ensure the quality and performance of the products, and I
               collaborate closely with cross-functional teams to deliver
               high-quality solutions that meet our clients' requirements. */}
-            </p>
-          </motion.div>
+              </p>
+              <motion.div
+                className='mt-4 flex gap-[2%] text-sm 2xl:text-base'
+                // ref={projectRefContainer}
+                style={{
+                  x: projectsX
+                }}
+              >
+                <div className='min-w-[90%] flex-col items-center justify-center rounded-xl border border-dashed border-blue-400 p-4'>
+                  <p className='text-xl'>Finaccel module</p>
+                  <p>
+                    A booking system built with Next.js caters to businesses
+                    needing a web-based platform optimized for mobile devices.
+                    Its responsive design ensures accessibility across all
+                    devices with web browsers, providing an efficient solution
+                    for integration within clients' webviews. This approach
+                    minimizes costs while enhancing convenience and user
+                    experience.
+                  </p>
+                  <p>Role: Frontend developer</p>
+                  <p>
+                    My contributions: I integrated Firebase authentication with
+                    webviews and created a visually appealing UI using Ant
+                    Design and Tailwind CSS. I used SWR for efficient data
+                    fetching and socket.io for instant communication, while
+                    NestJS, Laravel Echo and Firebase served as reliable backend
+                    services for real-time communication and messaging
+                    functionality to support the booking system.
+                  </p>
+                </div>
+                <div className='min-w-[90%] flex-col items-center justify-center rounded-xl border border-dashed border-blue-400 p-4'>
+                  <p className='text-xl'>Travel booking system</p>
+                  <p>
+                    This project aims to renew an outdated logistics system
+                    using new technologies based on customer requirements. The
+                    process will involve generating ideas for improvements,
+                    implementing necessary upgrades and integrations, and
+                    overhauling the entire system to make it more efficient and
+                    functional.
+                  </p>
+                  <p>Role: Frontend, Backend developer</p>
+                  <p>
+                    My contributions: I built easily usable and reusable
+                    components, upgraded and maintained them. I organized
+                    modules to shorten project development time and enhance
+                    efficiency. I utilized NextJS, React Query, Ant Design,
+                    Tailwind CSS, React Hook Form, TypeScript, and styled
+                    components to create a visually appealing, responsive, and
+                    well-structured project.
+                  </p>
+                </div>
+                <div className='min-w-[90%] flex-col items-center justify-center rounded-xl border border-dashed border-blue-400 p-4'>
+                  <p className='text-xl'>House Inspection System</p>
+                  <p>
+                    This project involves a web and mobile application system
+                    that is designed to conduct surveys and evaluations of
+                    construction works and apartment buildings. The main purpose
+                    of this project is to provide a convenient and efficient way
+                    to assess the condition and quality of these structures.
+                  </p>
+                  <p>Role: Frontend, Backend, Mobile developer</p>
+                  <p>
+                    My contributions: I contributed to a project involving
+                    surveys and evaluations of construction works and
+                    apartments. I worked on frontend, backend, and mobile app
+                    roles. I used ReactJS, Tailwind CSS, Ant Design, Redux,
+                    React Hook Form, and React DND Beautiful for the frontend.
+                    For the backend, I used NestJS and MongoDB, and for the
+                    mobile app, I used React Native. I optimized performance for
+                    handling large amounts of data in forms and integrated
+                    GraphQL with Apollo Client for efficient data retrieval and
+                    manipulation.
+                  </p>
+                </div>
+
+                <div className='min-w-[90%] flex-col items-center justify-center rounded-xl border border-dashed border-blue-400 p-4'>
+                  <p className='text-xl'>Custom open-source</p>
+                  <p>
+                    The aim of this project is to improve the functionality of
+                    Mattermost, an open-source code, to facilitate better
+                    communication operations, follow-up communication, task
+                    management, and internal company processes. The main goal is
+                    to enhance the user interface and incorporate additional
+                    features that can seamlessly connect with other company
+                    systems, creating a more cohesive ecosystem. This approach
+                    aims to increase operational efficiency and streamline the
+                    management of internal activities.
+                  </p>
+                  <p>Role: Frontend</p>
+                  <p>
+                    I have made significant contributions by customizing and
+                    improving the open-source code of Mattermost. My work
+                    involved enhancing the user interface to make it more
+                    user-friendly and integrating additional features with other
+                    systems used by the company. These changes resulted in
+                    improved communication efficiency and simplified management
+                    of internal processes.
+                  </p>
+                </div>
+              </motion.div>
+              <div className='flex gap-2'></div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </>

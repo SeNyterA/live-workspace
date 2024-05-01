@@ -5,6 +5,7 @@ import {
   IconSwipeRight
 } from '@tabler/icons-react'
 import {
+  AnimatePresence,
   motion,
   useMotionValue,
   useMotionValueEvent,
@@ -52,8 +53,6 @@ export default function LandingContent() {
 
   useMotionValueEvent(dragButton, 'change', e => dragX.set(-e))
 
-  const contentX = useTransform(dragX, x => -x)
-
   return (
     <motion.div
       className='backgroudConic fixed inset-0 p-10 text-slate-950'
@@ -85,7 +84,6 @@ export default function LandingContent() {
                 key={idx}
                 animate={{
                   scale: imgIndex === idx ? 1 : 1
-                  // filter: imgIndex === idx ? 'drop-shadow(0 0 4px #000000aa)' : 'none'
                 }}
                 transition={SPRING_OPTIONS}
                 className={`relative h-full w-full shrink-0 overflow-hidden rounded-3xl !bg-white/60 object-cover ${idx == 0 ? ' from-blue-500/20 via-white/100 to-yellow-500/40' : 'bg-white/60'}`}
@@ -200,7 +198,7 @@ export default function LandingContent() {
         </motion.div>
       </motion.div>
 
-      <MouseIcon />
+      {imgIndex > 0 && <MouseIcon />}
     </motion.div>
   )
 }
