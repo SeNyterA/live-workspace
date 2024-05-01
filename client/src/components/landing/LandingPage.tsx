@@ -1,25 +1,22 @@
 import {
   IconChevronLeft,
   IconChevronRight,
-  IconPlus,
-  IconSwipeRight
+  IconPlus
 } from '@tabler/icons-react'
 import {
-  AnimatePresence,
   motion,
   useMotionValue,
   useMotionValueEvent,
   useTransform
 } from 'framer-motion'
 import { useState } from 'react'
-import Example from './aaa/Scrollaa'
 import { Chip } from './Chip'
-import './landing.scss'
 import MouseIcon from './common/MouseIcon'
+import './landing.scss'
 import AboutMe from './secssions/AboutMe'
-import Exprience from './secssions/Exprience'
+import Contact from './secssions/Contact'
 import Intro from './secssions/Intro'
-import { Project } from './secssions/Project'
+import { Project } from './secssions/LiveWorkspace'
 
 const DRAG_BUFFER = 100
 const SPRING_OPTIONS = {
@@ -91,7 +88,7 @@ export default function LandingContent() {
                 {idx == 0 && <Intro />}
                 {idx == 1 && <AboutMe />}
                 {idx == 2 && <Project />}
-                {idx == 3 && <Example />}
+                {idx == 3 && <Contact />}
               </motion.div>
             )
           })}

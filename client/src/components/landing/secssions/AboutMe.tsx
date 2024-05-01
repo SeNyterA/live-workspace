@@ -31,7 +31,7 @@ export default function AboutMe() {
     console.log(value)
   })
 
-  const projectsX = useTransform(projectsYProgress, [0.2, 1], ['0%', '-266%'])
+  const projectsX = useTransform(projectsYProgress, [0.25, 1], ['0%', '-266%'])
 
   useLayoutEffect(() => {
     const scrollTrigger = viewPortRef?.current?.addEventListener(
@@ -260,8 +260,8 @@ export default function AboutMe() {
           />
         </div>
 
-        <div className='projects relative h-[500%]' ref={projectsRef}>
-          <div className='sticky top-0 flex h-1/5 gap-10 p-10'>
+        <div className='projects relative h-[400%]' ref={projectsRef}>
+          <div className='sticky top-0 flex h-1/4 gap-10 p-10'>
             <video
               autoPlay
               loop
@@ -387,6 +387,8 @@ export default function AboutMe() {
             </motion.div>
           </div>
         </div>
+
+        <div className='h-[100%] bg-black/20'></div>
       </div>
     </>
   )
