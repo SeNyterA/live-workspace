@@ -26,7 +26,7 @@ const SPRING_OPTIONS = {
   damping: 50
 }
 
-export const tabs = ['Intro', 'Skills & Exprience', 'Live workspace', 'Contact']
+export const tabs = ['Intro', 'Skills & Exprience', 'Contact']
 
 export default function LandingContent() {
   const [imgIndex, setImgIndex] = useState(0)
@@ -52,7 +52,7 @@ export default function LandingContent() {
 
   return (
     <motion.div
-      className='backgroudConic fixed inset-0 p-10 text-slate-950'
+      className='backgroudConic fixed inset-0 text-slate-950'
       animate={{
         paddingTop: imgIndex == 0 ? 40 : 48,
         paddingBottom: imgIndex == 0 ? 40 : 80

@@ -31,7 +31,7 @@ export default function AboutMe() {
     console.log(value)
   })
 
-  const projectsX = useTransform(projectsYProgress, [0.25, 1], ['0%', '-266%'])
+  const projectsX = useTransform(projectsYProgress, [0, 1], ['0%', '-266%'])
 
   useLayoutEffect(() => {
     const scrollTrigger = viewPortRef?.current?.addEventListener(
@@ -41,11 +41,11 @@ export default function AboutMe() {
         timeoutRef.current = setTimeout(() => {
           const height = viewPortRef?.current?.clientHeight
           if (!height) return
-          if (Math.round(scrollY.get() / height) > 2) return
-          viewPortRef.current?.scrollTo({
-            top: Math.round(scrollY.get() / height) * height,
-            behavior: 'smooth'
-          })
+          if (Math.round(scrollY.get() / height) <= 10)
+            viewPortRef.current?.scrollTo({
+              top: Math.round(scrollY.get() / height) * height,
+              behavior: 'smooth'
+            })
         }, 500)
       }
     )
@@ -387,8 +387,6 @@ export default function AboutMe() {
             </motion.div>
           </div>
         </div>
-
-        <div className='h-[100%] bg-black/20'></div>
       </div>
     </>
   )

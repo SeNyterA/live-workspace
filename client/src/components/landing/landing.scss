@@ -66,6 +66,7 @@
 }
 
 .backgroudConic {
+  @apply p-10;
   &::before {
     transition: width 2s;
     z-index: -1;
@@ -358,7 +359,7 @@
 
 .projects {
   &::before {
-    @apply bg-cover bg-center -z-20;
+    @apply -z-20 bg-cover bg-center;
     content: '';
     position: absolute;
     inset: 0;
