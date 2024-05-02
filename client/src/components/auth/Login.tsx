@@ -1,19 +1,15 @@
 import {
-  ActionIcon,
   Anchor,
   Button,
   Checkbox,
   Divider,
-  Group,
   PasswordInput,
-  Stack,
-  Text,
   TextInput
 } from '@mantine/core'
 import { signInWithPopup } from 'firebase/auth'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { BsGithub, BsGoogle } from 'react-icons/bs'
+import { BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { auth, googleProvider } from '../../firebase/firebase'
@@ -58,16 +54,19 @@ export default function Authentication() {
   })
 
   return (
-    <div className='relative flex h-screen w-screen items-center bg-cover bg-center bg-no-repeat p-10'>
+    <div className='relative flex h-screen w-screen items-center justify-center bg-cover bg-center bg-no-repeat p-10'>
       <video
         autoPlay
         loop
         muted
         playsInline
         src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
-        className='aspect-square h-full overflow-hidden rounded-2xl object-cover'
+        className='inset-0 aspect-square h-full overflow-hidden rounded-2xl'
       />
-      <div className='absolute inset-10 left-[unset] w-96 rounded-2xl bg-gray-950/90 p-6'>
+      <div className='left-[unset] w-96 rounded-2xl bg-gray-950/90 p-6'>
+        <p className='my-4 text-center text-2xl font-semibold'>
+          Welcome to Live Workspace
+        </p>
         <Button
           className='w-full'
           onClick={() => {
@@ -127,7 +126,7 @@ export default function Authentication() {
             }
           })}
         >
-          <Stack>
+          <div className='space-y-4'>
             {type === 'register' && (
               <Controller
                 name='userName'
@@ -216,26 +215,23 @@ export default function Authentication() {
                 )}
               />
             )}
-          </Stack>
+          </div>
 
-          <Group justify='space-between' mt='xl'>
-            <Anchor
-              component='button'
-              type='button'
-              c='dimmed'
+          <div className='mt-6 flex w-full justify-between items-center'>
+            <div
               onClick={() => {
                 setType(type === 'login' ? 'register' : 'login')
               }}
-              size='xs'
+              className='text-sm'
             >
               {type === 'register'
                 ? 'Already have an account? Login'
                 : "Don't have an account? Register"}
-            </Anchor>
+            </div>
             <Button type='submit' radius='xl'>
               {type}
             </Button>
-          </Group>
+          </div>
         </form>
       </div>
     </div>
