@@ -369,3 +369,24 @@
     // filter: drop-shadow(0 0 10px #6366f1) blur(10px);
   }
 }
+
+@keyframes scrolltech {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.icons-inner-1 {
+  display: flex;
+  animation: scrolltech 40s linear infinite;
+}
+
+
+
+.icons-inner-2 {
+  display: flex;
+  animation: scrolltech 40s linear infinite;
+}

@@ -7,22 +7,28 @@ const Contact = () => {
     <section className='absolute inset-0 flex items-end justify-center gap-10 p-10'>
       <div className='mx-auto w-full'>
         <Link
-          heading='Github'
-          subheading='Check out my projects'
-          imgSrc='/github.png'
-          href='https://github.com/SeNyterA'
+          heading='Senytera@gmail.com'
+          subheading='Email me'
+          imgSrc='/email.webp'
+          href='mailto:'
         />
         <Link
           heading='+84 849 630 412'
-          subheading='Call me anytime'
+          subheading='Contact me via phone or Zalo'
           imgSrc='/phone.jpeg'
           href='tel:'
         />
-        <Link
-          heading='Senytera@gmail.com'
-          subheading='Get in touch with me'
+        {/* <Link
+          heading='Facebook'
+          subheading='Message me'
           imgSrc='/email.webp'
-          href='mailto:'
+          href='https://fb.com/SeNytera'
+        /> */}
+        <Link
+          heading='Github'
+          subheading='Check out my projects'
+          imgSrc='/email.webp'
+          href='https://github.com/SeNyterA'
         />
       </div>
       <video

@@ -87,8 +87,8 @@ export default function LandingContent() {
               >
                 {idx == 0 && <Intro />}
                 {idx == 1 && <AboutMe />}
-                {idx == 2 && <Project />}
-                {idx == 3 && <Contact />}
+                {idx == 2 && <Contact />}
+                {/* {idx == 2 && <Project />} */}
               </motion.div>
             )
           })}
@@ -96,7 +96,7 @@ export default function LandingContent() {
       </div>
 
       <motion.div
-        className='fixed flex h-12 items-center justify-between gap-3 bg-blend-lighten'
+        className='absolute flex h-12 items-center justify-between gap-3 bg-blend-lighten'
         initial={{ translateY: -10, opacity: 0 }}
         animate={{
           top: imgIndex == 0 ? 44 : 0,
@@ -135,7 +135,7 @@ export default function LandingContent() {
       </motion.div>
 
       <motion.div
-        className='fixed left-1/2 z-50 flex gap-28'
+        className='absolute left-1/2 z-50 flex gap-28'
         initial={{ bottom: 80, translateY: 20, translateX: '-50%', opacity: 0 }}
         animate={{
           bottom: imgIndex == 0 ? 80 : 16

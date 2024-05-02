@@ -9,6 +9,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 
 export default function AboutMe() {
   const projectsRef = useRef<HTMLDivElement>(null)
+  const workspaceRef = useRef<HTMLDivElement>(null)
   const viewPortRef = useRef<HTMLDivElement>(null)
   const [page, setPage] = useState(0)
   const timeoutRef = useRef<NodeJS.Timeout>()
@@ -56,11 +57,28 @@ export default function AboutMe() {
     }
   }, [])
 
+  const getPageTitle = () => {
+    switch (page) {
+      case 0:
+        return 'About Me'
+      case 1:
+        return 'Skills'
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+        return 'Experience'
+      default:
+        return 'Pesonal projects'
+    }
+  }
+
   return (
     <>
       <div className='absolute bottom-2 left-1/2 z-50 flex translate-x-[-50%] items-center gap-2 text-sm font-semibold uppercase'>
         <div className='h-0.5 w-10 bg-black' />
-        {page == 0 ? 'About Me' : page <= 2 ? 'Skills' : 'Experience'}
+        {getPageTitle()}
         <div className='h-0.5 w-10 bg-black' />
       </div>
 
@@ -72,12 +90,12 @@ export default function AboutMe() {
         }}
       >
         <div className='flex h-full items-center gap-10 p-10'>
-          <div className='flex-1'>
+          <div className='relative flex-1'>
             <motion.p className='text-5xl font-bold'>N.D.Khang</motion.p>
             <div className='animated-text relative'>
               I'm a <span></span>
             </div>
-            <p className='max-w-2xl cursor-text'>
+            <p className='cursor-text'>
               I'm a{' '}
               <span className='font-semibold text-blue-600'>
                 Full-Stack Developer
@@ -106,21 +124,223 @@ export default function AboutMe() {
               . I'm seeking a challenging opportunity to contribute my skills to
               a fast-paced and innovative team.
             </p>
-            <motion.button
-              className='mt-2 flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-slate-700 px-4 text-white outline-none hover:bg-slate-950'
-              initial={{ opacity: 0, translateX: -1000 }}
-              animate={{ opacity: 1, translateX: 0 }}
-              whileHover={{
-                filter: 'drop-shadow(0 0 4px #000000aa)',
-                scale: 1.05
-              }}
-              onClick={() => {
-                window.open('/NguyenDucKhang.pdf')
-              }}
-            >
-              <IconDownload size={16} />
-              CV
-            </motion.button>
+
+            <div className='absolute inset-x-0 mt-2 overflow-x-hidden'>
+              <div className='flex gap-2'>
+                <div className='icons-inner-1 flex w-fit space-x-2'>
+                  <img
+                    src='/techs/react.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/nextjs.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/nestjs.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/firebase.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/redis.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/redux.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/react-query.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/tailwind.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/socket-io.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/mysql.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/mongo.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/typeorm.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/prisma.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/graphql.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/apollographql.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/vite.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/mantine.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/antd.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/material.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/docker.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/ec2.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/ngnix.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                </div>
+                <div className='icons-inner-2 flex w-fit space-x-2'>
+                  <img
+                    src='/techs/react.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/nextjs.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/nestjs.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/firebase.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/redis.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/redux.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/react-query.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/tailwind.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/socket-io.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/mysql.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/mongo.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/typeorm.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/prisma.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/graphql.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/apollographql.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/vite.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/mantine.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/antd.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/material.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+
+                  <img
+                    src='/techs/docker.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/ec2.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                  <img
+                    src='/techs/ngnix.png'
+                    className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                  />
+                </div>
+              </div>
+
+              <motion.button
+                className='mt-2 flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-slate-700 px-4 text-white outline-none hover:bg-slate-950'
+                initial={{ opacity: 0, translateX: -1000 }}
+                animate={{ opacity: 1, translateX: 0 }}
+                whileHover={{
+                  filter: 'drop-shadow(0 0 4px #000000aa)',
+                  scale: 1.05
+                }}
+                onClick={() => {
+                  window.open('/NguyenDucKhang.pdf')
+                }}
+              >
+                <IconDownload size={16} />
+                CV
+              </motion.button>
+            </div>
           </div>
 
           <video
@@ -142,7 +362,7 @@ export default function AboutMe() {
             src='https://cdn.dribbble.com/userupload/12695681/file/original-fa27c05d79d2f61e77453c02398f1859.mp4'
             className='aspect-square h-full overflow-hidden rounded-2xl object-cover'
           />
-          <motion.div className='flex-1 flex-col items-center justify-center rounded-xl text-sm xl:text-base'>
+          <motion.div className='flex-1 flex-col items-center justify-center rounded-xl text-base'>
             <p className='text-2xl font-semibold'>Frontend</p>
             <p>
               I am a skilled creator committed to designing engaging web and
@@ -199,7 +419,7 @@ export default function AboutMe() {
         </div>
 
         <div className='flex h-full items-center gap-10 p-10'>
-          <motion.div className='flex-1 flex-col items-center justify-center rounded-xl text-sm xl:text-base'>
+          <motion.div className='flex-1 flex-col items-center justify-center rounded-xl text-base'>
             <p className='text-2xl font-semibold'>Backend</p>
             <p>
               I have a specialization in developing robust and real-time
@@ -383,8 +603,191 @@ export default function AboutMe() {
                   </p>
                 </div>
               </motion.div>
-              <div className='flex gap-2'></div>
             </motion.div>
+          </div>
+        </div>
+
+        <div className='projects relative h-[300%]' ref={workspaceRef}>
+          <div className='sticky top-0 flex h-1/3 gap-10 p-10'>
+            <motion.div className='z-50 flex flex-1 flex-col justify-center rounded-xl'>
+              <p className='text-2xl font-semibold'>Live workspace</p>
+              <p>
+                The development of a comprehensive{' '}
+                <span>real-time workspace system</span>
+                focused on integrating chat functionality, notifications, and
+                task management features. Crafted using a cutting-edge tech
+                stack including <span>NestJS</span> and <span>ReactJS</span>.
+                With a strong emphasis on speed and efficiency, the system
+                ensured optimal performance and responsiveness, enabling swift
+                and seamless interactions within the workspace environment.
+              </p>
+              <motion.div
+                className='mt-4 flex gap-[2%] overflow-scroll text-sm 2xl:text-base'
+                // ref={projectRefContainer}
+              >
+                <div className='min-w-[60%] items-start justify-center gap-4 rounded-xl border border-dashed border-blue-400 p-4'>
+                  <p
+                    className='text-xl'
+                    // style={{
+                    //   writingMode: 'vertical-lr'
+                    // }}
+                  >
+                    Frontend
+                  </p>
+                  <div>
+                    For effective state management, Redux was employed,
+                    guaranteeing smooth and predictable handling of the
+                    application state. Additionally, React Query, fully
+                    supported with TypeScript, was integrated to enhance data
+                    fetching and caching. A modern, responsive user interface
+                    prioritizing usability and aesthetics was developed using
+                    MantineUI and Tailwind CSS.
+                  </div>
+
+                  <div className='mt-2 space-x-2'>
+                    <img
+                      src='/techs/react.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                    <img
+                      src='/techs/vite.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+
+                    <img
+                      src='/techs/firebase.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                    <img
+                      src='/techs/mantine.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+
+                    <img
+                      src='/techs/react-query.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+
+                    <img
+                      src='/techs/socket-io.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                    <img
+                      src='/techs/tailwind.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                  </div>
+                </div>
+                <div className='min-w-[60%] items-start justify-center gap-4 rounded-xl border border-dashed border-blue-400 p-4'>
+                  <p
+                    className='text-xl'
+                    // style={{
+                    //   writingMode: 'vertical-lr'
+                    // }}
+                  >
+                    Backend
+                  </p>
+                  <div>
+                    Real-time communication functionalities were seamlessly
+                    incorporated using socketIO, enabling instantaneous
+                    messaging and collaboration among users. The database schema
+                    was optimized using MySQL and Prisma, ensuring efficient
+                    data storage and retrieval. Integration of Redis for caching
+                    purposes enhanced overall system performance and
+                    responsiveness.
+                  </div>
+                  <div className='mt-2 space-x-2'>
+                    <img
+                      src='/techs/mysql.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                    <img
+                      src='/techs/nestjs.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                    <img
+                      src='/techs/firebase.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+
+                    <img
+                      src='/techs/prisma.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                    <img
+                      src='/techs/redis.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                    <img
+                      src='/techs/socket-io.png'
+                      className='h-10 w-10 rounded p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                  </div>
+                </div>
+
+                <div className='min-w-[60%] items-start justify-center gap-4 rounded-xl border border-dashed border-blue-400 p-4'>
+                  <p
+                    className='text-xl'
+                    // style={{
+                    //   writingMode: 'vertical-lr'
+                    // }}
+                  >
+                    Deployment
+                  </p>
+                  <div>
+                    Docker was utilized for containerization, simplifying the
+                    deployment process and ensuring consistency across different
+                    environments. The application was deployed on AWS, with
+                    Nginx serving as a reverse proxy to enhance security and
+                    performance.
+                  </div>
+                  <div className='mt-2 space-x-2'>
+                    <img
+                      src='/techs/ec2.png'
+                      className='h-10 w-10 rounded bg-slate-100 p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                    <img
+                      src='/techs/ngnix.png'
+                      className='h-10 w-10 rounded bg-slate-100 p-2 bg-blend-luminosity 2xl:h-16 2xl:w-16'
+                    />
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* <motion.button
+                className='mt-2 flex h-9 w-fit cursor-pointer items-center justify-center gap-2 rounded-lg border-none bg-slate-700 px-4 text-white outline-none hover:bg-slate-950'
+                initial={{ opacity: 0, translateX: -1000 }}
+                animate={{ opacity: 1, translateX: 0 }}
+                whileHover={{
+                  filter: 'drop-shadow(0 0 4px #000000aa)',
+                  scale: 1.05
+                }}
+                onClick={() => {
+                  window.open('/workspace.pdf')
+                }}
+              >
+                More details
+              </motion.button> */}
+            </motion.div>
+
+            <div className='aspect-square h-full space-x-[2%] overflow-hidden rounded-2xl object-cover blur-[2px]'>
+              <img
+                src='/workspace.png'
+                className='h-full overflow-hidden rounded-2xl object-cover'
+              />
+              <img
+                src='/workspace.png'
+                className='h-full overflow-hidden rounded-2xl object-cover'
+              />
+              <img
+                src='/workspace.png'
+                className='h-full overflow-hidden rounded-2xl object-cover'
+              />
+              <img
+                src='/workspace.png'
+                className='h-full overflow-hidden rounded-2xl object-cover'
+              />
+            </div>
           </div>
         </div>
       </div>
