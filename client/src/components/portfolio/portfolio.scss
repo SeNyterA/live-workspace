@@ -24,20 +24,17 @@
   70%,
   100% {
     mix-blend-mode: lighten;
-    // opacity: 0.8;
   }
   20%,
   50%,
   80% {
     mix-blend-mode: hue;
-    // opacity: 1;
   }
   0%,
   30%,
   60%,
   90% {
     mix-blend-mode: luminosity;
-    // opacity: 0.9;
   }
 }
 .intro {
@@ -383,8 +380,6 @@
   display: flex;
   animation: scrolltech 40s linear infinite;
 }
-
-
 
 .icons-inner-2 {
   display: flex;

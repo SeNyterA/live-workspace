@@ -58,39 +58,33 @@ export default function Authentication() {
   })
 
   return (
-    <div className='relative flex h-screen w-screen items-center bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat'>
-      <div className='m-10 '>
-        <p className='text-[60px] font-bold'>Live workspace</p>
-        <p className='text-[30px] font-light'>Collaborate with your team</p>
-        <p className='text-[20px] font-light'>
-          Create, share and manage your projects
-        </p>
-      </div>
-      <div className='absolute inset-10 left-[unset] w-96 rounded-xl p-6 '>
-        <Text size='lg' fw={500}>
-          Welcome to Mantine, {type === 'register' ? 'Register' : 'Login'} with
-        </Text>
-
-        <Group grow mb='md' mt='md'>
-          <ActionIcon
-            variant='transparent'
-            onClick={() => {
-              signInWithPopup(auth, googleProvider)
-                .then(async result => {
-                  const token = await result.user.getIdToken()
-                  loginWithSocial({
-                    url: { baseUrl: '/auth/loginWithSocial' },
-                    method: 'post',
-                    payload: { token }
-                  })
+    <div className='relative flex h-screen w-screen items-center bg-cover bg-center bg-no-repeat p-10'>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
+        className='aspect-square h-full overflow-hidden rounded-2xl object-cover'
+      />
+      <div className='absolute inset-10 left-[unset] w-96 rounded-2xl bg-gray-950/90 p-6'>
+        <Button
+          className='w-full'
+          onClick={() => {
+            signInWithPopup(auth, googleProvider)
+              .then(async result => {
+                const token = await result.user.getIdToken()
+                loginWithSocial({
+                  url: { baseUrl: '/auth/loginWithSocial' },
+                  method: 'post',
+                  payload: { token }
                 })
-                .catch(error => {})
-            }}
-          >
-            <BsGoogle radius='xl'>Google</BsGoogle>
-          </ActionIcon>
-          <BsGithub radius='xl'>Github</BsGithub>
-        </Group>
+              })
+              .catch(error => {})
+          }}
+        >
+          <BsGoogle radius='xl' className='mr-3' /> Continue with Google
+        </Button>
 
         <Divider
           label='Or continue with email'

@@ -10,13 +10,12 @@ import {
   useTransform
 } from 'framer-motion'
 import { useState } from 'react'
-import { Chip } from './Chip'
+import { Chip } from './common/Chip'
 import MouseIcon from './common/MouseIcon'
-import './landing.scss'
+import './portfolio.scss'
 import AboutMe from './secssions/AboutMe'
 import Contact from './secssions/Contact'
 import Intro from './secssions/Intro'
-import { Project } from './secssions/LiveWorkspace'
 
 const DRAG_BUFFER = 100
 const SPRING_OPTIONS = {
@@ -28,7 +27,7 @@ const SPRING_OPTIONS = {
 
 export const tabs = ['Intro', 'Skills & Exprience', 'Contact']
 
-export default function LandingContent() {
+export default function Portfolio() {
   const [imgIndex, setImgIndex] = useState(0)
   const dragX = useMotionValue(0)
   const dragButton = useMotionValue(0)

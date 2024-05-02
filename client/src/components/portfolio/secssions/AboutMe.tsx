@@ -487,7 +487,8 @@ export default function AboutMe() {
               loop
               muted
               playsInline
-              src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
+              src='https://cdn.dribbble.com/userupload/9232958/file/original-0bb0cc42e6ae84c6e1478cd6522a2af6.mp4'
+              // src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
               className='aspect-square h-full overflow-hidden rounded-2xl object-cover'
             />
             <motion.div className='z-50 flex flex-1 flex-col justify-center overflow-x-hidden rounded-xl'>
