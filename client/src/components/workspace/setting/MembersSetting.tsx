@@ -35,14 +35,11 @@ const User = memo(({ user }: { user: TUser }) => {
         <p className='max-w-[150px] truncate text-sm font-medium leading-4'>
           {user?.userName}
         </p>
-        <p className='leading-2 truncate text-xs text-gray-500'>
-          {user?.email}
-        </p>
+        <p className='leading-2 truncate text-xs '>{user?.email}</p>
       </div>
       <Button
-        variant='outline'
         color='gray'
-        className='h-[30px] min-h-[30px] border-none border-gray-100 bg-gray-400/10 hover:bg-gray-200/10'
+        className='h-[30px] min-h-[30px] border-none'
         disabled={isPending}
         loading={isPending}
         onClick={() =>
@@ -93,9 +90,7 @@ const Member = ({ member }: { member: TMember }) => {
             <p className='max-w-[150px] truncate font-medium leading-4'>
               {user?.userName}
             </p>
-            <p className='leading-2 truncate text-xs text-gray-500'>
-              {user?.email}
-            </p>
+            <p className='leading-2 truncate text-xs '>{user?.email}</p>
           </div>
 
           {member && <MemberRole member={member} />}
@@ -144,8 +139,9 @@ export default function MembersSetting() {
 
   return (
     <ScrollArea
-      className='absolute inset-0 right-[-12px] pr-3'
+      className='absolute inset-0 left-[-12px] right-[-12px]'
       scrollbarSize={8}
+      classNames={{ viewport: 'px-3' }}
     >
       <Watching
         watchingFn={state =>
@@ -160,10 +156,6 @@ export default function MembersSetting() {
               description='Atleast 3 characters required'
               placeholder='senytera'
               className='sticky top-0 z-[300] mt-4'
-              classNames={{
-                input:
-                  'text-gray-100 bg-gray-400/20 border-gray-100/20 hover:border-blue-500/50 focus:border-blue-500/70'
-              }}
               leftSection={<IconSearch size={16} />}
               value={searchValue}
               onChange={event => setSearchValue(event.currentTarget.value)}
@@ -184,9 +176,7 @@ export default function MembersSetting() {
 
       <div className='mt-4 flex justify-between font-semibold'>
         Members
-        <Badge variant='light' color='gray'>
-          {members!.length}
-        </Badge>
+        <Badge color='gray'>{members!.length}</Badge>
       </div>
 
       {invitedMembers.length > 0 && (

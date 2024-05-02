@@ -58,17 +58,17 @@ export class MessageService {
   }
 
   async createMessage({
-    user,
+    userId,
     targetId,
     message
   }: {
     message: Message
-    user: TJwtUser
+    userId: string
     targetId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         workspaceId: targetId
       }
@@ -87,8 +87,8 @@ export class MessageService {
         },
         type: MessageType.Normal,
         workspaceId: targetId,
-        createdById: user.sub,
-        modifiedById: user.sub
+        createdById: userId,
+        modifiedById: userId
       },
       include: {
         attachments: {
@@ -109,16 +109,16 @@ export class MessageService {
     targetId,
     size,
     fromId,
-    user
+    userId
   }: {
     targetId: string
     fromId?: string
     size?: number
-    user: TJwtUser
+    userId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         workspaceId: targetId
       }
@@ -193,17 +193,17 @@ export class MessageService {
   }
 
   async pinMessage({
-    user,
+    userId,
     messageId,
     targetId
   }: {
-    user: TJwtUser
+    userId: string
     messageId: string
     targetId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         workspaceId: targetId
       }
@@ -218,7 +218,7 @@ export class MessageService {
       }
     })
     message.isPinned = !message.isPinned
-    message.modifiedById = user.sub
+    message.modifiedById = userId
     const newMessage = await this.prismaService.message.update({
       where: { id: message.id },
       data: message
@@ -229,14 +229,14 @@ export class MessageService {
 
   async getPinedMessages({
     targetId,
-    user
+    userId
   }: {
-    user: TJwtUser
+    userId: string
     targetId: string
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         workspaceId: targetId
       }
@@ -255,17 +255,17 @@ export class MessageService {
 
   async deleteMessage({
     messageId,
-    user,
+    userId,
     targetId
   }: {
     messageId: string
-    user: TJwtUser
+    userId: string
     targetId: string
   }) {
     const message = await this.prismaService.message.findFirst({
       where: {
         id: messageId,
-        createdById: user.sub,
+        createdById: userId,
         workspaceId: targetId,
         isAvailable: true
       }
@@ -274,7 +274,7 @@ export class MessageService {
     if (!message) {
       const isAdminOrOwner = await this.prismaService.member.findFirst({
         where: {
-          userId: user.sub,
+          userId: userId,
           status: MemberStatus.Active,
           workspaceId: targetId,
           role: MemberRole.Admin
@@ -287,7 +287,7 @@ export class MessageService {
     }
 
     message.isAvailable = false
-    message.modifiedById = user.sub
+    message.modifiedById = userId
 
     const messageUpdated = await this.prismaService.message.update({
       where: { id: message.id },
@@ -300,17 +300,17 @@ export class MessageService {
   async reactMessage({
     messageId,
     targetId,
-    user,
+    userId,
     icon
   }: {
     messageId: string
     targetId: string
-    user: TJwtUser
+    userId: string
     icon: { native?: string; shortcode?: string; unified: string }
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         status: MemberStatus.Active,
         workspaceId: targetId
       }
@@ -320,26 +320,26 @@ export class MessageService {
     }
 
     const reaction = await this.prismaService.reaction.findUnique({
-      where: { userId_messageId: { messageId, userId: user.sub } }
+      where: { userId_messageId: { messageId, userId: userId } }
     })
 
     let newReaction: Reaction
     if (reaction) {
       if (reaction.unified === icon.unified) {
         newReaction = await this.prismaService.reaction.update({
-          where: { userId_messageId: { messageId, userId: user.sub } },
+          where: { userId_messageId: { messageId, userId: userId } },
           data: { isAvailable: false }
         })
       } else {
         newReaction = await this.prismaService.reaction.update({
-          where: { userId_messageId: { messageId, userId: user.sub } },
+          where: { userId_messageId: { messageId, userId: userId } },
           data: { isAvailable: true, ...icon }
         })
       }
     } else {
       newReaction = await this.prismaService.reaction.create({
         data: {
-          userId: user.sub,
+          userId: userId,
           messageId,
           ...icon
         }

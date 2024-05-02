@@ -53,10 +53,6 @@ const Title = ({ isDisabled }: { isDisabled: boolean }) => {
       placeholder='Enter the team name'
       size='sm'
       className='mt-4'
-      classNames={{
-        input:
-          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
-      }}
       defaultValue={workspace?.title}
       key={workspace?.title}
       onBlur={e =>
@@ -101,13 +97,8 @@ const Description = ({ isDisabled }: { isDisabled: boolean }) => {
     <Textarea
       placeholder='Enter a description...'
       className='mt-4'
-      classNames={{
-        input:
-          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
-      }}
       defaultValue={workspace?.description}
       key={workspace?.description}
-      // data-autofocus
       withAsterisk
       disabled={isPending || isDisabled}
       label={`${workspace?.type} description`}
@@ -159,10 +150,6 @@ const DisplayUrl = ({ isDisabled }: { isDisabled: boolean }) => {
       description='This is the url that will be used to access the team. e.g. .../teams/your-team-name'
       size='sm'
       className='mt-4'
-      classNames={{
-        input:
-          'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40'
-      }}
       defaultValue={workspace?.displayUrl}
       disabled={isPending || isDisabled}
       key={workspace?.displayUrl}
@@ -263,9 +250,6 @@ const Thunmbnail = ({ isDisabled }: { isDisabled: boolean }) => {
                 state.workspace.workspaces[workspaceId!].thumbnailId!
               ]
 
-            console.log({
-              state
-            })
             return thumbnail
           }}
         >
@@ -488,7 +472,10 @@ export default function InfoSetting() {
 
   return (
     <ScrollArea
-      className='absolute inset-0 right-[-12px] pr-3'
+      className='absolute inset-0 inset-x-[-12px]'
+      classNames={{
+        viewport: 'px-3'
+      }}
       scrollbarSize={8}
     >
       <Thunmbnail isDisabled={!enabled} />

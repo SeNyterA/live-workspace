@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common'
-import { HttpUser } from 'src/decorators/users.decorator'
+import { UserId } from 'src/decorators/users.decorator'
 import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { TeamService } from './team.service'
 import { Member, Workspace } from '@prisma/client'
@@ -10,7 +10,7 @@ export class TeamController {
 
   @Post()
   create(
-    @HttpUser() user: TJwtUser,
+    @UserId() userId: string,
     @Body()
     {
       workspace,
@@ -25,7 +25,7 @@ export class TeamController {
     }
   ) {
     return this.teamService.createTeam({
-      user,
+      userId,
       workspace,
       channels,
       boards,

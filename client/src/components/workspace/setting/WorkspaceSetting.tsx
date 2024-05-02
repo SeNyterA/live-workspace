@@ -41,37 +41,21 @@ export default function WorkspaceSetting() {
           <p className='h-fit leading-[18px]'>{workspace?.title}</p>
         </div>
       }
+      size={376}
+      position={position || 'left'}
       overlayProps={{
         blur: '0.5'
       }}
-      classNames={{
-        header: 'bg-transparent',
-        content: 'rounded-lg flex flex-col bg-black/80',
-        inner: 'p-3',
-        body: 'flex flex-col flex-1 relative text-sm',
-        root: 'text-gray-100',
-        overlay: 'bg-white/10 blur'
-      }}
-      size={376}
-      position={position || 'left'}
     >
-      <Tabs
-        defaultValue='info'
-        classNames={{
-          root: 'h-full flex flex-col',
-          panel: 'flex-1',
-          list: 'before:content-[attr(data-before)] before:block before:h-[2px] before:border-blue-400/20',
-          tab: 'bg-transparent hover:bg-blue-400/20'
-        }}
-      >
+      <Tabs defaultValue='info'>
         <Tabs.List>
           <Tabs.Tab value='info'>Infomation</Tabs.Tab>
           <Tabs.Tab value='members'>Members</Tabs.Tab>
         </Tabs.List>
-        <Tabs.Panel value='members' className='relative'>
+        <Tabs.Panel value='members'>
           <MembersSetting />
         </Tabs.Panel>
-        <Tabs.Panel value='info' className='relative'>
+        <Tabs.Panel value='info'>
           <InfoSetting />
         </Tabs.Panel>
       </Tabs>

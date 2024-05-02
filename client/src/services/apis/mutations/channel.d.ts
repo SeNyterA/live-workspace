@@ -1,4 +1,4 @@
-import { TMember, TWorkspace } from '../../../types'
+import { TMember, TWorkspace, TWorkspaceExtra } from '../../../types'
 
 export type TChannelMutationApi = {
   createChannel: {
@@ -10,6 +10,6 @@ export type TChannelMutationApi = {
     }
     method: 'post'
     payload: { workspace: TWorkspace; members?: TMember[] }
-    response: { group: TWorkspace }
+    response: TWorkspaceExtra
   }
 }

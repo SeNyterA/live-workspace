@@ -3,19 +3,19 @@ import { ExecutionContext, createParamDecorator } from '@nestjs/common'
 export const WsUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToWs().getClient()
-    return request.user
+    return request._id
   }
 )
 
-export const HttpUser = createParamDecorator(
+export const UserId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest()
-    return request.user
+    return request.userId
   }
 )
 
-export const WsClient = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
-    return ctx.switchToWs().getClient()
-  }
-)
+// export const WsClient = createParamDecorator(
+//   (data: unknown, ctx: ExecutionContext) => {
+//     return ctx.switchToWs().getClient()
+//   }
+// )

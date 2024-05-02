@@ -16,8 +16,7 @@ export default function BoardContent() {
           <div className='flex h-12 w-full items-center justify-end gap-2 px-3'>
             <BoardHeader />
             <ActionIcon
-              variant='light'
-              className='h-[30px] w-[30px] bg-gray-400/20'
+              className='h-[30px] w-[30px] '
               onClick={() => setOpenInfo(e => !e)}
             >
               <IconChevronRight
@@ -33,6 +32,11 @@ export default function BoardContent() {
 
         {openInfo && (
           <>
+            <Divider
+              orientation='vertical'
+              variant='dashed'
+              className='border-gray-200/20'
+            />
             <Info />
           </>
         )}

@@ -2,25 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-
-@layer components {
-  .primary-button {
-    @apply rounded bg-blue-500 px-4 py-2 font-bold text-white;
-  }
-
-  .card {
-    background-color: theme('colors.white');
-    border-radius: theme('borderRadius.lg');
-    padding: theme('spacing.6');
-    box-shadow: theme('boxShadow.xl');
-  }
-}
-
 blockquote,
 dl,
 dd,
@@ -37,24 +18,197 @@ pre {
   margin: 0;
 }
 
-.customscroll {
-  overflow-y: scroll;
-  scrollbar-width: thin;
+@layer base {
+  [data-theme='dark-acrylic'] {
+  }
 }
 
-.customscroll::-webkit-scrollbar {
-  width: 0px;
+@layer components {
+  body {
+    @apply text-gray-50;
+  }
+
+  .layout {
+    @apply bg-black/80;
+  }
+
+  .sidebar {
+    @apply bg-slate-700/30;
+  }
+
+  .default-button {
+    @apply bg-gray-400/20 hover:bg-gray-400/40 hover:text-blue-400;
+  }
+
+  .message-wrapper {
+    @apply bg-gray-50/10;
+  }
+
+  .card-item-wrapper {
+    @apply bg-gray-50/10 outline-none ring-violet-400 focus-visible:ring-1;
+  }
+
+  .card-propetes-wrapper {
+    @apply bg-white/5;
+  }
+
+  .card-detail-wrapper {
+    @apply focus-within:ring-1 hover:ring-1;
+  }
+
+  .kbd {
+    @apply bg-gray-400/20;
+  }
+
+  .actions-wrapper {
+    @apply bg-black/90;
+  }
+
+  .column-header {
+    @apply bg-gray-900/90 ring-violet-400 focus-visible:outline-none group-hover:bg-gray-800 group-hover:shadow;
+  }
+
+  .customscroll {
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    &::-webkit-scrollbar {
+      width: 0px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #9ca3af;
+      border-radius: 5px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #f9fafb;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: #2980b9;
+    }
+  }
+
+  .editorWapper {
+    @apply bg-slate-700/30 ring-violet-400 transition-all focus-within:ring-1 hover:ring-1 hover:ring-blue-400;
+  }
 }
 
-.customscroll::-webkit-scrollbar-thumb {
-  background-color: #9ca3af;
-  border-radius: 5px;
+.mantine-NavLink-root {
+  @apply relative rounded  hover:bg-blue-200/5 data-[active]:bg-transparent data-[active]:font-semibold data-[active]:text-blue-400 data-[active]:hover:bg-blue-200/5;
+  &[data-variant='indicator'][data-active],
+  &[data-variant='indicator'][data-expanded='true'][data-info] {
+    @apply bg-gray-50/10 text-blue-400 data-[info]:bg-gray-50/[0.02];
+    &:before {
+      @apply absolute left-[-8px] h-4 w-1 rounded-full bg-blue-400;
+      content: '';
+    }
+  }
 }
 
-.customscroll::-webkit-scrollbar-track {
-  background-color: #f9fafb;
+.mantine-NavLink-collapse .mantine-NavLink-root[data-active] {
+  @apply bg-gray-50/5;
+  &::before {
+    @apply absolute left-[-8px] h-4 w-1 rounded-full bg-blue-400;
+    content: '';
+  }
 }
 
-.customscroll::-webkit-scrollbar-thumb:hover {
-  background-color: #2980b9;
+.mantine-Overlay-root {
+  @apply bg-white/10 blur;
+}
+
+.mantine-Tabs-root {
+  @apply flex h-full flex-col;
+
+  .mantine-Tabs-list {
+    @apply before:block before:h-[2px] before:border-blue-400/20 before:content-[attr(data-before)];
+
+    .mantine-Tabs-tab {
+      @apply bg-transparent hover:bg-blue-400/20;
+    }
+  }
+
+  .mantine-Tabs-panel {
+    @apply relative flex-1;
+  }
+}
+
+.mantine-Modal-root {
+  @apply text-gray-50;
+  .mantine-Paper-root {
+    @apply bg-black/70;
+  }
+}
+
+.mantine-Drawer-root {
+  @apply text-gray-50;
+
+  .mantine-Overlay-root {
+    @apply bg-white/10 blur;
+  }
+
+  .mantine-Drawer-inner {
+    @apply p-3;
+
+    .mantine-Paper-root {
+      @apply flex flex-col rounded-lg bg-black/70;
+
+      .mantine-Drawer-header {
+        @apply bg-transparent;
+      }
+
+      .mantine-Drawer-body {
+        @apply relative flex flex-1 flex-col text-sm;
+      }
+    }
+  }
+}
+
+.mantine-Input-wrapper {
+  @apply items-center rounded transition-all;
+  &:where(:not([data-variant='transparent'])) {
+    @apply bg-gray-400/20 ring-violet-400 focus-within:ring-1 hover:bg-gray-400/30 hover:ring-1 hover:ring-blue-400;
+  }
+
+  .mantine-Input-input {
+    @apply truncate border-none bg-transparent text-gray-50;
+  }
+}
+
+.mantine-focus-auto {
+  @apply ring-violet-400 ring-offset-transparent focus-within:outline-none focus-visible:outline-none focus-visible:ring-1;
+}
+
+.mantine-ActionIcon-root,
+.mantine-CloseButton-root,
+.mantine-RichTextEditor-control,
+.mantine-Button-root {
+  @apply border-none bg-gray-400/10 text-gray-50 transition-colors hover:bg-gray-400/20 hover:text-blue-400 data-[active]:bg-blue-400/20 data-[variant='transparent']:bg-transparent data-[active]:text-blue-400;
+}
+
+.mantine-Select-option,
+.mantine-MultiSelect-option,
+.mantine-Combobox-option {
+  &:hover:where(:not([data-combobox-disabled])),
+  &[data-combobox-selected] {
+    @apply bg-white/10 text-gray-50;
+  }
+}
+
+.mantine-Pill-root {
+  @apply bg-gray-50/20 text-gray-50;
+}
+
+[data-portal] .mantine-Popover-dropdown,
+[data-portal] .mantine-Menu-dropdown {
+  @apply border-none bg-gray-950/95 ring-1 ring-violet-400/30;
+}
+
+.mantine-Divider-root {
+  @apply border-gray-400/30;
+}
+
+.mantine-Badge-root {
+  @apply bg-transparent text-[unset] transition-colors;
+}
+.mantine-Menu-item {
+  @apply text-gray-50 hover:bg-gray-50/5;
 }

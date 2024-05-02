@@ -1,5 +1,6 @@
-import { MemberRole } from '@prisma/client'
-
+import { MemberRole, MemberStatus } from '@prisma/client'
+import { Server } from 'socket.io'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
 export declare type JSONContent = {
   type?: string
   attrs?: Record<string, any>
@@ -53,4 +54,70 @@ export const checkPermission = async ({
     return true
   }
   return false
+}
+
+export const joinRooms = async ({
+  rooms,
+  server,
+  userId
+}: {
+  server: Server
+  userId: string
+  rooms: string[] | string
+}) => {
+  const sockets = await server.fetchSockets()
+  const userSockets = sockets.filter(socket => socket._id === userId)
+  if (!userSockets.length) return
+  userSockets.forEach(socket => {
+    socket.join(rooms)
+  })
+}
+
+export const leaveRooms = async ({
+  rooms,
+  server,
+  userId
+}: {
+  server: Server
+  userId: string
+  rooms: string[]
+}) => {
+  const sockets = await server.fetchSockets()
+  const userSockets = sockets.filter(socket => socket._id === userId)
+  if (!userSockets.length) return
+  userSockets.forEach(socket => {
+    rooms.forEach(room => socket.leave(room))
+  })
+}
+
+export const membersJoinRoomWhenCreateWorkspace = async ({
+  workspaceId,
+  workspace,
+  prismaService,
+  server
+}: {
+  workspaceId: string
+  workspace: any
+  server: Server
+  prismaService: PrismaService
+}) => {
+  const members = await prismaService.member.findMany({
+    where: {
+      workspaceId: workspaceId,
+      status: MemberStatus.Active
+    }
+  })
+
+  const membersId = members.map(member => member.userId)
+  const socket = await server.sockets.fetchSockets()
+  socket.map(socket => {
+    if (membersId.includes(socket._id)) {
+      console.log('join workspace', workspaceId)
+      return socket.join(workspaceId)
+    }
+  })
+
+  setTimeout(() => {
+    server.to(workspaceId).emit('workspace', { workspace: workspace })
+  }, 0)
 }

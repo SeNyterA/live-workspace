@@ -1,5 +1,4 @@
-import { ActionIcon, Badge, Card, ScrollArea } from '@mantine/core'
-import { IconPlus } from '@tabler/icons-react'
+import { ScrollArea } from '@mantine/core'
 import {
   DragDropContext,
   Draggable,
@@ -8,14 +7,9 @@ import {
 } from 'react-beautiful-dnd'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../../hooks/useAppControlParams'
-import useRenderCount from '../../../hooks/useRenderCount'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { getAppValue, useAppSelector } from '../../../redux/store'
-import {
-  appMutationFn,
-  useAppMutation
-} from '../../../services/apis/mutations/useAppMutation'
-import { extractApi } from '../../../types'
+import { useAppMutation } from '../../../services/apis/mutations/useAppMutation'
 import { useBoard } from './BoardProvider'
 import CardOptions from './CardOptions'
 
@@ -39,7 +33,6 @@ const getNewOptionOrder = ({
 
   if (options.length === 0) return
 
-  console.log({ to, length: options.length })
   if (to === 0)
     return { oldOption: options[from], newOrder: options[0].order / 2 }
   if (to === options.length - 1)
@@ -115,7 +108,6 @@ const getNewCard = (result: DropResult, propertyId: string) => {
 }
 
 export default function CardsContent() {
-  useRenderCount('CardsContent')
   const { toogleCard } = useAppControlParams()
   const { trackingId, boardId } = useBoard()
   const { mutateAsync: updateColumnPosition } = useAppMutation(
@@ -139,15 +131,13 @@ export default function CardsContent() {
       {propertyRoot && (
         <div className='relative flex-1'>
           <ScrollArea
-            className='absolute inset-0 cursor-pointer px-2 pt-2'
+            className='absolute inset-0 mt-2 cursor-pointer'
+            classNames={{ viewport: 'px-2 pb-2' }}
             scrollbarSize={8}
           >
             <DragDropContext
               onDragEnd={result => {
-                console.log(result)
                 if (result.type === 'column') {
-                  console.log({ result })
-
                   const data = getNewOptionOrder({
                     from: result.source.index,
                     to: result.destination?.index,
@@ -281,7 +271,7 @@ export default function CardsContent() {
                       >
                         {dragProvided => (
                           <div
-                            className='mx-1 w-64'
+                            className='group mx-1 w-64'
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                           >
@@ -295,9 +285,21 @@ export default function CardsContent() {
                       </Draggable>
                     ))}
 
-                    <div className='mx-1 w-64'>
+                    {/* <div className='mx-1 w-64 group'>
                       <CardOptions propertyId={propertyRoot.id} />
-                    </div>
+                    </div> */}
+
+                    <Draggable draggableId='orhter' index={9999} isDragDisabled>
+                      {dragProvided => (
+                        <div
+                          className='group mx-1 w-64'
+                          ref={dragProvided.innerRef}
+                          {...dragProvided.draggableProps}
+                        >
+                          <CardOptions propertyId={propertyRoot.id} />
+                        </div>
+                      )}
+                    </Draggable>
 
                     {dropProvided.placeholder}
                   </div>

@@ -37,19 +37,13 @@ export default function MessageContentWrapper() {
               size='sm'
               placeholder='Search on'
               leftSection={<IconSearch size={14} />}
-              className='flex h-[30px] max-w-[230px] flex-1 items-center rounded bg-gray-100 bg-gray-400/20'
+              className='flex h-[30px] max-w-[230px] flex-1 items-center rounded'
               classNames={{
-                input:
-                  'bg-transparent text-gray-100 border-none min-h-[20px] h-[20px]'
+                input: 'min-h-[20px] h-[20px]'
               }}
             />
 
-            <ActionIcon
-              variant='light'
-              size={30}
-              className='bg-gray-400/20'
-              onClick={() => setOpenInfo(e => !e)}
-            >
+            <ActionIcon size={30} onClick={() => setOpenInfo(e => !e)}>
               <IconChevronRight
                 className={`h-4 w-4 transition-transform ${
                   openInfo || 'rotate-180'

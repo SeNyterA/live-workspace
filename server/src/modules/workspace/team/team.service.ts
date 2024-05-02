@@ -1,7 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import { Server } from 'socket.io'
-import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
 import {
   Member,
@@ -11,6 +10,7 @@ import {
   WorkspaceStatus,
   WorkspaceType
 } from '@prisma/client'
+import { membersJoinRoomWhenCreateWorkspace } from 'src/libs/helper'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
 import { BoardService } from './board/board.service'
 import { ChannelService } from './channel/channel.service'
@@ -35,13 +35,13 @@ export class TeamService {
   ) {}
 
   async createTeam({
-    user,
+    userId,
     workspace,
     boards,
     channels,
     members
   }: {
-    user: TJwtUser
+    userId: string
     workspace: Workspace
     channels?: Workspace[]
     boards?: Workspace[]
@@ -54,23 +54,23 @@ export class TeamService {
         avatarId: workspace.avatarId,
         type: WorkspaceType.Team,
         status: WorkspaceStatus.Private,
-        createdById: user.sub,
-        modifiedById: user.sub,
+        createdById: userId,
+        modifiedById: userId,
         members: {
           createMany: {
             data: [
               {
                 role: MemberRole.Admin,
-                userId: user.sub,
-                createdById: user.sub,
-                modifiedById: user.sub,
+                userId: userId,
+                createdById: userId,
+                modifiedById: userId,
                 status: MemberStatus.Active
               },
               ...(members?.map(e => ({
                 role: e.role,
                 userId: e.userId,
-                createdById: user.sub,
-                modifiedById: user.sub,
+                createdById: userId,
+                modifiedById: userId,
                 status: MemberStatus.Invited
               })) || [])
             ]
@@ -78,15 +78,13 @@ export class TeamService {
         }
       },
       include: {
-        members: true,
-        avatar: true,
-        thumbnail: true
+        avatar: true
       }
     })
 
     boards?.forEach(async board => {
       await this.boardService.createBoard({
-        user,
+        userId,
         workspace: board,
         teamId: team.id
       })
@@ -94,16 +92,18 @@ export class TeamService {
 
     channels?.map(async channel => {
       await this.channelService.createChannel({
-        user,
+        userId,
         workspace: channel,
         teamId: team.id
       })
     })
 
-    const { members: _, ..._team } = team
-    this.server
-      .to(team.members.map(e => e.userId))
-      .emit('workspace', { workspace: _team, action: 'create' })
+    membersJoinRoomWhenCreateWorkspace({
+      workspaceId: team.id,
+      workspace: team,
+      prismaService: this.prismaService,
+      server: this.server
+    })
 
     return team
   }

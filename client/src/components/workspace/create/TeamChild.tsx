@@ -32,17 +32,13 @@ const TeamChild = ({ name }: { name: 'channels' | 'boards' }) => {
               placeholder='General'
               leftSection={<IconHash size={16} />}
               rightSection={
-                <ActionIcon
-                  variant='transparent'
-                  className='hover:bg-gray-400/20'
-                  onClick={() => remove(index)}
-                >
+                <ActionIcon onClick={() => remove(index)}>
                   <IconX size={16} />
                 </ActionIcon>
               }
               classNames={{
                 input:
-                  'text-gray-100 bg-gray-400/20 border-gray-100/20 focus:border-gray-100/40 border border-dashed'
+                  'border-gray-100/20 focus:border-gray-100/40 border border-dashed'
               }}
               error={fieldState.error && fieldState.error.message}
             />
@@ -52,7 +48,6 @@ const TeamChild = ({ name }: { name: 'channels' | 'boards' }) => {
       <div className='mt-2 flex justify-end'>
         <Button
           size='sm'
-          variant='light'
           onClick={() => {
             append({
               title: ''

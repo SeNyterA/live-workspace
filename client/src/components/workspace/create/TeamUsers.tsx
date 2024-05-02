@@ -37,7 +37,7 @@ const Option = memo(
           </Watching>
           <div className='flex flex-1 flex-col justify-center'>
             <p className='font-medium leading-5'>{user.userName}</p>
-            <p className='text-xs leading-3 text-gray-500'>{user.email}</p>
+            <p className='text-xs leading-3 '>{user.email}</p>
           </div>
 
           <MemberRole member={member} />
@@ -102,7 +102,7 @@ const UserCombobox = memo(
           />
         </Combobox.Target>
 
-        <Combobox.Dropdown className='border-1 border-blue-400 bg-gray-400 shadow-sm'>
+        <Combobox.Dropdown className='border-1 shadow-sm'>
           <Combobox.Options style={{ overflowY: 'auto' }}>
             <ScrollArea.Autosize scrollbarSize={8} mah={400}>
               {teamMembers.length === 0 ? (
@@ -193,8 +193,7 @@ export const TeamUsers = memo(() => {
                     placeholder: 'Search and select members...',
                     className: 'mt-4',
                     classNames: {
-                      input:
-                        'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+                      input: 'border-gray-100 border-none  '
                     }
                   }}
                 />

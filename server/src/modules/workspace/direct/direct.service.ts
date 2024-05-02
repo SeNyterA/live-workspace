@@ -23,12 +23,12 @@ export class DirectService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createDirect({
-    user,
+    userId,
     workspace,
     userTargetId
   }: {
     workspace: Workspace
-    user: TJwtUser
+    userId: string
     userTargetId: string
   }) {
     const oldDirect = await this.prismaService.workspace.findFirst({
@@ -37,7 +37,7 @@ export class DirectService {
         members: {
           every: {
             userId: {
-              in: [user.sub, userTargetId]
+              in: [userId, userTargetId]
             }
           }
         }
@@ -66,16 +66,16 @@ export class DirectService {
         members: {
           create: [
             {
-              userId: user.sub,
+              userId: userId,
               role: MemberRole.Admin,
               status: MemberStatus.Active,
-              createdById: user.sub
+              createdById: userId
             },
             {
               userId: userTargetId,
               role: MemberRole.Admin,
               status: MemberStatus.Active,
-              createdById: user.sub
+              createdById: userId
             }
           ]
         }

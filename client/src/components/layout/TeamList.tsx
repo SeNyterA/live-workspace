@@ -37,7 +37,6 @@ export default function TeamList() {
           className={`mx-auto mt-2 flex h-fit w-fit items-center justify-center rounded-full p-0 first:mt-0 ${
             teamId === 'personal' ? 'ring-[1.5px]' : ''
           }`}
-          variant='subtle'
           onClick={() => switchTeam({ teamId: 'personal' })}
         >
           <Watching
@@ -54,7 +53,7 @@ export default function TeamList() {
           </Watching>
         </ActionIcon>
 
-        <Divider variant='dashed' className='mx-4 border-gray-400/20' />
+        <Divider variant='dashed' className='mx-4' />
         <div className='relative flex-1'>
           <ScrollArea
             className='absolute inset-0'
@@ -88,7 +87,6 @@ export default function TeamList() {
                           ? 'rounded-full shadow-custom ring-2 ring-blue-400'
                           : 'rounded-full'
                       }`}
-                      variant='light'
                       size='md'
                       onClick={() => {
                         switchTeam({ teamId: team.id })
@@ -117,11 +115,10 @@ export default function TeamList() {
             ))}
           </ScrollArea>
         </div>
-        <Divider variant='dashed' className='mx-4 border-gray-400/20' />
+        <Divider variant='dashed' className='mx-4' />
 
         <ActionIcon
           className='m mx-auto flex h-fit w-fit items-center justify-center rounded-full p-0'
-          variant='subtle'
           onClick={() => {
             toggleDrawer(true)
           }}
@@ -136,19 +133,11 @@ export default function TeamList() {
         onClose={() => toggleDrawer(false)}
         opened={openDrawer}
         title={<p className='text-lg font-semibold'>Create team</p>}
+        size={376}
+        position={'left'}
         overlayProps={{
           blur: '0.5'
         }}
-        classNames={{
-          header: 'bg-transparent',
-          content: 'rounded-lg flex flex-col bg-black/80',
-          inner: 'p-3',
-          body: 'flex flex-col flex-1 relative text-sm',
-          root: 'text-gray-100',
-          overlay: 'bg-white/10 blur'
-        }}
-        size={376}
-        position={'left'}
       >
         <CreateWorkspace
           onClose={() => toggleDrawer(false)}

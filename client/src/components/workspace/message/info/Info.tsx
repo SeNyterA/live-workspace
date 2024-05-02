@@ -42,7 +42,6 @@ export default function Info() {
           <p className='flex-1 text-base font-semibold'>{workspace?.title}</p>
           <ActionIcon
             size={30}
-            variant='light'
             color='gray'
             onClick={() =>
               dispatch(
@@ -57,9 +56,7 @@ export default function Info() {
             <IconSettings size={16} />
           </ActionIcon>
         </div>
-        {workspace?.description && (
-          <p className='text-gray-500'>{workspace?.description}</p>
-        )}
+        {workspace?.description && <p>{workspace?.description}</p>}
 
         {workspace?.thumbnail?.path && (
           <Image
@@ -71,7 +68,10 @@ export default function Info() {
 
         <div className='relative mt-2 flex-1'>
           <ScrollArea
-            className='absolute inset-0 right-[-12px] pr-3'
+            className='absolute inset-0 inset-x-[-12px]'
+            classNames={{
+              viewport: 'px-3'
+            }}
             scrollbarSize={8}
           >
             <Members />

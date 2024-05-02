@@ -10,7 +10,10 @@ export type TMemberApi = {
         }
       }
       method: 'post'
-      response: TWorkspaceExtra[]
+      response: {
+        workspaces: TWorkspaceExtra[]
+        members: TMemberExtra[]
+      }
     }
     declineInvition: {
       url: {

@@ -12,7 +12,6 @@ import { Server } from 'socket.io'
 import { Errors } from 'src/libs/errors'
 import { PrismaService } from '../prisma/prisma.service'
 import { RedisService } from '../redis/redis.service'
-import { TJwtUser } from '../socket/socket.gateway'
 export type TWorkspaceSocket = {
   action: 'create' | 'update' | 'delete'
   data: Workspace
@@ -49,10 +48,10 @@ export class WorkspaceService {
   //#region Workspace
   async updateWorkspace({
     workspaceId,
-    user,
+    userId,
     workspace
   }: {
-    user: TJwtUser
+    userId: string
     workspaceId: string
     workspace: Workspace
   }) {
@@ -62,7 +61,7 @@ export class WorkspaceService {
         isAvailable: true,
         members: {
           some: {
-            userId: user.sub,
+            userId: userId,
             status: MemberStatus.Active,
             role: MemberRole.Admin
           }
@@ -70,7 +69,7 @@ export class WorkspaceService {
       },
       data: {
         ...workspace,
-        modifiedById: user.sub
+        modifiedById: userId
       },
       include: {
         thumbnail: true,
@@ -87,18 +86,19 @@ export class WorkspaceService {
 
   async deleteWorkspace({
     workpsaceId,
-    user
+    userId
   }: {
-    user: TJwtUser
+    userId: string
     workpsaceId: string
   }) {
     const memberOperator = await this.prismaService.member.findUnique({
       where: {
         userId_workspaceId: {
-          userId: user.sub,
+          userId: userId,
           workspaceId: workpsaceId
         },
-        status: MemberStatus.Active
+        status: MemberStatus.Active,
+        role: MemberRole.Admin
       }
     })
 
@@ -125,19 +125,19 @@ export class WorkspaceService {
       },
       data: {
         isAvailable: false,
-        modifiedById: user.sub
+        modifiedById: userId
       }
     })
 
     return workspacesDeleted
   }
 
-  async getAllWorkspace({ user }: { user: TJwtUser }) {
+  async getAllWorkspace({ userId }: { userId: string }) {
     const workspaces = await this.prismaService.workspace.findMany({
       where: {
         members: {
           some: {
-            userId: user.sub,
+            userId: userId,
             status: MemberStatus.Active
           }
         },
@@ -167,9 +167,9 @@ export class WorkspaceService {
 
   async getWorkspaceById({
     workspaceId,
-    user
+    userId
   }: {
-    user: TJwtUser
+    userId: string
     workspaceId: string
   }) {
     const workspace = await this.prismaService.workspace.findUnique({
@@ -178,7 +178,7 @@ export class WorkspaceService {
         isAvailable: true,
         members: {
           some: {
-            userId: user.sub,
+            userId,
             status: MemberStatus.Active
           }
         }
@@ -216,15 +216,15 @@ export class WorkspaceService {
 
   async getWorkspaceAttachFiles({
     workspaceId,
-    user
+    userId
   }: {
     workspaceId: string
-    user: TJwtUser
+    userId: string
   }) {
     await this.prismaService.member.findUniqueOrThrow({
       where: {
         userId_workspaceId: {
-          userId: user.sub,
+          userId: userId,
           workspaceId: workspaceId
         },
         workspace: {

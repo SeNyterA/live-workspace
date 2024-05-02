@@ -36,7 +36,6 @@ export default function Properties() {
   const { mutateAsync: updateCard } = useAppMutation('updateCard', {
     mutationOptions: {
       onSuccess(data, variables, context) {
-        console.log(data)
         dispatch(
           workspaceActions.updateWorkspaceStore(
             extractApi({
@@ -80,7 +79,7 @@ export default function Properties() {
   // }, [card?.properties])
 
   return (
-    <div className='relative flex w-80 flex-col rounded-lg bg-gray-900/90 p-3'>
+    <div className='card-propetes-wrapper relative flex w-80 flex-col rounded-lg p-4'>
       <Dropzone
         onDrop={files =>
           uploadFile(
@@ -132,8 +131,11 @@ export default function Properties() {
       </Input.Description>
       <div className='relative mt-2 flex-1'>
         <ScrollArea
-          className='absolute inset-0 right-[-8px] pr-2'
+          className='absolute inset-0 left-[-12px] right-[-12px] overflow-visible'
           scrollbarSize={8}
+          classNames={{
+            viewport: 'px-3'
+          }}
         >
           {properties?.map(property => (
             <Fragment key={property.id}>
@@ -147,14 +149,12 @@ export default function Properties() {
                 >
                   {options => (
                     <Select
+                      checkIconPosition='right'
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
-                        dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90'
+                        input: 'min-h-[30px]',
+                        dropdown: 'pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -229,15 +229,11 @@ export default function Properties() {
                 >
                   {options => (
                     <MultiSelect
+                      checkIconPosition='right'
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
-                        dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90',
-                        pill: 'bg-gray-400/20 text-gray-100 border-gray-400/20'
+                        dropdown: 'pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -321,14 +317,12 @@ export default function Properties() {
                   }
                   children={data => (
                     <Select
+                      checkIconPosition='right'
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
-                        dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90'
+                        input: 'min-h-[30px]',
+                        dropdown: 'pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -407,14 +401,12 @@ export default function Properties() {
                   }
                   children={data => (
                     <MultiSelect
+                      checkIconPosition='right'
                       clearable
                       className='!mt-2 first:!mt-0'
                       classNames={{
-                        input:
-                          'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]',
-                        dropdown:
-                          '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-                        option: 'hover:bg-gray-700/90'
+                        input: 'min-h-[30px]',
+                        dropdown: 'pr-0'
                       }}
                       label={property.title}
                       description={property.title}
@@ -491,8 +483,7 @@ export default function Properties() {
                   mt='md'
                   defaultValue={card?.properties?.[property.id]?.toString()}
                   classNames={{
-                    input:
-                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                    input: 'min-h-[30px]'
                   }}
                   onBlur={e => {
                     const oldCard = getAppValue(
@@ -555,8 +546,7 @@ export default function Properties() {
                 <DateTimePicker
                   className='!mt-2 first:!mt-0'
                   classNames={{
-                    input:
-                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                    input: 'min-h-[30px]'
                   }}
                   clearable
                   label={property.title}
@@ -645,8 +635,7 @@ export default function Properties() {
                   placeholder='Pick dates range'
                   className='!mt-2 first:!mt-0'
                   classNames={{
-                    input:
-                      'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px]'
+                    input: 'min-h-[30px]'
                   }}
                 />
               )}

@@ -203,15 +203,14 @@ export default function SendMessage({
   })
 
   return (
-    <div className={`rootWrapper relative h-28 ${classNames?.rootWrapper}`}>
-      <div
-        className={`editorWapper absolute bottom-6 left-2 right-2 z-10 rounded-md border border-dashed border-gray-200/40 bg-[#101b24]/95 ${classNames?.editorWrapper}`}
-      >
+    <div className={`rootWrapper px-2 pb-1 ${classNames?.rootWrapper}`}>
+      <div className={`editorWapper rounded-md ${classNames?.editorWrapper}`}>
         <RichTextEditor
           editor={editor}
           className='border-none text-sm'
           classNames={{
-            content: 'bg-transparent border-none text-sm'
+            content: 'bg-transparent border-none text-sm',
+            typographyStylesProvider: 'customscroll'
           }}
           autoFocus
         >
@@ -220,55 +219,15 @@ export default function SendMessage({
               editor={editor}
               tippyOptions={{ arrow: true, placement: 'top-start' }}
             >
-              <div className='flex p-1 bg-black/90 rounded gap-1'>
-                <RichTextEditor.Bold
-                  classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Italic
-                  classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Underline
-                  classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Highlight
-                  classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Strikethrough
-                  classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.Link
-                  classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.BulletList
-                  classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
-                  }}
-                />
-                <RichTextEditor.OrderedList
-                  classNames={{
-                    control:
-                      'bg-gray-400/20 border-none hover:bg-blue-400/40'
-                  }}
-                />
+              <div className='flex gap-1 rounded actions-wrapper p-1'>
+                <RichTextEditor.Bold />
+                <RichTextEditor.Italic />
+                <RichTextEditor.Underline />
+                <RichTextEditor.Highlight />
+                <RichTextEditor.Strikethrough />
+                <RichTextEditor.Link />
+                <RichTextEditor.BulletList />
+                <RichTextEditor.OrderedList />
               </div>
             </BubbleMenu>
           )}
@@ -290,8 +249,7 @@ export default function SendMessage({
           {files.map(file => (
             <Badge
               key={file.id}
-              variant='transparent'
-              className='h-[26px] rounded bg-gray-400/20'
+              className='h-[26px] rounded px-1'
               rightSection={
                 <IconX
                   size={14}
@@ -317,7 +275,6 @@ export default function SendMessage({
               <Button
                 size='compact-sm'
                 variant='transparent'
-                className='bg-blue-400/20'
                 {...props}
                 loading={isPending}
               >
@@ -327,9 +284,7 @@ export default function SendMessage({
           </FileButton>
           <Divider orientation='vertical' />
           <Button
-            variant='transparent'
             size='compact-sm'
-            className='bg-blue-400/20'
             onClick={() => {
               _createMessage()
             }}
@@ -339,16 +294,16 @@ export default function SendMessage({
         </div>
       </div>
 
-      <p
-        className={`info-wrapper absolute bottom-1 left-4 right-3 flex justify-between text-xs text-gray-300 ${classNames?.infoWrapper}`}
+      <div
+        className={`info-wrapper flex justify-between py-1 pl-4 pr-3 text-end text-xs ${classNames?.infoWrapper}`}
       >
         <Typing targetId={targetId} />
         <span>
-          Press <kbd className='rounded-sm bg-gray-400/30'>⌘Enter</kbd> or{' '}
-          <kbd className='rounded-sm bg-gray-400/30'>Alt Enter</kbd> to quickly
+          Press <kbd className='rounded-sm kbd'>⌘Enter</kbd> or{' '}
+          <kbd className='rounded-sm kbd'>Alt Enter</kbd> to quickly
           send
         </span>
-      </p>
+      </div>
     </div>
   )
 }

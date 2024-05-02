@@ -16,9 +16,7 @@ export type TJwtUser = {
   iat: number
   exp: number
 }
-export interface CustomSocket extends Socket {
-  user: TJwtUser
-}
+
 
 @WebSocketGateway({
   cors: {
@@ -36,14 +34,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async subscribeToWorkspaces({
     client,
-    user
+    userId
   }: {
-    user: TJwtUser
-    client: CustomSocket
+    userId: string
+    client: Socket
   }) {
     const members = await this.prismaService.member.findMany({
       where: {
-        userId: user.sub,
+        userId: userId,
 
         workspace: {
           isAvailable: true
@@ -55,13 +53,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       ...members
         .filter(e => e.status === MemberStatus.Active)
         .map(member => member.workspaceId),
-      user.sub
+      userId
     ])
 
     return members
   }
 
-  async handleConnection(client: CustomSocket, ...args: any[]) {
+  async handleConnection(client: Socket, ...args: any[]) {
     try {
       if (!client?.handshake?.auth?.token) throw new Error('Missing token')
 
@@ -80,29 +78,29 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
       })
       if (!validUser) throw new Error('Invalid user')
 
-      client.user = jwtUser
+      client._id = validUser.id
 
       const members = await this.subscribeToWorkspaces({
         client,
-        user: jwtUser
+        userId: validUser.id
       })
 
-      this.redisService.redisClient.set(`presence:${jwtUser.sub}`, 'online')
+      this.redisService.redisClient.set(`presence:${validUser.id}`, 'online')
       this.server
         .to(members.map(member => member.workspaceId))
-        .emit('userPresence', { [jwtUser.sub]: 'online' })
+        .emit('userPresence', { [validUser.id]: 'online' })
     } catch (error) {
       client.disconnect()
     }
   }
 
-  async handleDisconnect(client: CustomSocket) {
+  async handleDisconnect(client: Socket) {
     try {
-      const userId = client?.user?.sub
+      const userId = client._id
       if (!userId) return
 
       const sockets = await this.server.fetchSockets()
-      const userSockets = sockets.filter(socket => socket.rooms.has(userId))
+      const userSockets = sockets.filter(socket => socket._id === userId)
       if (userSockets.length) return
 
       const now = Date.now().toString()

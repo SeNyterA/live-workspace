@@ -16,11 +16,11 @@ export default function CardOptions({
   dragProvided
 }: {
   propertyId: string
-
   option?: TPropertyOption
   dragProvided?: DraggableProvided
 }) {
   const { toogleCard } = useAppControlParams()
+
   const dispatch = useDispatch()
   const { searchValue } = useBoard()
   const { trackingId, boardId } = useBoard()
@@ -28,7 +28,7 @@ export default function CardOptions({
     Object.values(state.workspace.cards).filter(
       card =>
         card.workspaceId === boardId &&
-        (!!option?.id
+        (option?.id
           ? card.properties?.[propertyId] === option.id
           : !Object.values(state.workspace.options)
               .filter(option => option.propertyId === propertyId)
@@ -40,11 +40,16 @@ export default function CardOptions({
 
   return (
     <>
-      <div {...dragProvided?.dragHandleProps} className='sticky top-0'>
-        <div className='flex h-9 items-center justify-between rounded border border-gray-300 bg-black bg-gray-900/90 px-2 pr-1'>
+      <div
+        {...dragProvided?.dragHandleProps}
+        className='sticky top-0 outline-none'
+        tabIndex={-1}
+      >
+        <div className='column-header flex h-9 items-center justify-between gap-2 rounded border px-2 pr-1'>
           <Badge
             classNames={{
-              root: 'p-0 rounded-none bg-transparent'
+              root: 'p-0 rounded-none bg-transparent flex-1 flex',
+              label: 'flex-1'
             }}
             leftSection={
               <div
@@ -52,14 +57,14 @@ export default function CardOptions({
                 style={{ backgroundColor: option?.color || 'gray' }}
               />
             }
+            rightSection={<span>{cards?.length}</span>}
           >
-            {!!option ? option?.title : 'Other'}
+            {option ? option?.title : 'Other'}
           </Badge>
 
           <ActionIcon
-            variant='transparent'
             aria-label='Settings'
-            className='h-[28px] w-[28px] bg-blue-400/20 text-white'
+            size={20}
             onClick={() => {
               appMutationFn({
                 key: 'createCard',
@@ -105,10 +110,14 @@ export default function CardOptions({
               <Draggable key={card.id} draggableId={card.id} index={index}>
                 {dragProvided => (
                   <div
-                    className='py-1'
+                    className='card-item-wrapper mt-2 flex flex-col rounded p-2'
                     {...dragProvided.dragHandleProps}
                     {...dragProvided.draggableProps}
                     ref={dragProvided.innerRef}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') toogleCard({ cardId: card.id })
+                    }}
+                    onClick={() => toogleCard({ cardId: card.id })}
                   >
                     <CardItem card={card} />
                   </div>

@@ -76,7 +76,6 @@ export default function MessageContent() {
   useAppOnSocket({
     key: 'reaction',
     resFunc({ reaction }) {
-      console.log({ reaction })
       dispatch(
         workspaceActions.updateWorkspaceStore({
           reactions: { [`${reaction.messageId}_${reaction.userId}`]: reaction }
@@ -194,7 +193,7 @@ export default function MessageContent() {
             )}
             <div
               ref={loadMoreObserverRef}
-              className='invisible absolute inset-0 bottom-[-800px] -z-10 flex justify-center bg-black'
+              className='invisible absolute inset-0 bottom-[-800px] -z-10 flex justify-center'
             />
           </div>
         </ScrollArea>

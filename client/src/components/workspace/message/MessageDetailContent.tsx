@@ -60,7 +60,7 @@ function MessageDetailContent({
         >
           {data => (
             <div
-              className='line-clamp-1 h-4 max-w-96 cursor-pointer truncate !bg-transparent text-xs !text-blue-400 hover:underline'
+              className='! line-clamp-1 h-4 max-w-96 cursor-pointer truncate !bg-transparent text-xs hover:underline'
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   generateHTML(
@@ -83,15 +83,13 @@ function MessageDetailContent({
         offset={0}
       >
         <Menu.Target>
-          <div className='bg-black'></div>
+          <div className=''></div>
         </Menu.Target>
 
         <Menu.Dropdown className='overflow-hidden rounded-lg p-0 shadow-none'>
           <Picker
             data={data}
             onEmojiSelect={(data: any) => {
-              console.log(data)
-              // console.log(String.fromCodePoint(Number('0x1f618')))
               reactMessage({
                 url: {
                   baseUrl: '/workspaces/:workspaceId/messages/:messageId/react',
@@ -115,19 +113,17 @@ function MessageDetailContent({
       </Menu>
 
       <div
-        className={`group relative w-fit rounded bg-gray-400/20 p-1 ${
-          message.replyToId && 'cursor-pointer'
+        className={`message-wrapper group relative w-fit rounded p-1 ${
+          !!message.replyToId && 'cursor-pointer'
         }`}
         key={message.id}
       >
         <div
-          className={`absolute top-0 z-10 hidden translate-y-[-100%] items-center justify-center gap-1 rounded bg-gray-900 p-1 shadow-custom group-hover:flex ${
+          className={`actions-wrapper absolute top-0 z-10 hidden translate-y-[-100%] items-center justify-center gap-1 rounded p-1 shadow-custom group-hover:flex ${
             isOwner ? 'right-0' : 'left-0'
           }`}
         >
           <ActionIcon
-            variant='light'
-            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               toogleImojiId(message.id)
             }}
@@ -136,17 +132,12 @@ function MessageDetailContent({
           </ActionIcon>
 
           {isOwner && (
-            <ActionIcon
-              variant='light'
-              className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
-            >
+            <ActionIcon>
               <IconEdit size={18} />
             </ActionIcon>
           )}
 
           <ActionIcon
-            variant='light'
-            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               pinWorkspaceMessage({
                 method: 'post',
@@ -164,8 +155,6 @@ function MessageDetailContent({
           </ActionIcon>
 
           <ActionIcon
-            variant='light'
-            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
               updateThread({
                 targetId: message.workspaceId,
@@ -177,14 +166,7 @@ function MessageDetailContent({
           </ActionIcon>
 
           <ActionIcon
-            variant='light'
-            className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
             onClick={() => {
-              console.log({
-                targetId: message.workspaceId,
-                threadId: message.threadToId || message.id,
-                replyId: message.id
-              })
               updateThread({
                 targetId: message.workspaceId,
                 threadId: message.threadToId || message.id,
@@ -196,8 +178,6 @@ function MessageDetailContent({
           </ActionIcon>
           {isOwner && (
             <ActionIcon
-              variant='light'
-              className='bg-slate-800/90 text-gray-300 hover:bg-gray-800 hover:text-blue-400'
               onClick={() => {
                 deleteWorkspaceMessage({
                   method: 'delete',
@@ -240,7 +220,7 @@ function MessageDetailContent({
           />
         )}
         {/* <p
-          className={`invisible absolute top-[50%] translate-y-[-50%] text-gray-300 group-hover:visible ${isOwner ? 'left-0 translate-x-[-110%]' : 'right-0 translate-x-[110%]'} text-xs text-gray-300 ${message.isPinned ? 'hidden' : ''}`}
+          className={`invisible absolute top-[50%] translate-y-[-50%]  group-hover:visible ${isOwner ? 'left-0 translate-x-[-110%]' : 'right-0 translate-x-[110%]'} text-xs  ${message.isPinned ? 'hidden' : ''}`}
         >
           {dayjs(message.createdAt).format('HH:mm')}
         </p> */}

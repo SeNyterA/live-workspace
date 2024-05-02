@@ -37,16 +37,16 @@ export default function UserAvatar({
 }) {
   const { switchTo } = useAppControlParams()
   const meId = useAppSelector(state => state.auth.userInfo?.id)
-  
+
   const avatar = useAppSelector(state => state.workspace.files[user?.avatarId!])
   const presence = useAppSelector(state => state.workspace.presents[user?.id!])
   const dispath = useDispatch()
   return (
     <Menu
       shadow='md'
-      position='bottom-start'
+      position={isSetting ? 'bottom-end' : 'bottom-start'}
       classNames={{
-        item: 'text-gray-100 hover:bg-blue-400/20 bg-transparent flex justify-between items-center',
+        item: 'bg-transparent flex justify-between items-center',
         arrow: 'border-none'
       }}
       disabled={!user || !showMenu || (user.id === meId && !isSetting)}
@@ -65,15 +65,15 @@ export default function UserAvatar({
           className='h-fit w-fit'
         >
           <Avatar src={avatar?.path} size={size} radius={radius}>
-            <span className='capitalize'>{user?.userName[0]}</span>
+            <span className='capitalize'>{user?.userName?.[0]}</span>
           </Avatar>
         </Indicator>
       </Menu.Target>
 
-      <Menu.Dropdown className='rounded-xl border-none !bg-slate-950/90 p-4 text-gray-100 shadow-none'>
+      <Menu.Dropdown className='rounded-xl border-none p-4 shadow-none'>
         <div className='flex flex-col items-center justify-center p-3'>
           <Avatar src={avatar?.path} size={100}>
-            <span className='capitalize'>{user?.userName[0]}</span>
+            <span className='capitalize'>{user?.userName?.[0]}</span>
           </Avatar>
 
           {!!user?.nickName && (
@@ -81,12 +81,8 @@ export default function UserAvatar({
               {user?.nickName}
             </p>
           )}
-          <p className='break-all text-center text-sm text-gray-300'>
-            @{user?.userName}
-          </p>
-          <p className='break-all text-center text-sm text-gray-300'>
-            {user?.email}
-          </p>
+          <p className='break-all text-center text-sm '>@{user?.userName}</p>
+          <p className='break-all text-center text-sm '>{user?.email}</p>
         </div>
 
         <Menu.Label>Application</Menu.Label>

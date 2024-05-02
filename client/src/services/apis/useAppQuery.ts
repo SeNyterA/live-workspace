@@ -174,13 +174,15 @@ type ApiQueryType = {
 export const useAppQuery = <T extends keyof ApiQueryType>({
   url,
   options,
-  onSuccess
+  onSuccess,
+  onError
 }: Omit<ApiQueryType[T], 'response'> & { key: T } & {
   options?: Omit<
     UseQueryOptions<ApiQueryType[T]['response']>,
     'queryFn' | 'queryKey'
   > & { queryKey?: string[] | string }
   onSuccess?: (data: ApiQueryType[T]['response']) => void
+  onError?: (error: any) => void
 }) => {
   const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
 
@@ -194,11 +196,17 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
     ...options,
     queryKey: [requestKey, options?.queryKey],
     queryFn: async (): Promise<ApiQueryType[T]['response']> => {
-      const response = await http.get(urlApi, {
-        params: (url as any)?.queryParams
-      })
-      onSuccess && onSuccess(response.data)
-      return response.data
+      try {
+        const response = await http.get(urlApi, {
+          params: (url as any)?.queryParams
+        })
+        onSuccess?.(response.data)
+        return response.data
+      } catch (error) {
+        onError?.(error)
+        console.error('Error making API request:', error)
+        return Promise.reject(error)
+      }
     }
   })
 

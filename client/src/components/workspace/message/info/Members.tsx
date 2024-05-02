@@ -1,4 +1,5 @@
 import { Avatar, Badge, Indicator, NavLink } from '@mantine/core'
+import { IconHash } from '@tabler/icons-react'
 import useAppParams from '../../../../hooks/useAppParams'
 import { useAppSelector } from '../../../../redux/store'
 import { EMemberStatus, RoleWeights } from '../../../../types'
@@ -26,48 +27,41 @@ export default function Members() {
 
   return (
     <NavLink
-      className='sticky top-0 z-[2] p-1 pl-0 hover:bg-blue-400/20'
-      label={
-        <div className='flex items-center justify-between'>
-          Members
-          {members?.length! > 0 && (
-            <Badge variant='light' color='gray'>
-              {members!.length}
-            </Badge>
-          )}
-        </div>
-      }
-      onClick={() => {}}
+      variant='indicator'
+      defaultOpened={true}
+      data-info
+      leftSection={<IconHash className='scale-90' size={20} />}
+      className='sticky top-0 z-[2] h-8 p-1 pl-0'
       classNames={{
-        children:
-          'pl-0 border-0 border-b border-dashed border-gray-200/20 pb-2 mb-4'
+        children: 'pl-0 mb-2 mt-1',
+        section: 'data-[position="left"]:me-[8px]'
       }}
+      label={
+        <Badge
+          rightSection={<span>{members?.length! > 0 && members!.length}</span>}
+          classNames={{
+            root: 'p-0 rounded-none bg-transparent flex-1 flex',
+            label: 'flex-1',
+            section: 'data-[position="left"]:me-[8px]'
+          }}
+        >
+          Members
+        </Badge>
+      }
     >
       {!!enableMembers?.length &&
         enableMembers?.map(({ member, user }) => (
           <div
-            className='mt-2 flex max-w-full flex-1 items-center gap-3 shadow-custom first:mt-0'
+            className='mt-2 flex max-w-full flex-1 items-center gap-3 first:mt-0'
             key={user?.id}
           >
-            {/* <Indicator
-              inline
-              size={12}
-              offset={4}
-              position='bottom-end'
-              color='yellow'
-              processing
-              zIndex={1}
-            >
-              <Avatar src={user?.avatar?.path} size={32} />
-            </Indicator> */}
-
             <UserAvatar user={user} size={32} />
 
             <div className='flex flex-1 flex-col justify-center'>
               <p className='max-w-[150px] truncate font-medium leading-4'>
                 {user?.userName}
               </p>
-              <p className='leading-2 max-w-[150px] truncate text-xs text-gray-300'>
+              <p className='leading-2 max-w-[150px] truncate text-xs '>
                 {user?.email}
               </p>
             </div>

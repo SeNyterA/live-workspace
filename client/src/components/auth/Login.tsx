@@ -1,19 +1,15 @@
 import {
-  ActionIcon,
   Anchor,
   Button,
   Checkbox,
   Divider,
-  Group,
   PasswordInput,
-  Stack,
-  Text,
   TextInput
 } from '@mantine/core'
 import { signInWithPopup } from 'firebase/auth'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { BsGithub, BsGoogle } from 'react-icons/bs'
+import { BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { auth, googleProvider } from '../../firebase/firebase'
@@ -35,7 +31,6 @@ export default function Authentication() {
       onSuccess(data) {
         dispatch(authActions.loginSuccess(data))
         // const redirect = new URLSearchParams(location.search).get('redirect')
-        // console.log(redirect)
         // navigate(redirect || '/')
       }
     }
@@ -45,7 +40,6 @@ export default function Authentication() {
       onSuccess(data) {
         dispatch(authActions.loginSuccess(data))
         // const redirect = new URLSearchParams(location.search).get('redirect')
-        // console.log(redirect)
         // navigate(redirect || '/')
       }
     }
@@ -60,39 +54,36 @@ export default function Authentication() {
   })
 
   return (
-    <div className='relative flex h-screen w-screen items-center bg-[url(/auth-bg.jpg)] bg-cover bg-center bg-no-repeat'>
-      <div className='m-10 text-gray-100'>
-        <p className='text-[60px] font-bold'>Live workspace</p>
-        <p className='text-[30px] font-light'>Collaborate with your team</p>
-        <p className='text-[20px] font-light'>
-          Create, share and manage your projects
+    <div className='relative flex h-screen w-screen items-center justify-center bg-cover bg-center bg-no-repeat p-10'>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
+        className='inset-0 aspect-square h-full overflow-hidden rounded-2xl'
+      />
+      <div className='left-[unset] w-96 rounded-2xl bg-gray-950/90 p-6'>
+        <p className='my-4 text-center text-2xl font-semibold'>
+          Welcome to Live Workspace
         </p>
-      </div>
-      <div className='absolute inset-10 left-[unset] w-96 rounded-xl bg-black/80 p-6 text-gray-100'>
-        <Text size='lg' fw={500}>
-          Welcome to Mantine, {type === 'register' ? 'Register' : 'Login'} with
-        </Text>
-
-        <Group grow mb='md' mt='md'>
-          <ActionIcon
-            variant='transparent'
-            onClick={() => {
-              signInWithPopup(auth, googleProvider)
-                .then(async result => {
-                  const token = await result.user.getIdToken()
-                  loginWithSocial({
-                    url: { baseUrl: '/auth/loginWithSocial' },
-                    method: 'post',
-                    payload: { token }
-                  })
+        <Button
+          className='w-full'
+          onClick={() => {
+            signInWithPopup(auth, googleProvider)
+              .then(async result => {
+                const token = await result.user.getIdToken()
+                loginWithSocial({
+                  url: { baseUrl: '/auth/loginWithSocial' },
+                  method: 'post',
+                  payload: { token }
                 })
-                .catch(error => {})
-            }}
-          >
-            <BsGoogle radius='xl'>Google</BsGoogle>
-          </ActionIcon>
-          <BsGithub radius='xl'>Github</BsGithub>
-        </Group>
+              })
+              .catch(error => {})
+          }}
+        >
+          <BsGoogle radius='xl' className='mr-3' /> Continue with Google
+        </Button>
 
         <Divider
           label='Or continue with email'
@@ -135,7 +126,7 @@ export default function Authentication() {
             }
           })}
         >
-          <Stack>
+          <div className='space-y-4'>
             {type === 'register' && (
               <Controller
                 name='userName'
@@ -146,7 +137,7 @@ export default function Authentication() {
                     label='Name'
                     placeholder='Your name'
                     classNames={{
-                      input: 'bg-gray-400/20 text-gray-100'
+                      input: ' '
                     }}
                     value={field.value}
                     onChange={field.onChange}
@@ -172,7 +163,7 @@ export default function Authentication() {
                   label='Email'
                   placeholder='hello@mantine.dev'
                   classNames={{
-                    input: 'bg-gray-400/20 text-gray-100'
+                    input: ' '
                   }}
                   value={field.value}
                   onChange={field.onChange}
@@ -197,7 +188,7 @@ export default function Authentication() {
                   label='Password'
                   placeholder='Your password'
                   classNames={{
-                    input: 'bg-gray-400/20 text-gray-100'
+                    input: ' '
                   }}
                   value={field.value}
                   onChange={field.onChange}
@@ -224,26 +215,23 @@ export default function Authentication() {
                 )}
               />
             )}
-          </Stack>
+          </div>
 
-          <Group justify='space-between' mt='xl'>
-            <Anchor
-              component='button'
-              type='button'
-              c='dimmed'
+          <div className='mt-6 flex w-full justify-between items-center'>
+            <div
               onClick={() => {
                 setType(type === 'login' ? 'register' : 'login')
               }}
-              size='xs'
+              className='text-sm'
             >
               {type === 'register'
                 ? 'Already have an account? Login'
                 : "Don't have an account? Register"}
-            </Anchor>
-            <Button type='submit' radius='xl' variant='outline'>
+            </div>
+            <Button type='submit' radius='xl'>
               {type}
             </Button>
-          </Group>
+          </div>
         </form>
       </div>
     </div>

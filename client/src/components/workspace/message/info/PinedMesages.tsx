@@ -19,6 +19,7 @@ import { useAppQuery } from '../../../../services/apis/useAppQuery'
 import { updateLabelMention } from '../../../../utils/helper'
 import UserAvatar from '../../../common/UserAvatar'
 import Attachments from '../detail/Attachments'
+import { IconPin, IconPinned } from '@tabler/icons-react'
 
 export default function PinedMesages() {
   const { channelId, groupId, directId } = useAppParams()
@@ -56,23 +57,29 @@ export default function PinedMesages() {
 
   return (
     <NavLink
-      className='sticky top-0 z-[2] mt-1 p-1 pl-0 hover:bg-blue-400/20'
-      label={
-        <div className='flex items-center justify-between gap-1'>
-          <p className='flex-1'>Pined messages</p>
-          {pinedMessages!.length > 0 && (
-            <Badge variant='light' color='gray'>
-              {pinedMessages!.length}
-            </Badge>
-          )}
-          {isPending && <Loader size={10} />}
-        </div>
-      }
-      onClick={() => {}}
+      variant='indicator'
+      defaultOpened={true}
+      data-info
+      leftSection={<IconPinned className='scale-90' size={20} />}
+      className='sticky top-0 z-[2] h-8 p-1 pl-0'
       classNames={{
-        children:
-          'pl-0 border-0 border-b border-dashed border-gray-200/20 pb-2 mb-4'
+        children: 'pl-0 mb-2 mt-1',
+        section: 'data-[position="left"]:me-[8px]'
       }}
+      label={
+        <Badge
+          rightSection={
+            <span>{pinedMessages?.length! > 0 && pinedMessages!.length}</span>
+          }
+          classNames={{
+            root: 'p-0 rounded-none bg-transparent flex-1 flex',
+            label: 'flex-1',
+            section: 'data-[position="left"]:me-[8px]'
+          }}
+        >
+          Pined Messages
+        </Badge>
+      }
     >
       {pinedMessages?.map((message, index) => (
         <Fragment key={message.id}>
@@ -88,7 +95,7 @@ export default function PinedMesages() {
                   <p className='font-medium'>
                     {createBy?.userName || 'Senytera'}
                   </p>
-                  <p className='text-xs text-gray-500'>
+                  <p className='text-xs '>
                     {dayjs(message.createdAt).format('YYYY-MM-DD HH:mm:ss')}
                   </p>
                   <div

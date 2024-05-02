@@ -360,8 +360,9 @@ export const extractApi = ({
 
   const extractMembers = (members: TMemberExtra[]) => {
     members.forEach(member => {
-      const { user, ...resMember } = member
-      extractUser(user)
+      const { user, workspace, ...resMember } = member
+      !!user && extractUser(user)
+      !!workspace && extractWorkspaces([workspace])
       res.members[`${member.workspaceId}_${member.userId}`] = resMember
     })
   }

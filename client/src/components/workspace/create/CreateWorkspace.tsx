@@ -1,11 +1,14 @@
 import { Button, ScrollArea, Tabs } from '@mantine/core'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import useAppControlParams from '../../../hooks/useAppControlParams'
 import useAppParams from '../../../hooks/useAppParams'
+import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import {
   ApiMutationType,
   useAppMutation
 } from '../../../services/apis/mutations/useAppMutation'
-import { EWorkspaceStatus, EWorkspaceType } from '../../../types'
+import { EWorkspaceStatus, EWorkspaceType, extractApi } from '../../../types'
 import CreateWorkspaceInfo from './CreateWorkspaceInfo'
 import Members from './Members'
 import { TeamUsers } from './TeamUsers'
@@ -64,17 +67,37 @@ export default function CreateWorkspace({
   const form = useForm<TCreateWorkspaceForm>({ defaultValues })
   const workspaceType = defaultValues?.workspace.type
   const { teamId } = useAppParams()
+  const { switchTeam, switchTo } = useAppControlParams()
+  const dispatch = useDispatch()
 
   const { mutateAsync: createBoard } = useAppMutation('createBoard', {
     mutationOptions: {
-      onSuccess: () => {
+      onSuccess: data => {
+        dispatch(
+          workspaceActions.updateWorkspaceStore(
+            extractApi({ workspaces: [data] })
+          )
+        )
+        switchTo({
+          target: EWorkspaceType.Board,
+          targetId: data.id
+        })
         onClose && onClose()
       }
     }
   })
   const { mutateAsync: createChannel } = useAppMutation('createChannel', {
     mutationOptions: {
-      onSuccess: () => {
+      onSuccess: data => {
+        dispatch(
+          workspaceActions.updateWorkspaceStore(
+            extractApi({ workspaces: [data] })
+          )
+        )
+        switchTo({
+          target: EWorkspaceType.Channel,
+          targetId: data.id
+        })
         onClose && onClose()
       }
     }
@@ -88,7 +111,13 @@ export default function CreateWorkspace({
   })
   const { mutateAsync: createTeam } = useAppMutation('createTeam', {
     mutationOptions: {
-      onSuccess: () => {
+      onSuccess: data => {
+        dispatch(
+          workspaceActions.updateWorkspaceStore(
+            extractApi({ workspaces: [data] })
+          )
+        )
+        switchTeam({ teamId: data.id })
         onClose && onClose()
       }
     }
@@ -96,30 +125,28 @@ export default function CreateWorkspace({
 
   return (
     <FormProvider {...form}>
-      <Tabs
-        defaultValue='info'
-        classNames={{
-          root: 'h-full flex flex-col',
-          panel: 'flex-1',
-          list: 'before:content-[attr(data-before)] before:block before:h-[2px] before:border-blue-400/20',
-          tab: 'bg-transparent hover:bg-blue-400/20'
-        }}
-      >
+      <Tabs defaultValue='info'>
         <Tabs.List>
           <Tabs.Tab value='info'>Infomation</Tabs.Tab>
           <Tabs.Tab value='members'>Members</Tabs.Tab>
         </Tabs.List>
-        <Tabs.Panel value='info' className='relative'>
+        <Tabs.Panel value='info'>
           <ScrollArea
-            className='absolute inset-0 right-[-12px] pr-3'
+            className='absolute inset-0 inset-x-[-12px]'
+            classNames={{
+              viewport: 'px-3'
+            }}
             scrollbarSize={8}
           >
             <CreateWorkspaceInfo />
           </ScrollArea>
         </Tabs.Panel>
-        <Tabs.Panel value='members' className='relative'>
+        <Tabs.Panel value='members'>
           <ScrollArea
-            className='absolute inset-0 right-[-12px] pr-3'
+            className='absolute inset-0 inset-x-[-12px]'
+            classNames={{
+              viewport: 'px-3'
+            }}
             scrollbarSize={8}
           >
             {[EWorkspaceType.Channel, EWorkspaceType.Board].includes(
@@ -134,18 +161,10 @@ export default function CreateWorkspace({
       </Tabs>
 
       <div className='mt-4 flex items-center justify-end gap-3'>
-        <Button
-          variant='transparent'
-          className='bg-transparent text-red-300 hover:bg-red-400/20 hover:text-red-500'
-        >
-          Close
-        </Button>
+        <Button>Close</Button>
 
         <Button
-          variant='transparent'
-          className='bg-blue-400/20'
           onClick={form.handleSubmit(({ ...data }) => {
-            console.log({ data })
             if (workspaceType === EWorkspaceType.Team) {
               const _data = data as ApiMutationType['createTeam']['payload']
               createTeam({

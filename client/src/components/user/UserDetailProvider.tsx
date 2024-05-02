@@ -16,10 +16,7 @@ export default function UserDetailProvider({
   return (
     <Menu shadow='md' width={200} position='top-start' withArrow>
       <Menu.Target>
-        <ActionIcon
-          variant='transparent'
-          className='h-fit w-fit overflow-visible'
-        >
+        <ActionIcon className='h-fit w-fit overflow-visible'>
           {children}
         </ActionIcon>
       </Menu.Target>
@@ -31,8 +28,8 @@ export default function UserDetailProvider({
             {avatar => <Avatar src={avatar?.path} size={120} />}
           </Watching>
           <p className='mt-2 text-base font-semibold'>{user?.nickName}</p>
-          <p className='text-sm text-gray-500'>{`@${user?.userName}`}</p>
-          <p className='text-sm text-gray-500'>{user?.email}</p>
+          <p className='text-sm '>{`@${user?.userName}`}</p>
+          <p className='text-sm '>{user?.email}</p>
         </div>
         <Menu.Divider />
         <Menu.Item

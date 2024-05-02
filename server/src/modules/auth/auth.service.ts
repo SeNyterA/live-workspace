@@ -51,7 +51,6 @@ export class AuthService {
   ) {}
 
   private async _generateUserCredentials(user: User): Promise<string> {
-    console.log(user)
     const payload = {
       email: user.email,
       userName: user.userName,
@@ -146,7 +145,7 @@ export class AuthService {
       if (existingUser) {
         const access_token = await this._generateUserCredentials(existingUser)
         return {
-          user: existingUser,
+          user: existingUser.id,
           token: access_token
         }
       } else {
@@ -267,10 +266,13 @@ export class AuthService {
 
     this.server.to(members.map(e => e.workspaceId)).emit('user', { user })
   }
-  async updateProfile({ id, user }: { id: string; user: User }) {
+  async updateProfile({ userId, user }: { userId: string; user: User }) {
     const profileUpdated = await this.prismaService.user.update({
-      where: { id: id, isAvailable: true },
-      data: user,
+      where: { id: userId, isAvailable: true },
+      data: {
+        ...user,
+        id: userId
+      },
       include: { avatar: true }
     })
 

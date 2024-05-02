@@ -31,7 +31,6 @@ export default function MemberRole({ member }: { member: TMember }) {
   }
   return (
     <Badge
-      variant='light'
       radius='xs'
       color={getRoleColor(member.role)?.color}
       className={`w-16 px-0`}

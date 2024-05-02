@@ -25,17 +25,6 @@ export default function AppHeader() {
         onClose={() => {
           setSettingProfile(false)
         }}
-        overlayProps={{
-          blur: '0.5'
-        }}
-        classNames={{
-          header: 'bg-transparent',
-          content: 'rounded-lg flex flex-col bg-black/80',
-          inner: 'p-3',
-          body: 'flex flex-col flex-1 relative text-sm',
-          root: 'text-gray-100',
-          overlay: 'bg-white/10 blur'
-        }}
         position='right'
         size={376}
         title={
@@ -43,6 +32,9 @@ export default function AppHeader() {
             Profile setting
           </div>
         }
+        overlayProps={{
+          blur: '0.5'
+        }}
       >
         <SettingProfile />
       </Drawer>

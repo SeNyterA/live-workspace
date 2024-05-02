@@ -34,13 +34,12 @@ export default function BoardHeader() {
       <label className='flex cursor-pointer items-center justify-center gap-1 rounded'>
         <p className='ml-1'>Group by:</p>
         <Select
+          checkIconPosition='right'
           classNames={{
-            input:
-              'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px] h-[30px]',
-            dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-            option: 'hover:bg-gray-700/90'
+            input: 'min-h-[30px] h-[30px]',
+            dropdown: 'pr-0'
           }}
-          className='w-32'
+          className='max-w-32'
           data={propertiesChecking?.map(e => ({
             label: e.title,
             value: e.id
@@ -52,36 +51,13 @@ export default function BoardHeader() {
         />
       </label>
 
-      {/* <label className='flex cursor-pointer items-center justify-center gap-1 rounded'>
-        <p className='ml-1'>Sort by:</p>
-        <Select
-          classNames={{
-            input:
-              'border-gray-100 border-none bg-gray-400/20 text-gray-100 min-h-[30px] h-[30px]',
-            dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20 pr-0',
-            option: 'hover:bg-gray-700/90'
-          }}
-          className='w-32'
-          value={sortBy}
-          data={[
-            { label: 'Label', value: 'label' },
-            { label: 'Created at', value: 'createdAt' },
-            { label: 'Updated at', value: 'updatedAt' }
-          ]}
-          onChange={propertyCheckingId =>
-            propertyCheckingId && setSortBy(propertyCheckingId as any)
-          }
-        />
-      </label> */}
-
       <Input
-        className='flex h-[30px] items-center rounded bg-gray-400/20'
+        className='flex h-[30px] items-center rounded '
         size='sm'
         placeholder='Search card name'
         leftSection={<IconSearch size={14} />}
         classNames={{
-          input:
-            'bg-transparent border-none min-h-[20px] h-[20px] text-gray-100'
+          input: 'bg-transparent border-none min-h-[20px] h-[20px] '
         }}
         value={searchValue}
         onChange={e => setSearchValue(e.currentTarget.value)}
@@ -89,7 +65,7 @@ export default function BoardHeader() {
 
       <ActionIcon
         aria-label='Settings'
-        className='h-[30px] w-[30px] bg-gray-400/20'
+        className='h-[30px] w-[30px] '
         onClick={() => setOpenProperty(true)}
       >
         <IconSettings size={16} stroke={1.5} />

@@ -48,7 +48,7 @@ export default function useAppControlParams() {
         const teamChild = getAppValue(
           state => state.workspace.workspaces[lsActions.getTeamChild(teamId)!]
         )
-        if (!!teamChild) {
+        if (teamChild) {
           lsActions.setTeamChild(teamId, teamChild.id)
           return `/${urlParser[teamChild.type as keyof typeof urlParser]}/${
             teamChild.id

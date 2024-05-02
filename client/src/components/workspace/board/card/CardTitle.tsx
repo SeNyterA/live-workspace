@@ -16,11 +16,11 @@ export default function CardTitle() {
 
   return (
     <TextInput
+      variant='transparent'
       placeholder='Pick value'
       className='w-full px-0'
       classNames={{
-        input:
-          'border w-full bg-transparent text-gray-100 border-transparent outline-none w-full resize-none text-lg px-0 w-full truncate'
+        input: 'w-full text-lg px-0 w-full truncate'
       }}
       value={value}
       onBlur={() => {

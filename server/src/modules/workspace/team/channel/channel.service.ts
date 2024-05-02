@@ -17,8 +17,8 @@ import {
 import { Server } from 'socket.io'
 
 import { Errors } from 'src/libs/errors'
+import { membersJoinRoomWhenCreateWorkspace } from 'src/libs/helper'
 import { PrismaService } from 'src/modules/prisma/prisma.service'
-import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { TeamService } from '../team.service'
 
 @WebSocketGateway({
@@ -37,19 +37,19 @@ export class ChannelService {
   ) {}
 
   async createChannel({
-    user,
+    userId,
     workspace,
     teamId,
     members
   }: {
     workspace: Workspace
-    user: TJwtUser
+    userId: string
     teamId: string
     members?: Member[]
   }) {
     const memberOperator = await this.prismaService.member.findFirst({
       where: {
-        userId: user.sub,
+        userId: userId,
         workspaceId: teamId,
         status: MemberStatus.Active,
         role: MemberRole.Admin
@@ -65,8 +65,8 @@ export class ChannelService {
         ...workspace,
         workspaceParentId: teamId,
         type: WorkspaceType.Channel,
-        createdById: user.sub,
-        modifiedById: user.sub,
+        createdById: userId,
+        modifiedById: userId,
         messages: {
           createMany: {
             data: [
@@ -100,16 +100,24 @@ export class ChannelService {
             data: [
               {
                 role: MemberRole.Admin,
-                userId: user.sub,
+                userId: userId,
                 status: MemberStatus.Active
               }
             ]
           }
         }
+      },
+      include: {
+        avatar: true
       }
     })
 
-    this.server.to(teamId).emit('workspace', { workspace: channel })
+    membersJoinRoomWhenCreateWorkspace({
+      workspaceId: channel.id,
+      workspace: channel,
+      prismaService: this.prismaService,
+      server: this.server
+    })
 
     return channel
   }

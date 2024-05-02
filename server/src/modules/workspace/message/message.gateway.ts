@@ -16,7 +16,7 @@ export type TJwtUser = {
   exp: number
 }
 export interface CustomSocket extends Socket {
-  user: TJwtUser
+  userId: string
 }
 
 @WebSocketGateway({
@@ -72,12 +72,12 @@ export class MessageGateway {
 
   @SubscribeMessage('startTyping')
   async startTyping(
-    @WsUser() user: TJwtUser,
+    @WsUser() userId: string,
     @MessageBody() { targetId }: { targetId: string }
   ) {
-    this.toggleTyping({ targetId, userId: user.sub, isTyping: true })
+    this.toggleTyping({ targetId, userId: userId, isTyping: true })
     this.redisService.redisClient.set(
-      `typing:${targetId}:${user.sub}`,
+      `typing:${targetId}:${userId}`,
       '',
       'EX',
       3
@@ -86,32 +86,32 @@ export class MessageGateway {
 
   @SubscribeMessage('stopTyping')
   async stopTyping(
-    @WsUser() user: TJwtUser,
+    @WsUser() userId: string,
     @MessageBody() { targetId }: { targetId: string }
   ) {
-    this.toggleTyping({ targetId, userId: user.sub, isTyping: false })
-    this.redisService.redisClient.del(`typing:${targetId}:${user.sub}`)
+    this.toggleTyping({ targetId, userId: userId, isTyping: false })
+    this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
   }
 
   @SubscribeMessage('readedMessage')
   async readedMessage(
-    @WsUser() user: TJwtUser,
+    @WsUser() userId: string,
     @MessageBody()
     { messageId, workspaceId }: { messageId: string; workspaceId: string }
   ) {
     // this.redisService.redisClient.hset(
     //   `messageCheckpoint:${workspaceId}`,
-    //   user.sub,
+    //   userId,
     //   messageId
     // )
-    this.redisService.redisClient.hset(`unread:${user.sub}`, workspaceId, 0)
+    this.redisService.redisClient.hset(`unread:${userId}`, workspaceId, 0)
 
     // this.server.to([workspaceId]).emit('checkpointMessage', {
-    //   userId: user.sub,
+    //   userId: userId,
     //   messageId,
     //   workspaceId
     // })
-    this.server.to([user.sub]).emit('unread', {
+    this.server.to([userId]).emit('unread', {
       workspaceId,
       count: 0
     })

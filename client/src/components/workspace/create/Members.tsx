@@ -64,10 +64,6 @@ function UserCombobox({
       }}
       store={combobox}
       position='top-start'
-      classNames={{
-        dropdown: '!bg-gray-900/90 text-gray-100 border-gray-400/20',
-        option: 'hover:bg-gray-700/90'
-      }}
     >
       <Combobox.Target>
         <TextInput
@@ -102,9 +98,7 @@ function UserCombobox({
                       <Avatar src={item.avatar?.path} />
                       <div className='flex flex-1 flex-col justify-center'>
                         <p className='font-medium leading-5'>{item.userName}</p>
-                        <p className='text-xs leading-3 text-gray-500'>
-                          {item.email}
-                        </p>
+                        <p className='text-xs leading-3 '>{item.email}</p>
                       </div>
                       {usersSelectedId.includes(item.id) && (
                         <CheckIcon size={12} />
@@ -148,7 +142,7 @@ const Members = () => {
           placeholder: 'Search and select members...',
           className: 'mt-2',
           classNames: {
-            input: 'border-gray-100 border-none bg-gray-400/20 text-gray-100'
+            input: 'border-gray-100 border-none  '
           }
         }}
       />
