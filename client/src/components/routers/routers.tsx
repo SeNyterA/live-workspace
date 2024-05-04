@@ -70,7 +70,7 @@ export const routers = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <LandingPage />
+        element: <W />
       },
 
       {

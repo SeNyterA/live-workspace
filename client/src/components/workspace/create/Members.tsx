@@ -3,6 +3,7 @@ import {
   CheckIcon,
   Combobox,
   Loader,
+  MultiSelect,
   ScrollArea,
   TextInput,
   TextInputProps,
@@ -14,7 +15,7 @@ import { useDispatch } from 'react-redux'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
-import { EMemberRole, extractApi } from '../../../types'
+import { extractApi, TUser } from '../../../types'
 import { useCreateWorkspaceForm } from './CreateWorkspace'
 import MemberControl from './MemberControl'
 import './userCombobox.module.css'
@@ -43,7 +44,7 @@ function UserCombobox({
       }
     },
     options: {
-      // enabled: !!searchValue && searchValue.length > 2
+      enabled: !!searchValue && searchValue.length > 2
     },
     onSuccess(data) {
       dispatch(
@@ -121,9 +122,33 @@ const Members = () => {
     name: 'members'
   })
 
+  const dispatch = useDispatch()
+  const [searchValue, setSearchValue] = useState('')
+  const { data, isLoading } = useAppQuery({
+    key: 'findUsersByKeyword',
+    url: {
+      baseUrl: '/users/by-keyword',
+      queryParams: {
+        keyword: searchValue
+      }
+    },
+    options: {
+      enabled: !!searchValue && searchValue.length > 2
+    },
+    onSuccess(data) {
+      dispatch(
+        workspaceActions.updateWorkspaceStore(
+          extractApi({
+            users: data.users
+          })
+        )
+      )
+    }
+  })
+
   return (
     <>
-      <UserCombobox
+      {/* <UserCombobox
         usersSelectedId={fields?.map(e => e.userId) || []}
         onPick={userId => {
           const idx = fields?.findIndex(e => e.userId === userId)
@@ -144,6 +169,38 @@ const Members = () => {
           classNames: {
             input: 'border-gray-100 border-none  '
           }
+        }}
+      /> */}
+
+      <MultiSelect
+        label='Add Members'
+        searchable
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+        description='Type to search and add members to the team'
+        placeholder='Search and select members...'
+        className='mt-2'
+        data={data?.users.map(e => ({
+          value: e.id,
+          label: e.userName,
+          user: e
+        }))}
+        value={[]}
+        renderOption={e => {
+          const user = (e.option as any).user as TUser
+          return (
+            <div
+              className='mt-3 flex flex-1 items-center gap-2 first:mt-0'
+              key={e.option.value}
+            >
+              {/* <Avatar src={e.option.users?} /> */}
+              <div className='flex flex-1 flex-col justify-center'>
+                <p className='font-medium leading-5'>{user.userName}</p>
+                <p className='text-xs leading-3 '>{user.email}</p>
+              </div>
+              {/* {usersSelectedId.includes(item.id) && <CheckIcon size={12} />} */}
+            </div>
+          )
         }}
       />
 
