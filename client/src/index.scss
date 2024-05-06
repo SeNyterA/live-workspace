@@ -2,6 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+
+@font-face {
+  font-family: "Cayano Regular";
+  src: url("/cayano-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Petit Cochon";
+  src: url("/Petit Cochon.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Neon Spark";
+  src: url("/neonspark.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Attack";
+  src: url("/fonts/attack/Bold.woff") format("woff");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Attack";
+  src: url("/fonts/attack/ExtraBold.woff") format("woff");
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: "Attack";
+  src: url("/fonts/attack/ExtraLight.woff") format("woff");
+  font-weight: 200;
+}
+
+@font-face {
+  font-family: "Attack";
+  src: url("/fonts/attack/Light.woff") format("woff");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Attack";
+  src: url("/fonts/attack/Medium.woff") format("woff");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: "Attack";
+  src: url("/fonts/attack/Regular.woff") format("woff");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Attack";
+  src: url("/fonts/attack/SemiBold.woff") format("woff");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "Attack";
+  src: url("/fonts/attack/Thin.woff") format("woff");
+  font-weight: 100;
+}
+
+
+body {
+  @apply text-gray-50;
+  font-family: "Lato", sans-serif;
+  // font-family: 'Neon Spark', sans-serif;
+  // font-family: "Nunito", sans-serif;
+  // font-family: 'Cayano Regular', sans-serif;
+  // font-family: 'Petit Cochon', sans-serif;
+  font-optical-sizing: auto;
+}
+
 blockquote,
 dl,
 dd,
@@ -19,14 +96,11 @@ pre {
 }
 
 @layer base {
-  [data-theme='dark-acrylic'] {
-  }
+  [data-theme='dark-acrylic'] {}
 }
 
 @layer components {
-  body {
-    @apply text-gray-50;
-  }
+
 
   .layout {
     @apply bg-black/80;
@@ -71,16 +145,20 @@ pre {
   .customscroll {
     overflow-y: scroll;
     scrollbar-width: thin;
+
     &::-webkit-scrollbar {
       width: 0px;
     }
+
     &::-webkit-scrollbar-thumb {
       background-color: #9ca3af;
       border-radius: 5px;
     }
+
     &::-webkit-scrollbar-track {
       background-color: #f9fafb;
     }
+
     &::-webkit-scrollbar-thumb:hover {
       background-color: #2980b9;
     }
@@ -92,10 +170,12 @@ pre {
 }
 
 .mantine-NavLink-root {
-  @apply relative rounded  hover:bg-blue-200/5 data-[active]:bg-transparent data-[active]:font-semibold data-[active]:text-blue-400 data-[active]:hover:bg-blue-200/5;
+  @apply relative rounded hover:bg-blue-200/5 data-[active]:bg-transparent data-[active]:font-semibold data-[active]:text-blue-400 data-[active]:hover:bg-blue-200/5;
+
   &[data-variant='indicator'][data-active],
   &[data-variant='indicator'][data-expanded='true'][data-info] {
     @apply bg-gray-50/10 text-blue-400 data-[info]:bg-gray-50/[0.02];
+
     &:before {
       @apply absolute left-[-8px] h-4 w-1 rounded-full bg-blue-400;
       content: '';
@@ -105,6 +185,7 @@ pre {
 
 .mantine-NavLink-collapse .mantine-NavLink-root[data-active] {
   @apply bg-gray-50/5;
+
   &::before {
     @apply absolute left-[-8px] h-4 w-1 rounded-full bg-blue-400;
     content: '';
@@ -133,6 +214,7 @@ pre {
 
 .mantine-Modal-root {
   @apply text-gray-50;
+
   .mantine-Paper-root {
     @apply bg-black/70;
   }
@@ -164,6 +246,7 @@ pre {
 
 .mantine-Input-wrapper {
   @apply items-center rounded transition-all;
+
   &:where(:not([data-variant='transparent'])) {
     @apply bg-gray-400/20 ring-violet-400 focus-within:ring-1 hover:bg-gray-400/30 hover:ring-1 hover:ring-blue-400;
   }
@@ -187,6 +270,7 @@ pre {
 .mantine-Select-option,
 .mantine-MultiSelect-option,
 .mantine-Combobox-option {
+
   &:hover:where(:not([data-combobox-disabled])),
   &[data-combobox-selected] {
     @apply bg-white/10 text-gray-50;
@@ -209,6 +293,7 @@ pre {
 .mantine-Badge-root {
   @apply bg-transparent text-[unset] transition-colors;
 }
+
 .mantine-Menu-item {
   @apply text-gray-50 hover:bg-gray-50/5;
 }

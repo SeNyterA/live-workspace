@@ -1,50 +1,91 @@
-import { ScrollArea } from '@mantine/core'
+import { Button, ScrollArea } from '@mantine/core'
 import {
   motion,
   useMotionValueEvent,
   useScroll,
   useTransform
 } from 'framer-motion'
+import './landing.scss'
 import React, { ReactNode, useRef } from 'react'
 import { FiArrowUpRight } from 'react-icons/fi'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import Features from './Features'
+import Intro from './Intro'
 
-export const Project = () => {
+export const WorkspaceLading = () => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const viewPortRef = useRef<HTMLDivElement>(null)
 
+  const { scrollY } = useScroll({
+    target: viewPortRef,
+    layoutEffect: true
+  })
+
   return (
-    <ScrollArea
-      className='absolute inset-0 rounded-[20px]'
-      viewportRef={viewPortRef}
-    >
-      <TextParallaxContent
-        viewPortRef={viewPortRef}
-        imgUrl='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-        subheading='Collaborate'
-        heading='Built for all of us.'
+    <>
+      <motion.div className='relative inset-x-0 z-10 flex h-16 items-center justify-between px-10 text-slate-950'>
+        <motion.p
+          className='text-xl font-black uppercase'
+          style={{
+            fontFamily: '"Attack", sans-serif'
+          }}
+        >
+          Live workspace
+        </motion.p>
+        <div className='flex items-end gap-2'>
+          <Button variant='gradient' onClick={() => navigate('team/personal')}>
+            Open Workspace
+          </Button>
+        </div>
+      </motion.div>
+      <ScrollArea
+        className='fixed inset-0'
+        classNames={{}}
+        viewportRef={viewPortRef}
       >
-        <ExampleContent />
-      </TextParallaxContent>
-      <TextParallaxContent
-        viewPortRef={viewPortRef}
-        imgUrl='https://images.unsplash.com/photo-1530893609608-32a9af3aa95c?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-        subheading='Quality'
-        heading='Never compromise.'
-      >
-        <ExampleContent />
-      </TextParallaxContent>
-      <TextParallaxContent
-        viewPortRef={viewPortRef}
-        imgUrl='https://images.unsplash.com/photo-1504610926078-a1611febcad3?q=80&w=2416&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-        subheading='Modern'
-        heading='Dress for the best.'
-      >
-        <ExampleContent />
-      </TextParallaxContent>
-    </ScrollArea>
+        <Intro />
+        <Features />
+        <motion.div className='relative h-full w-full bg-black'>
+          <video
+            autoPlay
+            loop
+            muted
+            className='absolute left-1/2 top-1/2 h-full max-h-[1000px] w-full max-w-[700px] translate-x-[-50%] translate-y-[-50%] object-cover'
+            src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
+          />
+        </motion.div>
+        <TextParallaxContent
+          viewPortRef={viewPortRef}
+          imgUrl='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+          subheading='Collaborate'
+          heading='Built for all of us.'
+        >
+          <ExampleContent />
+        </TextParallaxContent>
+        <TextParallaxContent
+          viewPortRef={viewPortRef}
+          imgUrl='https://images.unsplash.com/photo-1530893609608-32a9af3aa95c?q=80&w=2564&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+          subheading='Quality'
+          heading='Never compromise.'
+        >
+          <ExampleContent />
+        </TextParallaxContent>
+        <TextParallaxContent
+          viewPortRef={viewPortRef}
+          imgUrl='https://images.unsplash.com/photo-1504610926078-a1611febcad3?q=80&w=2416&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+          subheading='Modern'
+          heading='Dress for the best.'
+        >
+          <ExampleContent />
+        </TextParallaxContent>
+      </ScrollArea>
+    </>
   )
 }
 
-const IMG_PADDING = 0
+const IMG_PADDING = 12
 
 const TextParallaxContent = ({
   imgUrl,
@@ -107,7 +148,7 @@ const StickyImage = ({
         backgroundImage: `url(${imgUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        height: `calc(100vh - 128px - ${IMG_PADDING * 2}px)`,
+        height: `calc(100vh - ${IMG_PADDING * 2}px)`,
         top: IMG_PADDING,
         scale
       }}

@@ -15,6 +15,7 @@ import BoardContent from '../workspace/board/BoardContent'
 import DetailCard from '../workspace/board/card/DetailCard'
 import MessageContentWrapper from '../workspace/message/MessageContentWrapper'
 import WorkspaceSetting from '../workspace/setting/WorkspaceSetting'
+import { WorkspaceLading } from '../landing/WorkspaceLading'
 
 function PrivateRoute() {
   const dispatch = useDispatch()
@@ -70,7 +71,7 @@ export const routers = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <W />
+        element: <WorkspaceLading />
       },
 
       {

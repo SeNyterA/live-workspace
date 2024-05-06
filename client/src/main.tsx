@@ -11,7 +11,6 @@ import { routers } from './components/routers/routers.tsx'
 import './index.scss'
 import i18n from './locales/i18.ts'
 import store from './redux/store.ts'
-import './themes/theme.scss'
 
 const queryClient = new QueryClient()
 init({ data })
