@@ -9,7 +9,10 @@ export type TChannelMutationApi = {
       }
     }
     method: 'post'
-    payload: { workspace: TWorkspace; members?: TMember[] }
+    payload: {
+      workspace: TWorkspace
+      members?: Pick<TMember, 'userId' | 'role'>[]
+    }
     response: TWorkspaceExtra
   }
 }

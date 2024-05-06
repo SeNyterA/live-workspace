@@ -8,7 +8,7 @@ export class UserController {
   @Get('/by-keyword')
   getUsersByKeywork(
     @Query('keyword') keyword: string,
-    @Query('page') page: number = 1,
+    @Query('page') page: number = 0,
     @Query('pageSize') pageSize: number = 10
   ) {
     return this.userService.findByKeyword({

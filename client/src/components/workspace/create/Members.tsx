@@ -1,117 +1,50 @@
-import {
-  Avatar,
-  CheckIcon,
-  Combobox,
-  Loader,
-  MultiSelect,
-  ScrollArea,
-  TextInput,
-  TextInputProps,
-  useCombobox
-} from '@mantine/core'
+import { ActionIcon, Avatar, Loader, Select } from '@mantine/core'
+import { IconX } from '@tabler/icons-react'
 import { useState } from 'react'
 import { Controller, useFieldArray } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { workspaceActions } from '../../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../../redux/store'
+import Watching from '../../../redux/Watching'
 import { useAppQuery } from '../../../services/apis/useAppQuery'
-import { extractApi, TUser } from '../../../types'
+import { EMemberRole, extractApi, TMember, TUserExtra } from '../../../types'
 import { useCreateWorkspaceForm } from './CreateWorkspace'
-import MemberControl from './MemberControl'
-import './userCombobox.module.css'
 
-function UserCombobox({
-  usersSelectedId = [],
-  onPick,
-  textInputProps
+const MemberControl = ({
+  member,
+  onChange,
+  onRemove
 }: {
-  usersSelectedId?: string[]
-  onPick?: (userId: string) => void
-  textInputProps?: TextInputProps
-}) {
-  const userId = useAppSelector(state => state.auth.userInfo?.id)
-  const combobox = useCombobox({
-    onDropdownClose: () => {}
-  })
-  const dispatch = useDispatch()
-  const [searchValue, setSearchValue] = useState('')
-  const { data: userData, isLoading } = useAppQuery({
-    key: 'findUsersByKeyword',
-    url: {
-      baseUrl: '/users/by-keyword',
-      queryParams: {
-        keyword: searchValue
-      }
-    },
-    options: {
-      enabled: !!searchValue && searchValue.length > 2
-    },
-    onSuccess(data) {
-      dispatch(
-        workspaceActions.updateWorkspaceStore(
-          extractApi({
-            users: data.users
-          })
-        )
-      )
-    }
-  })
+  member: Pick<TMember, 'userId' | 'role'>
+  onChange?: (role: EMemberRole) => void
+  onRemove?: () => void
+}) => {
+  const user = useAppSelector(state =>
+    Object.values(state.workspace.users).find(e => e.id === member.userId)
+  )
 
   return (
-    <Combobox
-      onOptionSubmit={value => {
-        onPick && onPick(value)
-        // combobox.closeDropdown()
-      }}
-      store={combobox}
-      position='top-start'
+    <div
+      className='mt-2 flex flex-1 items-center gap-2 rounded p-2 py-1 pr-0 first:mt-0'
+      key={user?.id}
     >
-      <Combobox.Target>
-        <TextInput
-          {...textInputProps}
-          value={searchValue}
-          onChange={event => {
-            setSearchValue(event.currentTarget.value)
-            combobox.openDropdown()
-            combobox.updateSelectedOptionIndex()
-          }}
-          onClick={() => combobox.openDropdown()}
-          onFocus={() => combobox.openDropdown()}
-          onBlur={() => combobox.closeDropdown()}
-          rightSection={isLoading && <Loader size='xs' />}
-        />
-      </Combobox.Target>
+      <Watching watchingFn={state => state.workspace.files[user?.avatarId!]}>
+        {data => <Avatar src={data?.path} size={32} />}
+      </Watching>
 
-      <Combobox.Dropdown>
-        <Combobox.Options style={{ overflowY: 'auto' }}>
-          <ScrollArea.Autosize scrollbarSize={8} mah={230}>
-            {!userData || userData?.users.length === 0 ? (
-              <Combobox.Empty>Nothing found</Combobox.Empty>
-            ) : (
-              userData?.users
-                .filter(e => userId !== e.id)
-                .map(item => (
-                  <Combobox.Option value={item.id} key={item.id}>
-                    <div
-                      className='mt-3 flex flex-1 items-center gap-2 first:mt-0'
-                      key={item.id}
-                    >
-                      <Avatar src={item.avatar?.path} />
-                      <div className='flex flex-1 flex-col justify-center'>
-                        <p className='font-medium leading-5'>{item.userName}</p>
-                        <p className='text-xs leading-3 '>{item.email}</p>
-                      </div>
-                      {usersSelectedId.includes(item.id) && (
-                        <CheckIcon size={12} />
-                      )}
-                    </div>
-                  </Combobox.Option>
-                ))
-            )}
-          </ScrollArea.Autosize>
-        </Combobox.Options>
-      </Combobox.Dropdown>
-    </Combobox>
+      <div className='flex flex-1 flex-col justify-center'>
+        <p className='truncate font-medium leading-5'>{user?.userName}</p>
+        <p className='truncate text-xs leading-3 '>{user?.email}</p>
+      </div>
+
+      <ActionIcon
+        className='h-[30px] w-[30px] '
+        color='gray'
+        onClick={onRemove}
+      >
+        <IconX size={12} />
+      </ActionIcon>
+    </div>
   )
 }
 
@@ -133,7 +66,7 @@ const Members = () => {
       }
     },
     options: {
-      enabled: !!searchValue && searchValue.length > 2
+      enabled: !!searchValue && searchValue.length > 1
     },
     onSuccess(data) {
       dispatch(
@@ -148,31 +81,7 @@ const Members = () => {
 
   return (
     <>
-      {/* <UserCombobox
-        usersSelectedId={fields?.map(e => e.userId) || []}
-        onPick={userId => {
-          const idx = fields?.findIndex(e => e.userId === userId)
-          if (idx < 0) {
-            append({
-              userId,
-              role: EMemberRole.Member
-            } as any)
-          } else {
-            remove(idx)
-          }
-        }}
-        textInputProps={{
-          label: 'Add Members',
-          description: 'Type to search and add members to the team',
-          placeholder: 'Search and select members...',
-          className: 'mt-2',
-          classNames: {
-            input: 'border-gray-100 border-none  '
-          }
-        }}
-      /> */}
-
-      <MultiSelect
+      <Select
         label='Add Members'
         searchable
         searchValue={searchValue}
@@ -185,22 +94,31 @@ const Members = () => {
           label: e.userName,
           user: e
         }))}
-        value={[]}
+        value={null}
+        rightSection={isLoading && <Loader size={14} />}
         renderOption={e => {
-          const user = (e.option as any).user as TUser
+          const user = (e.option as any).user as TUserExtra
           return (
             <div
               className='mt-3 flex flex-1 items-center gap-2 first:mt-0'
               key={e.option.value}
             >
-              {/* <Avatar src={e.option.users?} /> */}
+              <Avatar src={user?.avatar?.path} />
               <div className='flex flex-1 flex-col justify-center'>
                 <p className='font-medium leading-5'>{user.userName}</p>
                 <p className='text-xs leading-3 '>{user.email}</p>
               </div>
-              {/* {usersSelectedId.includes(item.id) && <CheckIcon size={12} />} */}
             </div>
           )
+        }}
+        onChange={id => {
+          if (fields.every(e => e.id !== id) && !!id) {
+            append({
+              userId: id,
+              role: EMemberRole.Member
+            })
+            setSearchValue('')
+          }
         }}
       />
 
