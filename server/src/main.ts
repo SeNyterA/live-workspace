@@ -1,7 +1,9 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
+import { EventEmitter } from 'events'
 import { AppModule } from './app.module'
 import { RedisIoAdapter } from './modules/adapters/redis-io.adapter'
+;(EventEmitter.prototype as any)._maxListeners = 15
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { snapshot: true })
@@ -26,6 +28,6 @@ async function bootstrap() {
   await redisIoAdapter.connectToRedis()
   app.useWebSocketAdapter(redisIoAdapter)
 
-  await app.listen(process.env.PORT)
+  await app.listen(Number(process.env.PORT) || 8420)
 }
 bootstrap()

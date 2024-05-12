@@ -16,15 +16,28 @@ export default store
 
 export type RootState = ReturnType<typeof rootReducer>
 
-export const useAppSelector = <T>(
+export const getAppValue = <T>(
   selector: (state: RootState) => T,
   defaultValue?: T
 ): T | undefined => {
   try {
-    const value = useSelector(selector)
+    const value = selector(store.getState())
     return value || defaultValue
   } catch (error) {
-    console.log('_useSelector error', error)
+    // console.log('_useSelector error', error)
     return defaultValue
   }
+}
+
+export const useAppSelector = <T>(
+  selector: (state: RootState) => T
+): T | undefined => {
+  const value = useSelector(state => {
+    try {
+      return JSON.stringify(selector(state as RootState))
+    } catch (error) {
+      return undefined
+    }
+  })
+  return value ? JSON.parse(value) : undefined
 }

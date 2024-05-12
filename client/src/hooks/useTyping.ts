@@ -3,7 +3,7 @@ import { useAppEmitSocket } from '../services/socket/useAppEmitSocket'
 
 export default function useTyping() {
   const socketEmit = useAppEmitSocket()
-  const typingRef = useRef<number | undefined>()
+  const typingRef = useRef<NodeJS.Timeout | undefined>()
 
   const typing = (targetId: string) => {
     if (typingRef.current === undefined) {

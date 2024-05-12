@@ -24,4 +24,14 @@ export class RedisService {
       })
     })
   }
+
+  async getUsersPresence(userIds: string[]) {
+    const usersPresence: { [userId: string]: any } = {}
+    for (const userId of userIds) {
+      const presence = await this.redisClient.get(`presence:${userId}`)
+      usersPresence[userId] = presence
+    }
+
+    return usersPresence
+  }
 }

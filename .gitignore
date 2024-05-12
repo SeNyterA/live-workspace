@@ -1,5 +1,10 @@
-yarn.lock
-node_modules/
 package-lock.json
-server/.env
+node_modules/
+yarn.lock
+dist/
+.vercel/
+.env
+.DS_Store
+.env.prod
 server/yarn.lock
+.env.dev

@@ -1,283 +1,388 @@
+import { ForbiddenException, Injectable } from '@nestjs/common'
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
 import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException
-} from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { DirectMessageService } from '../direct-message/direct-message.service'
-import { MemberService } from '../member/member.service'
-import { WorkspaceService } from './../workspace.service'
-import { EMessageFor, EMessageType, Message } from './message.schema'
+  MemberRole,
+  MemberStatus,
+  Message,
+  MessageType,
+  Reaction
+} from '@prisma/client'
+import { Server } from 'socket.io'
+import { Errors } from 'src/libs/errors'
+import { PrismaService } from 'src/modules/prisma/prisma.service'
+import { RedisService } from 'src/modules/redis/redis.service'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
 
+@WebSocketGateway({
+  cors: {
+    origin: '*'
+  }
+})
 @Injectable()
 export class MessageService {
+  @WebSocketServer()
+  server: Server
+
   constructor(
-    @InjectModel(Message.name)
-    private readonly messageModel: Model<Message>,
-    private readonly directMessageService: DirectMessageService,
-    private readonly memberService: MemberService,
-    private readonly workspaceService: WorkspaceService
+    private readonly redisService: RedisService,
+    private readonly prismaService: PrismaService
   ) {}
 
-  async _makeUnreadCount(targetId: string) {
-    const members = await this.memberService.memberModel
-      .find({
-        targetId,
-        isAvailable: true
-      })
-      .lean()
+  async emitMessage({ message }: { message: Message }) {
+    this.server.to([message.workspaceId]).emit('message', { message })
+  }
 
-    await members.map(member => {
-      this.workspaceService._incrementUnread(
-        member.userId.toString(),
-        member.targetId.toString()
-      )
+  async incrUnreadMsgs({ message }: { message: Message }) {
+    const members = await this.prismaService.member.findMany({
+      where: {
+        workspaceId: message.workspaceId,
+        status: MemberStatus.Active
+      }
+    })
+
+    members.forEach(async member => {
+      {
+        if (member.userId === message.createdById) return
+
+        const count = await this.redisService.redisClient.hincrby(
+          `unread:${member.userId}`,
+          message.workspaceId,
+          1
+        )
+        this.server.to([member.userId]).emit('unread', {
+          workspaceId: message.workspaceId,
+          count
+        })
+      }
     })
   }
 
-  async _createForDirect({
-    targetId,
+  async createMessage({
     userId,
-    messagePayload
+    targetId,
+    message
   }: {
+    message: Message
     userId: string
     targetId: string
-    messagePayload: { content: string }
   }) {
-    const { direct: directMessage, isNew } =
-      await this.directMessageService._getOrCreateDirectMessage({
-        targetId,
-        userId
-      })
-
-    const newMess = await this.messageModel.create({
-      messageReferenceId: directMessage._id.toString(),
-      createdById: userId,
-      modifiedById: userId,
-      content: messagePayload.content,
-      messageFor: EMessageFor.Direct,
-      messageType: EMessageType.Normal
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: userId,
+        status: MemberStatus.Active,
+        workspaceId: targetId
+      }
     })
-
-    if (isNew) {
-      this.workspaceService.workspaces({
-        rooms: [
-          ...directMessage.userIds.map(e => e.toString()),
-          directMessage._id.toString()
-        ],
-        workspaces: [{ action: 'create', type: 'direct', data: directMessage }]
-      })
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
     }
 
-    this.workspaceService.message({
-      rooms: [targetId, userId, directMessage._id.toString()],
+    const newMessage = await this.prismaService.message.create({
       data: {
-        action: 'create',
-        message: newMess
-      }
-    })
-    directMessage.userIds.map(userId =>
-      this.workspaceService._incrementUnread(
-        userId.toString(),
-        directMessage._id.toString()
-      )
-    )
-
-    return newMess.toJSON()
-  }
-
-  async _createForChannel({
-    channelId,
-    userId,
-    messagePayload
-  }: {
-    userId: string
-    channelId: string
-    messagePayload: { content: string }
-  }) {
-    await this.memberService._checkExisting({
-      userId,
-      targetId: channelId
-    })
-
-    const newMess = await this.messageModel.create({
-      messageReferenceId: channelId,
-      createdById: userId,
-      modifiedById: userId,
-      content: messagePayload.content,
-      messageFor: EMessageFor.Channel,
-      messageType: EMessageType.Normal
-    })
-
-    this.workspaceService.message({
-      rooms: [channelId],
-      data: {
-        action: 'create',
-        message: newMess
-      }
-    })
-    this._makeUnreadCount(channelId)
-
-    return newMess.toJSON()
-  }
-
-  async _createForGroup({
-    groupId,
-    userId,
-    messagePayload
-  }: {
-    userId: string
-    groupId: string
-    messagePayload: { content: string }
-  }) {
-    await this.memberService._checkExisting({
-      userId,
-      targetId: groupId
-    })
-
-    const newMess = await this.messageModel.create({
-      messageReferenceId: groupId,
-      createdById: userId,
-      modifiedById: userId,
-      content: messagePayload.content,
-      messageFor: EMessageFor.Group,
-      messageType: EMessageType.Normal
-    })
-
-    this.workspaceService.message({
-      rooms: [groupId],
-      data: {
-        action: 'create',
-        message: newMess
+        ...message,
+        attachments: {
+          createMany: {
+            data: (message as any).attachments
+          }
+        },
+        type: MessageType.Normal,
+        workspaceId: targetId,
+        createdById: userId,
+        modifiedById: userId
+      },
+      include: {
+        attachments: {
+          include: {
+            file: true
+          }
+        }
       }
     })
 
-    this._makeUnreadCount(groupId)
-    return newMess.toJSON()
+    this.server.to([targetId]).emit('message', { message: newMessage })
+    this.incrUnreadMsgs({ message: newMessage })
+
+    return newMessage
   }
 
-  async _editMessage({
-    messageId,
+  async getMessages({
+    targetId,
+    size,
+    fromId,
     userId
+  }: {
+    targetId: string
+    fromId?: string
+    size?: number
+    userId: string
+  }) {
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: userId,
+        status: MemberStatus.Active,
+        workspaceId: targetId
+      }
+    })
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    if (!!fromId) {
+      const firstMess = await this.prismaService.message.findUnique({
+        where: { id: fromId, isAvailable: true }
+      })
+
+      const messages = await this.prismaService.message.findMany({
+        where: {
+          workspaceId: targetId,
+          isAvailable: true,
+          createdAt: { lte: firstMess?.createdAt }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: size + 1,
+        include: {
+          attachments: {
+            include: {
+              file: true
+            }
+          },
+          reactions: {
+            where: {
+              isAvailable: true
+            }
+          },
+          replyTo: true,
+          theadMessages: true
+        }
+      })
+      return {
+        messages: messages.slice(0, size),
+        isComplete: messages.length <= size
+      }
+    } else {
+      const messages = await this.prismaService.message.findMany({
+        where: {
+          workspaceId: targetId,
+          isAvailable: true
+        },
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: size + 1,
+        include: {
+          attachments: {
+            include: {
+              file: true
+            }
+          },
+          reactions: {
+            where: {
+              isAvailable: true
+            }
+          }
+        }
+      })
+
+      return {
+        messages: messages.slice(0, size),
+        isComplete: messages.length <= size
+      }
+    }
+  }
+
+  async pinMessage({
+    userId,
+    messageId,
+    targetId
   }: {
     userId: string
     messageId: string
+    targetId: string
   }) {
-    const message = await this.messageModel.findOne({
-      _id: messageId,
-      createdById: userId,
-      isAvailable: true
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: userId,
+        status: MemberStatus.Active,
+        workspaceId: targetId
+      }
     })
-
-    if (!message) {
-      throw new NotFoundException('Message not found')
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
     }
-
-    if (message.messageType === EMessageType.System) {
-      throw new ForbiddenException('Cannot edit system message')
-    }
-
-    switch (message.messageFor) {
-      case EMessageFor.Direct: {
-        break
+    const message = await this.prismaService.message.findFirst({
+      where: {
+        id: messageId,
+        workspace: { id: targetId }
       }
-      default: {
-        this.memberService._checkExisting({
-          userId,
-          targetId: message._id.toString()
-        })
-      }
-    }
-
-    return 'editmess'
+    })
+    message.isPinned = !message.isPinned
+    message.modifiedById = userId
+    const newMessage = await this.prismaService.message.update({
+      where: { id: message.id },
+      data: message
+    })
+    this.emitMessage({ message: newMessage })
+    return newMessage
   }
 
-  async _getMessages({
-    messageReferenceId,
-    userId,
-    messgaeFor,
-    pageSize = 100,
-    fromId
-  }: {
-    userId: string
-    messageReferenceId: string
-    messgaeFor: EMessageFor
-    fromId?: string
-    pageSize?: number
-  }) {
-    let _messageReferenceId = messageReferenceId
-
-    switch (messgaeFor) {
-      case EMessageFor.Channel:
-      case EMessageFor.Group: {
-        await this.memberService._checkExisting({
-          targetId: messageReferenceId,
-          userId
-        })
-        break
-      }
-      case EMessageFor.Direct: {
-        const directMess = await this.directMessageService._checkExisting({
-          targetId: messageReferenceId,
-          userId
-        })
-        _messageReferenceId = directMess._id.toString()
-        break
-      }
-    }
-
-    const messages = await this.messageModel
-      .find({
-        messageReferenceId: _messageReferenceId,
-        isAvailable: true,
-        ...(fromId && { _id: { $lt: fromId } })
-      })
-      .sort({ createdAt: -1 })
-      .limit(pageSize)
-
-    const remainingCount = await this.messageModel
-      .find({
-        messageReferenceId: _messageReferenceId,
-        isAvailable: true,
-        ...(fromId && { _id: { $lt: fromId } })
-      })
-      .countDocuments()
-
-    return {
-      messages,
-      remainingCount: remainingCount - messages.length
-    }
-  }
-
-  async _createSystemMessage({
+  async getPinedMessages({
     targetId,
-    userId,
-    messagePayload,
-    messageFor
+    userId
   }: {
     userId: string
     targetId: string
-    messagePayload: string
-    messageFor: EMessageFor
   }) {
-    const newMess = await this.messageModel.create({
-      messageReferenceId: targetId,
-      createdById: userId,
-      modifiedById: userId,
-      content: messagePayload,
-      messageFor: messageFor,
-      messageType: EMessageType.System
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: userId,
+        status: MemberStatus.Active,
+        workspaceId: targetId
+      }
     })
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+    return this.prismaService.message.findMany({
+      where: {
+        workspaceId: targetId,
+        isPinned: true,
+        isAvailable: true
+      }
+    })
+  }
 
-    this.workspaceService.message({
-      rooms: [targetId, userId],
-      data: {
-        action: 'create',
-        message: newMess
+  async deleteMessage({
+    messageId,
+    userId,
+    targetId
+  }: {
+    messageId: string
+    userId: string
+    targetId: string
+  }) {
+    const message = await this.prismaService.message.findFirst({
+      where: {
+        id: messageId,
+        createdById: userId,
+        workspaceId: targetId,
+        isAvailable: true
       }
     })
 
-    return newMess.toJSON()
+    if (!message) {
+      const isAdminOrOwner = await this.prismaService.member.findFirst({
+        where: {
+          userId: userId,
+          status: MemberStatus.Active,
+          workspaceId: targetId,
+          role: MemberRole.Admin
+        }
+      })
+
+      if (!isAdminOrOwner) {
+        throw new ForbiddenException(Errors.PERMISSION_DENIED)
+      }
+    }
+
+    message.isAvailable = false
+    message.modifiedById = userId
+
+    const messageUpdated = await this.prismaService.message.update({
+      where: { id: message.id },
+      data: message
+    })
+    this.emitMessage({ message: messageUpdated })
+    return messageUpdated
   }
+
+  async reactMessage({
+    messageId,
+    targetId,
+    userId,
+    icon
+  }: {
+    messageId: string
+    targetId: string
+    userId: string
+    icon: { native?: string; shortcode?: string; unified: string }
+  }) {
+    const memberOperator = await this.prismaService.member.findFirst({
+      where: {
+        userId: userId,
+        status: MemberStatus.Active,
+        workspaceId: targetId
+      }
+    })
+    if (!memberOperator) {
+      throw new ForbiddenException(Errors.PERMISSION_DENIED)
+    }
+
+    const reaction = await this.prismaService.reaction.findUnique({
+      where: { userId_messageId: { messageId, userId: userId } }
+    })
+
+    let newReaction: Reaction
+    if (reaction) {
+      if (reaction.unified === icon.unified) {
+        newReaction = await this.prismaService.reaction.update({
+          where: { userId_messageId: { messageId, userId: userId } },
+          data: { isAvailable: false }
+        })
+      } else {
+        newReaction = await this.prismaService.reaction.update({
+          where: { userId_messageId: { messageId, userId: userId } },
+          data: { isAvailable: true, ...icon }
+        })
+      }
+    } else {
+      newReaction = await this.prismaService.reaction.create({
+        data: {
+          userId: userId,
+          messageId,
+          ...icon
+        }
+      })
+    }
+
+    this.server.to([targetId]).emit('reaction', {
+      reaction: newReaction
+    })
+
+    return { reaction: newReaction }
+  }
+
+  //#region Typing
+  async startTyping(userId: string, targetId: string) {
+    await this.toggleTyping({ targetId, userId, type: 1 })
+    await this.redisService.redisClient.set(
+      `typing:${targetId}:${userId}`,
+      '',
+      'EX',
+      3
+    )
+  }
+
+  async stopTyping(userId: string, targetId: string) {
+    await this.redisService.redisClient.del(`typing:${targetId}:${userId}`)
+    this.toggleTyping({ targetId, userId, type: 0 })
+  }
+
+  async toggleTyping({
+    targetId,
+    type,
+    userId
+  }: {
+    targetId: string
+    userId: string
+    type: 0 | 1
+  }) {
+    this.server.to([targetId]).emit('typing', {
+      userId,
+      targetId,
+      type
+    })
+  }
+  //#endregion
 }

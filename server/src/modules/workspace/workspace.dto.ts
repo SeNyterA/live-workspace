@@ -1,62 +1,23 @@
-import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested
-} from 'class-validator'
+import { WorkspaceStatus } from '@prisma/client'
+import { IsEnum, IsOptional, IsString } from 'class-validator'
 
-import { Type } from 'class-transformer'
-import { EMemberRole } from './member/member.schema'
-
-export class MemberDto {
+class WorkspaceDto {
   @IsString()
-  @IsNotEmpty()
-  userId: string
+  title: string
 
-  @IsEnum(EMemberRole)
-  @IsNotEmpty()
-  role: EMemberRole
-}
-
-export class MembersDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => MemberDto)
-  members: MemberDto[]
-}
-
-export class CreateWorkspaceDto {
   @IsOptional()
   @IsString()
-  title?: string
-
-  @IsString()
-  @IsOptional()
   description?: string
 
-  @IsString()
   @IsOptional()
-  avatar?: string
+  @IsEnum(WorkspaceStatus)
+  status?: WorkspaceStatus
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => MemberDto)
-  members?: MemberDto[]
-}
-
-export class UpdateWorkspaceDto {
   @IsString()
-  @IsOptional()
-  title?: string
+  avatarId?: string
 
-  @IsString()
   @IsOptional()
-  description?: string
-
   @IsString()
-  @IsOptional()
-  avatar?: string
+  thumbnailId?: string
 }

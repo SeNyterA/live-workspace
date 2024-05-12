@@ -1,12 +1,15 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
+import { authActions } from '../../redux/slices/auth.slice'
+import store from '../../redux/store'
 import { lsActions } from '../../utils/auth'
+import { baseURL } from '../config'
 
 class Http {
   instance: AxiosInstance
 
   constructor() {
     this.instance = axios.create({
-      baseURL: 'http://localhost:8420',
+      baseURL: baseURL,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -26,7 +29,7 @@ class Http {
       response => response,
       (error: AxiosError) => {
         if (error.response?.status === 401) {
-          lsActions.clearLS(true)
+          store.dispatch(authActions.logout())
         }
         return Promise.reject(error)
       }

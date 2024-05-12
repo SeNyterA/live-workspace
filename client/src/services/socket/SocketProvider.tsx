@@ -7,6 +7,7 @@ import {
 } from 'react'
 import io, { Socket } from 'socket.io-client'
 import { useAppSelector } from '../../redux/store'
+import { socketUrl } from '../config'
 
 interface SocketProviderProps {
   children?: ReactNode
@@ -22,13 +23,11 @@ export default function SocketProvider({ children }: SocketProviderProps) {
 
   useEffect(() => {
     if (token) {
-      const newSocket = io('http://localhost:8420', {
+      const newSocket = io(socketUrl!, {
         auth: {
           token
         }
       }).connect()
-
-      // newSocket.emit('joins')
 
       setSocket(newSocket)
 

@@ -1,52 +1,67 @@
-// export const formatTime = (timestamp: number) => {
-//   const now = moment()
-//   const time = moment(timestamp)
-//   if (now.isSame(time, 'day')) {
-//     return time.format('h:mm A')
-//   }
-//   if (now.diff(time, 'weeks') === 0) {
-//     return time.fromNow()
-//   }
-//   return time.format('ddd, MMM Do')
-// }
-
 export const removeHtmlTags = (htmlString: string) => {
   return htmlString.replace(/<[^>]*>/g, ' ')
 }
 
-// export const groupMessagesByUser = (messages: Message[]) => {
-//   const sortedMessages = messages.sort((a, b) => b.createdAt - a.createdAt)
+export const formatFileName = (
+  url: string,
+  startChars: number = 10,
+  endChars: number = 10
+): string => {
+  const fileName: string = url.split('/').pop() || ''
 
-//   return sortedMessages.reduce((pre, next) => {
-//     if (pre.length) {
-//       const lastGroup = pre[pre.length - 1]
-//       const lastMsg = lastGroup[lastGroup.length - 1]
+  if (fileName.length <= startChars + endChars) {
+    return fileName
+  }
 
-//       if (next.isSystem) {
-//         const isSameUser = lastMsg.isSystem === next.isSystem
+  const firstChars: string = fileName.substring(0, startChars)
+  const lastChars: string = fileName.substring(fileName.length - endChars)
 
-//         const timeDiff = Math.abs(lastMsg.createdAt - next.createdAt)
+  return `${firstChars}...${lastChars}`
+}
 
-//         if (isSameUser && timeDiff < 60 * 1000) {
-//           pre[pre.length - 1] = [next, ...pre[pre.length - 1]]
-//         } else {
-//           pre.push([next])
-//         }
-//       } else {
-//         const isSameUser = lastMsg.createdById === next.createdById
+type FileInfo = {
+  type?: string
+  url: string
+}
 
-//         const timeDiff = Math.abs(lastMsg.createdAt - next.createdAt)
+const detectFileType = (url: string): FileInfo => {
+  const match = url.match(/\.([a-zA-Z0-9]+)$/)
 
-//         if (isSameUser && timeDiff < 60 * 1000) {
-//           pre[pre.length - 1] = [next, ...pre[pre.length - 1]]
-//         } else {
-//           pre.push([next])
-//         }
-//       }
-//     } else {
-//       pre.push([next])
-//     }
+  if (match && match[1]) {
+    const extension = match[1].toLowerCase()
+    return { type: extension, url }
+  } else
+    return {
+      url
+    }
+}
 
-//     return pre
-//   }, [] as Message[][])
-// }
+type GroupedData = {
+  images: FileInfo[]
+  files: FileInfo[]
+}
+
+export const groupByFileType = (urls: string[]): GroupedData => {
+  const result: GroupedData = {
+    images: [],
+    files: []
+  }
+
+  urls.forEach(url => {
+    const fileInfo = detectFileType(url)
+
+    switch (fileInfo?.type) {
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        result.images.push(fileInfo)
+        break
+
+      default:
+        result.files.push(fileInfo)
+        break
+    }
+  })
+
+  return result
+}

@@ -1,24 +1,30 @@
 import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+
+import { FileSourceType } from '@prisma/client'
 import { MulterFile } from 'multer'
 import slugify from 'slugify'
-import { HttpUser } from 'src/decorators/users.decorator'
-import { TJwtUser } from '../workspace/workspace.gateway'
+import { UserId } from 'src/decorators/users.decorator'
+import { PrismaService } from '../prisma/prisma.service'
+import { TJwtUser } from '../socket/socket.gateway'
 import { AWSConfigService } from './aws.config'
 
-@Controller('upload')
+@Controller('')
 export class UploadController {
-  constructor(private readonly awsConfigService: AWSConfigService) {}
+  constructor(
+    private readonly awsConfigService: AWSConfigService,
+    private readonly prismaService: PrismaService
+  ) {}
 
-  @Post()
+  @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @UploadedFile() file: MulterFile,
-    @HttpUser() user: TJwtUser
+    @UploadedFile() fileRaw: MulterFile,
+    @UserId() userId: string
   ) {
-    const { originalname, buffer, mimetype } = file
+    const { originalname, buffer, mimetype } = fileRaw
     const timestamp = new Date().getTime()
-    const fileName = `${timestamp}_${user.sub}_${slugify(originalname, {
+    const fileName = `${timestamp}_${userId}_${slugify(originalname, {
       lower: true,
       remove: /[*+~()'"!:@]/g
     }).replace(/-/g, '_')}`
@@ -36,6 +42,15 @@ export class UploadController {
       })
       .promise()
 
-    return uploadResult
+    return this.prismaService.file.create({
+      data: {
+        size: fileRaw.size,
+        createdBy: { connect: { id: userId } },
+        modifiedBy: { connect: { id: userId } },
+        path: uploadResult.Location,
+        name: originalname,
+        sourceType: FileSourceType.AWS
+      }
+    })
   }
 }

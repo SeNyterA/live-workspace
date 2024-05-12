@@ -1,17 +1,14 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { TUser } from '../../types/user.type'
 import {
-  TBoard,
-  TChannel,
-  TDirect,
-  TGroup,
-  TMember,
-  TMessage,
-  TTeam
-} from '../../types/workspace.type'
-import { TBoardQueryApi } from './board/board.api'
+  TFileExtra,
+  TMemberExtra,
+  TMessageExtra,
+  TUserExtra,
+  TWorkspaceExtra
+} from '../../types'
 import { replaceDynamicValues } from './common'
 import http from './http'
+import { TMemberApi } from './mutations/member.api'
 
 type ApiQueryType = {
   base: {
@@ -27,44 +24,65 @@ type ApiQueryType = {
         param2: string
       }
     }
-    response: TUser
+    response: TUserExtra
   }
 
   login: {
     url: {
       baseUrl: '/auth/profile'
     }
-    response: TUser
+    response: TUserExtra
+  }
+
+  verify: {
+    url: {
+      baseUrl: '/auth/verify'
+      queryParams: {
+        token: string
+      }
+    }
+    response: TUserExtra
   }
 
   //workspace
   workspace: {
     url: {
-      baseUrl: '/workspace'
+      baseUrl: '/workspaces/:workspaceId'
+      urlParams: {
+        workspaceId: string
+      }
     }
     response: {
-      teams: {
-        teams: TTeam[]
-        members: TMember[]
-      }
-      channels: {
-        channels: TChannel[]
-        members: TMember[]
-      }
-      boards: {
-        boards: TBoard[]
-        members: TMember[]
-      }
-      groups: {
-        groups: TGroup[]
-        members: TMember[]
-      }
-      directs: {
-        directs: TDirect[]
-        directUserId: string[]
-      }
-      users: TUser[]
+      workspace: TWorkspaceExtra
+      usersPresence: { [userId: string]: 'online' | 'offline' }
     }
+  }
+
+  workspaces: {
+    url: {
+      baseUrl: '/workspaces'
+    }
+    response: TWorkspaceExtra[]
+  }
+
+  workspaceFiles: {
+    url: {
+      baseUrl: '/workspaces/:workspaceId/files'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    response: TFileExtra[]
+  }
+
+  board: {
+    url: {
+      baseUrl: '/boards/:boardId'
+      urlParams: {
+        boardId: string
+      }
+    }
+    response: TWorkspaceExtra
   }
 
   targetMembers: {
@@ -78,52 +96,36 @@ type ApiQueryType = {
       }
     }
     response: {
-      members: TMember[]
-      users: TUser[]
+      members: TMemberExtra[]
+      users: TUserExtra[]
     }
   }
 
-  channelMessages: {
+  workpsaceMessages: {
     url: {
-      baseUrl: '/workspace/channels/:channelId/messages'
+      baseUrl: 'workspaces/:workspaceId/messages'
       urlParams: {
-        channelId: string
-      }
-    }
-    response: {
-      messages: TMessage[]
-      remainingCount: number
-    }
-  }
-
-  groupMessages: {
-    url: {
-      baseUrl: '/workspace/groups/:groupId/messages'
-      urlParams: {
-        groupId: string
-      }
-    }
-    response: {
-      messages: TMessage[]
-      remainingCount: number
-    }
-  }
-
-  directMessages: {
-    url: {
-      baseUrl: '/workspace/direct-messages/:targetId/messages'
-      urlParams: {
-        targetId: string
+        workspaceId: string
       }
       queryParams?: {
-        formId?: string
-        pageSize?: number
+        fromId?: string
+        size?: number
       }
     }
     response: {
-      messages: TMessage[]
-      remainingCount: number
+      messages: TMessageExtra[]
+      isCompleted: boolean
     }
+  }
+
+  workpsacePinedMessages: {
+    url: {
+      baseUrl: 'workspaces/:workspaceId/messages/pined'
+      urlParams: {
+        workspaceId: string
+      }
+    }
+    response: TMessageExtra[]
   }
 
   findUsersByKeyword: {
@@ -136,7 +138,7 @@ type ApiQueryType = {
       }
     }
     response: {
-      users: TUser[]
+      users: TUserExtra[]
     }
   }
 
@@ -148,23 +150,7 @@ type ApiQueryType = {
       }
     }
     response: {
-      user: TUser
-    }
-  }
-
-  findDirectInfo: {
-    url: {
-      baseUrl: '/workspace/direct-messages'
-      queryParams: {
-        directId?: string
-        targetEmail?: string
-        targetId?: string
-        targetUserName?: string
-      }
-    }
-    response: {
-      users: TUser[]
-      direct: TDirect
+      user: TUserExtra
     }
   }
 
@@ -183,13 +169,20 @@ type ApiQueryType = {
     }
     response: { [targetId: string]: number }
   }
-} & TBoardQueryApi
+} & TMemberApi['queries']
 
 export const useAppQuery = <T extends keyof ApiQueryType>({
   url,
-  options
+  options,
+  onSuccess,
+  onError
 }: Omit<ApiQueryType[T], 'response'> & { key: T } & {
-  options?: Omit<UseQueryOptions<ApiQueryType[T]['response']>, 'queryFn'>
+  options?: Omit<
+    UseQueryOptions<ApiQueryType[T]['response']>,
+    'queryFn' | 'queryKey'
+  > & { queryKey?: string[] | string }
+  onSuccess?: (data: ApiQueryType[T]['response']) => void
+  onError?: (error: any) => void
 }) => {
   const queryParams = new URLSearchParams((url as any)?.queryParams).toString()
 
@@ -203,11 +196,17 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
     ...options,
     queryKey: [requestKey, options?.queryKey],
     queryFn: async (): Promise<ApiQueryType[T]['response']> => {
-      const response = await http.get(urlApi, {
-        params: (url as any)?.queryParams
-      })
-
-      return response.data
+      try {
+        const response = await http.get(urlApi, {
+          params: (url as any)?.queryParams
+        })
+        onSuccess?.(response.data)
+        return response.data
+      } catch (error) {
+        onError?.(error)
+        console.error('Error making API request:', error)
+        return Promise.reject(error)
+      }
     }
   })
 
@@ -215,10 +214,12 @@ export const useAppQuery = <T extends keyof ApiQueryType>({
 }
 
 export const appGetFn = async <T extends keyof ApiQueryType>({
-  url
-}: Omit<ApiQueryType[T], 'response'> & { key: T }): Promise<
-  ApiQueryType[T]['response']
-> => {
+  url,
+  onSuccess
+}: Omit<ApiQueryType[T], 'response'> & {
+  key: T
+  onSuccess?: (data: ApiQueryType[T]['response']) => void
+}): Promise<ApiQueryType[T]['response']> => {
   const urlApi = `${replaceDynamicValues(
     url.baseUrl,
     (url as any)?.urlParams || {}
@@ -228,6 +229,7 @@ export const appGetFn = async <T extends keyof ApiQueryType>({
     const response = await http.get(urlApi, {
       params: (url as any)?.queryParams
     })
+    onSuccess && onSuccess(response.data)
     return response.data
   } catch (error) {
     console.error('Error making API request:', error)

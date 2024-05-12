@@ -1,44 +1,25 @@
 import { useEffect } from 'react'
-import { TUser } from '../../types/user.type'
 import {
-  TBoard,
-  TCard,
-  TChannel,
-  TDirect,
-  TGroup,
-  TMember,
-  TMessage,
-  TProperty,
-  TTeam
-} from '../../types/workspace.type'
+  TCardExtra,
+  TMessageExtra,
+  TPropertyOptionExtra,
+  TReactionExtra,
+  TUserExtra,
+  TWorkspaceExtra
+} from '../../types'
 import { useSocketContext } from './SocketProvider'
-
-export type TWorkspaceSocket = {
-  action?: 'create' | 'update' | 'delete'
-} & (
-  | { data: TChannel; type: 'channel' }
-  | { data: TBoard; type: 'board' }
-  | { data: TTeam; type: 'team' }
-  | { data: TDirect; type: 'direct' }
-  | { data: TGroup; type: 'group' }
-  | { data: TMember; type: 'member' }
-  | { data: TUser; type: 'user' }
-)
-
-export type TDetailBoard = {
-  action: 'create' | 'update' | 'delete'
-} & ({ data: TProperty; type: 'property' } | { data: TCard; type: 'card' })
-
-export type TUserSocket = {
-  data: TUser
-  type: 'get' | 'update'
-}
 
 export type ApiSocketType = {
   message: {
     response: {
-      message: TMessage
+      message: TMessageExtra
       action: 'create' | 'update' | 'delete'
+    }
+  }
+
+  userPresence: {
+    response: {
+      [userId: string]: 'online' | 'offline'
     }
   }
 
@@ -46,36 +27,57 @@ export type ApiSocketType = {
     response: {
       targetId: string
       userId: string
-      type: 1 | 0
+      isTyping: boolean
     }
   }
 
-  userReadedMessage: {
-    response: string
+  workspace: {
+    response: {
+      workspace: TWorkspaceExtra
+      action?: 'create' | 'update' | 'delete'
+    }
   }
 
   workspaces: {
     response: {
-      workspaces: TWorkspaceSocket[]
+      workspaces: TWorkspaceExtra[]
     }
   }
 
-  boardData: {
+  option: {
     response: {
-      boardData: TDetailBoard[]
+      option: TPropertyOptionExtra
+      mode: 'create' | 'update' | 'delete'
+    }
+  }
+  card: {
+    response: {
+      card: TCardExtra
+      mode: 'create' | 'update' | 'delete'
+    }
+  }
+  reaction: {
+    response: {
+      reaction: TReactionExtra
     }
   }
 
-  users: {
+  unread: {
     response: {
-      users: TUserSocket[]
-    }
-  }
-
-  unReadCount: {
-    response: {
+      workspaceId: string
       count: number
-      targetId: string
+    }
+  }
+  checkpointMessage: {
+    response: {
+      userId: string
+      messageId: string
+      workspaceId: string
+    }
+  }
+  user: {
+    response: {
+      user: TUserExtra
     }
   }
 }
@@ -89,7 +91,10 @@ export const useAppOnSocket = <T extends keyof ApiSocketType>({
 }) => {
   const { socket } = useSocketContext()
   useEffect(() => {
-    socket?.on(key as string, resFunc)
+    socket?.on(key as string, (data: ApiSocketType[T]['response']) => {
+      console.log(data)
+      resFunc(data)
+    })
     return () => {
       socket?.off(key)
     }

@@ -3,49 +3,87 @@ import {
   Button,
   Checkbox,
   Divider,
-  Group,
-  Paper,
   PasswordInput,
-  Stack,
-  Text,
   TextInput
 } from '@mantine/core'
+import { signInWithPopup } from 'firebase/auth'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { BsGithub, BsGoogle } from 'react-icons/bs'
+import { BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { auth, googleProvider } from '../../firebase/firebase'
 import { authActions } from '../../redux/slices/auth.slice'
-import { useAppMutation } from '../../services/apis/useAppMutation'
-import { TUser } from '../../types/user.type'
+import { useAppMutation } from '../../services/apis/mutations/useAppMutation'
+import { TUser } from '../../types'
 
-type TAuthForm = Pick<TUser, 'email' | 'password' | 'userName'> & {
+type TAuthForm = Pick<TUser, 'email' | 'userName'> & {
   terms: boolean
+  password: string
 }
 
 export default function Authentication() {
   const [type, setType] = useState<'register' | 'login'>('login')
-  const { mutateAsync: login } = useAppMutation('login')
+  const navigate = useNavigate()
+  // const { redirect } = useAppQueryParams<{ redirect: string }>()
+  const { mutateAsync: login } = useAppMutation('login', {
+    mutationOptions: {
+      onSuccess(data) {
+        dispatch(authActions.loginSuccess(data))
+        // const redirect = new URLSearchParams(location.search).get('redirect')
+        // navigate(redirect || '/')
+      }
+    }
+  })
+  const { mutateAsync: loginWithSocial } = useAppMutation('loginWithSocial', {
+    mutationOptions: {
+      onSuccess(data) {
+        dispatch(authActions.loginSuccess(data))
+        // const redirect = new URLSearchParams(location.search).get('redirect')
+        // navigate(redirect || '/')
+      }
+    }
+  })
   const { mutateAsync: register } = useAppMutation('register')
-
   const dispatch = useDispatch()
 
-  const { control, handleSubmit, reset, clearErrors } = useForm<TAuthForm>({
+  const { control, handleSubmit } = useForm<TAuthForm>({
     defaultValues: {
       terms: false
     }
   })
 
   return (
-    <div className='flex h-screen w-screen items-center justify-center'>
-      <Paper radius='md' className='w-96' p='xl' withBorder>
-        <Text size='lg' fw={500}>
-          Welcome to Mantine, {type === 'register' ? 'Register' : 'Login'} with
-        </Text>
-
-        <Group grow mb='md' mt='md'>
-          <BsGoogle radius='xl'>Google</BsGoogle>
-          <BsGithub radius='xl'>Github</BsGithub>
-        </Group>
+    <div className='relative flex h-screen w-screen items-center justify-center bg-cover bg-center bg-no-repeat p-10'>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        src='https://cdn.dribbble.com/userupload/7610900/file/original-e95e0b10875ec267692fa079cb3c1122.mp4'
+        className='inset-0 aspect-square h-full overflow-hidden rounded-2xl'
+      />
+      <div className='left-[unset] w-96 rounded-2xl bg-gray-950/90 p-6'>
+        <p className='my-4 text-center text-2xl font-semibold'>
+          Welcome to Live Workspace
+        </p>
+        <Button
+          className='w-full'
+          onClick={() => {
+            signInWithPopup(auth, googleProvider)
+              .then(async result => {
+                const token = await result.user.getIdToken()
+                loginWithSocial({
+                  url: { baseUrl: '/auth/loginWithSocial' },
+                  method: 'post',
+                  payload: { token }
+                })
+              })
+              .catch(error => {})
+          }}
+        >
+          <BsGoogle radius='xl' className='mr-3' /> Continue with Google
+        </Button>
 
         <Divider
           label='Or continue with email'
@@ -56,51 +94,39 @@ export default function Authentication() {
         <form
           onSubmit={handleSubmit(data => {
             if (type === 'login') {
-              login(
+              login({
+                method: 'post',
+                url: {
+                  baseUrl: '/auth/login'
+                },
+                payload: {
+                  userNameOrEmail: data.email,
+                  password: data.password
+                }
+              })
+            }
+
+            if (type === 'register') {
+              register(
                 {
                   method: 'post',
                   url: {
-                    baseUrl: '/auth/login'
+                    baseUrl: '/auth/register'
                   },
                   payload: {
-                    userNameOrEmail: data.email,
-                    password: data.password
+                    ...data
                   }
                 },
                 {
                   onSuccess(data) {
-                    dispatch(authActions.loginSuccess(data))
+                    // dispatch(authActions.loginSuccess(data))
                   }
                 }
               )
             }
-
-            if (type === 'register') {
-              Array(1000)
-                .fill(1)
-                .forEach((_, index) => {
-                  register(
-                    {
-                      method: 'post',
-                      url: {
-                        baseUrl: '/auth/register'
-                      },
-                      payload: {
-                        email: `${index}_${data.email}`,
-                        password: data.password,
-                        userName: `${index}_${data.userName}`
-                      }
-                    },
-                    {}
-                  )
-                })
-            }
-
-            reset()
-            clearErrors()
           })}
         >
-          <Stack>
+          <div className='space-y-4'>
             {type === 'register' && (
               <Controller
                 name='userName'
@@ -110,6 +136,9 @@ export default function Authentication() {
                   <TextInput
                     label='Name'
                     placeholder='Your name'
+                    classNames={{
+                      input: ' '
+                    }}
                     value={field.value}
                     onChange={field.onChange}
                     error={fieldState.error && fieldState.error.message}
@@ -133,6 +162,9 @@ export default function Authentication() {
                 <TextInput
                   label='Email'
                   placeholder='hello@mantine.dev'
+                  classNames={{
+                    input: ' '
+                  }}
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState.error && fieldState.error.message}
@@ -155,6 +187,9 @@ export default function Authentication() {
                 <PasswordInput
                   label='Password'
                   placeholder='Your password'
+                  classNames={{
+                    input: ' '
+                  }}
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState.error && fieldState.error.message}
@@ -180,28 +215,25 @@ export default function Authentication() {
                 )}
               />
             )}
-          </Stack>
+          </div>
 
-          <Group justify='space-between' mt='xl'>
-            <Anchor
-              component='button'
-              type='button'
-              c='dimmed'
+          <div className='mt-6 flex w-full justify-between items-center'>
+            <div
               onClick={() => {
                 setType(type === 'login' ? 'register' : 'login')
               }}
-              size='xs'
+              className='text-sm'
             >
               {type === 'register'
                 ? 'Already have an account? Login'
                 : "Don't have an account? Register"}
-            </Anchor>
-            <Button type='submit' radius='xl' variant='outline'>
+            </div>
+            <Button type='submit' radius='xl'>
               {type}
             </Button>
-          </Group>
+          </div>
         </form>
-      </Paper>
+      </div>
     </div>
   )
 }

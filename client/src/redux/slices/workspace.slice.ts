@@ -1,146 +1,106 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { assign } from 'lodash'
-import { TUser } from '../../types/user.type'
 import {
-  TBoard,
-  TCard,
-  TChannel,
-  TDirect,
-  TGroup,
-  TMember,
-  TMessage,
-  TProperty,
-  TTeam
-} from '../../types/workspace.type'
-
-export type TUsers = { [userId: string]: TUser }
-export type TMembers = { [membersId: string]: TMember }
-export type TChannels = { [channelId: string]: TChannel }
-export type TBoards = { [boardId: string]: TBoard }
-export type TGroups = { [groupId: string]: TGroup }
-export type TTeams = { [teamId: string]: TTeam }
-export type TDirects = { [directId: string]: TDirect }
-export type TMessages = {
-  [messageId: string]: TMessage
-}
-export type TUnreadCounts = { [targetId: string]: number }
-export type TUserReadedMessages = {
-  [key: string]: string //targetId:userId:messageId
-}
-export type TCards = { [cardId: string]: TCard }
-export type TProperties = { [propertyId: string]: TProperty }
+  TAttachments,
+  TCards,
+  TFiles,
+  TMembers,
+  TMessages,
+  TOptions,
+  TProperties,
+  TpropertiesTracking,
+  TReactions,
+  TUnreadCounts,
+  TUserReadedMessages,
+  TUsers,
+  TWorkspaces
+} from '../../types'
 
 type TWorkpsaceStore = {
-  teams: TTeams
-  channels: TChannels
-  groups: TGroups
-  directs: TDirects
+  workspaces: TWorkspaces
   members: TMembers
   users: TUsers
   messages: TMessages
   userReadedMessages: TUserReadedMessages
   unreadCount: TUnreadCounts
-
-  boards: TBoards
   cards: TCards
   properties: TProperties
+  options: TOptions
+  files: TFiles
+  reactions: TReactions
+  propertiesTracking: TpropertiesTracking
+  workspaceSettingId?: string
+  attachments: TAttachments
+  settingPosition?: 'left' | 'right'
+  presents: { [userId: string]: string }
+  typing: {
+    [workspaceId: string]: {
+      [userId: string]: boolean
+    }
+  }
+  unreads: {
+    [workspaceId: string]: number
+  }
 }
 
 const initialState: TWorkpsaceStore = {
-  channels: {},
-  groups: {},
-  teams: {},
+  workspaces: {},
+  files: {},
   members: {},
   messages: {},
   users: {},
-  directs: {},
+  cards: {},
+  properties: {},
+  reactions: {},
+  options: {},
+  attachments: {},
   userReadedMessages: {},
   unreadCount: {},
-
-  boards: {},
-  cards: {},
-  properties: {}
+  presents: {},
+  propertiesTracking: {},
+  typing: {},
+  unreads: {}
 }
 const workspaceSlice = createSlice({
   name: 'workspace',
   initialState,
   reducers: {
-    init: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
-      return assign(state, action.payload)
+    reset: () => initialState,
+
+    updateWorkspaceStore: (
+      state,
+      action: PayloadAction<Partial<Omit<TWorkpsaceStore, 'workspaceSetting'>>>
+    ) => {
+      Object.keys(action.payload).forEach(key => {
+        assign((state as any)[key] as any, (action.payload as any)[key])
+      })
     },
 
-    updateData: (state, action: PayloadAction<Partial<TWorkpsaceStore>>) => {
-      const {
-        channels,
-        directs,
-        groups,
-        members,
-        messages,
-        teams,
-        users,
-        boards,
-        cards,
-        properties
-      } = action.payload
-      if (channels) assign(state.channels, channels)
-      if (directs) assign(state.directs, directs)
-      if (groups) assign(state.groups, groups)
-      if (members) assign(state.members, members)
-      if (messages) assign(state.messages, messages)
-      if (teams) assign(state.teams, teams)
-      if (users) assign(state.users, users)
-
-      if (boards) assign(state.boards, boards)
-      if (cards) assign(state.cards, cards)
-      if (properties) assign(state.properties, properties)
+    toggleWorkspaceSetting: (
+      state,
+      action: PayloadAction<{
+        workspaceSettingId?: string
+        settingPosition?: 'left' | 'right'
+      }>
+    ) => {
+      state.workspaceSettingId = action.payload.workspaceSettingId
+      if (action.payload.settingPosition)
+        state.settingPosition = action.payload.settingPosition
     },
 
-    addUsers: (state, action: PayloadAction<TUsers>) => {
-      assign(state.users, action.payload)
-    },
-    addMembers: (state, action: PayloadAction<TMembers>) => {
-      assign(state.members, action.payload)
-    },
-    addTeams: (state, action: PayloadAction<TTeams>) => {
-      assign(state.teams, action.payload)
-    },
-    addChannels: (state, action: PayloadAction<TChannels>) => {
-      assign(state.channels, action.payload)
-    },
-    addGroups: (state, action: PayloadAction<TGroups>) => {
-      assign(state.groups, action.payload)
-    },
-    addDirects: (state, action: PayloadAction<TDirects>) => {
-      assign(state.directs, action.payload)
-    },
-    addMessages: (state, action: PayloadAction<TMessages>) => {
-      assign(state.messages, action.payload)
-    },
-
-    //Board
-    addBoards: (state, action: PayloadAction<TBoards>) => {
-      assign(state.boards, action.payload)
-    },
-    addCards: (state, action: PayloadAction<TCards>) => {
-      assign(state.cards, action.payload)
-    },
-    addProperties: (state, action: PayloadAction<TProperties>) => {
-      assign(state.properties, action.payload)
-    },
-
-    toogleUserReadedMessage: (
+    toogleTyping: (
       state,
       action: PayloadAction<{
         userId: string
-        targetId: string
-        messageId: string
+        workpsaceId: string
+        isTyping: boolean
       }>
     ) => {
-      const { messageId, targetId, userId } = action.payload
-      state.userReadedMessages[`${targetId}_${userId}`] = messageId
-    },
-    setUnreadCounts: (state, action: PayloadAction<TUnreadCounts>) => {
-      assign(state.unreadCount, action.payload)
+      if (!state.typing[action.payload.workpsaceId])
+        state.typing[action.payload.workpsaceId] = {}
+
+      state.typing[action.payload.workpsaceId][action.payload.userId] =
+        action.payload.isTyping
     }
   }
 })

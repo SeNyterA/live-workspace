@@ -1,0 +1,22 @@
+# Stage 1: Builder
+FROM node:18 as builder
+WORKDIR /app
+
+COPY package.json ./
+RUN yarn install
+
+COPY prisma ./prisma
+RUN yarn prisma generate
+
+COPY . .
+
+RUN yarn build
+RUN yarn install --production
+RUN yarn prisma generate
+
+# Stage 2: Final
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app .
+EXPOSE 8420
+CMD ["node", "dist/main"]

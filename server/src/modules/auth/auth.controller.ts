@@ -1,11 +1,9 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
-import { HttpUser } from 'src/decorators/users.decorator'
-import { TCreateUser } from 'src/modules/users/user.dto'
-
-import { TLoginPayload } from './auth.dto'
-import { AuthGuard, Public } from './auth.guard'
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common'
+import { User } from '@prisma/client'
+import { UserId } from 'src/decorators/users.decorator'
+import { TJwtUser } from '../socket/socket.gateway'
+import { Public } from './auth.guard'
 import { AuthService } from './auth.service'
-import { TJwtUser } from '../workspace/workspace.gateway'
 
 @Controller('auth')
 export class AuthController {
@@ -13,19 +11,38 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  signIn(@Body() signInDto: TLoginPayload) {
+  signIn(@Body() signInDto: any) {
     return this.authService.signIn(signInDto)
   }
 
   @Public()
+  @Post('loginWithSocial')
+  signInWithSocial(@Body() payload: { token: string }) {
+    return this.authService.signInWithSocial(payload)
+  }
+
+  @Public()
   @Post('register')
-  signUp(@Body() signUpDto: TCreateUser) {
+  signUp(@Body() signUpDto: any) {
     return this.authService.signUp(signUpDto)
   }
 
-  @UseGuards(AuthGuard)
   @Get('profile')
-  getProfile(@HttpUser() user: TJwtUser) {
-    return this.authService.getProfile(user.sub)
+  getProfile(@UserId() userId: string) {
+    return this.authService.getProfile(userId)
+  }
+
+  @Public()
+  @Post('verify')
+  verifyAccount(@Body() payload: { token: string }) {
+    return this.authService.verifyAccount(payload.token)
+  }
+
+  @Patch('profile')
+  updateProfile(@UserId() userId: string, @Body() updateProfileDto: User) {
+    return this.authService.updateProfile({
+      userId: userId,
+      user: updateProfileDto
+    })
   }
 }

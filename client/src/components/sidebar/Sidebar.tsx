@@ -1,293 +1,452 @@
-import { ActionIcon, Divider, Input, NavLink, ScrollArea } from '@mantine/core'
+import {
+  ActionIcon,
+  Avatar,
+  Divider,
+  Drawer,
+  Image,
+  Indicator,
+  Input,
+  NavLink,
+  ScrollArea
+} from '@mantine/core'
 import {
   IconHash,
   IconLayoutKanban,
-  IconMessage,
   IconPlus,
   IconSearch,
   IconSettings,
+  IconUserBolt,
   IconUsersGroup
 } from '@tabler/icons-react'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 import useAppControlParams from '../../hooks/useAppControlParams'
 import useAppParams from '../../hooks/useAppParams'
+import { workspaceActions } from '../../redux/slices/workspace.slice'
 import { useAppSelector } from '../../redux/store'
 import Watching from '../../redux/Watching'
-import DirectNavLink from '../layouts/DirectNavLink'
-// import CreateDirect from '../new-message/CreateDirect'
-import TeamSetting from '../team-setting/TeamSetting'
-import BoardItem from './board/BoardItem'
-import CreateBoard from './board/CreateBoard'
-import ChannelItem from './channel/ChannelItem'
-import CreateChannel from './channel/CreateChannel'
-import CreateGroup from './CreateGroup'
-import GroupItem from './group/GroupItem'
+import {
+  EMemberRole,
+  EMemberStatus,
+  EWorkspaceType,
+  TWorkspace
+} from '../../types'
+import CreateWorkspace, {
+  getDefaultValue
+} from '../workspace/create/CreateWorkspace'
 
-export type TSideBarToggle =
-  | 'createBoard'
-  | 'createChannel'
-  | 'createGroup'
-  | 'teamSetting'
-  | 'createDirect'
-  | 'createGroup'
+function WorkspaceNav({ workspace }: { workspace: TWorkspace }) {
+  const { channelId, groupId, directId, boardId } = useAppParams()
+  const targetId = channelId || groupId || directId || boardId
+  const { switchTo } = useAppControlParams()
+  const unReadCount = useAppSelector(
+    state => state.workspace.unreads[workspace.id]
+  )
+  return (
+    <NavLink
+      tabIndex={0}
+      classNames={{
+        label: 'max-w-[220px] block flex-1 overflow-visible',
+        body: 'overflow-visible',
+        section: 'data-[position="left"]:me-[8px]'
+      }}
+      className='h-8 overflow-visible p-1 pl-1'
+      leftSection={
+        workspace.type === EWorkspaceType.Direct ? (
+          <Watching
+            watchingFn={state =>
+              state.workspace.users[
+                Object.values(state.workspace.members).find(
+                  e =>
+                    e.workspaceId === workspace.id &&
+                    e.userId !== state.auth.userInfo?.id
+                )?.userId!
+              ]
+            }
+          >
+            {user => (
+              <Watching
+                watchingFn={state =>
+                  state.workspace.files[user?.avatarId!]?.path
+                }
+              >
+                {path => <Avatar src={path} size={20} radius={4} />}
+              </Watching>
+            )}
+          </Watching>
+        ) : (
+          <Watching
+            watchingFn={state =>
+              state.workspace.files[workspace?.avatarId!]?.path
+            }
+          >
+            {path => (
+              <Avatar
+                classNames={{ placeholder: 'text-xs' }}
+                src={path}
+                size={20}
+                radius={4}
+                className='text-base'
+              >
+                {workspace.title[0]?.toUpperCase()}
+              </Avatar>
+            )}
+          </Watching>
+        )
+      }
+      label={
+        <div className='flex items-center gap-2'>
+          <p className='flex-1 truncate'>
+            {workspace.type === EWorkspaceType.Direct ? (
+              <Watching
+                watchingFn={state =>
+                  state.workspace.users[
+                    Object.values(state.workspace.members).find(
+                      e =>
+                        e.workspaceId === workspace.id &&
+                        e.userId !== state.auth.userInfo?.id
+                    )?.userId!
+                  ]
+                }
+              >
+                {user => (
+                  <>
+                    {workspace.title ||
+                      user?.nickName ||
+                      user?.userName ||
+                      user?.email}
+                  </>
+                )}
+              </Watching>
+            ) : (
+              <>{workspace.title || workspace.id}</>
+            )}
+          </p>
+
+          <Indicator
+            processing
+            disabled={!unReadCount || workspace.id === targetId}
+            className='mr-2'
+          />
+        </div>
+      }
+      active={[channelId, groupId, directId, boardId].includes(workspace.id)}
+      onClick={() => {
+        switchTo({
+          target: workspace.type as any,
+          targetId: workspace.id
+        })
+      }}
+    />
+  )
+}
 
 export default function Sidebar() {
-  const { channelId, teamId, directId, boardId, groupId } = useAppParams()
-  const { switchTo } = useAppControlParams()
+  const { channelId, teamId, boardId, groupId, directId } = useAppParams()
+  const dispatch = useDispatch()
   const path = useLocation()
-  const [toggle, setToggle] = useState<TSideBarToggle>()
-  const team = useAppSelector(state =>
-    Object.values(state.workspace.teams).find(e => e._id === teamId)
-  )
+  const [toggle, setToggle] = useState<EWorkspaceType>()
+  const team = useAppSelector(state => state.workspace.workspaces[teamId!])
   const [searchValue, setSearchValue] = useState('')
 
   return (
     <>
-      <div className='flex w-72 flex-col gap-2 py-3'>
-        <p className='px-4 text-xl'>{team?.title}</p>
-        <div className='flex items-center justify-center gap-2 px-4'>
+      <div className='sidebar mb-4 flex w-72 flex-col gap-2 rounded-lg px-4 py-3 shadow-custom'>
+        <p className='text-xl'>{team ? team?.title : 'Personal'}</p>
+        <p className='line-clamp-3 '>
+          {team ? team?.description : 'Wellcome to workspace'}
+        </p>
+
+        <Watching
+          watchingFn={state => state.workspace.files[team?.thumbnailId!]?.path}
+        >
+          {path =>
+            path && (
+              <Image
+                loading='lazy'
+                src={path}
+                className='aspect-video w-full rounded-lg'
+              />
+            )
+          }
+        </Watching>
+
+        <div className='flex items-center justify-center gap-2'>
           <Input
-            className='flex h-[30px] flex-1 items-center rounded bg-gray-100'
+            className='flex h-[32px] flex-1 items-center rounded'
             size='sm'
             placeholder='Search on workspace'
-            leftSection={<IconSearch size={14} />}
-            classNames={{
-              input: 'bg-transparent border-none min-h-[20px] h-[20px]'
-            }}
+            leftSection={<IconSearch size={16} />}
             value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
           />
-
-          <ActionIcon
-            variant='transparent'
-            aria-label='Settings'
-            className='h-[30px] w-[30px] bg-gray-100'
-            onClick={() => setToggle('teamSetting')}
-          >
-            <IconSettings
-              style={{ width: '70%', height: '70%' }}
-              stroke={1.5}
-            />
-          </ActionIcon>
+          {!!team && (
+            <ActionIcon
+              size={32}
+              onClick={() =>
+                dispatch(
+                  workspaceActions.toggleWorkspaceSetting({
+                    settingPosition: 'left',
+                    workspaceSettingId: teamId!
+                  })
+                )
+              }
+            >
+              <IconSettings size={16} />
+            </ActionIcon>
+          )}
         </div>
 
         <div className='relative flex-1'>
-          <ScrollArea scrollbarSize={6} className='absolute inset-0 px-4'>
+          <ScrollArea
+            scrollbarSize={6}
+            className='absolute inset-x-[-12px] inset-y-[-4px] overflow-visible'
+            classNames={{
+              viewport: 'px-3 py-1'
+            }}
+          >
+            {team && (
+              <>
+                <NavLink
+                  tabIndex={0}
+                  className='sticky top-0 z-10 mb-1 h-8 p-1'
+                  label='Boards'
+                  leftSection={
+                    <IconLayoutKanban
+                      className='scale-90'
+                      size={20}
+                      stroke={1.5}
+                    />
+                  }
+                  active={path.pathname.includes('board')}
+                  defaultOpened={!!boardId}
+                  classNames={{
+                    children: 'pl-0 mb-2',
+                    section: 'data-[position="left"]:me-[8px]'
+                  }}
+                >
+                  <Watching
+                    watchingFn={state =>
+                      Object.values(state.workspace.workspaces).filter(
+                        e =>
+                          e.type === EWorkspaceType.Board &&
+                          e.workspaceParentId === teamId
+                      )
+                    }
+                  >
+                    {boards => (
+                      <>
+                        {boards?.map(item => (
+                          <WorkspaceNav workspace={item} key={item.id} />
+                        ))}
+                      </>
+                    )}
+                  </Watching>
+
+                  <Watching
+                    watchingFn={state =>
+                      !!Object.values(state.workspace.members).find(
+                        e =>
+                          e.workspaceId === teamId &&
+                          e.role === EMemberRole.Admin &&
+                          e.status === EMemberStatus.Active &&
+                          e.userId === state.auth.userInfo?.id
+                      )
+                    }
+                  >
+                    {canCreate =>
+                      canCreate && (
+                        <NavLink
+                          tabIndex={0}
+                          className='h-8 p-1 opacity-70'
+                          label={`Create board`}
+                          classNames={{
+                            section: 'data-[position="left"]:me-[8px]'
+                          }}
+                          leftSection={
+                            <ActionIcon tabIndex={-1} size={20}>
+                              <IconPlus size={16} />
+                            </ActionIcon>
+                          }
+                          onClick={() => {
+                            setToggle(EWorkspaceType.Board)
+                          }}
+                        />
+                      )
+                    }
+                  </Watching>
+                </NavLink>
+
+                <NavLink
+                  tabIndex={0}
+                  className='sticky top-0 z-10 mb-1 h-8 p-1'
+                  label='Channels'
+                  leftSection={<IconHash className='scale-90' size={20} />}
+                  active={path.pathname.includes('channel')}
+                  defaultOpened={!!channelId}
+                  classNames={{
+                    children: 'pl-0 mb-2',
+                    section: 'data-[position="left"]:me-[8px]'
+                  }}
+                >
+                  <Watching
+                    watchingFn={state =>
+                      Object.values(state.workspace.workspaces).filter(
+                        e =>
+                          e.type === EWorkspaceType.Channel &&
+                          e.workspaceParentId === teamId
+                      )
+                    }
+                  >
+                    {channels => (
+                      <>
+                        {channels?.map(item => (
+                          <WorkspaceNav workspace={item} key={item.id} />
+                        ))}
+                      </>
+                    )}
+                  </Watching>
+
+                  <Watching
+                    watchingFn={state =>
+                      Object.values(state.workspace.members).find(
+                        e =>
+                          e.workspaceId === teamId &&
+                          e.role === EMemberRole.Admin &&
+                          e.status === EMemberStatus.Active &&
+                          e.userId === state.auth.userInfo?.id
+                      )
+                    }
+                  >
+                    {canCreate =>
+                      canCreate && (
+                        <NavLink
+                          tabIndex={0}
+                          className='h-8 p-1 opacity-70'
+                          label={`Create channel`}
+                          classNames={{
+                            section: 'data-[position="left"]:me-[8px]'
+                          }}
+                          leftSection={
+                            <ActionIcon tabIndex={-1} size={20}>
+                              <IconPlus size={16} />
+                            </ActionIcon>
+                          }
+                          onClick={() => {
+                            setToggle(EWorkspaceType.Channel)
+                          }}
+                        />
+                      )
+                    }
+                  </Watching>
+                </NavLink>
+
+                <Divider variant='dashed' className='border-gray-200/20' />
+              </>
+            )}
+
             <NavLink
-              className='mb-1 p-1'
-              label='Boards'
-              leftSection={<IconLayoutKanban size='1rem' stroke={1.5} />}
-              active={path.pathname.includes('board')}
-              defaultOpened={!!boardId}
-            >
-              <Watching
-                watchingFn={state =>
-                  Object.values(state.workspace.boards).filter(
-                    e => e.teamId === teamId
-                  )
-                }
-              >
-                {boards => (
-                  <>
-                    {boards?.map(item => (
-                      <BoardItem board={item} key={item._id} />
-                    ))}
-                  </>
-                )}
-              </Watching>
-
-              <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
-                label={`Create board`}
-                rightSection={<IconPlus size={14} />}
-                onClick={() => {
-                  setToggle('createBoard')
-                }}
-              />
-            </NavLink>
-
-            <NavLink
-              className='mb-1 p-1'
-              label='Channels'
-              leftSection={<IconHash size='1rem' stroke={1.5} />}
-              active={path.pathname.includes('channel')}
-              defaultOpened={!!channelId}
-            >
-              <Watching
-                watchingFn={state =>
-                  Object.values(state.workspace.channels).filter(
-                    e =>
-                      e.teamId === teamId &&
-                      [
-                        e.title.toLowerCase(),
-                        e.description?.toLowerCase()
-                      ].some(e => e?.includes(searchValue.toLowerCase()))
-                  )
-                }
-              >
-                {channels => (
-                  <>
-                    {channels?.map(item => (
-                      <ChannelItem channel={item} key={item._id} />
-                    ))}
-                  </>
-                )}
-              </Watching>
-
-              <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
-                label={`Create channel`}
-                rightSection={<IconPlus size={14} />}
-                onClick={() => {
-                  setToggle('createChannel')
-                }}
-              />
-            </NavLink>
-
-            <Divider variant='dashed' />
-
-            <NavLink
-              className='my-1 p-1'
+              tabIndex={0}
+              className='sticky top-0 z-10 mb-1 mt-1 h-8 p-1'
               label='Groups'
-              leftSection={<IconUsersGroup size='1rem' stroke={1.5} />}
+              leftSection={<IconUsersGroup className='scale-90' size={20} />}
               active={!!groupId}
               defaultOpened={!!groupId}
-              classNames={{ children: 'w-full' }}
+              classNames={{
+                children: 'pl-0 mb-2',
+                section: 'data-[position="left"]:me-[8px]'
+              }}
             >
               <Watching
                 watchingFn={state =>
-                  Object.values(state.workspace.groups).filter(e =>
-                    [e.title.toLowerCase(), e.description?.toLowerCase()].some(
-                      e => e?.includes(searchValue.toLowerCase())
-                    )
+                  Object.values(state.workspace.workspaces).filter(
+                    e => e.type === EWorkspaceType.Group
                   )
                 }
               >
                 {groups => (
                   <>
                     {groups?.map(item => (
-                      <GroupItem key={item._id} group={item} />
+                      <WorkspaceNav workspace={item} key={item.id} />
                     ))}
                   </>
                 )}
               </Watching>
 
               <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
+                tabIndex={0}
+                className='h-8 p-1 opacity-70'
                 label={`Create group`}
-                rightSection={<IconPlus size={14} />}
+                classNames={{ section: 'data-[position="left"]:me-[8px]' }}
+                leftSection={
+                  <ActionIcon tabIndex={-1} size={20}>
+                    <IconPlus size={16} />
+                  </ActionIcon>
+                }
                 onClick={() => {
-                  setToggle('createGroup')
+                  setToggle(EWorkspaceType.Group)
                 }}
               />
             </NavLink>
 
             <NavLink
-              className='my-1 p-1'
-              label='Direct messages'
-              leftSection={<IconMessage size='1rem' stroke={1.5} />}
-              active={path.pathname.includes('direct-message')}
+              tabIndex={0}
+              className='sticky top-0 z-10 mb-1 h-8 p-1'
+              label='Drirects'
+              leftSection={<IconUserBolt className='scale-90' size={20} />}
+              active={!!directId}
               defaultOpened={!!directId}
+              classNames={{
+                children: 'pl-0 mb-2',
+                section: 'data-[position="left"]:me-[8px]'
+              }}
             >
               <Watching
-                watchingFn={state => {
-                  const meId = state.auth.userInfo?._id
-                  const users = Object.values(state.workspace.users)
-                  const directs = Object.values(state.workspace.directs).filter(
-                    direct => {
-                      const user = users.find(
-                        user =>
-                          direct.userIds.find(e => e !== meId) === user._id
-                      )
-
-                      return [
-                        user?.email,
-                        user?.userName,
-                        user?.nickname,
-                        direct.title
-                      ].some(e => e?.includes(searchValue.toLowerCase()))
-                    }
+                watchingFn={state =>
+                  Object.values(state.workspace.workspaces).filter(
+                    e => e.type === EWorkspaceType.Direct
                   )
-
-                  return directs
-                }}
+                }
               >
                 {directs => (
                   <>
                     {directs?.map(item => (
-                      <DirectNavLink direct={item} key={item._id}>
-                        {({ targetUser }) => (
-                          <NavLink
-                            key={item._id}
-                            className='p-1 pl-3'
-                            label={
-                              item.title || targetUser?.userName || item._id
-                            }
-                            active={
-                              !!directId &&
-                              [
-                                item._id,
-                                targetUser?._id,
-                                targetUser?.userName,
-                                targetUser?.email
-                              ].includes(directId)
-                            }
-                            onClick={() => {
-                              if (targetUser?.userName)
-                                switchTo({
-                                  target: 'direct-message',
-                                  targetId: targetUser?.userName
-                                })
-                            }}
-                          />
-                        )}
-                      </DirectNavLink>
+                      <WorkspaceNav workspace={item} key={item.id} />
                     ))}
                   </>
                 )}
               </Watching>
 
-              <NavLink
-                className='mb-2 p-1 pl-3 opacity-70'
-                label={`Create channel`}
-                rightSection={<IconPlus size={14} />}
+              {/* <NavLink
+              tabIndex={0}
+                className='p-1 pl-3 opacity-70'
+                label={`Create direct`}
+                rightSection={<IconPlus size={16} />}
                 onClick={() => {
-                  setToggle('createDirect')
+                  setToggle(EWorkspaceType.Direct)
                 }}
-              />
+              /> */}
             </NavLink>
           </ScrollArea>
         </div>
       </div>
 
-      <TeamSetting
-        isOpen={toggle === 'teamSetting'}
+      <Drawer
         onClose={() => setToggle(undefined)}
-      />
-
-      {/* <CreateDirect
-        isOpen={toggle === 'createDirect'}
-        onClose={() => setToggle(undefined)}
-      /> */}
-
-      <CreateGroup
-        isOpen={toggle === 'createGroup'}
-        onClose={() => setToggle(undefined)}
-        refetchKey={toggle}
-      />
-
-      <CreateChannel
-        isOpen={toggle === 'createChannel'}
-        onClose={() => setToggle(undefined)}
-        refetchKey={toggle}
-      />
-
-      <CreateBoard
-        isOpen={toggle === 'createBoard'}
-        onClose={() => setToggle(undefined)}
-        refetchKey={toggle}
-      />
+        opened={!!toggle}
+        title={<p className='text-lg font-semibold'>Create {toggle}</p>}
+        overlayProps={{
+          blur: 0.5
+        }}
+        size={376}
+        position={'left'}
+      >
+        <CreateWorkspace
+          defaultValues={getDefaultValue(toggle!) as any}
+          onClose={() => setToggle(undefined)}
+        />
+      </Drawer>
     </>
   )
 }

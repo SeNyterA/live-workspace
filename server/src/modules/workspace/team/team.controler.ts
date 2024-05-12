@@ -1,90 +1,35 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post
-} from '@nestjs/common'
-import { HttpUser } from 'src/decorators/users.decorator'
-
-import { EMemberRole } from '../member/member.schema'
-import { TJwtUser } from '../workspace.gateway'
-import { TUpdateTeamPayload, TeamDto } from './team.dto'
+import { Body, Controller, Post } from '@nestjs/common'
+import { UserId } from 'src/decorators/users.decorator'
+import { TJwtUser } from 'src/modules/socket/socket.gateway'
 import { TeamService } from './team.service'
+import { Member, Workspace } from '@prisma/client'
 
-@Controller('/workspace/teams')
+@Controller('teams')
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post()
-  create(@HttpUser() user: TJwtUser, @Body() teamDto: TeamDto) {
-    return this.teamService._create({
-      teamDto,
-      userId: user.sub
-    })
-  }
-
-  @Get(':id')
-  findOne(@HttpUser() user: TJwtUser, @Param('id') id: string) {
-    return this.teamService.getTeamById({
-      id: id,
-      userId: user.sub
-    })
-  }
-
-  @Get()
-  findAll(@HttpUser() user: TJwtUser) {
-    return this.teamService.getTeamsByUserId(user.sub)
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @HttpUser() user: TJwtUser,
-    @Body() teamPayload: TUpdateTeamPayload
+  create(
+    @UserId() userId: string,
+    @Body()
+    {
+      workspace,
+      channels,
+      boards,
+      members
+    }: {
+      workspace: Workspace
+      channels?: Workspace[]
+      boards?: Workspace[]
+      members?: Member[]
+    }
   ) {
-    return this.teamService.update({
-      id,
-      userId: user.sub,
-      teamPayload
+    return this.teamService.createTeam({
+      userId,
+      workspace,
+      channels,
+      boards,
+      members
     })
-  }
-
-  @Delete(':id')
-  remove(@HttpUser() user: TJwtUser, @Param('id') id: string) {
-    return this.teamService.delete({
-      id: id,
-      userId: user.sub
-    })
-  }
-
-  @Post(':id/members')
-  addMember(
-    @HttpUser() user: TJwtUser,
-    @Param('id') id: string,
-    @Body() member: { userId: string; role: EMemberRole }
-  ) {
-    // return this.teamService.addMember({
-    //   userId: user.sub,
-    //   teamId: id,
-    //   member
-    // })
-  }
-
-  @Patch(':teamId/members/:memberId')
-  changeRole(
-    @HttpUser() user: TJwtUser,
-    @Param('teamId') teamId: string,
-    @Param('memberId') memberId: string,
-    @Body() payload: { role: EMemberRole }
-  ) {
-    // return this.teamService.editMember({
-    //   userId: user.sub,
-    //   teamId,
-    //   memberId,
-    //   role: payload.role
-    // })
   }
 }

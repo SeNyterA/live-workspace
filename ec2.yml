@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/data'
+    command: redis-server --notify-keyspace-events KEx
+    networks:
+      - live-workspace-network
+
+  server:
+    container_name: server
+    restart: always
+    image: senytera/live-workspace-server:latest
+    ports:
+      - '8420:8420'
+    env_file:
+      - .env.ec2
+    depends_on:
+      - redis
+    command: node dist/main
+    networks:
+      - live-workspace-network
+
+  nginx:
+    container_name: nginx
+    image: senytera/live-workspace-client:latest
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/ec2.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - server
+    networks:
+      - live-workspace-network
+
+networks:
+  live-workspace-network:
+    driver: bridge
+
+volumes:
+  redis_data:

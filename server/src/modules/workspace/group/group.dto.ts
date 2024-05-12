@@ -1,13 +1,45 @@
-import { Type } from 'class-transformer'
-import {
-  ArrayMinSize,
-  IsArray,
-  IsNotEmpty,
-  ValidateNested
-} from 'class-validator'
-import { CreateWorkspaceDto, MemberDto } from '../workspace.dto'
+import { WorkspaceStatus } from '@prisma/client'
+import { IsEnum, IsOptional, IsString } from 'class-validator'
 
-export class GroupDto extends CreateWorkspaceDto {
-  @ArrayMinSize(1)
-  members: MemberDto[]
+export class CreateWorkspaceDto {
+  @IsString()
+  title: string
+
+  @IsOptional()
+  @IsString()
+  description?: string
+
+  @IsOptional()
+  @IsEnum(WorkspaceStatus)
+  status?: WorkspaceStatus
+
+  @IsOptional()
+  @IsString()
+  avatarId?: string
+
+  @IsOptional()
+  @IsString()
+  thumbnailId?: string
+}
+
+export class UpdateWorkspaceDto {
+  @IsOptional()
+  @IsString()
+  title?: string
+
+  @IsOptional()
+  @IsString()
+  description?: string
+
+  @IsOptional()
+  @IsEnum(WorkspaceStatus)
+  status?: WorkspaceStatus
+
+  @IsOptional()
+  @IsString()
+  avatarId?: string
+
+  @IsOptional()
+  @IsString()
+  thumbnailId?: string
 }

@@ -1,4 +1,4 @@
-import { TUser } from '../types/user.type'
+import { TUser } from '../types'
 
 export const LocalStorageEventTarget = new EventTarget()
 
@@ -30,5 +30,22 @@ export const lsActions = {
       const clearLSEvent = new Event('clearLS')
       LocalStorageEventTarget.dispatchEvent(clearLSEvent)
     }
-  }
+  },
+
+  getTrackingId: (key: string) =>
+    localStorage.getItem(key) as string | undefined,
+  setTrackingId: (key: string, value: string) =>
+    localStorage.setItem(key, value),
+
+  getSortBy: (key: string) => localStorage.getItem(key + '_sortBy'),
+  setSortBy: (key: string, value: string) =>
+    localStorage.setItem(key + '_sortBy', value),
+
+  getTeamChild: (key: string) =>
+    localStorage.getItem(key) as string | undefined,
+  setTeamChild: (key: string, value: string) =>
+    localStorage.setItem(key, value),
+  getCurentTeam: () =>
+    localStorage.getItem('currentTeam') as string | undefined,
+  setCurentTeam: (teamId: string) => localStorage.setItem('currentTeam', teamId)
 }

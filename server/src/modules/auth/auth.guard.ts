@@ -8,7 +8,7 @@ import {
 import { Reflector } from '@nestjs/core'
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
-import { UsersService } from 'src/modules/users/users.service'
+import { PrismaService } from '../prisma/prisma.service'
 
 export const IS_PUBLIC_KEY = 'isPublic'
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true)
@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-    private usersService: UsersService
+    private readonly prismaService: PrismaService
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -37,13 +37,19 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException()
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET
+      const payload = await this.jwtService
+        .verifyAsync(token, {
+          secret: process.env.JWT_SECRET
+        })
+        .catch(err => {})
+
+      const user = await this.prismaService.user.findUnique({
+        where: { id: payload.sub }
       })
 
-      await this.usersService.findById(payload?.sub)
-
-      request['user'] = payload
+      if (!user) throw new UnauthorizedException()
+      
+      request['userId'] = user.id
     } catch {
       throw new UnauthorizedException()
     }
