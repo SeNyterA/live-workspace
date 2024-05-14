@@ -9,13 +9,12 @@ import { extractApi } from '../../types'
 import { lsActions } from '../../utils/auth'
 import Login from '../auth/Login'
 import Verify from '../auth/Verify'
+import Landing from '../landing/Landing'
 import Layout from '../layout/Layout'
-import LandingPage from '../portfolio/Portfolio'
 import BoardContent from '../workspace/board/BoardContent'
 import DetailCard from '../workspace/board/card/DetailCard'
 import MessageContentWrapper from '../workspace/message/MessageContentWrapper'
 import WorkspaceSetting from '../workspace/setting/WorkspaceSetting'
-import { WorkspaceLading } from '../landing/WorkspaceLading'
 
 function PrivateRoute() {
   const dispatch = useDispatch()
@@ -46,7 +45,7 @@ function PrivateRoute() {
     <SocketProvider>{user && <Outlet />}</SocketProvider>
   ) : (
     <Navigate
-      to={`/auth/login?redirect=${location.pathname + location.search}`}
+      to={`/?redirect=${location.pathname + location.search}`}
     />
   )
 }
@@ -71,17 +70,12 @@ export const routers = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <WorkspaceLading />
+        element: <Landing />
       },
-
-      {
-        path: 'portfolio',
-        element: <LandingPage />
-      },
-      {
-        path: 'auth/login',
-        element: <Login />
-      },
+      // {
+      //   path: 'auth/login',
+      //   element: <Login />
+      // },
       {
         path: 'auth/register',
         element: (
