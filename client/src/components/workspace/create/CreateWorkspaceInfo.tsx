@@ -179,7 +179,7 @@ export default function CreateWorkspaceInfo() {
         )}
       />
 
-      <Controller
+      {/* <Controller
         control={control}
         name='workspace.displayUrl'
         render={({ field: { value, onChange }, fieldState }) => (
@@ -199,7 +199,7 @@ export default function CreateWorkspaceInfo() {
             error={fieldState.error && fieldState.error.message}
           />
         )}
-      />
+      /> */}
 
       <Controller
         control={control}

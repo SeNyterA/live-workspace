@@ -1,17 +1,19 @@
 import { ActionIcon, Button, Drawer } from '@mantine/core'
 import {
   IconBrandFacebookFilled,
-  IconBrandGithubFilled
+  IconBrandGithubFilled,
+  IconChevronLeft
 } from '@tabler/icons-react'
 import React from 'react'
 import Authentication from '../auth/Login'
 import './landing.scss'
+import TaskManager from './TaskManager'
 
 export default function Landing() {
   const [open, setOpen] = React.useState(false)
   return (
     <div
-      className='grid h-screen w-screen text-justify text-sm'
+      className='grid h-screen w-screen bg-cover text-justify text-sm'
       style={{
         gridAutoRows: 'calc((calc(100vh) / 30))',
         gridAutoColumns: 'calc((calc(100vw) / 30))',
@@ -83,7 +85,7 @@ export default function Landing() {
 
       <div
         style={{ gridArea: '11 / 3 / 20 / 14' }}
-        className='m-1 flex flex-col items-center justify-center rounded bg-gray-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
+        className='landing- m-1 flex flex-col items-center justify-center rounded bg-gray-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
       >
         <p
           className='w-full'
@@ -91,12 +93,11 @@ export default function Landing() {
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-          Flexibility
+          Easy to manage
         </p>
         <p>
-          Your workspace adapts to your needs, not the other way around. With
-          customizable grids and layouts, you shape your environment for maximum
-          productivity.
+          Create, update, and delete tasks, property with ease, with
+          drag-and-drop functionality.
         </p>
       </div>
       <div
@@ -109,7 +110,7 @@ export default function Landing() {
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-          Seamless Task Management
+         Modern UI
         </p>
         <p>
           From inception to completion, every task finds its home in our
@@ -127,7 +128,7 @@ export default function Landing() {
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-          Unified Collaboration
+          Seamless Collaboration
         </p>
         <p>
           Connect with your team seamlessly within the workspace. Group
@@ -137,20 +138,20 @@ export default function Landing() {
       </div>
       <div
         style={{ gridArea: '8 / 14 / 20 / 22' }}
-        className='m-1 flex flex-col items-center justify-center rounded bg-yellow-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
+        className='lading-board m-1 flex flex-col items-center justify-center rounded hover:scale-[1.01] hover:ring-2'
       >
         <p
-          className='w-full'
+          className='z-10 w-full'
           style={{
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-          Empowering Groups
+          Board
         </p>
-        <p>
-          Whether small teams or large departments, our platform cultivates a
-          sense of belonging and fosters collective success. Your group thrives,
-          empowered by shared goals and streamlined communication.
+        <p className='z-10'>
+          Manage tasks efficiently and intuitively, with easy navigation.
+          Create, update, and delete tasks, property with ease, with
+          drag-and-drop functionality.
         </p>
       </div>
       <div
@@ -163,7 +164,7 @@ export default function Landing() {
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-          Effortless Communication
+          Speed
         </p>
         <p>
           Say goodbye to scattered conversations. Our integrated chat feature
@@ -203,7 +204,7 @@ export default function Landing() {
         </p>
       </div>
 
-      <div
+      {/* <div
         className='mt-4 h-full w-full rounded bg-black/95 p-10'
         style={{
           gridArea: '3 / 3 / 29 / 29',
@@ -212,139 +213,8 @@ export default function Landing() {
           gridAutoColumns: 'calc(100% / 12)'
         }}
       >
-        <p
-          className='text-2xl'
-          style={{
-            fontFamily: 'vortice-concept, sans-serif'
-          }}
-        >
-          Technical
-        </p>
-        <div
-          className='m-1 flex flex-col justify-center rounded bg-blue-900/40 p-4 '
-          style={{
-            gridArea: '2 / 1 /13 / 6'
-          }}
-        >
-          <p
-            className=''
-            style={{
-              fontFamily: 'vortice-concept, sans-serif'
-            }}
-          >
-            Frontend
-          </p>
-
-          <p>
-            <span className='text-lime-500'>Redux</span> ensures efficient state
-            management, <span className='text-lime-500'>Socket.IO</span> enables
-            real-time communication,{' '}
-            <span className='text-lime-500'>Tailwind CSS</span> and{' '}
-            <span className='text-lime-500'>SCSS</span> aid rapid UI
-            development, <span className='text-lime-500'>Mantine UI</span>{' '}
-            ensures cross-device consistency,{' '}
-            <span className='text-lime-500'>React Query</span> and{' '}
-            <span className='text-lime-500'>Axios</span> hooks handle data
-            fetching, while <span className='text-lime-500'>Firebase</span>{' '}
-            simplifies authentication.
-          </p>
-
-          <div className='mt-3 flex gap-4'>
-            <img className='h-10 w-10' src='/techs/react.png' />
-            <img className='h-10 w-10' src='/techs/tailwind.png' />
-            <img className='h-10 w-10' src='/techs/mantine.png' />
-            <img className='h-10 w-10' src='/techs/redux.png' />
-            <img className='h-10 w-10' src='/techs/react-query.png' />
-            <img className='h-10 w-10' src='/techs/socket-io.png' />
-            <img className='h-10 w-10' src='/techs/firebase.png' />
-            <img className='h-10 w-10' src='/techs/vite.png' />
-          </div>
-        </div>
-
-        <div
-          className='m-1 flex flex-col justify-center rounded bg-violet-900/40 p-4 '
-          style={{
-            gridArea: '2 / 6 /9 / 13'
-          }}
-        >
-          <p
-            className=''
-            style={{
-              fontFamily: 'vortice-concept, sans-serif'
-            }}
-          >
-            Backend
-          </p>
-          <p>
-            Building server-side logic with{' '}
-            <span className='text-lime-500'>NestJS</span> for ease of
-            development.
-          </p>
-          <p>
-            Managing data with <span className='text-lime-500'>MySQL</span> for
-            strict integrity and security.
-          </p>
-          <p>
-            Creating efficient data models with{' '}
-            <span className='text-lime-500'>Prisma ORM</span> for easy
-            maintenance.
-          </p>
-          <p>
-            Implementing <span className='text-lime-500'>Socket.IO</span> for
-            real-time bidirectional communication.
-          </p>
-          <p>
-            Utilizing <span className='text-lime-500'>Redis</span> caching for
-            high-speed data management.
-          </p>
-
-          <div className='mt-3 flex gap-4'>
-            <img className='h-10 w-10' src='/techs/nestjs.png' />
-            <img className='h-10 w-10' src='/techs/mysql.png' />
-            <img className='h-10 w-10' src='/techs/redis.png' />
-            <img className='h-10 w-10' src='/techs/socket-io.png' />
-            <img className='h-10 w-10' src='/techs/prisma.png' />
-            <img className='h-10 w-10' src='/techs/firebase.png' />
-          </div>
-        </div>
-
-        <div
-          className='m-1 flex flex-col justify-center rounded bg-sky-900/40 p-4 '
-          style={{
-            gridArea: '9 / 6 /13 / 13'
-          }}
-        >
-          <p
-            className=''
-            style={{
-              fontFamily: 'vortice-concept, sans-serif'
-            }}
-          >
-            Deployment
-          </p>
-          <p>
-            Deploying on <span className='text-lime-500'>Linux</span> with{' '}
-            <span className='text-lime-500'>AWS EC2</span> tier free, which
-            includes 1GB RAM and 1 CPU.
-          </p>
-          <p>
-            Utilizing <span className='text-lime-500'>Docker</span> for
-            containerization of server,{' '}
-            <span className='text-lime-500'>Nginx</span>, client, and
-            <span className='text-lime-500'>Redis services</span>.
-          </p>
-          <p>
-            Implementing <span className='text-lime-500'>MYSQL</span> with
-            Relational Database (RDB) for data storage and management.
-          </p>
-
-          <div className='mt-3 flex gap-4'>
-            <img className='h-10 w-10' src='/techs/ec2.png' />
-            <img className='h-10 w-10' src='/techs/docker.png' />
-            <img className='h-10 w-10' src='/techs/ngnix.png' />
-          </div>
-        </div>
-      </div>
+        <TaskManager />
+      </div> */}
 
       <Drawer
         onClose={() => {

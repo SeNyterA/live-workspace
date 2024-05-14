@@ -300,8 +300,7 @@ export default function SendMessage({
         <Typing targetId={targetId} />
         <span>
           Press <kbd className='rounded-sm kbd'>⌘Enter</kbd> or{' '}
-          <kbd className='rounded-sm kbd'>Alt Enter</kbd> to quickly
-          send
+          <kbd className='rounded-sm kbd'>Alt Enter</kbd>
         </span>
       </div>
     </div>
