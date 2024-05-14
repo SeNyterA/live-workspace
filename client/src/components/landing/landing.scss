@@ -1,9 +1,0 @@
-.lading-board {
-    @apply relative overflow-hidden bg-black p-4 text-white;
-
-    &::before {
-        @apply inset-0 absolute bg-cover z-0 bg-left opacity-50;
-        content: "";
-        background-image: url("/imgs/board.png");
-    }
-}

@@ -1,7 +1,7 @@
 import { IconChevronLeft } from '@tabler/icons-react'
 import React from 'react'
 
-export default function TaskManager() {
+export default function TaskManager({ onBack }: { onBack: () => void }) {
   return (
     <>
       <div
@@ -10,7 +10,7 @@ export default function TaskManager() {
           gridArea: '1 / 1 /2 / 13'
         }}
       >
-        <IconChevronLeft />
+        <IconChevronLeft onClick={onBack} />
         <p
           className='text-xl'
           style={{
@@ -37,7 +37,7 @@ export default function TaskManager() {
         </p>
         <p>Manage tasks efficiently and intuitively, with easy navigation</p>
 
-        <img src='/imgs/board.png' className='w-full mt-4' alt='board' />
+        <img src='/imgs/board.png' className='mt-4 w-full' alt='board' />
       </div>
 
       <div
@@ -60,7 +60,7 @@ export default function TaskManager() {
         </p>
         <img
           src='/imgs/custom-property-2.png'
-          className='w-full mt-4'
+          className='mt-4 w-full'
           alt='custom-property-2'
         />
       </div>
@@ -85,7 +85,7 @@ export default function TaskManager() {
         </p>
         <img
           src='/imgs/detal-board.png'
-          className='w-full mt-4'
+          className='mt-4 w-full'
           alt='custom-property-2'
         />
       </div>

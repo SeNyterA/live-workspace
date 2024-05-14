@@ -1,6 +1,6 @@
 import { IconChevronLeft } from '@tabler/icons-react'
 
-export default function Technical() {
+export default function Technical({ onBack }: { onBack: () => void }) {
   return (
     <>
       <div
@@ -9,7 +9,7 @@ export default function Technical() {
           gridArea: '1 / 1 /2 / 13'
         }}
       >
-        <IconChevronLeft />
+        <IconChevronLeft onClick={onBack} />
         <p
           className='text-xl'
           style={{

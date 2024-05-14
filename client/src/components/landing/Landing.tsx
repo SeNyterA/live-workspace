@@ -4,13 +4,44 @@ import {
   IconBrandGithubFilled,
   IconChevronLeft
 } from '@tabler/icons-react'
-import React from 'react'
+import { motion } from 'framer-motion'
+import React, { useEffect, useState } from 'react'
 import Authentication from '../auth/Login'
 import './landing.scss'
+import { useSearchParams } from 'react-router-dom'
+import Feature from './Feature'
+import Modern from './Modern'
+import Speed from './Speed'
 import TaskManager from './TaskManager'
+import Technical from './Technical'
 
 export default function Landing() {
   const [open, setOpen] = React.useState(false)
+  const [openContent, setOpenContent] = useState<
+    'board' | 'speed' | 'task' | 'tech' | 'modern' | 'feature'
+  >()
+  const [params] = useSearchParams()
+  useEffect(() => {
+    if (params.size) setOpen(true)
+  }, [params])
+
+  const content = () => {
+    switch (openContent) {
+      case 'board':
+        return <TaskManager onBack={() => setOpenContent(undefined)} />
+      case 'speed':
+        return <Speed onBack={() => setOpenContent(undefined)} />
+      case 'tech':
+        return <Technical onBack={() => setOpenContent(undefined)} />
+      case 'modern':
+        return <Modern onBack={() => setOpenContent(undefined)} />
+      case 'feature':
+        return <Feature onBack={() => setOpenContent(undefined)} />
+      default:
+        return <TaskManager onBack={() => setOpenContent(undefined)} />
+    }
+  }
+
   return (
     <div
       className='grid h-screen w-screen bg-cover text-justify text-sm'
@@ -85,7 +116,7 @@ export default function Landing() {
 
       <div
         style={{ gridArea: '11 / 3 / 20 / 14' }}
-        className='landing- m-1 flex flex-col items-center justify-center rounded bg-gray-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
+        className='m-1 flex flex-col items-center justify-center rounded bg-gray-500/50 p-4 hover:scale-[1.01] hover:ring-2'
       >
         <p
           className='w-full'
@@ -93,34 +124,49 @@ export default function Landing() {
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-          Easy to manage
+          Esay to cusstom
         </p>
         <p>
-          Create, update, and delete tasks, property with ease, with
-          drag-and-drop functionality.
+          This is open-source code, robust, utilizing suitable technology,
+          written cleanly, and easy to use for customization for various
+          purposes.
         </p>
+        <div className='mt-2 w-full'>
+          <a
+            className='flex no-underline'
+            href='https://github.com/SeNyterA/live-workspace'
+            target='_blank'
+          >
+            <Button className='space-x-2'>
+              <IconBrandGithubFilled size={16} />
+              <span className='ml-2'>View on Github</span>
+            </Button>
+          </a>
+        </div>
       </div>
       <div
         style={{ gridArea: '4 / 6 / 11 / 14' }}
-        className='m-1 flex flex-col items-center justify-center rounded bg-blue-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
+        className='m-1 flex cursor-pointer flex-col items-center justify-center rounded bg-pink-500/50 p-4 hover:scale-[1.01] hover:ring-2'
+        onClick={() => setOpenContent('modern')}
       >
         <p
-          className='w-full'
+          className='z-10 w-full'
           style={{
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-         Modern UI
+          Modern UI
         </p>
-        <p>
+        <p className='z-10'>
           From inception to completion, every task finds its home in our
           intuitive system. Keep track of progress effortlessly, leaving no
           detail overlooked.
         </p>
       </div>
       <div
-        style={{ gridArea: '20 / 9 / 29 / 16' }}
-        className='m-1 flex flex-col items-center justify-center rounded bg-red-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
+        style={{ gridArea: '20 / 7 / 29 / 16' }}
+        className='m-1 flex flex-col items-center justify-center rounded bg-red-500/50 p-4 hover:scale-[1.01] hover:ring-2'
+        onClick={() => setOpenContent('tech')}
       >
         <p
           className='w-full'
@@ -128,17 +174,25 @@ export default function Landing() {
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-          Seamless Collaboration
+          Technical
         </p>
         <p>
-          Connect with your team seamlessly within the workspace. Group
-          discussions, file sharing, and real-time collaboration foster synergy
-          like never before.
+          <span className='text-lime-500'>Redux</span> ensures efficient state
+          management, <span className='text-lime-500'>Socket.IO</span> enables
+          real-time communication,{' '}
+          <span className='text-lime-500'>Tailwind CSS</span> and{' '}
+          <span className='text-lime-500'>SCSS</span> aid rapid UI development,{' '}
+          <span className='text-lime-500'>Mantine UI</span> ensures cross-device
+          consistency, <span className='text-lime-500'>React Query</span> and{' '}
+          <span className='text-lime-500'>Axios</span> hooks handle data
+          fetching, while <span className='text-lime-500'>Firebase</span>{' '}
+          simplifies authentication.
         </p>
       </div>
       <div
         style={{ gridArea: '8 / 14 / 20 / 22' }}
-        className='lading-board m-1 flex flex-col items-center justify-center rounded hover:scale-[1.01] hover:ring-2'
+        className='lading-board m-1 flex cursor-pointer flex-col items-center justify-center rounded bg-blue-500/50 p-4 hover:scale-[1.01] hover:ring-2'
+        onClick={() => setOpenContent('board')}
       >
         <p
           className='z-10 w-full'
@@ -156,25 +210,27 @@ export default function Landing() {
       </div>
       <div
         style={{ gridArea: '20 / 16 / 28 / 27' }}
-        className='m-1 flex flex-col items-center justify-center rounded bg-lime-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
+        className='m-1 flex cursor-pointer flex-col items-center justify-center rounded bg-violet-500/50 p-4 hover:scale-[1.01] hover:ring-2'
+        onClick={() => setOpenContent('speed')}
       >
         <p
-          className='w-full'
+          className='z-10 w-full'
           style={{
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
           Speed
         </p>
-        <p>
-          Say goodbye to scattered conversations. Our integrated chat feature
-          keeps discussions organized and accessible, ensuring clarity and
-          alignment across the board.
+        <p className='z-10'>
+          With a clean and modern interface, you can navigate the workspace with
+          ease. The intuitive design ensures that every task is just a click
+          away.
         </p>
       </div>
       <div
         style={{ gridArea: '10 / 22 / 20 / 29' }}
-        className='m-1 flex flex-col items-center justify-center rounded bg-sky-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
+        className='m-1 flex cursor-pointer flex-col items-center justify-center rounded bg-sky-500/50 p-4 hover:scale-[1.01] hover:ring-2'
+        onClick={() => setOpenContent('feature')}
       >
         <p
           className='w-full'
@@ -182,39 +238,32 @@ export default function Landing() {
             fontFamily: 'vortice-concept, sans-serif'
           }}
         >
-          Maximized Productivity
+          Productivity
         </p>
         <p>
-          With every tool at your fingertips and distractions minimized,
-          productivity becomes second nature. Harness the power of focused work
-          and achieve your goals with ease.
-        </p>
-      </div>
-      <div
-        style={{ gridArea: '20 / 4 / 25 / 9' }}
-        className='m-1 flex flex-col items-center justify-center rounded bg-yellow-500/50 p-4 text-white hover:scale-[1.01] hover:ring-2'
-      >
-        <p
-          className='w-full'
-          style={{
-            fontFamily: 'vortice-concept, sans-serif'
-          }}
-        >
-          Technical
+          Our application is equipped with a range of powerful features designed
+          to streamline your workflow and enhance your efficiency. With
+          intuitive tools and seamless integration, accomplishing tasks has
+          never been easier.
         </p>
       </div>
 
-      {/* <div
+      <motion.div
         className='mt-4 h-full w-full rounded bg-black/95 p-10'
         style={{
           gridArea: '3 / 3 / 29 / 29',
           display: 'grid',
           gridAutoRows: 'calc(100% / 12)',
-          gridAutoColumns: 'calc(100% / 12)'
+          gridAutoColumns: 'calc(100% / 12)',
+          animationDuration: '0.5s'
+        }}
+        animate={{
+          opacity: openContent ? 1 : 0,
+          zIndex: openContent ? 20 : -1
         }}
       >
-        <TaskManager />
-      </div> */}
+        {content()}
+      </motion.div>
 
       <Drawer
         onClose={() => {
