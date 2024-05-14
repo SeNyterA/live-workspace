@@ -116,9 +116,8 @@ export default function UserAvatar({
                 <IconLogout style={{ width: rem(14), height: rem(14) }} />
               }
               onClick={() => {
-                store.dispatch(authActions.reset())
-                store.dispatch(workspaceActions.reset())
-                lsActions.clearLS()
+                lsActions.clearLS(true)
+                store.dispatch(authActions.logout())
               }}
             >
               Logout

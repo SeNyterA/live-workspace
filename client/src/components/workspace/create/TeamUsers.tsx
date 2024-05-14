@@ -205,7 +205,7 @@ export const TeamUsers = memo(() => {
                     name={`members.${index}.role`}
                     render={({ field: { value, onChange } }) => (
                       <MemberControl
-                        member={{ ...member, role: value }}
+                        member={{ ...member, role: value } as any}
                         onChange={role => {
                           onChange(role)
                         }}
