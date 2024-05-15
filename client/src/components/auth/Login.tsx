@@ -1,5 +1,4 @@
 import {
-  Anchor,
   Button,
   Checkbox,
   Divider,
@@ -11,7 +10,6 @@ import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { BsGoogle } from 'react-icons/bs'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import { auth, googleProvider } from '../../firebase/firebase'
 import { authActions } from '../../redux/slices/auth.slice'
 import { useAppMutation } from '../../services/apis/mutations/useAppMutation'

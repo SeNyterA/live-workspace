@@ -44,9 +44,7 @@ function PrivateRoute() {
   return isAuthenticated ? (
     <SocketProvider>{user && <Outlet />}</SocketProvider>
   ) : (
-    <Navigate
-      to={`/?redirect=${location.pathname + location.search}`}
-    />
+    <Navigate to={`/?redirect=${location.pathname + location.search}`} />
   )
 }
 
@@ -106,8 +104,17 @@ export const routers = createBrowserRouter([
           {
             path: '',
             element: (
-              <div className='flex flex-1 items-center justify-center'>
-                Please choose content...
+              <div className='flex flex-1 flex-col items-center justify-center'>
+                <img
+                  src='/no-content.avif'
+                  alt='No content'
+                  className='w-1/2'
+                />
+                <p className='max-w-lg'>
+                  Please choose a team or create other content by clicking on
+                  the bottom-left corner to create a team, or on the sidebar to
+                  choose or create other content.
+                </p>
               </div>
             )
           },
