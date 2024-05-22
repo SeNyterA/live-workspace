@@ -110,28 +110,33 @@ export class AuthService {
 
   async createUsersFakeData() {
     await Promise.all(
-      Array(100)
+      Array(50)
         .fill(1)
-        .map(() =>
-          this.prismaService.user.create({
-            data: {
-              email: faker.internet.email(),
-              userName: faker.internet.userName(),
-              password: crypto.SHA256('123123').toString(),
-              nickName: faker.internet.displayName(),
-              isAvailable: true,
-              avatar: {
-                create: {
-                  path: faker.image.avatar(),
-                  sourceType: 'Link'
+        .map(() => {
+          try {
+            this.prismaService.user.create({
+              data: {
+                email: faker.internet.email(),
+                userName: faker.internet.userName(),
+                password: crypto.SHA256('123123').toString(),
+                nickName: faker.internet.displayName(),
+                isAvailable: true,
+                avatar: {
+                  create: {
+                    path: faker.image.avatar(),
+                    sourceType: 'Link'
+                  }
                 }
               }
-            }
-          })
-        )
+            })
+          } catch (error) {
+            console.count('error')
+          }
+        })
     )
     console.count('users')
-    this.createUsersFakeData()
+
+    setTimeout(() => this.createUsersFakeData(), 1000)
   }
 
   async signInWithSocial({ token }: { token: string }) {
@@ -176,51 +181,56 @@ export class AuthService {
   }
 
   async signUp(userDto: User) {
-    // const existingUser = await this.userRepository.findOne({
-    //   where: [{ email: userDto.email }, { userName: userDto.userName }]
-    // })
-    // if (existingUser) {
-    //   if (existingUser.isAvailable) {
-    //     return false
-    //   } else {
-    //     const tokenVerify = this.jwtService.sign(
-    //       { sub: existingUser.id },
-    //       {
-    //         secret: process.env.JWT_SECRET,
-    //         expiresIn: '1h'
-    //       }
-    //     )
-    //     const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
-    //     this.mailService.sendEmail({
-    //       to: userDto.email,
-    //       subject: 'Verify Your Account',
-    //       text: `Hello ${existingUser.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
-    //     })
-    //     return true
-    //   }
-    // } else {
-    //   const _password = userDto.password
-    //   const hashedPassword = crypto.SHA256(_password).toString()
-    //   userDto.password = hashedPassword
-    //   const user = await this.userRepository.create({
-    //     ...userDto,
-    //     isAvailable: false
-    //   })
-    //   await this.userRepository.save(user)
-    //   const tokenVerify = this.jwtService.sign(
-    //     { sub: user.id },
-    //     {
-    //       expiresIn: '1h'
-    //     }
-    //   )
-    //   const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
-    //   this.mailService.sendEmail({
-    //     to: userDto.email,
-    //     subject: 'Verify Your Account',
-    //     text: `Hello ${user.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
-    //   })
-    //   return true
-    // }
+    const existingUser = await this.prismaService.user.findFirst({
+      where: {
+        OR: [{ email: userDto.email }, { userName: userDto.userName }]
+      }
+    })
+
+    if (existingUser) {
+      if (existingUser.isAvailable) {
+        return false
+      } else {
+        const tokenVerify = this.jwtService.sign(
+          { sub: existingUser.id },
+          {
+            secret: process.env.JWT_SECRET,
+            expiresIn: '1h'
+          }
+        )
+        const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
+        this.mailService.sendEmail({
+          to: userDto.email,
+          subject: 'Verify Your Account',
+          text: `Hello ${existingUser.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
+        })
+        return true
+      }
+    } else {
+      const _password = userDto.password
+      const hashedPassword = crypto.SHA256(_password).toString()
+      userDto.password = hashedPassword
+
+      const user = await this.prismaService.user.create({
+        data: {
+          ...userDto,
+          isAvailable: false
+        }
+      })
+      const tokenVerify = this.jwtService.sign(
+        { sub: user.id },
+        {
+          expiresIn: '1h'
+        }
+      )
+      const verificationLink = `${process.env.CLIENT_VERIFY_MAIL}${tokenVerify}`
+      this.mailService.sendEmail({
+        to: userDto.email,
+        subject: 'Verify Your Account',
+        text: `Hello ${user.userName},\n\nThank you for signing up at Your Website. Please verify your account by clicking on the following link:\n\n${verificationLink}\n\nThis link will expire in 1 hour.\n\nIf you did not sign up for an account, please ignore this email.\n\nBest regards,\nThe Your Website Team`
+      })
+      return true
+    }
   }
 
   async verifyAccount(token: string) {

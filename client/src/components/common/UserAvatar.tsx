@@ -10,8 +10,9 @@ import {
 import { set } from 'lodash'
 import { useDispatch } from 'react-redux'
 import useAppControlParams from '../../hooks/useAppControlParams'
+import { authActions } from '../../redux/slices/auth.slice'
 import { workspaceActions } from '../../redux/slices/workspace.slice'
-import { useAppSelector } from '../../redux/store'
+import store, { useAppSelector } from '../../redux/store'
 import { appMutationFn } from '../../services/apis/mutations/useAppMutation'
 import { EWorkspaceType, extractApi, TUser } from '../../types'
 import { lsActions } from '../../utils/auth'
@@ -114,7 +115,10 @@ export default function UserAvatar({
               leftSection={
                 <IconLogout style={{ width: rem(14), height: rem(14) }} />
               }
-              onClick={() => lsActions.clearLS(true)}
+              onClick={() => {
+                lsActions.clearLS(true)
+                store.dispatch(authActions.logout())
+              }}
             >
               Logout
             </Menu.Item>

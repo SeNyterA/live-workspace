@@ -3,75 +3,71 @@
 @tailwind utilities;
 
 
-@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
 @font-face {
-  font-family: "Cayano Regular";
-  src: url("/cayano-Regular.otf") format("opentype");
+  font-family: 'Neon Spark';
+  src: url('/fonts/neonspark.otf') format('opentype');
 }
 
 @font-face {
-  font-family: "Petit Cochon";
-  src: url("/Petit Cochon.otf") format("opentype");
+  font-family: 'Attack';
+  src: url('/fonts/attack/Black.woff') format('woff');
+  font-weight: 900;
 }
 
 @font-face {
-  font-family: "Neon Spark";
-  src: url("/neonspark.otf") format("opentype");
-}
-
-@font-face {
-  font-family: "Attack";
-  src: url("/fonts/attack/Bold.woff") format("woff");
+  font-family: 'Attack';
+  src: url('/fonts/attack/Bold.woff') format('woff');
   font-weight: 700;
 }
 
 @font-face {
-  font-family: "Attack";
-  src: url("/fonts/attack/ExtraBold.woff") format("woff");
+  font-family: 'Attack';
+  src: url('/fonts/attack/ExtraBold.woff') format('woff');
   font-weight: 800;
 }
 
 @font-face {
-  font-family: "Attack";
-  src: url("/fonts/attack/ExtraLight.woff") format("woff");
+  font-family: 'Attack';
+  src: url('/fonts/attack/ExtraLight.woff') format('woff');
   font-weight: 200;
 }
 
 @font-face {
-  font-family: "Attack";
-  src: url("/fonts/attack/Light.woff") format("woff");
+  font-family: 'Attack';
+  src: url('/fonts/attack/Light.woff') format('woff');
   font-weight: 300;
 }
 
 @font-face {
-  font-family: "Attack";
-  src: url("/fonts/attack/Medium.woff") format("woff");
+  font-family: 'Attack';
+  src: url('/fonts/attack/Medium.woff') format('woff');
   font-weight: 500;
 }
 
 @font-face {
-  font-family: "Attack";
-  src: url("/fonts/attack/Regular.woff") format("woff");
+  font-family: 'Attack';
+  src: url('/fonts/attack/Regular.woff') format('woff');
   font-weight: 400;
 }
 
 @font-face {
-  font-family: "Attack";
-  src: url("/fonts/attack/SemiBold.woff") format("woff");
+  font-family: 'Attack';
+  src: url('/fonts/attack/SemiBold.woff') format('woff');
   font-weight: 600;
 }
 
 @font-face {
-  font-family: "Attack";
-  src: url("/fonts/attack/Thin.woff") format("woff");
+  font-family: 'Attack';
+  src: url('/fonts/attack/Thin.woff') format('woff');
   font-weight: 100;
 }
 
 
 body {
   @apply text-gray-50;
-  font-family: "Lato", sans-serif;
+  // font-family: "Lato", sans-serif;
   // font-family: 'Neon Spark', sans-serif;
   // font-family: "Nunito", sans-serif;
   // font-family: 'Cayano Regular', sans-serif;
@@ -99,9 +95,8 @@ pre {
   [data-theme='dark-acrylic'] {}
 }
 
+
 @layer components {
-
-
   .layout {
     @apply bg-black/80;
   }
